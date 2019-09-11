@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}{{ block.super }}Scope{% endblock %}
+
+{% block navbar-left %}
+  {% include "_navbar.html" with active_link="NONE" %}
+{% endblock %}
+
+{% block navbar-custom-right %}
+    {% include "_navbar-right.html" with active_link="scope" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="padding-top: 10px;">
+    <div id="sec1" class="text-page  text-center" style="margin-bottom: 10px;">
+        <h2>Project Scope - City of Raleigh Municipal Site GSI/LID Cost Tool</h2>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+          <h2>Task 1 - Develop Cost Tool Architectural Concepts</h2>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>Tetra Tech
+will use the Cost-Benefit Tool Concept document (Tetra Tech, 2016) developed
+with the City of Raleigh and background research as a foundation for this
+project. The project team will continue to research key aspects of existing
+tools (e.g., cost equations, input and output, friendly formats) as appropriate
+to incorporate into this new web-based application, and a preliminary
+architecture will be outlined to test against the research objective. It is
+expected that there will be multiple elements that the team gathers and
+evaluates during initial planning. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>During the
+early portion of Task 1, Tetra Tech will work with the City to assemble a
+Project Advisory Committee (PAC). The purpose of the PAC will be to provide
+input and tool testing from intended tool users to enhance tool design and
+performance in achieving the City's objectives for the tool. Agreed upon
+architectural concepts will be documented to guide tool development and
+testing. Potential PAC members include City staff that oversee site plan
+designs for City property and private development (e.g., Construction
+Management, Development Services, Stormwater Management) along with third party
+designers associated with site development. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>To identify
+and evaluate tool architectural concepts, the team will solicit input from the
+PAC to establish optimal inputs and outputs for the tool. The goal is to test
+the applicability of the cost tool with variations of inputs and outputs that
+will increase the likelihood of its use to assist municipalities and the development
+community during pre-development, site design, and design stages of review. The
+challenge of creating an accurate, user-friendly cost estimation tool is making
+sure that the tool remains simple while containing just enough detail to
+satisfy the intended user by showing that the application is a credible
+resource. Expectations for level of detail and accuracy at the three stages
+will be explored with the PAC. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>Additionally,
+Tetra Tech will work with the PAC to conceptualize how the tool can best incorporate
+estimation of potential cost savings of smart design (e.g., LID) features such
+as narrowing street widths, eliminating curb and gutter, and reducing or
+eliminating drainage piping where swales can meet requirements. The goal is to
+keep the output of the tool <span class=GramE>simple</span> so it translates
+into a resource that an average user desires to implement to make site
+assessments, but also evaluate traditional infrastructure, mixed, and GSI/LID
+projects fiscally to drive decision-making and negotiations. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>Once the project
+team, with PAC input, decides upon project components to be represented in
+project cost estimates, the team will create a local cost database. The
+database will incorporate ideas stemming from a facilitated dialog between the project
+team and the PAC. Additionally, the research team will work with the PAC to
+decide how this database will be utilized in the tool and accessed by users.
+For example, the research team will need to figure out the accessibility of the
+data for different user types. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>Based on the
+PAC input throughout Task 1, Tetra Tech will formulate and document the preliminary
+architecture concepts that will be used for testing and troubleshooting the
+tool through Task 2. <o:p></o:p></span></p>
+
+<p class=MsoNormal><i style='mso-bidi-font-style:normal'><u><span
+style='font-size:12.0pt;line-height:107%'>Task 1 Deliverable<o:p></o:p></span></u></i></p>
+
+<ol><li>Document summarizing the architectural
+    concepts to guide Task 2 tool construction</li></ol>
+
+    </div>
+
+
+    <div class="col-lg-6">
+      <h2>Task 2 - Construct the Prototype Cost Tool</h2>
+        <p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>Tetra Tech
+will build prototype techniques and tools that elaborate on the preliminary
+architecture concepts for select users to test before building the full working
+software. Once the requirements have been finalized and approved through the
+prototyping process, development of the application will begin. Based on the
+preliminary requirements, the application will be developed primarily in HTML
+and will be compatible with the major browsers and their two most current
+versions.  The development will take into
+account browser dependencies, where possible, as well as interaction with
+plug-ins.  <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>The project
+team will follow the agile development lifecycle (i.e., an industry standard
+comprising a set of values and principles for software development under which
+requirements and solutions evolve through the collaborative effort of
+self-organizing cross-functional teams) and the finalized requirements will be
+scoped into three incremental (6 week to 2 month) software releases. Each
+release will be fully tested internally before being provided to the City (PAC)
+for their release testing. Testing feedback will be collected, reviewed, and
+implemented based on priorities and funding. This iterative approach to
+development and testing allows the development team to rapidly receive and
+address feedback from the tool testers. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:12.0pt;line-height:107%'>Key features
+that Tetra Tech will create and get feedback from the PAC include: <o:p></o:p></span></p>
+
+<ol>
+<li>The design of the web link for the
+user login.  The initial thought is that
+the application will not be publicly accessible. It is proposed that user access be controlled
+through user authentication so all users will need a User Name and Password
+    managed by the City of Raleigh.</li>
+
+<li>The design and content of the main
+home page with a brief description of the tool, purpose and how to use it, and
+    contact information for main point of contact if the user needs help. </li>
+
+<li>The types of scenario inputs that the
+user would have the option to select and customize to describe the site for
+    which the tool is being applied - For example, these may include: </li>
+<ul>
+<li>SCM sizing information</li>
+<li>Basic infrastructure quantities (e.g., paved road, curb and gutter, parking area,
+drainage piping)</li>
+<li>Option to input user-defined unit cost information</li>
+</ul>
+<li>Formulating a basic results report
+that talks about: </li>
+<ul>
+<li >Scenario
+description</li>
+
+<li>BMP
+and infrastructure assumptions</li>
+
+<li>Unit
+    cost assumptions</li>
+
+<li>Up
+    front capital costs, O&amp;M costs, and life-cycle costs for each element</li>
+
+<li>Total
+costs</li>
+</ul>
+<li>Saving the scenario to the username
+with a sorting filter option. </li>
+
+<li>Allowing the user to choose multiple
+scenarios to compare costs (i.e., up to three scenarios for comparison). </li>
+
+<li>Enhanced viewing of results for a
+single scenario or multiple scenario comparisons. </li>
+
+<li>Enhanced administrative functions as
+resources allow. For example, add options that the City would like for
+administration of the user data. </li>
+
+<li>Input regarding the look and design
+of the tool (to the extent resources allow)</li>
+</ol>
+
+<p><i style='mso-bidi-font-style:normal'><u><span
+style='font-size:12.0pt;line-height:107%'>Task 2 Deliverables<o:p></o:p></span></u></i></p>
+<ol>
+<li>Documentation of web-based tool
+requirements<o:p></o:p></span></p>
+
+<li>Prototype tool (3 iterative versions)
+releases for testing<o:p></o:p></span></p>
+
+<li>Final project tool for publishing</p>
+</ol>
+    </div>
+
+    <div class="col-lg-6">
+      <h2>Task 3 - Deliver the Municipal Site
+GSI/LID Cost Tool for Installation on City Server</h2>
+
+Once
+development of the City of Raleigh Site GSI/LID Cost Tool is complete and all
+functionality has been tested and verified by the beta-testers, the team will
+follow basic software construction to help deploy the system into the City's
+production environment. The team has already engaged the City of Raleigh's IT
+Infrastructure staff to facilitate a streamlined and efficient transition from
+Tetra Tech's development environment to the City of Raleigh's production
+environment. When the application is ready to be moved to the Raleigh
+Production environment, Tetra Tech will work directly with the City's IT
+Infrastructure staff to support the deployment of the application. In support
+of this effort the application will be developed from the start in a manner
+that is compatible with the City's technical infrastructure requirements,
+security protocols, and user management platform. Documentation including
+source code will be provided. A User Manual, specified in the WRF "Web-based
+Product Criteria" is not anticipated as the intent is for the tool to be easy to
+use with any simple user guidance provided online.<o:p></o:p></span></p>
+
+<u><span style='font-size:12.0pt;
+line-height:107%'>Task 3 Deliverable<o:p></o:p></span></u></p>
+<ol>
+<li>Programmed tool for installation on
+City of Raleigh website along with installation guide
+<li>Documentation of source code
+</ol>
+
+    </div>
+  </div>
+</div>
+
+    <div class="col-lg-6">
+      <h2>Task 4 - Deliver Design Report</h2>
+   The primary
+deliverable for this research project will be the City of Raleigh Site GSI/LID
+Cost Tool web-based application. However, a Design Report will be provided for
+a project record. The report will briefly summarize the project background,
+objective, approach, and outcomes incorporating the architectural concepts,
+tool requirements, cost equations, and source code from the previous tasks. As
+appropriate, recommendations for how the initial product might be enhanced or
+complemented in the future will also be documented.<o:p></o:p></span></p>
+
+<u><span style='font-size:12.0pt;
+line-height:107%'>Task 4 Deliverable<o:p></o:p></span></u></p>
+<ol>
+<li>Design Report draft
+<li>Design Report final
+</ol>
+{% endblock %}

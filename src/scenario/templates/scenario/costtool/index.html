@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }}Update Scenario{% endblock %}
+
+{% block navbar-left %}
+  {% include "_navbar.html" with active_link="scenario" %}
+{% endblock navbar-left %}
+
+{% load staticfiles %}
+
+{% block extra_css %}
+
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/css/bootstrap-slider.min.css">
+<link rel="stylesheet" href="{% static 'scenario/css/scenario_main.css' %}" title="normal" type="text/css" media="all">
+{% endblock extra_css %}
+
+
+{% block extra_javascript %}
+<script type="text/javascript" language="Javascript" src="{% static 'scenario/js/displaycontrols.js' %}"></script>
+
+<!-- debug is being used as a surrogate for Development vs. Production -->
+{% if debug %}
+    <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
+{% else %}
+    <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls_production.js' %}"></script>
+{% endif %}
+
+<script type="text/javascript" language="Javascript" src="{% static 'scenario/js/cost_tool.js' %}"></script>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+{% endblock extra_javascript %}
+
+{% block extra_js %}
+{% endblock extra_js %}
+
+{% block content %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+
+    function openFileOption()
+    {
+      document.getElementById("file1").click();
+    }
+    var openFile = function(event) {
+      var data = loadJSON(event);
+    };
+
+    // on-ready function
+    $( function() {
+        var active_tab = 2;
+        $("#tab_box").tabs({
+            activate: function (event, ui) {
+              //alert("opened tab " + ui.newPanel[0].id);
+              setCookie('tab', ui.newPanel[0].id, 365);
+            }
+        });
+
+        var id = getCookie('tab');
+        if (id != '')
+        {
+          var index = $('#tab_box a[href="#'+id+'"]').parent().index();
+          $("#tab_box").tabs("option", "active", index );
+        }
+
+
+    });
+
+    $( "#tab_box" ).tabs({
+      activate: function( event, ui ) {
+          alert("opened tab ");
+      }
+    });
+
+    $( function() {
+        $( document ).tooltip({
+          classes: {
+            "ui-tooltip": "highlight"
+          }
+        });
+    } );
+
+    $( function() {
+        $( ".accordion" ).accordion({
+          collapsible: true,
+            active: false,
+
+        });
+    });
+</script>
+
+<style>
+.ui-tabs .ui-tabs-nav
+{
+    background: #fff;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { background: #7ece32;}
+.highlight {
+	background: #7ece32;
+    color: #fff;
+}
+select.form-control:not([size]):not([multiple]) {
+    height: auto!important;
+}
+
+#calculator  h3 {
+    color: #7ece32;
+    font-size: 25px;
+    margin-left: -30px;
+    margin-top: -28px;
+    margin-bottom: 12px;
+}
+.nav-tabs{
+    display: flex;
+    text-align: center;
+}
+.nav-tabs li {
+    display: flex;
+    flex: 1;
+    border-radius: 15px 15px 0 0;
+}
+
+.nav-tabs li  a {
+    flex: 1;
+    border-radius: 15px 15px 0 0;
+}
+</style>
+
+<div id="calculate">
+
+    <div id="pageoptions">
+
+        <span class="note"></span>
+
+        <!--<button type="button" class="btn btn-primary" onclick="saveDB()" class="pageoption save">-->
+            <!--<span class="glyphicon glyphicon-download"></span>Save DB-->
+        <!--</button>-->
+{#        <button type="button" class="btn btn-primary" onclick="saveJSON()" class="pageoption save">#}
+{#            <span class="glyphicon glyphicon-download"></span>Save JSON#}
+{#        </button>#}
+{#        <input type="file" accept='application/json' id="file1" onchange='openFile(event)' style="display:none">#}
+{#        <button type="button" class="btn btn-primary" onclick="openFileOption()" class="pageoption save">#}
+{#            <span class="glyphicon glyphicon-upload"></span>Load JSON#}
+{#        </button>#}
+        <!--<button type="button" class="btn btn-primary" onclick="togglePrintable()" class="pageoption save">-->
+            <!--<span class="glyphicon glyphicon-print"></span>Display Printable Format-->
+        <!--</button>-->
+
+    </div>
+
+    <div id="tab_box">
+
+        <h2>    <div id="scenario_name"></div></h2>
+
+        <ul id="tab_options" class="nav nav-tabs nav-justified">
+            <!--<li><a href="#start">Start</a></li>-->
+            <li><a href="#project_information">Project-<br>Scenario<br>Description</a></li>
+{#            <li><a href="#nonconventional_structures">Non-<br>Conventional<br>Structure</a></li>#}
+{#            <li><a href="#conventional_structures">Conventional<br>Structure</a></li>#}
+            <li><a href="#structures">Structures</a></li>
+            <li><a href="#costitems">Cost Item<br>Unit Costs</a></li>
+            <li><a href="#structure_costs">Structure/<br>Cost Item<br>Costs</a></li>
+            <li><a href="#input-result" style="background-color:#228EA9; color:white;">Results</a></li>
+        </ul>
+
+        <div class="tab-content" id="inputs">
+            <div class="content">
+
+                <!-- the content of these pages is stored separately for convenience only -->
+                <!--{#% include "scenario/costtool/subpages/start.html" %#}-->
+
+                {% include "scenario/costtool/subpages/project_information.html" %}
+
+{#                {% include "scenario/costtool/subpages/nonconventional_structures.html" %}#}
+
+{#                {% include "scenario/costtool/subpages/conventional_structures.html" %}#}
+
+                {% include "scenario/costtool/subpages/structures.html" %}
+
+                {% include "scenario/costtool/subpages/costitems.html" %}
+
+                {% include "scenario/costtool/subpages/structure_costs.html" %}
+
+                {% include "scenario/costtool/subpages/results.html" %}
+
+                <form name="calculator" onsubmit="return false;" id="calculator" method="get">
+                    <input type="hidden" name="s" id="s" value="0">
+                </form>
+            </div><!-- .content -->
+        </div><!-- #inputs -->
+    </div><!-- #calculate-box -->
+</div><!-- #calculate -->
+
+<div id="divider">
+    <div class="shadow">
+        <div id="sh_bot">
+            <div class="sh t1 o1"></div>
+            <div class="sh t2 o2"></div>
+            <div class="sh t3 o3"></div>
+            <div class="sh t4 o4"></div>
+            <div class="sh t5 o5"></div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block new_extra_js %}
+
+
+
+{% endblock %}

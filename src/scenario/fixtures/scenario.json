@@ -1,0 +1,119 @@
+[
+  {
+    "model": "scenario.location",
+    "pk": 1,
+    "fields": {
+      "user": 6,
+      "shared_description": "1931 Hunters Trail",
+      "legal_description": "1931 Hunters Trail",
+      "size": 1.2,
+      "development_type": "Single Family Home",
+      "soil_type": "B",
+      "create_date": "2018-11-08T21:47:00.931Z",
+      "modified_date": "2018-11-08T21:47:00.932Z"
+    }
+  },
+  {
+    "model": "scenario.location",
+    "pk": 2,
+    "fields": {
+      "user": 6,
+      "shared_description": "1921 Hunters Trail",
+      "legal_description": "1921 Hunters Trail",
+      "size": 1.2,
+      "development_type": "Single Family Home",
+      "soil_type": "B",
+      "create_date": "2018-11-08T21:47:00.931Z",
+      "modified_date": "2018-11-08T21:47:00.932Z"
+    }
+  },
+  {
+    "model": "scenario.location",
+    "pk": 3,
+    "fields": {
+      "user": 6,
+      "shared_description": "1911 Hunters Trail",
+      "legal_description": "1911 Hunters Trail",
+      "size": 1.2,
+      "development_type": "Single Family Home",
+      "soil_type": "B",
+      "create_date": "2018-11-08T21:47:00.931Z",
+      "modified_date": "2018-11-08T21:47:00.932Z"
+    }
+  },
+  {
+    "model": "scenario.location",
+    "pk": 4,
+    "fields": {
+      "user": 6,
+      "shared_description": "1901 Hunters Trail",
+      "legal_description": "1901 Hunters Trail",
+      "size": 1.2,
+      "development_type": "Single Family Home",
+      "soil_type": "B",
+      "create_date": "2018-11-08T21:47:00.931Z",
+      "modified_date": "2018-11-08T21:47:00.932Z"
+    }
+  },
+  {
+    "model": "scenario.scenario",
+    "pk": 1,
+    "fields": {
+      "scenario_date": "2018-11-01",
+      "name": "tiny house nation",
+      "user": 6,
+      "location": 3,
+      "create_date": "2018-11-08T21:55:38.192Z",
+      "modified_date": "2018-11-08T21:56:07.044Z"
+    }
+  },
+  {
+    "model": "scenario.scenario",
+    "pk": 2,
+    "fields": {
+      "scenario_date": "2018-11-01",
+      "name": "bigger tiny house nation",
+      "user": 6,
+      "location": 3,
+      "create_date": "2018-11-08T21:55:38.192Z",
+      "modified_date": "2018-11-08T21:56:07.044Z"
+    }
+  }
+  ,
+  {
+    "model": "scenario.scenario",
+    "pk": 3,
+    "fields": {
+      "scenario_date": "2018-11-01",
+      "name": "big tiny house nation",
+      "user": 6,
+      "location": 4,
+      "create_date": "2018-11-08T21:55:38.192Z",
+      "modified_date": "2018-11-08T21:56:07.044Z"
+    }
+  }  ,
+  {
+    "model": "scenario.scenario",
+    "pk": 4,
+    "fields": {
+      "scenario_date": "2018-11-01",
+      "name": "pretty tiny house nation",
+      "user": 6,
+      "location": 2,
+      "create_date": "2018-11-08T21:55:38.192Z",
+      "modified_date": "2018-11-08T21:56:07.044Z"
+    }
+  }  ,
+  {
+    "model": "scenario.scenario",
+    "pk": 5,
+    "fields": {
+      "scenario_date": "2018-11-01",
+      "name": "somewhat tiny house nation",
+      "user": 6,
+      "location": 2,
+      "create_date": "2018-11-08T21:55:38.192Z",
+      "modified_date": "2018-11-08T21:56:07.044Z"
+    }
+  }
+]

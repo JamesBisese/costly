@@ -1,0 +1,162 @@
+{% load staticfiles %}
+<style>
+
+    {#.table_col {#}
+    {#    margin-left: 37px;#}
+    {#    min-width: 65%;#}
+    {#    padding: 0px;#}
+    {#}#}
+    .help_col {
+        padding: 0px;
+    }
+    {#.form-control {#}
+    {#    padding: .375rem 0.1rem;#}
+    {#}#}
+
+{#    .gft {#}
+{#	margin-left: 20px;#}
+{#	border-collapse: collapse;#}
+{#	}#}
+{#.gft td {#}
+{#	padding: 2px 4px;#}
+{#	font-size: 13px;#}
+{#	font-family: Arial, Helvetica, sans-serif;#}
+{#	letter-spacing: -0.01em;#}
+{#	}#}
+{#.gft td input, .gft td select {#}
+{#	/*font-size: 13px;*/#}
+{#	width: 100%;#}
+{#	}#}
+{#.gft td.indent1 {#}
+{#	padding-left: 20px;#}
+{#	}#}
+{#.gft td.indent2 {#}
+{#	padding-left: 40px;#}
+{#	}#}
+
+    .costItemTable {
+        width: 640px;
+        margin-left: -53px;
+        border-collapse: collapse;
+        font-size: 11px;
+    }
+    .costItemTable .input-group-text {
+        padding-right: 0px!important;
+        padding-left: 3px!important;
+    }
+    .costItemTable .input-group {
+        padding-right: 1px!important;
+        padding-left: 2px!important;
+    }
+    .costItemTable .td_centered {
+        text-align: center;
+    }
+    .costItemTable .form-control .leftaligned {
+        text-align: left;
+    }
+    .costItemTable .td_left_padded {
+        padding-left: 3px;
+    }
+    .costItemTable .form-control {
+        text-align: right;
+        padding-right: 6px!important;
+        padding-left: 2px!important;
+        border-radius: 0px;
+    }
+    .costItemTable .mb-3 {
+        margin-bottom: 0px!important;
+    }
+    .costItemTable td {
+        background: #e9ecef;
+    }
+</style>
+<div id="costitems">
+    <div class="container">
+        <div class="row">
+            <div class="col table_col">
+
+               <form name="calculator" onsubmit="return false;" id="calculator" method="get">
+
+                    <!-- jab-start -->
+               <h3 class="bmplabel" onclick="toggleHelpText('CostItemUnitCostsHelpText');">Cost Item Unit Costs</h3>
+            <table border="1" cellpadding="0" cellspacing="0" class="costItemTable" >
+                <thead>
+                    <tr style="text-align: center;">
+                        <th style="width: 100px;">Cost Item</th>
+                        <th style="width: 46px;">Bid Units</th>
+                        <th style="width: 100px;">Unit Cost</th>
+                        <th style="width: 46px;">User Input</th>
+                        <th style="width: 46px;">Year</th>
+                        <th style="width: 46px;">Rep. Life<br>(yrs)</th>
+                        <th style="width: 46px;">Ongoing O&amp;M Factor (%)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+{% for cost_item_default_cost in cost_item_default_costs %}
+                    <tr>
+                        <td class="td_left_padded"
+                                onclick="open_costitem_help('{{ cost_item_default_cost.costitem.code }}');">{{ cost_item_default_cost.costitem.name }}</td>
+                        <td class="td_centered">{{ cost_item_default_cost.costitem.units }}</td>
+                        <td>
+                            <select id="ui_{{ cost_item_default_cost.costitem.code }}_cost_source"
+                                    class="form-control" onkeypress="returnCalc(this);"
+                                    onchange="runCalculate(this);" >
+                                <option value="user">User </option>
+                                <option selected value="rsmeans">Eng. Est. - {{ cost_item_default_cost.rsmeans_va }}</option>
+                                <option value="db_25_pct">DB - 25% - {{ cost_item_default_cost.db_25pct_va }}</option>
+                                <option value="db_50_pct">DB - 50% - {{ cost_item_default_cost.db_50pct_va }}</option>
+                                <option value="db_75_pct">DB - 75% - {{ cost_item_default_cost.db_75pct_va }}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input disabled type="text" class="form-control"
+
+                                   id="ui_{{ cost_item_default_cost.costitem.code }}_user_input_cost"
+{#                                   value="{{ cost_item_default_cost.rsmeans_50_pct }}"#}
+                                   onkeypress="returnCalc(this);" onchange="runCalculate(this);"
+                            >
+                        </td>
+                        <td>
+                            <input disabled type="text" class="form-control"
+
+                                   id="ui_{{ cost_item_default_cost.costitem.code }}_base_year"
+{#                                   value="{{ cost_item_default_cost.rsmeans_base_year }}"#}
+                                onkeypress="returnCalc(this);" onchange="runCalculate(this);" >
+
+                        </td>
+                        <td>
+                            <input type="text" class="form-control left_aligned"
+
+                                   id="ui_{{ cost_item_default_cost.costitem.code }}_replacement_life"
+                                   value="{{ cost_item_default_cost.replacement_life }}"
+                                onkeypress="returnCalc(this);" onchange="runCalculate(this);" >
+
+                        </td>
+                        <td>
+                            <input type="text" class="form-control"
+
+                                   id="ui_{{ cost_item_default_cost.costitem.code }}_o_and_m_pct"
+                                   value="{{ cost_item_default_cost.o_and_m_pct }}"
+                                onkeypress="returnCalc(this);" onchange="runCalculate(this);" >
+                        </td>
+                    </tr>
+
+{% endfor %}
+
+
+                </tbody>
+            </table>
+
+
+                    </form>
+            </div>
+            <div id="help_system" class="col help_col">
+
+                {% include "scenario/costtool/subpages/help_text/costitems.html" %}
+            </div>
+        </div>
+    </div>
+
+</div>
+

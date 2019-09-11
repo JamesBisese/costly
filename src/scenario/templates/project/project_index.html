@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}{{ block.super }}Projects{% endblock %}
+{% block javascriptOLD %}
+
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
+<style>
+    div.dt-buttons{
+        padding-top: 5px;
+    }
+</style>
+
+{% endblock extra_css %}
+
+{% block navbar-left %}
+  {% include "_navbar.html" with active_link="project" %}
+{% endblock navbar-left %}
+
+{% block content %}
+
+<div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
+    {%  if can_add %}
+    <button type="button"
+            class="btn btn-primary js-create-project"
+            style="font-size: 16px; float:right; "
+            data-url="{% url 'scenario:project_create' %}">
+      <span class="glyphicon glyphicon-plus"></span>
+      New project
+    </button>
+    {% endif %}
+
+	<div style="clear: both;"></div>
+<br>
+</div>
+{% if user.is_superuser %}
+    <div id="is_superuser" display="none";></div>
+{% endif %}
+  <table class="table" id="project-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>User</th>
+        <th>Project Name</th>
+        <th>Legal Description</th>
+        <th>Size ft<sup>2</sup></th>
+        <th>Ownership</th>
+        <th>Project Type</th>
+          <th>Scenario<br>Count</th>
+        <th></th>
+      </tr>
+    </thead>
+
+  </table>
+
+{#    This is where the modal gets injected #}
+  <div id="modal-project" class="modal fade" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block new_extra_js %}
+    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+
+    {% if debug %}
+        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
+    {% else %}
+        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls_production.js' %}"></script>
+    {% endif %}
+
+    <script src="{% static 'project/js/project_index.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}{{ block.super }}Scenarios{% endblock %}
+
+{% block javascriptOLD %}
+{% endblock %}
+
+{% block extra_css %}
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
+<style>
+    div.dt-buttons{
+        padding-top: 5px;
+    }
+</style>
+{% endblock extra_css %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="scenario" %}
+{% endblock navbar-left %}
+
+{% block content %}
+<style>
+    #compareScenarios2[disabled] {
+        pointer-events: all !important;
+    }
+
+.project_table {
+  border-collapse: collapse;
+}
+
+.project_table, .ptd {
+  border: 1px solid black;
+}
+</style>
+<div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
+	<span style="font-size: 38px; float:left; margin-right: 40px;">{{ header }}</span>
+<span style="display: block;">
+    {% include "scenario/project.html"  %}
+</span>
+
+    {%  if can_add %}
+    <!--This was the ajax (modal) version-->
+    <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
+      <!--<span class="glyphicon glyphicon-plus"></span>-->
+      <!--New scenario-->
+    <!--</button>-->
+        <div style="float: right; display: inline-block;">
+        <!-- the data-url gets set by scenario.js when a single scenario is selected -->
+            <button id='duplicate_scenario' type="button"
+                    style="display: none;"
+                    class="btn btn-primary js-duplicate-scenario">
+                <span class="glyphicon glyphicon-copy"></span> Duplicate scenario
+            </button>
+            <!-- this loads a modal to enter the new scenario title only -->
+            <button id='create_scenario' type="button"
+                    data-url="{% url 'scenario:project_scenario_create' project.id %}"
+                    class="btn btn-primary js-create-scenario">
+                <span class="glyphicon glyphicon-plus"></span>New Scenario
+            </button>
+
+            <!-- this loads a new page -->
+{#            <a class="btn btn-primary" style="font-size: 16px;"#}
+{#               href="{% url 'scenario:project_scenario_create' project.id %}">#}
+{#              <span class="glyphicon glyphicon-plus"></span>#}
+{#              New scenario#}
+{#            </a>#}
+        </div>
+    {% endif %}
+
+	<div style="clear: both;"></div>
+    <br>
+</div>
+{% if user.is_superuser %}
+    <div id="is_superuser" display="none";></div>
+{% endif %}
+
+{#<form method="POST" action="{% url 'scenario:scenario_index' %}">#}
+{#    {% csrf_token %}#}
+{#    <select name="project_id" onChange="form.submit();">#}
+{#        {% for project in projects %}#}
+{#            <option value="{{ project.id }}">{{ project.project_title }}</option>#}
+{#        {% endfor %}#}
+{#    </select>#}
+{#</form>#}
+
+
+<div style="display: none" id="project_id" value="{{ project.id  }}">{{ project.id  }}</div>
+<a id="compareScenarios2" class="btn btn-info" style="font-size: 16px; float:left;"
+   href="" target="scenarioResults"
+    title="Select 1, or 2 scenarios from the table and click to view results and compare">
+  <span class="glyphicon glyphicon-zoom-in"></span>
+  Compare Scenarios
+</a>
+<br><br>
+{#    responsive no-wrap#}
+<table class="table" id="scenario-table">
+    <thead>
+        <tr>
+            <th >#</th>
+            <th>Scenario Title</th>
+            <th data-priority="1">Nut. Req Met</th>
+            <th data-priority="2">Captures 90% Storm</th>
+            <th data-priority="2">Meets Peakflow Req</th>
+            <th data-priority="2">Pervious ft2</th>
+            <th data-priority="2">Impervious ft2</th>
+            <th></th>
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" id="modal-scenario">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block new_extra_js %}
+    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+    <script src="//cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+
+    {% if debug %}
+        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
+    {% else %}
+        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls_production.js' %}"></script>
+    {% endif %}
+
+    <script src="{% static 'scenario/js/scenario_index.js' %}"></script>
+{% endblock %}

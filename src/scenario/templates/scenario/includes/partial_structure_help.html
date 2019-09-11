@@ -1,0 +1,28 @@
+{% load staticfiles %}
+
+<div id="{{ structure_code }}">
+    {%  if structure_meta.count > 1 %}
+        {% if structure_code != 'all' %}
+            <p>Unable to find structure with code {{ structure_code }}</p>
+        {% endif %}
+        List of available structure codes<br>
+{#        <ol>#}
+{#        {%  for structure in structure_meta %}#}
+{#            <li>{{ structure.code }} -- {{ structure.name }}</li>#}
+{#        {% endfor %}#}
+{#        </ol>#}
+        {%  for structure in structure_meta %}
+    <button type="button" onclick="close_ci_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+            <h4>{{ structure.code }} -- {{ structure.name }}</h4>
+            {{ structure.help_text }}
+        {% endfor %}
+    {%  else %}
+    <button type="button" onclick="close_ci_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <h4>{{ structure_meta.name }} - place holder</h4>
+    {{ structure_meta.help_text }}
+    {%  endif %}
+</div>

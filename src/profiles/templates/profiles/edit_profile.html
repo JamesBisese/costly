@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+
+{% load bootstrap4 %}       {# import bootstrap4/bootstrap3#}
+
+{% bootstrap_messages %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_css %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load thumbnail %}
+
+{% block title %}{{ block.super }}Edit Account{% endblock %}
+
+{% block navbar-left %}
+{% include "_navbar.html" with active_link="NONE" %}
+{% endblock %}
+
+{% block navbar-custom-right %}
+{% include "_navbar-right.html" with active_link="NONE" %}
+{% endblock %}
+
+    {% block extra_css %}
+<!-- edit_profile block extra_css -->
+{{ form.media.js }}
+<!-- end edit_profile block extra_css -->
+    {% endblock %}
+
+<!-- Benefits of the Django application -->
+{% block content %}
+
+<div class="container">
+  <h1 class="text-primary">Edit Account</h1>
+  <hr>
+  <div class="row">
+    <!-- left column -->
+    <!--<div class="col-md-3">-->
+      <!--<div class="text-center">-->
+        <!--<img title="profile picture" class="img-circle img-responsive" src="{% thumbnail user.profile.picture|default:'default_profile.png' 140x140 crop %}">-->
+      <!--</div>-->
+    <!--</div>-->
+      
+    <!-- edit form column -->
+    <div class="col-md-6">
+
+      <form enctype="multipart/form-data" method="post">
+	{% crispy user_form %}
+	{% crispy profile_form %}
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <a class="btn btn-sm pull-right" href="{% url 'accounts:password-change' %}">Change Password</a>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+        {% block scripts %}
+<!-- start block scripts -->
+{{ form.media.js }}
+<!-- end block scripts -->
+        {% endblock scripts %}
+
+

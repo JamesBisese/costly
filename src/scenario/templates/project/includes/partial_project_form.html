@@ -1,0 +1,13 @@
+{% load widget_tweaks %}
+
+{% for field in form %}
+  <div class="form-group{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      <!-- NOTE: this uses widget_tweaks to add classes to every field -->
+    {% render_field field class+="form-control ui-state-default ui-corner-all" %}
+    <!--{% render_field field  %}-->
+    {% for error in field.errors %}
+      <p class="help-block">{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endfor %}

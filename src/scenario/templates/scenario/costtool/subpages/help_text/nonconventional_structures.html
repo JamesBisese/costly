@@ -1,0 +1,178 @@
+{% load staticfiles %}
+
+<style>
+.conventional_structure_help p {
+    margin-top: 10px;
+}
+</style>
+
+<div id="NonConventionalStructuresHelpText" class="conventional_structure_help" style="display:none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Non-Conventional Structure:</span></p>
+    <ul>
+        <li>
+            <p>
+                General help text: Select from the available Non-Conventional Structures in this Scenario for this
+            Project site and insert the size of the structure. Available structures are based upon the selected
+            Areal Features and Project Type as indicated by the user. Each structure has a default unit that
+            cannot be changed in the tool. Non-Conventional Structures are distributed GSI systems used
+            for stormwater management. The default cost items are listed under each selected structure,
+            which will drive the overall life cycle costs calculated in the cost tool for each structure. Cost
+            items can be added or removed from each structure in the Structure Cost Items User
+                Assumptions tab.
+            </p>
+            <p>
+            If you would like to learn more information about the structure, click on the name of the
+            structure. The tool will provide information about each structure including a description of what
+            it is, pictures and examples of the structure being implemented, and the Areal Features that the
+            structure can occur within on a Project site. The tool will also provide information about the
+            additional benefits each structure provides.
+            </p>
+        </li>
+        <li>
+            Additional 1st year maintenance costs: Tool assumes the same annual operations and
+            maintenance costs across the study life of the Scenario if the user leaves the 1st year
+            maintenance costs blank. User should specify additional 1st year maintenance costs (in dollars)
+            for each STRUCTURE if the costs are expected to be greater during the 1st year of the project
+                study life.
+        </li>
+    </ul></p>
+</div>
+
+<div id="help_swale_innerHTML" style="display: none;">
+    <div class="title">Swale</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image21.jpg' %}"
+             style="height: 200px; width: 280px;">
+    </div>
+
+Swales remove pollutants from stormwater by biofiltration, settling, and infiltration. Grassed swales filter pollutants
+as stormwater runoff moves through the leaves and roots of the grass. By reducing flow velocities and increasing a
+site's time of concentration, grassed swales contribute to reducing runoff peaks.
+<p>This structure can be constructed in:<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Protective Yards
+<li> Medians
+</ul></p>
+</div>
+
+
+<div id="help_rain_harvesting_device_innerHTML" style="display: none;">
+    <div class="title">Harvesting Device (i.e., cistern, rain barrel, other storage device)</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image22.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Rainwater Harvesting includes the capture of runoff from roofs, parking lots, sidewalks, and landscaped areas. These
+    structures might be a cistern, rain barrel, or other storage device used on the Project site. These structures have a
+    limited amount of space to capture stormwater, but can be effective with treatment and/or capture of small volumes.
+    <p>This structure can be constructed in:<ul class="help_ul_2">
+    <li> Amenity Areas/Urban Plaza
+    <li> Protective Yards
+    <li> Buildings
+    </ul></p>
+</div>
+
+<div id="help_bioretention_cell_innerHTML" style="display: none;">
+    <div class="title">Bioretention cells</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image23.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    A bioretention cell is an excavated area filled with soil media, plants, grass or sod. These cells temporarily hold and
+filter stormwater. Their versatility allows them to be installed in a variety of locations.
+<p>This structure can be constructed in:<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Protective Yards
+<li> Parking Islands
+<li> Drive-Thru Facility
+<li> Medians
+<li> Streets
+<li> Miscellaneous Landscaping/Open Space
+</ul></p>
+</div>
+
+
+<div id="help_filter_strip_innerHTML" style="display: none;">
+<div class="title">Filter strips</div>
+
+
+    A filter strip is an area of grass or other permanent vegetation used to reduce nutrients, sediment, and other
+contaminants in runoff to maintain or improve water quality. Filter strips slow the velocity of water, allowing for
+water runoff to infiltrate and reducing soil loss.
+<p>This structure can be constructed in:<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Protective Yards
+<li> Medians
+<li> Streets
+<li> Miscellaneous Landscaping/Open Space
+</ul></p>
+</div>
+
+
+<div id="help_green_roof_innerHTML" style="display: none;">
+<div class="title">Green Roof</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image24.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    A green roof structure has low-growing plants that intercept rain water up to a specific field capacity of the medium
+used for the plants to grow in. This structure has many benefits including improving air quality, saving energy, and
+prolonging the life of the roof.
+<p>This structure can be constructed in:<ul class="help_ul_2">
+<li> Buildings
+</ul></p>
+</div>
+
+<div id="help_planter_box_innerHTML" style="display: none;">
+<div class="title">Planter Boxes</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image25.jpg' %}"
+             style="height: 200px; width: 300px;">
+    </div>
+
+    Planter boxes are a type of bioretention structure that collects stormwater into a contained vegetated area. These boxes
+are designed to connect to a stormwater drainage system, and can either allow stormwater to infiltrate into the ground
+or have a waterproof barrier preventing stormwater from infiltrating the ground. These are small systems that can be
+applied across many areas in the Project site.
+<p>This structure can be constructed in:<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Parking Islands
+<li> Sidewalks
+</ul></p>
+</div>
+
+<div id="help_porous_pavement_innerHTML" style="display: none;">
+<div class="title">Permeable Pavement</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image26.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Permeable pavement captures stormwater through voids in the pavement surface and filters water through an underlying
+aggregate reservoir. The reservoir typically allows the water to infiltrate into the soil subgrade. If the underlying
+soil is not suitable for infiltration, the reservoir can also detain and release the water to a surface conveyance
+system. This structure accommodates pedestrians, parking, and traffic while controlling the quality and quantity of
+stormwater runoff.
+    <p>
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Drive-Thru Facility
+<li> Sidewalks
+<li> Streets
+<li> Medians
+<li> Parking Lots
+<li> Driveways and Alleys
+</ul>
+    </p>
+</div>
+
+
+
+
+

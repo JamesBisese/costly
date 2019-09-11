@@ -1,0 +1,133 @@
+{% load staticfiles %}
+
+<div id="start" style="display: none;">
+    <div class="col0">
+        <div class="picright"><img src="{% static 'scenario/images/green_infrastructure.jpg' %}" alt="Development">
+            <p class="source">EPA Smart Growth</p></div>
+        <h3>Getting Started (boilerplate)</h3>
+        <p class="intro">The Raleigh Cost Too is a tool for quickly comparing the
+            performance, costs, and benefits of Green Infrastructure, or Low Impact Development (LID),
+            to conventional stormwater practices. The GVC is designed to take you step-by-step through a
+            process of determining the average precipitation at your site, choosing a stormwater runoff
+            volume reduction goal, defining the impervious areas of your site under a conventional
+            development scheme, and then choosing from a range of Green Infrastructure Best Management
+            Practices (BMPs) to find the combination that meets the necessary runoff volume reduction
+            goal in a cost-effective way. </p>
+
+        <p>A few important points to keep in mind:</p>
+
+        <ul>
+            <li>The National GVC is currently focused on runoff volume reduction. It does not produce
+                any peak flow results. Volume reduction in this context implies infiltration,
+                evapotranspiration and reuse, and does not include detention in ponds or vaults. All
+                runoff volume captured in BMPs is assumed to be kept on site.
+            </li>
+            <li>The National GVC is meant for a single site or a campus of buildings contained on a
+                single site. If you are interested in looking at the performance and cost/benefit
+                analysis of Green Infrastructure BMPs applied on a neighborhood or watershed scale,
+                consider using the original GVC and/or some of the other stormwater tools provided
+                below.
+            </li>
+        </ul>
+
+        <p>To get started, select a tab at the top to enter site information. Default values (that can
+            always be changed by the user) are provided throughout the calculator, so you can begin on
+            any step. However, we recommend starting on the Lot Information page and proceeding through
+            each step. Below is a brief description of the information you can provide on each page:</p>
+
+        <ul>
+            <li><a onclick="toggleDescription('gs1');this.blur();return false;"
+                   href="/natgreenvalues#">Lot Information</a>
+                <ul id="gs1" style="display:none;">
+                    <li>Site location by zip code, which defines the average precipitation for your
+                        site. The user can override the average precipitation values if desired, e.g. if
+                        the user knows and wants to enter the amount of precipitation for the 2-year
+                        24-hour design storm.
+                    </li>
+                    <li>Site size</li>
+                    <li>Site Hydrologic Soil Group (A-D)</li>
+                </ul>
+            </li>
+            <li><a onclick="toggleDescription('gs2');this.blur();return false;"
+                   href="/natgreenvalues#">Predevelopment</a>
+                <ul id="gs2" style="display:none;">
+                    <li>Site predevelopment conditions, meaning either the state of the site before a
+                        particular project is built, or the pre-human development condition of the site.
+                        The user provides the percent area of the site covered by different possible
+                        land uses, e.g. lawn, trees, impervious, etc.
+                    </li>
+                </ul>
+            </li>
+            <li><a onclick="toggleDescription('gs3');this.blur();return false;"
+                   href="/natgreenvalues#">Runoff Reduction Goal</a>
+                <ul id="gs3" style="display:none;">
+                    <li>Runoff volume reduction goal. The user can choose from a list of regulations
+                        requiring different quantities of precipitation and/or runoff to be infiltrated,
+                        evapotranspirated, or reused on site.
+                    </li>
+                </ul>
+            </li>
+            <li><a onclick="toggleDescription('gs4');this.blur();return false;"
+                   href="/natgreenvalues#">Conventional
+                Development</a>
+                <ul id="gs4" style="display:none;">
+                    <li>Conventional development site conditions, including roof size, parking lot area,
+                        and street, sidewalk, and driveway area.
+                    </li>
+                </ul>
+            </li>
+            <li><a onclick="toggleDescription('gs5');this.blur();return false;"
+                   href="/natgreenvalues#">Green Improvements</a>
+                <ul id="gs5" style="display:none;">
+                    <li>Green Infrastructure BMP options. The user can select from a wide range of BMPs
+                        to determine which combination will best meet runoff reduction goals and budget
+                        considerations.
+                    </li>
+                </ul>
+            </li>
+            <li><a onclick="toggleDescription('gs6');this.blur();return false;"
+                   href="/natgreenvalues#">Advanced Options</a>
+                <ul id="gs6" style="display:none;">
+                    <li>Lifecycle. The user can choose to analyze the lifecycle cost and benefits of
+                        green and conventional stormwater systems over 5 to 100 years.
+                    </li>
+                    <li>Discount rate. The user can set the amortization rate which affects how the
+                        dollar value of maintenance and future replacement costs affects lifecycle
+                        costs.
+                    </li>
+                    <li>Curve numbers. The user can choose to use the default curve numbers provided in
+                        the calculator for various soil groups or fill in their own curve number values.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <h4>Results</h4>
+
+        <p>The results statement at the bottom of the page continuously updates to reflect site
+            conditions and BMPs defined by the user. The user does NOT need to click on a “Calculate”
+            button to see the affect of different choices. The results are presented in detail on
+            separate tabs. They include progress toward the specified runoff volume reduction goal,
+            changes in the total runoff volume annually and for the average storm event for the
+            predevelopment, conventional, and green scenarios, changes in the land use between the
+            conventional and green scenarios, and detail on the lifecycle cost/benefit analysis.</p>
+
+        <p>For more information on the conceptual, hydrologic, and financial basis of this tool, please
+            see the methodology link provided below.</p>
+
+        <div class="download-box">
+            <h4>Download Methodology</h4>
+            <p><strong><a href="http://greenvalues.cnt.org/national/downloads/methodology.pdf"
+                          class="download">methodology.pdf (PDF, 505kb)</a></strong></p>
+        </div>
+
+        <h4>Other Resources</h4>
+
+        <p><a href="http://greenvalues.cnt.org/calculator/">Original Green Values Stormwater
+            Calculator</a></p>
+
+        <p><a href="http://cfpub.epa.gov/npdes/home.cfm?program_id=298">EPA Office of Water Managing Wet
+            Weather with Green Infrastructure</a></p>
+
+        <!--<p><a href="calculator" class="button">Start Over</a></p>--></div>
+</div><!-- #input-start -->

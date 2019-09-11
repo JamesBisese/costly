@@ -1,0 +1,81 @@
+{% load staticfiles %}
+<style>
+    .mb-3 {
+        margin-bottom: 6px!important;
+    }
+</style>
+<div id="structures">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+
+                <form name="calculator" onsubmit="return false;" id="calculator" method="get">
+                    <div id="nonconventional_structure_header">
+                        <h3 class="bmplabel" onclick="toggleHelpText('NonConventionalStructuresHelpText');">Non-Conventional Structures</h3>
+                    </div>
+                    {% for structure in structures %}
+                        {% if structure.classification == 'nonconventional' %}
+                            <div class="input-group mb-3 input-group-sm">
+                                <div class="input-group-prepend" style="width: 70%;" onclick="open_nonconventional_structure_help(this);">
+                                    <div class="input-group-text" style="width: 100%;">
+                                        <input type="checkbox" id="checkbox_{{ structure.code }}"
+                                               value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                        <span >{% autoescape off %}{{ structure.name }}{% endautoescape %}</span>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control" id="ui_{{ structure.code }}_area"
+                                       onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">{% autoescape off %}{{ structure.units }}{% endautoescape %}</span>
+                                </div>
+                            </div>
+                            <div id="structure_cost_{{ structure.code }}"></div>
+
+
+                        {% endif %}
+                    {% endfor %}
+                    <hr>
+
+                <div id="conventional_structure_header">
+                    <h3 class="bmplabel" style="margin-top: 0px;"
+                        onclick="toggleHelpText('ConventionalStructuresHelpText');">Conventional Structures</h3>
+                </div>
+                    {% for structure in structures %}
+                        {% if structure.classification == 'conventional' %}
+                            <div class="input-group mb-3 input-group-sm">
+                                <div class="input-group-prepend" style="width: 70%;" onclick="open_conventional_structure_help(this);">
+                                    <div class="input-group-text" style="width: 100%;">
+                                        <input type="checkbox" id="checkbox_{{ structure.code }}"
+                                                value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                        <span >{% autoescape off %}{{ structure.name }}{% endautoescape %}</span>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control" id="ui_{{ structure.code }}_area"
+                                       onkeypress="returnCalc(this);" onchange="runCalculate(this);"
+                                {% if structure.code == 'curb_and_gutter' %}  style="display: none;" {% endif %}>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">{% autoescape off %}{{ structure.units }}{% endautoescape %}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <hr>
+
+                     <br><br>
+                    <br>
+                </form>
+
+            </div><!-- .col1 -->
+            <div id="structures_help_col" class="col">
+
+                {% include "scenario/costtool/subpages/help_text/nonconventional_structures.html" %}
+                {% include "scenario/costtool/subpages/help_text/conventional_structures.html" %}
+            </div>
+        </div>
+    </div>
+{#    <div class="col2" style="display: block;">#}
+
+
+
+</div>

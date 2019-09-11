@@ -1,0 +1,245 @@
+{% load staticfiles %}
+<style>
+
+</style>
+
+<div id="ConventionalStructuresHelpText" class="conventional_structure_help" style="display:none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Conventional Structure:</span></p>
+
+    <ul>
+        <li>
+            <p>
+                General help text: Select from the available Conventional Structures in this Scenario for this
+            Project site and insert the size of the structure. Available structures are based upon the selected
+            Areal Features and Project Type as indicated by the user. Each structure has a default unit that
+            cannot be changed in the tool. Non-Conventional Structures are distributed GSI systems used
+            for stormwater management. The default cost items are listed under each selected structure,
+            which will drive the overall life cycle costs calculated in the cost tool for each structure. Cost
+            items can be added or removed from each structure in the Structure Cost Items User
+                Assumptions tab.
+            </p>
+            <p>
+            If you would like to learn more information about the structure, click on the name of the
+            structure. The tool will provide information about each structure including a description of what
+            it is, pictures and examples of the structure being implemented, and the Areal Features that the
+            structure can occur within on a Project site. The tool will also provide information about the
+            additional benefits each structure provides.
+            </p>
+        </li>
+        <li>
+            Additional 1st year maintenance costs: Tool assumes the same annual operations and
+            maintenance costs across the study life of the Scenario if the user leaves the 1st year
+            maintenance costs blank. User should specify additional 1st year maintenance costs (in dollars)
+            for each STRUCTURE if the costs are expected to be greater during the 1st year of the project
+                study life.
+        </li>
+    </ul>
+</div>
+
+
+<div id="help_lawn_innerHTML" style="display: none;">
+    <div class="title" >Lawns, Shrubs, and Tree Plantings <br>(excluding vegetated stormwater practices)</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image15.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Lawns are vegetated landscapes made up of a grass species that provide recreational space for the Project site. They can
+be implemented in many areas within the Project site. These structures need to be well-maintained to continuously
+provide aesthetics to the site. While they do allow for stormwater infiltration, substituting grass lawns for other
+species of vegetation can help mitigate the impacts of runoff more effectively. Shrubs are traditional vegetative
+structures that add aesthetics to the Project site and can be used for screening the property. These are usually added
+in many areas throughout the Project site and might be planted with lawns. The Raleigh UDO has recently been updated to
+allow for greater diversity of vegetative species, particularly to mitigate stormwater using GSI, rather than
+restricting the design to include only shrubs and lawn. Tree Plantings are structures that include the installation of
+specimen trees that are usually new plants that will be maintained to grow into larger trees. These structures might be
+included to improve the aesthetics of the landscape or ecosystem services to the community and environment like shade,
+localized cooling, and habitat for species. This structure can be constructed in:
+<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Protective Yards
+<li> Parking Islands
+<li> Median
+<li> Streets
+<li> Miscellaneous Landscaping/Open Space
+</ul>
+
+</div>
+
+<div id="help_landscaping_innerHTML" style="display: none;">
+    <div class="title">Managed Open Space</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image17.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    The structure managed open space is part of Project sites that have miscellaneous landscaping and open space. This
+structure is not intended to include GSI structures, but will still be managed to maintain the aesthetics of the site.
+This structure would require construction and maintenance costs for items like permanent cover, sod, landscaping
+planting, and specimen trees.
+
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Miscellaneous Landscaping/Open Space
+</ul>
+</div>
+
+<div id="help_trench_innerHTML" style="display: none;">
+<div class="title">Trench</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image16.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Infiltration trenches can be used to provide large storage volume to hold stormwater for infiltration into the soil. The
+trenches might be filled with stone or other media that can store stormwater in the voids. These traditional systems
+have been used to manage upstream runoff from impervious surfaces such as parking lots, streets, and buildings.
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Amenity Areas/Urban Plaza
+<li> Protective Yards
+<li> Medians</ul>
+</ul>
+</div>
+
+
+<div id="help_stormwater_wetland_innerHTML" style="display: none;">
+<div class="title">Stormwater Wetland</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image12.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Stormwater wetlands can be implemented on a Project site to mitigate stormwater and help the developer meet compliance
+standards. Stormwater wetlands are constructed systems that mimic the functions of natural wetlands and use physical,
+chemical, and biological processes to treat stormwater. A stormwater wetland is designed to capture the design storm and
+release it slowly over a period of two to five days via a properly designed outlet structure. The wetland shall be
+designed in a manner that protects the device, the areas around the device and the receiving stream from erosion.
+Stormwater wetlands temporarily store stormwater runoff in shallow pools that support emergent and riparian vegetation.
+The storage, complex microtopography, and vegetative community in stormwater wetlands combine to form an ideal matrix
+for the removal of many pollutants. Stormwater wetlands can also effectively reduce peak runoff rates and stabilize flow
+to adjacent natural wetlands and streams. *narrative courtesy of NCDEQ.
+
+This structure is typically located in: <ul class="help_ul_1">
+Areas Exclusively Designated to Stormwater Management
+</ul>
+</div>
+
+
+<div id="help_pond_innerHTML" style="display: none;">
+<div class="title">Wet / Dry Pond</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image13.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    According to NCDEQ, a wet pond shall be designed to capture the design storm and release it slowly over a period of two
+to five days via a properly design outlet structure. Stormwater shall have an adequate flow path to bring about removal
+of TSS through dilution and settling. The pond shall be designed in a manner that protects the device, the areas around
+the device and the receiving stream from erosion. The pond also must be maintained properly to prevent the resuspension
+of captured sediments. The design volume for a wet pond is equivalent to the volume that is retained for a two to
+five-day period between the temporary pool elevation and the permanent pool elevation.
+
+The primary purpose of a dry pond is to attenuate and delay stormwater runoff peaks. Dry ponds hold water immediately
+after a storm event and drain to be almost completely dry between storm events. Dry ponds are a secondary SCM, but can
+be used in a treatment train to optimize hydraulic performance of another SCM, like a bioretention cell, for example.
+They also can be used to manage peak runoff, since the overall pollutant removal efficiency of dry extended detention
+basins is low. The design volume for a dry pond is the volume between the temporary pool elevation and outlet drain
+elevation that will drawdown within two to five days and is determined by the volume of stormwater that is required to
+be captured.
+
+This structure is typically located in: <ul class="help_ul_1">
+<li> Areas Exclusively Designated to Stormwater Management
+</ul>
+</div>
+
+
+<div id="help_rooftop_innerHTML" style="display: none;">
+<div class="title">Conventional Rooftop</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image14.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    A conventional rooftop will be included in projects that have a building structure. The conventional materials used to
+build a rooftop include, but are not limited to, concrete, asphalt, shingles, metal, etc. A major cost differentiator
+for conventional rooftops versus a green roof is the material costs for a traditional roof ballast versus the roof
+reinforcement required for green roofs. Conventional rooftops also contribute to overall impervious surface on the
+Project site. The effects of stormwater runoff on traditional rooftop structures can be mitigated with green roofs,
+harvesting devices, or other downstream structures (i.e., wet or dry pond, wetland, bioretention cell, swale, filter
+strip, permeable pavement).
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Building
+</ul>
+</div>
+
+
+<div id="help_asphalt_innerHTML" style="display: none;">
+<div class="title">Asphalt Pavement</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image18.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Asphalt pavement might be included on a site where roads, parking lots, driveways, and buildings are located. This
+structure contributes to overall impervious surface in the Project site and increases the amount of stormwater runoff to
+be mitigated. There are several layers that make up asphalt structures. Some of these layers can be substituted with
+permeable pavement to mitigate the impacts of stormwater runoff.
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Building
+<li> Drive-Thru Facility
+<li> Streets
+<li> Medians
+<li> Parking Lots
+<li> Driveways and Alleys
+<li> Sidewalks
+<li> Amenity Areas/Urban Plaza
+</ul>
+</div>
+
+<div id="help_concrete_innerHTML" style="display: none;">
+<div class="title">Concrete Paving Surface</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image19.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    The structure of concrete paving surface might be included on a site where sidewalks, buildings, and curb are located.
+This structure contributes to overall impervious surface in the Project site and increase the amount of stormwater
+runoff to be mitigated. There are several layers that make up concrete structures. Some of these layers can be
+substituted with permeable pavement to mitigate the impacts of stormwater runoff.
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Building
+<li> Driveways and Alleys
+<li> Sidewalks
+<li> Streets
+<li> Amenity Areas/Urban Plaza
+</ul>
+</div>
+
+<div id="help_curb_and_gutter_innerHTML" style="display: none;">
+<div class="title">Drainage Conveyance System</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image20.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    Drainage and Conveyance Systems are used to help control the flow of stormwater runoff on a Project site. These
+Structures may be a part of the inlets/outlets to other Areal Features on the site, provide conveyance of stormwater
+into a connected piping system, or create spatial boundaries between Areal Features on site. The City wants to encourage
+less dependence on these systems for stormwater management because of their pricey replacement costs. This tool will
+help developers and designers think about alternative systems that may be more cost effective to achieve the same
+outcome. For some Project sites, GSI practices may be substituted, which will help minimize the amount of curb and
+gutter systems on site to control stormwater.
+This structure can be constructed in:<ul class="help_ul_2">
+<li> Sidewalks
+<li> Driveways/Alleys
+<li> Streets
+<li> Amenity Areas/Urban Plazas
+</ul>
+</div>
+
+
+
+

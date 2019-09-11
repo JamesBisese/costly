@@ -1,0 +1,147 @@
+[
+  {
+    "model": "authtools.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$g4St5c0FOX3Z$fElj2aJAREwTgd7CUjjtpjqaMawqI5JBgr1zcW9PgQs=",
+      "last_login": "2018-11-08T19:15:55.565Z",
+      "is_superuser": true,
+      "email": "admin@tetratech.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2018-11-08T18:04:51.232Z",
+      "name": "admin",
+      "organization_tx": null,
+      "phone_tx": null,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authtools.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$vszLWud3wbeC$cxC9UMFDnyR7l2hD/xdaf+E7lu48l+A5j/6nD5dnnrA=",
+      "last_login": null,
+      "is_superuser": false,
+      "email": "manager@tetratech.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2018-11-08T18:04:51.665Z",
+      "name": "manager",
+      "organization_tx": null,
+      "phone_tx": null,
+      "groups": [],
+      "user_permissions": [
+        41,
+        42,
+        43,
+        45,
+        46,
+        47
+      ]
+    }
+  },
+  {
+    "model": "authtools.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$AtNS7NKkVlIw$p4RvSna8bP2Wu1wdOvRqq9gdvNLZJq+BrvFfkTrZw4c=",
+      "last_login": "2018-11-08T18:07:58.850Z",
+      "is_superuser": false,
+      "email": "user1@tetratech.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-11-08T18:04:52.261Z",
+      "name": "user1",
+      "organization_tx": null,
+      "phone_tx": null,
+      "groups": [],
+      "user_permissions": [
+        41,
+        42,
+        43,
+        45,
+        46,
+        47
+      ]
+    }
+  },
+  {
+    "model": "authtools.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$orHnmwwIytH6$qZM8B+1x4Ut2FevHYJdhnQWpWitwaW08kxn6C+CnfSQ=",
+      "last_login": null,
+      "is_superuser": false,
+      "email": "user2@tetratech.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-11-08T18:04:52.816Z",
+      "name": "user2",
+      "organization_tx": null,
+      "phone_tx": null,
+      "groups": [],
+      "user_permissions": [
+        41,
+        42,
+        43,
+        45,
+        46,
+        47
+      ]
+    }
+  },
+  {
+    "model": "authtools.user",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$k9t2Za4uZfXS$S0W1thxugdyoCKFZv0qtyWANL2CVAhQ6b7lVcaV76rc=",
+      "last_login": null,
+      "is_superuser": false,
+      "email": "user3@tetratech.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-11-08T18:04:53.207Z",
+      "name": "user3",
+      "organization_tx": null,
+      "phone_tx": null,
+      "groups": [],
+      "user_permissions": [
+        41,
+        42,
+        43,
+        45,
+        46,
+        47
+      ]
+    }
+  },
+  {
+    "model": "authtools.user",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$120000$WfLXetRsQZMg$kZSQo8gHXq+SyaztReCXwpKF3kMp+XDTcwqIymM6uUU=",
+      "last_login": "2018-11-08T19:18:12.152Z",
+      "is_superuser": false,
+      "email": "joe@test.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-11-08T18:14:26.182Z",
+      "name": "Joe",
+      "organization_tx": "Tetra Torche",
+      "phone_tx": "(202) 236-1077",
+      "groups": [],
+      "user_permissions": [
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48
+      ]
+    }
+  }
+]

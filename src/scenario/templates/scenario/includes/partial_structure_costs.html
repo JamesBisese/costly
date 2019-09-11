@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+{% load humanize %}
+{% load mathfilters %}
+
+<style>
+    .costTable {
+        width: 640px;
+        border-collapse: collapse;
+        font-size: 11px;
+    }
+    .costTable .input-group-text {
+        padding-right: 0px!important;
+        padding-left: 3px!important;
+    }
+    .costTable .input-group {
+        padding-right: 1px!important;
+        padding-left: 2px!important;
+    }
+    .costTable .form-control {
+        text-align: right;
+        padding-right: 3px!important;
+        padding-left: 2px!important;
+    }
+    .costTable .leftaligned {
+        text-align: left;
+    }
+    .costTable .rightaligned {
+        text-align: right;
+    }
+    .costTable .mb-3 {
+        margin-bottom: 0px!important;
+    }
+    .costTable td {
+        background: #e9ecef;
+    }
+    .costTable .td_centered {
+        text-align: center;
+    }
+</style>
+
+<!-- jab-start -->
+<div class="input-group mb-3 input-group-sm">
+    <div class="input-group-prepend" style="width: 70%;">
+        <div class="input-group-text" style="width: 100%;">
+             <div id="ui_structure_name_2">{{  structure.name }}</div>
+        </div>
+    </div>
+    <input type="text" class="form-control" id="ui_structure_area_2"
+           value="{{ structure.area }}"
+           disabled>
+    <div class="input-group-append">
+        <span class="input-group-text" id="ui_structure_units_2">{% autoescape off %}{{ structure.units_html }}{% endautoescape %}</span>
+    </div>
+</div>
+
+
+
+<label><input style="margin-left: -20px; margin-top: 10px;" type="checkbox" id="toggle_structure_cost_items"
+       value="0"
+       onclick="event.stopPropagation();validateForm(this);" >Show all Cost Items</label>
+
+<button id='recalculate_costs' type="button"
+        style="float: right; margin-bottom: 7px; margin-right: 20px;"
+        class="btn btn-primary" onclick="event.stopPropagation();recalculateCosts(this)">
+    <span class="glyphicon glyphicon-copy"></span> Recalculate
+</button>
+<br>
+<table border="1" cellpadding="0" cellspacing="0" id="structure_costs_table" class="costTable">
+    <thead>
+        <tr style="text-align: center;">
+            <th style="width: 130px;">Cost Item</th>
+            <th style="width: 40px;">Bid Units</th>
+            <th style="width: 80px;">Unit Cost</th>
+            <th style="width: 46px;">Area (scale factor)</th>
+            <th style="width: 42px;">Depth (FT)</th>
+            <th style="width: 50px;">Density (TN/CY)</th>
+{#            <th style="width: 40px;">Ratio (r)</th>#}
+            <th style="width: 40px;">Number (#)</th>
+            <th style="width: 182px;">Cost Equation</th>
+            <th style="width: 95px;">Cost</th>
+        </tr>
+    </thead>
+
+    <tbody>
+{% for cost_item_default_cost in cost_item_default_costs %}
+        <tr id="tr_{{ cost_item_default_cost.costitem.code }}">
+
+            <td>
+                <div class="input-group mb-3 input-group-sm">
+                    <div class="input-group-prepend" style="width: 100%;"
+                         id="structure_costitem_{{ cost_item_default_cost.costitem.code }}"
+                         onclick="open_costitem_help(this);">
+                        <div class="input-group-text" style="width: 100%; font-size: 10px">
+                            <input type="checkbox" id="checkbox_{{ cost_item_default_cost.costitem.code }}"
+                                    value="1" {% if cost_item_default_cost.checked == True %}checked{% else  %}{% endif %}
+
+                                   onclick="event.stopPropagation();runCalculate(this);" >
+                            <div >{{ cost_item_default_cost.costitem.name }}</div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+
+            <td class="td_centered ">{{ cost_item_default_cost.costitem.units }}</td>
+
+            <td class="rightaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_user_input_cost_READONLY"></td>
+
+            <td>
+                <div class="input-group mb-3 input-group-sm">
+                    <input type="text" class="form-control"
+                            style="font-size: 10px;" autocomplete="off"
+                           title="Multiple the Structure areal units by this unit-less factor"
+                           id="ui_{{ cost_item_default_cost.costitem.code }}_a_area"
+                           value="{% if cost_item_default_cost.a_area %}{{  cost_item_default_cost.a_area  }}{% else  %}{% endif %}"
+                           onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+
+                </div>
+            </td>
+            <td>
+                <div class="input-group mb-3 input-group-sm">
+                    <input type="text" class="form-control"
+style="font-size: 10px;" autocomplete="off"
+                           title="Depth in feed of this cost item"
+                           id="ui_{{ cost_item_default_cost.costitem.code }}_z_depth"
+                           value="{% if cost_item_default_cost.z_depth %}{{  cost_item_default_cost.z_depth  }}{% else  %}{% endif %}"
+                           onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+
+                </div>
+            </td>
+            <td>
+                <div class="input-group mb-3 input-group-sm">
+                    <input type="text" class="form-control"
+style="font-size: 10px;" autocomplete="off"
+                           title="Density of this cost item in tons per cubic yard"
+                           id="ui_{{ cost_item_default_cost.costitem.code }}_d_density"
+                           value="{% if cost_item_default_cost.d_density %}{{  cost_item_default_cost.d_density  }}{% else  %}{% endif %}"
+                           onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+
+                </div>
+            </td>
+
+            <td>
+                <div class="input-group mb-3 input-group-sm">
+                    <input type="text" class="form-control"
+style="font-size: 10px;" autocomplete="off"
+                           title="Count of items of this cost item"
+                           id="ui_{{ cost_item_default_cost.costitem.code }}_n_number"
+                           value="{% if cost_item_default_cost.n_number %}{{  cost_item_default_cost.n_number  }}{% else  %}{% endif %}"
+                           onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+
+                </div>
+            </td>
+
+            <td class="leftaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_equation"></td>
+
+            <td class="rightaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_cost_V1"></td>
+
+
+{#            <td>#}
+{#                <div class="input-group mb-3 input-group-sm">#}
+{#                    <input type="text" class="form-control leftaligned"#}
+{#                           title="Equation" readonly style="font-size: 10px;"#}
+{#                           id="ui_{{ cost_item_default_cost.costitem.code }}_equation"#}
+{#                           value="" >#}
+{##}
+{#                </div>#}
+{#            </td>#}
+{#            <td>#}
+{#                <div class="input-group mb-3 input-group-sm">#}
+{#                    <input type="text" class="form-control"#}
+{#                           title="Cost" disabled style="text-align: right; font-size: 10px;"#}
+{#                           id="ui_{{ cost_item_default_cost.costitem.code }}_cost_V1"#}
+{#                           value="" >#}
+{##}
+{#                </div>#}
+{#            </td>#}
+        </tr>
+
+{% endfor %}
+
+
+    </tbody>
+</table>

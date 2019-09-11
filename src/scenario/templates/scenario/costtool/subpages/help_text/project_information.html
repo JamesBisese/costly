@@ -1,0 +1,590 @@
+{% load staticfiles %}
+<style>
+
+
+</style>
+
+<h3 class="bmplabel" onclick="toggleHelpText('OpportunitiesScreeningHelpText');">Opportunity Screening</h3>
+
+
+
+<div  id="OpportunitiesScreeningHelpText" style="display: none;">
+    <p>Opportunities Screening - The content of this section reflects the opportunities
+        that are available based on your description of the project and area for each areal
+        feature.</p>
+</div>
+
+
+<div  id="ProjectInformationHelpText"  style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Project Information:</span>  This section summarizes the
+        Project for this Scenario. To edit any of this information you need to use the Projects page.
+        </p>
+{#    The Project information will be summarized with information about the#}
+{#        Project Organizer (responsible entity implementing the project),#}
+{#        Location of the Project (the latitude/longitude or address can be listed),#}
+{#        Project Type (broad characteristic of the developed site), Purchase Information#}
+{#        (indicates whether or not the site needs to be purchased), Priority Watershed#}
+{#        (name of the watershed that the Project takes place in), Total Project Area#}
+{#        (size of Project area in square feet), and Cost per sqft of Project site#}
+{#        (cost to purchase the land for the Project to take place).#}
+</div>
+<div  id="ScenarioInformationHelpText"  style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Scenario Information:</span>  This section summarizes the
+        Scenario that you will be editing in the Cost Tool. Set the Scenario Title on this page.</p>
+    <p>
+        This section also summarizes the level of compliance that is met by the Project.
+        Developers and designers need to consider stormwater management requirements
+        for a Project site. There are three levels of stormwater compliance requirements
+        that a developer can meet:
+        <ol>
+            <li>Nutrient management with or without buy down</li>
+            <li>Stormwater volume requirements</li>
+            <li>Peak flow mitigation</li>
+        </ol>
+
+    <p><i>Level 1 - Nutrient Management</i></p>
+
+
+    <p>According to the City of Raleigh's Unified Development Ordinance (UDO)
+        <span style="font-weight: bold;">Section 9.2.2.B.1. Nitrogen Reduction:</span>
+    </p>
+    <p>
+    <span style="display: inline-block; margin-left: 2em;">
+        C. Stormwater control measures shown on the stormwater control master plan for a new
+        development or expansion of existing development that are demonstrated to control
+        stormwater runoff on a runoff volume basis will be deemed to meet the nitrogen export load
+        requirement, provided that the post-development volume of stormwater leaving the site is
+        equal to or less than the pre-development volume, based on the 90th percentile storm. The pre-
+        development land cover must be assumed to be forested for the entire site.
+    </span>
+    </p>
+    <p>
+        A developer that does not meet nutrient load requirements has the option to "buy down" a portion of
+        their nutrient load from a DWR approved nutrient offset provider to meet loading rate targets . The buy
+        down requirements are different across watersheds and should be considered for the Cost Analysis.
+    </p>
+    <p>
+        <i>Level 2 - Stormwater Volume Requirements</i>
+    </p>
+    <p>
+        According to the City of Raleigh's UDO <span style="font-weight: bold;">Section 9.5.2.C. 3. & 9.5.3.C.3.a.:</span>
+
+    </p>
+
+            [Note: Four criteria listed for exception approval] In requesting a design exception, the
+            developer must demonstrate that runoff resulting from the first inch of rainfall over the entire
+            development site will be detained or retained using conventional stormwater treatment
+            practices, GSI, or a combination.
+        </span>
+Stormwater practices that are designed to manage nutrient mitigation (see Level 1) must also be
+designed to detain both the water quality one-inch storm and the one year, 24-hour three-inch storm.
+    <p>
+        <i>Level 3 - Peak Flow Mitigation</i>
+    </p>
+
+    <p>
+        According to the City of Raleigh's UDO
+        <span style="font-weight: bold;">Section 9.2.2.E Stormwater Runoff Controls: </span>
+    </p>
+    <p>
+        <span style="display: inline-block; margin-left: 2em;">
+            The peak stormwater runoff leaving any site for the two-year and 10-year storms shall be no
+            greater at every point of discharge for post-development conditions than pre-development
+            conditions. The same methodologies used to calculate stormwater runoff must be used for both
+            pre-development and post-development conditions...
+        </span>
+    </p>
+<p>
+Developers need to consider peak flow control on their sites, which can be established using
+conventional end-of-pipe designs and non-conventional distributed structures. Sites that do not meet
+peak flow requirements will need to be reevaluated and undergo changes in design so that peak flow
+requirements are met.
+</p>
+<p>
+The user should also be aware about the opportunities of savings made available when certain
+compliance requirements are met:
+</p>
+         <p>
+<i>Green Raleigh Review</i>
+</p>
+<p>
+The City has added a new program called the
+<a href="https://www.raleighnc.gov/home/content/PlanDev/Articles/DevServ/GreenRaleighReview.html"
+style="color: green;">
+Green Raleigh Review</a>, which is supposed to incentivize
+developers to include more GSI in their design. Participants in this program will get reimbursements for
+two fees:
+</p>
+
+<ol>
+<li>Sketch Plan Review Fee</li>
+<li>Express Service Fee</li>
+</ol>
+<p>
+This program requires participants to show that GSI practices are in their design plans and that the
+design mitigates stormwater runoff volume to the pre-project 90th percentile storm event conditions.
+This is verified using the Storm EZ Permitting Tool. If the project plans are approved, the participant is
+eligible for review fee reimbursements.
+    </p>
+
+</div>
+
+<div id="LifeCycleCostAssumptionsHelpText" style="display:none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Life Cycle Cost Assumptions</span></p>
+    <ul>
+           <li>Planning and Design Factor (%): This is the basis of the planning and design costs used in the
+                Scenario for each STRUCTURE based upon a percent of the total construction costs for the
+               individual STRUCTURE.
+           </li>
+            <li>Study Life (years): The number of years that determines the life cycle costs used in the Scenario
+                for each STRUCTURE.
+            </li>
+            <li>Discount Rate (%): This is the federal discount rate for water resources projects. This rate is used
+                in the present value equation for annual operations and maintenance costs for each COST ITEM.
+            </li>
+    </ul>
+</div>
+
+
+<div  id="ArealFeaturesHelpText"  style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+<p>
+<span style="font-weight: bold;">Scenario Areal Features:</span> This section summarizes the Areal Features in this Scenario for the Project site.
+Areal Feature refers to developed land attributes within a Project site (e.g., building, parking area),
+sometimes required by the City UDO (e.g., protective yard, amenity area), that have distinct boundaries
+including stormwater management practices (e.g., wet pond, bioretention, wetland). The area for each
+Areal Feature that is present in the Scenario should be added by the user. Areal Features that do not
+apply to a certain Project Type will be automatically crossed out in the tool.
+</p><p>
+If you would like to learn more information about the Areal Feature, click on the name of the Areal
+Feature. The information will highlight the set of Structures that can be designed in each Areal Feature.
+These Structures are either Conventional end-of-pipe systems or Non-Conventional distributed GSI
+systems. This tool will also provide information about the new opportunities in Raleigh's UDO where
+distributed GSI systems can be implemented in the Areal Features (e.g., planter boxes in parking
+islands). Potential benefits based on the design's ability to meet compliance standards will also be
+presented on this page.
+</p>
+</div>
+<div  id="PerviousAreasHelpText" style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+<p>
+<span style="font-weight: bold;">Pervious/Impervious: </span>This section summarizes the amount of land in the Scenario of the Project site
+that is expected to be pervious (porous area where water can infiltrate) or impervious (non-porous area
+where water cannot infiltrate). These values are important when comparing Scenarios within a Project
+site because developers are subject to stormwater fees based on the amount of impervious surface the
+Project site has. GSI can mitigate the amount of impervious surface is on site by replacing surfaces of
+different landscape features like asphalt and rooftop with porous pavers or vegetation, respectively.
+</p>
+    <p>
+The single-family rate consists of five tiers that are based on the amount of impervious surface (in
+square feet) of a property:
+</p>
+    <p>
+        <ul>
+    <li>Tier One-400 to 1000 square feet = $2.00/month</li>
+    <li>Tier Two-1,001 to 3,870 square feet = $5.00/month</li>
+    <li>Tier Three-3,871 to 6,620 square feet = $8.50/month</li>
+    <li>Tier Four-6,621 to 9,500 square feet = $14.50/month</li>
+<li>Tier Five-Over 9,500 square feet is billed at the commercial rate = Total Impervious surfaces
+divided by 2,260 (1 SFEU) times $5 = monthly fee</li>
+</ul>
+</p>
+    <p>
+
+The Commercial rate (e.g. multifamily, office, institutional, commercial industrial land uses;
+including single family parcels over 9,500 square feet)
+</p>
+    <p>
+        <ul>
+    <li>$5 per 2,260 square feet of impervious surfaces</li>
+<li>A commercial fee is calculated by the following formula. Total Impervious surfaces divided by
+2,260 (1 SFEU) times $5 = monthly fee</li>
+</ul>
+</p>
+    <p>
+One Single-Family Equivalent Unit (SFEU) represents the median impervious surface area found on a
+single-family property.
+</p>
+    <p>
+Note: properties with less than 400 square feet of impervious surfaces are not subject to a Stormwater
+        fee.</p>
+</div><!-- PreDevelopmentHelpText -->
+
+
+
+
+
+<div id="help_stormwater_management_feature_innerHTML" style="display:none;">
+    <div class="title" >Areas exclusively designated to stormwater management</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image1.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+<p>
+Areas used exclusively for treating stormwater, generally Structural Best Management Practices (BMPs) or Stormwater
+Control Measures (SCMs), are designed to manage large volumes of stormwater for complying with regulations for reducing
+stormwater peak flow rates, stormwater volume, and/or pollutant concentrations, depending on regulatory requirements and
+performance objectives. Conventional SCMs can require permanent dedication of large land areas (e.g., wet ponds, dry
+ponds, stormwater wetlands) and usually are located along the downslope periphery of project sites. Non-conventional
+stormwater management practices, when distributed within other site features, can reduce the land area needed for
+treating stormwater and make more land area available for other uses and/or reduce the land area needed for the
+development, possibly resulting in cost savings or added value for the development.
+</p>
+Potential for savings:<ul class="help_ul_1">
+<li> Value of freed up land per square foot ($/ft2)
+</ul>
+
+</div>
+<div id="help_amenity_plaza_innerHTML" style="display:none;">
+    <div class="title" >Amenity Areas / Urban Plaza</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image2.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+<p>
+Many development sites are required by the City's UDO to have an amenity area or an urban
+plaza. An amenity area is any feature that provides comfort, convenience, or pleasure. An urban plaza can be a public
+square or an open area near urban buildings featuring walkways and places to sit that are surrounded by trees and
+shrubs. The UDO prescribes size requirements for amenity areas and urban plazas based on the type of development and the
+development site. Amenity areas and urban plazas usually contribute to the amount of impervious surface area on a
+development site and thereby contribute to the site's stormwater treatment requirements. However, the City's UDO allows
+placement of GSI practices within amenity areas and urban plazas, which can reduce the extent of stormwater treatment to
+be provided elsewhere on the site. These sections of the UDO address placing GSI practices within amenity areas or urban
+plazas: </p>
+    <p>
+    <strong>UDO Section 1.5.3.C.7.</strong> Stormwater detention wet ponds and dry ponds shall not be considered an outdoor amenity
+area. GSI practices may be used to meet up to 10% of the requirement for the amenity area.
+    </p>
+    <p><strong>UDO Section 1.5.3.D.2.</strong> (For
+Urban Plazas) In addition, vegetated GSI practices may be located within the amenity area and may be used to meet up to
+10% of the requirement for the amenity area. Stormwater detention wet ponds and dry ponds shall not be considered an
+outdoor amenity area.
+</p>
+GSI practices that may be placed within amenity areas and urban plazas include:<ul class="help_ul_3">
+<li> Swales,
+<li> Bioretention,
+<li> Filter Strips,
+<li> Planter Boxes, and
+<li> Permeable Pavement
+</ul>
+Potential for savings:<ul class="help_ul_1">
+<li> Reduction in stormwater utility fees via reduction in impervious surface area ($/ft2/year)
+<li> Reduction in City review fees via Green Raleigh Review ($)
+<li> Reduction in land area needed exclusively for treating stormwater ($)
+<li> Value of freed-up land per square foot ($/ft2)
+</ul>[LJ2]
+</div>
+<div id="help_protective_yard_innerHTML" style="display:none;">
+    <div class="title" >Protective Yards</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image3.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+<p>
+Protective yards are landscaping features used to obstruct the view of a development site from an
+adjacent property or to otherwise serve as a visual buffer between disparate land uses. The City's UDO allows placement
+of GSI practices within protective yards, which can reduce the extent of stormwater treatment to be provided elsewhere
+on the site. These sections of the UDO address placing GSI practices within protective yards:
+</p><p><strong>UDO Section 7.2.4.A &
+7.2.4.B</strong> GSI practices shall be allowed in Transitional Protective Yard Types A2, B1, and B2 and in Street Protective
+Yard Types C1, C2, and C3. In order to accommodate GSI practices the number of shrubs may be reduced in the Protective
+Yards by ten (10) percent.
+</p><p><strong>UDO Section 7.2.7.C.4</strong> Additional Requirements for Trees in a Protective Yards a. In a
+protective yard, 50% of required trees shall be locally-adaptive evergreen species, except where an approved GSI
+practice is within a protective yard.
+</p><p><strong>5.b.vi. Shrubs, Protective Yard</strong> To accommodate multi-functional GSI practices as
+part of an approved stormwater management plan, the number of shrubs may be reduced in the Protective Yards by 10%,
+non-evergreen species may be used in lieu of up to 35% of evergreen shrubs, and all shrubs may be 24 inches when
+planted.
+</p>
+GSI practices that may be placed within protective yards include:<ul class="help_ul_3">
+<li> Swales,
+<li> Bioretention, and
+<li> Filter Strips
+</ul>Potential for savings:<ul class="help_ul_1">
+<li> Reduction in City review fees via Green Raleigh Review ($)
+<li> Reduction in land area needed exclusively for treating stormwater ($)
+<li> Value of freed-up land per square foot ($/ft2)
+</ul>
+</div>
+<div id="help_parking_island_innerHTML" style="display:none;">
+    <div class="title" >Parking Islands</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image4.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+<p>Parking islands are features within parking lots that separate blocks of parking spaces and provide
+areas for landscaping within parking lots of development sites. Conventional designs for parking islands usually use
+shrubs and trees for landscape plantings. However, the City's UDO allows placement of GSI practices within parking lot
+islands, which can reduce the extent of stormwater treatment to be provided elsewhere on the site. These sections of the
+UDO address placing GSI practices within parking lot islands: UDO Section 7.1.1.C. GSI practices may be located in
+perimeter islands if part of an approved stormwater management plan for the site. The Shrub requirements may be met
+within GSI practices. UDO Section 7.1.7.D. & Section 7.1.7.E GSI practices may be located in [interior, terminal, and
+median islands] if part of an approved stormwater management plan for the site. Required shade trees may be placed
+within the GSI practices. A maintenance plan must be approved for the GSI practices.
+</p><p>
+    GSI practices that may be placed within parking lot islands include:</p>
+    <ul>
+<li> Swales,
+<li> Bioretention, and
+<li> Planter Boxes
+</ul>Potential for savings:<ul class="help_ul_1">
+<li> Reduction in City review fees via Green Raleigh Review ($)
+<li> Reduction in land area needed exclusively for treating stormwater ($)
+<li> Value of freed-up land per square foot ($/ft2)
+</ul>
+</div>
+
+<div id="help_building_innerHTML" style="display:none;">
+    <div class="title" >Building</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image5.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+<p>
+On many development sites buildings contribute a substantial portion of the site's total
+impervious area and thereby a substantial portion of the site's requirement for stormwater
+treatment. Designs for development buildings can provide for rooftop materials or other systems
+for managing building rooftop runoff that can reduce the extent of stormwater treatment to be
+provided elsewhere on the site. Green roofs also can reduce the impervious surface area of a site.
+</p><p>
+These sections of the UDO address green roofs and rainwater harvesting as applied to stormwater
+management:</p><p>
+UDO Section 1.5.7.D.2 The following accessory structures may exceed the established height limits,
+except when located with an -AOD, provided they do not exceed the maximum building height by more
+than 12 feet:</p>
+a. Chimney, flue or vent stack;
+b. Unenclosed deck, patio or shade structure;
+c. Rooftop garden, landscaping;
+d. Flagpole;
+e. Parapet wall;
+f. Rainwater collection or harvesting system; and
+g. Solar panels, wind turbines
+Potential for savings:
+<ul class="help_ul_1">
+<li> Reduction in City review fees via Green Raleigh Review ($)
+<li> Reduction in land area needed exclusively for treating stormwater ($)
+<li> Value of freed-up land per square foot ($/ft2)
+</ul>
+</div>
+
+<div id="help_drive_thru_facility_innerHTML" style="display:none;">
+    <div class="title" >Drive-thru Facility</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image6.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+<p>
+A drive-thru facility is feature that designates space within the Project site for the provision or
+dispersion of products and/or services from a business or automated machine. These features typically require a compact
+evergreen hedge to screen the vehicles passing through this part of the site. However, updates to Raleigh's UDO allow
+for GSI practices in this setting.
+</p><p>
+UDO Section 7.2.5.A.4 (Drive Thru Facilities) The following options may be used in
+lieu of compact evergreen hedge (1) a combination of plants within GSI practices proposed to be part of an approved
+management plan and evergreen plants outside such GSI practices that together, at the time of planting, provide
+screening at least 36 inches above the level of the ground adjacent to the GSI practice, and reach a height of at least
+48 inches above adjacent ground within 3 years of planting.
+</p><p>
+The updates allow GSI to be a standard component of
+drive-thru facilities to help with onsite stormwater management. GSI that can occur in drive-thru facilities include:<ul
+class="help_ul_3"> <li> Bioretention, and <li> Planter Boxes. </ul></p><p>Potential for savings:<ul class="help_ul_1"> <li>
+Reduction in Green Raleigh Review fees ($) <li> Reduction in land needed exclusively for stormwater management ($)
+</ul></p>
+</div>
+
+<div id="help_landscape_innerHTML" style="display:none;">
+    <div class="title" >Miscellaneous Landscaping / Open Space (excluding vegetated stormwater practices)</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image11.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+<p>
+Miscellaneous landscaping and open space are features within a Project site that are included to provide
+aesthetics to the site. This is additional land that is not part of the legally required space,
+but is just open space in the Project site. These can have a variety of plants and species present,
+and can be a place for recreation or leisure in the site. These spaces may be left in its natural
+state and become managed open space, can include conventional structures like lawns, shrubs, and
+tree plantings, or can be areas where GSI is incorporated to increase overall stormwater management and aesthetics to the property.
+</p><p>
+GSI that can occur in miscellaneous landscaping and open space include:
+</p>
+<ul class="help_ul_3">
+<li> Filter strips
+<li> Bioretention cells
+</ul>
+    Potential for savings:
+    <ul class="help_ul_1">
+<li> Reduction in land needed exclusively for stormwater management ($)
+</ul>
+</div>
+
+<div id="help_sidewalk_innerHTML" style="display:none;">
+    <div class="title" >Sidewalks</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image6.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    <p></p>
+Sidewalks contribute to a site's stormwater runoff but can help with stormwater management if the developer or
+designer implements alternative surface coverage (e.g., permeable pavers). Implementing permeable or porous pavement on
+these features provide economic benefits to the developer and designer.</p><p> GSI that may be seen on sidewalks include:
+<ul class="help_ul_3">
+    <li> Permeable Pavement
+</ul>
+</p>
+<p>Potential for savings:
+<ul class="help_ul_1">
+    <li> Reduction in
+stormwater utility fees via reduction in impervious surface area ($/ft2/year)
+    <li> Reduction in Green Raleigh Review
+fees ($)
+    <li> Reduction in land needed exclusively for stormwater management ($) </ul>
+</p>
+</div>
+
+<div id="help_street_innerHTML" style="display:none;">
+    <div class="title" >Streets</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image7.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    <p>
+Streets have several development requirements that can impact a site's overall stormwater runoff.
+For this feature, developers need to consider vegetative requirements within required planting areas and size
+requirements of the road width.
+Changes in the UDO allows developers to consider the use of GSI in planting areas
+while maintaining understory tree requirements to better mitigate stormwater.
+        </p>
+    <p>
+UDO Section 8.4.1.D & 8.5.1.D. New Street and Existing Street Tree Planting</p>
+    <ol>
+<li> Where overhead utilities exist, 1 understory tree shall be planted every 20 feet on center, on average.
+Required understory trees may be offset by installing vegetated GSI practices, such as stormwater planter boxes. A
+maintenance plan must be approved for the GSI practice.</li>
+<li> All required street trees must meet the design and installation requirements of Sec.7.2.7.  If a GSI practice is part
+of an approved stormwater management plan for the site, required street trees may be installed within the GSI practice.
+A maintenance plan must be approved for the GSI practice.</li>
+</ol><p>
+        UDO Section 8.5.2. The required streetscape type is determined by the zoning district or by the designated
+frontage
+Dimensional standards for planting area, tree spacing, and utility placement and the planting types may be
+varied to accommodate GSI practices. The Planning and Development Officer and the Urban Forester shall make the final
+    determination.</p>
+    <p>
+The updates allow GSI to be a standard component of this feature to help with onsite stormwater management.</p>
+
+GSI that can occur in streets include:
+<ul class="help_ul_3">
+<li> Planter Boxes
+</ul>Potential for savings:<ul class="help_ul_1">
+<li> Reduction in stormwater utility fees via reduction in impervious surface area ($/ft2/year)
+<li> Reduction in Green Raleigh Review fees ($)
+<li> Reduction in land needed exclusively for stormwater management ($)
+</ul>
+</div>
+
+<div id="help_median_innerHTML" style="display:none;">
+    <div class="title" >Medians</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image8.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    <p>
+Medians are features that are usually seen covered with vegetation or a nonpermeable pavement.
+Developers can use alternative coverage on these features that incorporates GSI practices.
+The use of GSI in medians should consider road crown or slope.
+    </p><p>GSI that may be seen on Medians include:</p>
+<ul class="help_ul_3">
+<li> Swales
+<li> Permeable Pavement, and
+<li> Planter Boxes
+</ul>
+    Potential for savings:
+<ul class="help_ul_1">
+<li> Reduction in stormwater utility fees via reduction in impervious surface area ($/ft2/year)
+<li> Reduction in Green Raleigh Review fees ($)
+<li> Reduction in land needed exclusively for stormwater management ($)
+</ul>
+</div>
+
+<div id="help_parking_lot_innerHTML"  style="display:none;">
+    <div class="title" >Parking Lots</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image9.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    <p>
+Parking lots vary in scale and materials and have parking spaces requirements that developers need to
+consider when building on a new Project site. These requirements can be adjusted if the developer preserves trees on
+site: </p>
+    <p>UDO Section 7.1.4. E.  Tree Preservation 1. Minimum required parking may be reduced by one parking space for each
+tree 12 inches in diameter or larger that is preserved within the parking lot or elsewhere on the development site
+within 50 feet of the parking area. The preserved trees shall be specified on the recorded plat.
+    </p>
+        <p>The update allows the
+developer to save on costs for parking space size requirements and have funds available to make GSI a standard
+            component
+            of this feature, which will help with onsite stormwater management.</p>
+    <p>GSI that may be seen on Parking Lots include:</p>
+<ul class="help_ul_3">
+<li> Permeable pavement
+</ul>
+    Potential for savings:
+    <ul class="help_ul_1">
+<li> Reduction in stormwater utility fees via reduction in impervious surface area ($/ft2/year)
+<li> Reduction in Green Raleigh Review fees ($)
+<li> Reduction in land needed exclusively for stormwater management ($)
+</ul>
+</div>
+
+<div id="help_driveway_and_alley_innerHTML"  style="display:none;">
+    <div class="title" >Driveways and Alleys</div>
+    <div class="picright">
+        <img src="{% static 'scenario/images/help/Image10.jpg' %}"
+             style="height: 260px; width: 300px;">
+    </div>
+
+    <p>
+        Driveways and Alleys vary in scale and materials and usually have a required minimum width to meet development standards.
+        The City encourages developers and designers to consider the use of permeable pavers on these features to help with stormwater management.
+    </p>
+        <p>
+            GSI that can occur in Driveways and Alleys include:</p>
+        <ul class="help_ul_3">
+            <li> Permeable pavement
+        </ul>
+
+        Potential for savings:<ul class="help_ul_1">
+    <li> Reduction in stormwater utility fees via reduction in impervious surface area ($/ft2/year)
+    <li> Reduction in Green Raleigh Review fees ($)
+    <li> Reduction in land needed exclusively for stormwater management ($)
+    </ul>
+</div>
+
+
+
+
+

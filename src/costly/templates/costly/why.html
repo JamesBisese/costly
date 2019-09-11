@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Home{% endblock %}
+
+{% block navbar-left %}
+{% include "_navbar.html" with active_link="why" %}
+{% endblock %}
+
+{% block navbar-custom-right %}
+{% include "_navbar-right.html" with active_link="NONE" %}
+{% endblock %}
+
+<!-- Benefits of the Django application -->
+{% block content %}
+<div class="container" style="padding-top: 10px;">
+<div  class="text-page" >
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Why Raleigh is investing in GSI</h2>
+                <p></p>
+          <p>
+<img src="{% static 'costly/img/curve.jpg' %}" style="float: right; height: 210px;">
+The Raleigh GSI Cost Tool is part of the City’s greater initiative to implement
+            more Green Stormwater Infrastructure (GSI) throughout new and existing development sites. The City has a goal to incorporate a greater number of distributed practices on site to maximize stormwater capture. The standard design that development sites use for stormwater management is designating a large portion of land adjacent to the site for the installation of an end-of-pipe conventional structure, such as a stormwater wetland or detention pond. The City wants to show developers and designers that a site can use a more creative solution that can be more cost effective compared to the conventional solutions. Using distributed practices to better manage stormwater runoff helps
+            minimize the amount of excess land needed to meet the three main levels of compliance:
+            <ul><li>	Nutrient management with or without buy down
+                <li>	Stormwater volume requirements
+                <li>	Peak flow capture
+              </li>
+              </ul>
+
+        </p>
+        <p>
+The City is also interested in GSI because of the additional social and environmental benefits that it can provide. Several tools have been created to view the triple bottom line (i.e., economic, social, and environmental) benefits that alternative designs like GSI provide a community.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}

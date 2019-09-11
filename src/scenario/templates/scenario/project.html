@@ -1,0 +1,83 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<style>
+
+.result_table td  {
+  border: 1px solid black;
+  padding: 0px 5px 0px 5px;
+}
+.result_col {
+  text-align: right;
+  width:85px;
+}
+.input_col {
+  background: rgb(221, 235, 247);
+}
+.output_col {
+  background: rgb(226, 239, 218);
+}
+.result_table th  {
+  border: 1px solid black;
+  text-align:center;
+  padding: 5px;
+}
+.result_table {
+  border-collapse: collapse;
+  border-spacing: 10px;
+  width: 365px;
+  font-family: "Franklin ITC Light",sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 13px;
+}
+.caption_table {
+    width: 365px;
+    font-weight: bold;
+}
+
+</style>
+
+<div style="display: inline-block">
+<table class="caption_table">
+  <tr>
+    <td>Project Title:</td>
+    <td> {{ project.project_title }}</td>
+  </tr>
+</tr>
+</table>
+
+ <table class="result_table">
+    <td  style="width:75px;">Project Organizer</td>
+    <td class="input_col"> {{ project.get_project_ownership_display }}</td>
+  </tr>
+  <tr>
+    <td>Location of the project</td>
+    <td class="input_col"> {{ project.project_location }}</td>
+  <tr>
+    <td>Project Type</td>
+    <td class="input_col"> {{ project.get_project_type_display }}</td>
+  </tr>
+     {% if project.project_type == 'voluntary_redevelopment' %}
+  <tr>
+    <td colspan="2" style="color: red;line-height: 20px;">You have indicated that your voluntary BMP retrofit project might be
+        eligible for construction material reimbursement!
+        Check out the reimbursement program offered by the City of Raleigh!</td>
+  </tr>
+     {% endif %}
+  <tr>
+    <td>Purchase Information</td>
+    <td class="input_col"> {{ project.get_project_purchase_information_display }}</td>
+
+  </tr>
+  <tr>
+    <td>Total Project Area</td>
+    <td class="result_col input_col"> {{ project.project_area|intcomma }} ft<sup>2</sup> ({{ project.project_area|div:43560|floatformat:2|intcomma }} Acres)</td>
+  </tr>
+  <tr>
+    <td>Cost per ft<sup>2</sup> of Project site</td>
+    <td class="result_col input_col"> {{ project.land_unit_cost }}</td>
+  </tr>
+</table>
+
+</div>

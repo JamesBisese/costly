@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Instructions{% endblock %}
+
+{% block navbar-left %}
+{% include "_navbar.html" with active_link="internal" %}
+{% endblock %}
+
+{% block navbar-custom-right %}
+{% include "_navbar-right.html" with active_link="NONE" %}
+{% endblock %}
+
+<!-- Benefits of the Django application -->
+{% block content %}
+<div class="container" style="padding-top: 10px;">
+<div id="sec1" class="text-page" >
+
+    <div class="row">
+      <div class="col-md-12">
+<h2>Instructions</h2>
+
+
+
+<p>This is an internal page to share content that is not currently part
+of the external tool, but is useful</p>
+
+          <p>Here are a couple of lists that could be useful</p>
+          <ol>
+              <li>
+                <a href="{% url 'scenario:structures' %}">List of Structures</a>
+              </li>
+              <li>
+                <a href="{% url 'scenario:costitems' %}">List of Cost Items</a>
+              </li>
+              <li>
+                <a href="{% url 'scenario:costitems_default_costs' %}">List of Cost Item Default costs</a>
+              </li>
+              <li>
+                <a href="{% url 'scenario:costitems_default_equations' %}">List of Cost Item Equation and Default Factors</a>
+              </li>
+              <li>
+                <a href="{% url 'scenario:costitems_default_factors' %}">List of Structure/Cost Item Default Factors</a>
+              </li>
+          </ol>
+
+
+
+
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}

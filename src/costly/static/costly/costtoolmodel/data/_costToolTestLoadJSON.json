@@ -1,0 +1,386 @@
+{
+    "siteData": {
+        "version": "1.1",
+        "location": {
+            "project_title": "Test Load Project Title",
+            "scenario_title": "Test Load Scenario Title",
+            "land_cost_per_ft2": "999",
+            "project_type": "parcel",
+            "project_ownership": "public",
+            "project_area": "12000"
+
+        },
+        "areal_features": {
+            "stormwater_management_feature": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "amenity_plaza": {
+                "checkbox": true,
+                "area": 1001
+            },
+            "protective_yard": {
+                "checkbox": true,
+                "area": 1002
+            },
+            "parking_island": {
+                "checkbox": true,
+                "area": 1003
+            },
+            "building": {
+                "checkbox": true,
+                "area": 1004
+            },
+            "drive_thru_facility": {
+                "checkbox": true,
+                "area": 1005
+            },
+            "curb_and_gutter": {
+                "checkbox": true,
+                "area": 1006
+            },
+            "sidewalk": {
+                "checkbox": true,
+                "area": 1007
+            },
+            "street": {
+                "checkbox": true,
+                "area": 1008
+            },
+            "median": {
+                "checkbox": true,
+                "area": 1009
+            },
+            "parking_lot": {
+                "checkbox": true,
+                "area": 1010
+            },
+            "driveway_and_alley": {
+                "checkbox": true,
+                "area": 1011
+            }
+        },
+        "conventional_structures": {
+            "stormwater_wetland": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "pond": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "rooftop": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "piping": {
+                "checkbox": true,
+                "length": 1000,
+                "diameter": 6
+            },
+            "asphalt": {
+                "checkbox": false,
+                "area": 1000
+            },
+            "concrete": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "lawn": {
+                "checkbox": false,
+                "area": ""
+            },
+            "landscaping": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "trench": {
+                "checkbox": true,
+                "area": 1000
+            }
+        },
+        "nonconventional_structures": {
+            "swale": {
+                "checkbox": true,
+                "area": 1000
+            },
+            "rain_harvesting_device": {
+                "checkbox": true,
+                "area": 2000
+            },
+            "bioretention_cell": {
+                "checkbox": true,
+                "area": 3000
+            },
+            "filter_strip": {
+                "checkbox": true,
+                "area": 4000
+            },
+            "green_roof": {
+                "checkbox": false,
+                "area": 5000
+            },
+            "planter_box": {
+                "checkbox": true,
+                "area": 6000
+            },
+            "porous_pavement": {
+                "checkbox": true,
+                "area": 7000
+            }
+        },
+        "predevelopment": {
+            "land_impervious_pct_pre": "0.9",
+            "land_lawn_good_pct_pre": "11.3",
+            "land_lawn_fair_pct_pre": "11.3",
+            "land_urban_pct_pre": "11.3",
+            "land_desert_pct_pre": "11.3",
+            "land_newgrade_pct_pre": "6.7",
+            "land_rowcrops_pct_pre": "6.7",
+            "land_pasture_pct_pre": "6.7",
+            "land_meadow_pct_pre": "6.7",
+            "land_woods_pct_pre": "6.7",
+            "land_desert_shrub_pct_pre": "6.7",
+            "land_wetlands_pct_pre": "6.7",
+            "land_water_pct_pre": "6.7"
+        },
+        "runoff_reduction_goals": {
+            "goal": "4",
+            "capture": "1.9",
+            "capture_scope": "Impermeable Surface"
+        },
+        "conventional_development": {
+
+            "impervious_area": {
+                "roof_area": "9999",
+                "roof_length": "",
+                "roof_width": "",
+                "parking_spots": "9",
+                "parking_area": "999",
+                "sidewalk_length": "9",
+                "sidewalk_width": "9",
+                "street_length": "9",
+                "street_width": "9",
+                "driveway_length": "9",
+                "driveway_width": "9"
+            },
+            "other_land_cover": {
+                "land_impervious_pct": "114.7",
+                "land_lawn_good_pct": "59.8",
+                "land_lawn_fair_pct": "9",
+                "land_desert_pct": "9",
+                "land_newgrade_pct": "9",
+                "land_woods_pct": "9",
+                "land_wetlands_pct": "9",
+                "land_water_pct": "9"
+            }
+        },
+        "green_improvements": {
+            "stormwater_wetland": {
+                "checked": true
+            },
+            "pond": {
+                "checked": true
+            },
+            "rooftop": {
+                "checked": true
+            },
+            "piping": {
+                "checked": true
+            },
+            "asphalt": {
+                "checked": true
+            },
+            "concrete": {
+                "checked": true
+            },
+            "lawn": {
+                "checked": true
+            },
+            "landscaping": {
+                "checked": true
+            },
+            "trench": {
+                "checked": true
+            },
+
+            "green_roof": {
+                "checked": true,
+                "green_roof_area_pct": "9",
+                "green_roof_depth": "9",
+                "green_roof_porosity": "0.99"
+            },
+            "planter_boxes": {
+                "checked": true,
+                "planter_boxes_area": "25",
+                "planter_boxes_soil_depth": "9",
+                "planter_boxes_soil_porosity": "0.99",
+                "planter_boxes_agg_depth": "9",
+                "planter_boxes_agg_porosity": "0.99"
+            },
+            "rain_garden": {
+                "checked": true,
+                "rain_garden_area": "99",
+                "rain_garden_soil_depth": "9",
+                "rain_garden_soil_porosity": "0.99",
+                "rain_garden_agg_depth": "9",
+                "rain_garden_agg_porosity": "0.99"
+            },
+            "cistern": {
+                "checked": true,
+                "cistern_volume": "99",
+                "barrel_volume": "99"
+            },
+
+            "permeable_parking": {
+                "checked": true,
+                "permeable_parking_area_pct": "100",
+                "permeable_parking_material": "pavers",
+                "permeable_parking_depth": "9",
+                "permeable_parking_porosity": "0.99"
+            },
+
+
+            "filter_strips": {
+                "checked": true,
+                "filter_strips_length": "25",
+                "filter_strips_width": "20",
+                "filter_strips_depth": "12",
+                "filter_strips_porosity": "0.35"
+            },
+
+
+            "swales": {
+                "checked": true,
+                "roadside_swales_length": "100",
+                "roadside_swales_width": "36",
+                "roadside_swales_top_width": "48",
+                "roadside_swales_soil_depth": "5",
+                "roadside_swales_soil_porosity": "0.55",
+                "roadside_swales_depth": "4",
+                "roadside_swales_porosity": "0.44"
+            }
+
+        },
+        "advanced_options": {
+            "cost_parameters": {
+                "discount_rate": "9.9",
+                "life_cycle": "5"
+            },
+            "curve_numbers": {
+                "land_classes": {
+                    "soil_type": {
+                        "A": {
+                            "impervious": "1",
+                            "lawn_good": "2",
+                            "lawn_fair": "3",
+                            "urban": "4",
+                            "desert": "5",
+                            "newgrade": "6",
+                            "rowcrops": "7",
+                            "pasture": "8",
+                            "meadow": "9",
+                            "woods": "10",
+                            "desert_shrub": "11",
+                            "wetlands": "12",
+                            "water": "13"
+                        },
+                        "B": {
+                            "impervious": "98",
+                            "lawn_good": "61",
+                            "lawn_fair": "69",
+                            "urban": "82",
+                            "desert": "77",
+                            "newgrade": "86",
+                            "rowcrops": "78",
+                            "pasture": "69",
+                            "meadow": "58",
+                            "woods": "60",
+                            "desert_shrub": "72",
+                            "wetlands": "0",
+                            "water": "98"
+                        },
+                        "C": {
+                            "impervious": "98",
+                            "lawn_good": "74",
+                            "lawn_fair": "79",
+                            "urban": "87",
+                            "desert": "85",
+                            "newgrade": "91",
+                            "rowcrops": "85",
+                            "pasture": "79",
+                            "meadow": "71",
+                            "woods": "73",
+                            "desert_shrub": "81",
+                            "wetlands": "0",
+                            "water": "98"
+                        },
+                        "D": {
+                            "impervious": "98",
+                            "lawn_good": "80",
+                            "lawn_fair": "84",
+                            "urban": "89",
+                            "desert": "88",
+                            "newgrade": "94",
+                            "rowcrops": "89",
+                            "pasture": "84",
+                            "meadow": "78",
+                            "woods": "79",
+                            "desert_shrub": "86",
+                            "wetlands": "0",
+                            "water": "98"
+                        }
+                    }
+                },
+                "green_improvements": {
+                    "soil_type": {
+                        "A": {
+                            "green_roof": "14",
+                            "rain_garden": "15",
+                            "native_vegetation": "16",
+                            "filter_strips": "17",
+                            "swale": "18",
+                            "trees": "19",
+                            "porous_pavement": "20",
+                            "amended_soil": "21",
+                            "gravel": "22"
+                        },
+                        "B": {
+                            "green_roof": "75",
+                            "rain_garden": "51",
+                            "native_vegetation": "51",
+                            "filter_strips": "61",
+                            "swale": "51",
+                            "trees": "58",
+                            "porous_pavement": "40",
+                            "amended_soil": "61",
+                            "gravel": "85"
+                        },
+                        "C": {
+                            "green_roof": "75",
+                            "rain_garden": "63",
+                            "native_vegetation": "63",
+                            "filter_strips": "74",
+                            "swale": "63",
+                            "trees": "72",
+                            "porous_pavement": "40",
+                            "amended_soil": "74",
+                            "gravel": "89"
+                        },
+                        "D": {
+                            "green_roof": "75",
+                            "rain_garden": "70",
+                            "native_vegetation": "70",
+                            "filter_strips": "80",
+                            "swale": "70",
+                            "trees": "79",
+                            "porous_pavement": "40",
+                            "amended_soil": "80",
+                            "gravel": "91"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

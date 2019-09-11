@@ -1,0 +1,73 @@
+{% load staticfiles %}
+<style>
+    .sc {
+        width: 650px;
+    }
+
+    .structure_table_col {
+        {#margin-left: 37px;#}
+        min-width: 65%;
+        padding: 0px;
+    }
+    .structure_help_col {
+        padding: 0px;
+    }
+    #structure_costs_table {
+        margin-left: -20px;
+    }
+</style>
+<div id="structure_costs">
+    <div class="container">
+        <div class="row">
+            <div class="col structure_table_col">
+
+
+                <form name="calculatorcosts" onsubmit="return false;" id="calculator" method="get">
+
+                    <!-- jab-start -->
+
+                    <h3 class="bmplabel structureCostLabel" onclick="toggleHelpText('StructureCostsHelpText');">Structure Cost Item User Assumptions</h3>
+
+                    <table border="0" cellpadding="0" cellspacing="0" class="ft">
+                       <tr>
+                           <td class="input-group input-group-sm">
+                               <select id="ui_structure_select" class="form-control"
+
+                                    onchange="loadStructureCosts(this);" >
+                                    <option value=""> --- Select --- </option>
+                                    {% for r,obj in scenario.nonconventional_structures.items %}
+                                      {% if obj.checkbox == True %}
+                                        <option value="{{ obj.code }}">Non-Conventional - {{ obj.label }}</option>
+                                      {% endif %}
+                                    {% endfor %}
+
+                                    {% for r,obj in scenario.conventional_structures.items %}
+                                      {% if obj.checkbox == True %}
+                                    <option value="{{ obj.code }}">Conventional - {{ obj.label }}</option>
+                                      {% endif %}
+                                    {% endfor %}
+
+                                </select>
+                               <div class="input-group-append">
+                                   <span class="input-group-text">&nbsp;</span></div>
+                           </td>
+                        </tr>
+                    </table><br>
+
+                    <!-- the table gets loaded into this div when the drop-down list is selected -->
+{#                    <div id="structure_costs_table"></div>#}
+
+                    <div id="structure_costs_table" style="margin-right: 25px;">
+                        {% include "scenario/includes/partial_structure_costs.html" %}
+                    </div>
+
+                </form>
+            </div>
+            <div id="help_system" class="col structure_help_col">
+
+                {% include "scenario/costtool/subpages/help_text/structure_costs.html" %}
+            </div>
+        </div>
+    </div>
+
+</div>

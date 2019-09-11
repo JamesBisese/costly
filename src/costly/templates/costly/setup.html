@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Home{% endblock %}
+
+{% block navbar-left %}
+{% include "_navbar.html" with active_link="setup" %}
+{% endblock %}
+
+{% block navbar-custom-right %}
+{% include "_navbar-right.html" with active_link="NONE" %}
+{% endblock %}
+
+<!-- Benefits of the Django application -->
+{% block content %}
+<div class="container" style="padding-top: 10px;">
+<div class="text-page" >
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>How the Raleigh GSI Cost Tool is set up</h2>
+   <p>
+       <img src="{% static 'costly/img/abucus.jpg' %}" style="float: right; height: 215px;">
+The Raleigh GSI Cost Tool is set up to help developers and designers with two functions: 1) learning more about GSI options under the changes in the City of Raleigh’s Unified Development Ordinance (UDO), and 2) comparing cost implications of various conventional and GSI design scenarios.
+</p>  <p>
+       The first function is for those wishing to access the tool’s educational component. In the Opportunity Screening, the user is exposed to educational materials about changes in the City’s UDO and new opportunities for locations that designers can implement distributed green stormwater infrastructure practices. The user is also given information about the compliance standards set for development, and the potential savings for implementing GSI. The Opportunity Sc reening guides the user with information that is needed to complete Scenarios within the Cost Analysis.
+</p><p>
+          The second function of the tool allows the users to evaluate the specific costs of interest for design Scenarios entered into the tool. The user will need to define characteristics of the Project and can create one or multiple Scenarios to conduct a life cycle cost evaluation. Users are able to change default assumptions within the tool, import individual costs for specific cost items, and compare Scenarios within each Project site. A summary of these overall costs and differences between Scenarios can be viewed, exported and printed by the user.
+       </p>
+          <p><i>Cost Tool Assumptions</i></p>
+        <p>
+The user should note that the tool will not calculate the effectiveness of designs for nutrient management or stormwater runoff. Further, the tool will not generate peak flow calculations. Rather the tool will recommend resources that the user can reference to check if a design meets the City’s stormwater compliance standards.
+        </p>
+ <p><i>Vocabulary:</i></p>
+<ul>
+<li>	Project – a site of interest that the user will design and account for stormwater management
+<li>	Scenario – a unique design that will occur in the site of interest that generates a cost analysis
+<li>	Areal Feature – features defined by the site design areal coverage
+<li>	Conventional Structure – end-of-pipe system used for stormwater management
+<li>	Non-Conventional Structure – distributed GSI system used for stormwater management
+<li>	Impervious Area – non-porous area where water cannot infiltrate (i.e., cement, asphalt, etc.)
+<li>	Pervious Area – porous area where water can infiltrate (i.e., vegetation, permeable pavers, etc.)
+<li>    Cost Item – an item that is paid for and used to construct a structure. </li>
+</ul>
+<p></p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}
