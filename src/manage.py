@@ -6,6 +6,8 @@ if __name__ == "__main__":
     # CHANGED manage.py will use development settings by
     # default. Change the DJANGO_SETTINGS_MODULE environment variable
     # for using the environment specific settings file.
+
+    # edit to test GitHub only
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "costly.settings.production")
 
     from django.core.management import execute_from_command_line
