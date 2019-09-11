@@ -1,6 +1,6 @@
 
 
-# costly
+# costly was here
 
 costly is the _City of Raleigh NC Cost Tool_. It is built with [Python][0] using the [Django Web Framework][1].
 
