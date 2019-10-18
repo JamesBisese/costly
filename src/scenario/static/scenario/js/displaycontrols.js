@@ -160,7 +160,7 @@ function open_structure_help(button_context, type){
     buttonDiv.addEventListener("click", close_cs_help);
 
     var imageDiv = document.createElement("img");
-    imageDiv.src = "/static/scenario/images/close2.gif";
+    imageDiv.src =  SETTINGS.URLS.IIS_PREFIX + "/static/scenario/images/close2.gif";
     imageDiv.style.border = "0";
     buttonDiv.appendChild(imageDiv);
 
@@ -528,7 +528,11 @@ function open_af_help(button_context) {
 // mouse-over text attached to each Areal Feature button
 function open_af_button_title(button_context) {
     //TODO: implement logic to go get text for display
-    return "mouse_over button place-holder text: " + button_context;
+    return "Check this to enable input for this areal feature";
+}
+
+function open_structure_checkbox_title(structure){
+     return "Check this to enable input for this structure";
 }
 // mouse-over text attached to each Areal Feature input box
 function open_af_input_title(button_context) {

@@ -32,6 +32,13 @@ class ProjectForm(forms.ModelForm):
                   'land_unit_cost',
                   )
 
+    # TODO
+    # def clean_project_area(self):
+    #     value = self.cleaned_data.get("project_area")
+    #     try:
+    #         value = value.replace(",", "")
+    #         response = validator.project_area
+
     def __init__(self, *args, **kwargs):
         _user_id = kwargs.pop('user_id', None)
 
@@ -40,7 +47,7 @@ class ProjectForm(forms.ModelForm):
         self.fields['project_location'].widget.attrs['placeholder'] = 'Lat/Long or Address as applicable'
         self.fields['project_area'].widget.attrs['class'] = 'col-sm-6'
         self.fields['project_area'].widget.attrs['placeholder']= 'Area in square feet'
-        self.fields['land_unit_cost'].widget.attrs['class'] = 'col-sm-6'
+        self.fields['land_unit_cost'].widget.attrs['class'] = 'col-sm-6 row'
         # self.fields['id_land_unit_cost_1'].widget.attrs['class'] = 'col-sm-6'
         if _user_id:
             self.fields['user'].queryset = User.objects.filter(id=_user_id)

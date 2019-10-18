@@ -15,8 +15,8 @@ class HelpPage(generic.TemplateView):
 class InstructionsPage(generic.TemplateView):
     template_name = "costly/instructions.html"
 
-class InternalPage(generic.TemplateView):
-    template_name = "costly/internal.html"
+class ReferencePage(generic.TemplateView):
+    template_name = "costly/reference.html"
 
 class AboutPage(generic.TemplateView):
     template_name = "costly/about.html"

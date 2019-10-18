@@ -40,7 +40,7 @@ $(function () {
                 {"data": "classification_display"},
                 {"data": "name"},
                 {"data": "code"},
-                 {"data": "units_html", "searchable": false, "sortable": false},
+                 {"data": "units", "searchable": false, "sortable": false},
                 {"data": "help_text", "searchable": true},
 
              ],

@@ -69,8 +69,7 @@
             {% block navbar-left %}
               {% include "_navbar.html" with active_link="home" %}
             {% endblock navbar-left %}
-        </ul>
-        <ul class="navbar-nav ">
+
             {% block navbar-right %}
                 {% block navbar-custom-right %}
                     {% include "_navbar-right.html" with active_link="NONE" %}
@@ -84,7 +83,7 @@
                                href="{% url 'accounts:signup' %}" role="button">Create New Account</a></li>
                     {% endblock navbar-auth-login %}
                 {% else %}
-                    <li class="dropdown">
+                    <li class="dropdown" style="background: rgba(74,139,44,.9);">
                         <a class="nav-link" href="#" class="dropdown-toggle profile-menu" data-toggle="dropdown">
                         <!--<img src="{% thumbnail user.profile.picture|default:'default_profile.png' 30x30 crop %}" alt="" />-->
                         {{ user.get_full_name|truncatechars:20 }}

@@ -39,15 +39,15 @@ $(function () {
                     var tblData = table.rows('.selected').data();
                     scenario_id = tblData[0]['id'];
 
-                    $('#duplicate_scenario').css('display','');
-                    $('#duplicate_scenario').attr('data-url',
-                        SETTINGS.URLS.scenario_duplicate.replace('<int:pk>', scenario_id));
+                    // $('#duplicate_scenario').css('display','');
+                    // $('#duplicate_scenario').attr('data-url',
+                    //     SETTINGS.URLS.scenario_duplicate.replace('<int:pk>', scenario_id));
                 }
-                else
-                {
-                    $('#duplicate_scenario').css('display','none');
-
-                }
+                // else
+                // {
+                //     $('#duplicate_scenario').css('display','none');
+                //
+                // }
                $('#compareScenarios').removeAttr('disabled');
                $('#compareScenarios2').removeClass('disabled');
 
@@ -67,7 +67,7 @@ $(function () {
             }
             else
             {
-                $('#duplicate_scenario').css('display','none');
+                // $('#duplicate_scenario').css('display','none');
 
 
                 $('#compareScenarios').attr('disabled','disabled');
@@ -135,10 +135,15 @@ $(function () {
                     "sWidth": "150px",
                     "render": function (data, type, row) {
 
+                        var duplicate_url = SETTINGS.URLS.scenario_duplicate.replace('<int:pk>', data);
                         var update_url = SETTINGS.URLS.scenario_update.replace('<int:pk>', data);
                         var delete_url = SETTINGS.URLS.scenario_delete.replace('<int:pk>', data);
 
-                        return '<a class="btn btn-warning btn-sm js-update-project" href="' + update_url + '">' +
+                        return '<button type="button" class="btn btn-primary btn-sm js-duplicate-scenario" data-url="' + duplicate_url + '">'+
+                           '<span class="glyphicon glyphicon-duplicate"></span> Duplicate'+
+                           '</button>' + '&nbsp;' +
+
+                            '<a class="btn btn-warning btn-sm js-update-project" href="' + update_url + '">' +
                             '<span class="glyphicon glyphicon-pencil"></span> Edit' +
                             '</a>' + '&nbsp;' +
 
@@ -188,6 +193,7 @@ $(function () {
             beforeSend: function () {
                 $("#modal-scenario .modal-content").html("");
                 $("#modal-scenario").modal("show");
+                // $('#duplicate_scenario').css('display','none');
             },
             success: function (data) {
                 $("#modal-scenario .modal-content").html(data.html_form);
@@ -274,7 +280,7 @@ $(function () {
     $("#modal-scenario").on("submit", ".js-scenario-create-form", submitForm);
 
     // Duplicate scenario
-    $("#duplicate_scenario").on("click",  loadForm);
+    $("#scenario-table").on("click",  ".js-duplicate-scenario", duplicateForm);
     $("#modal-scenario").on("submit", ".js-scenario-duplicate-form", submitForm);
 
     // Delete scenario

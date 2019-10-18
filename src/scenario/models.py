@@ -305,7 +305,7 @@ class Project(models.Model):
     PROJECT_TYPE_CHOICES = zip(PROJECT_TYPE_VALUES, PROJECT_TYPE_TEXTS)
 
     PURCHASE_TYPE_VALUES = ('to_be_purchased', 'owned')
-    PURCHASE_TYPE_TEXTS = ('Needs to be purchased', 'Already owned')
+    PURCHASE_TYPE_TEXTS = ('Site property needs to be purchased by developer', 'Site property is owned by developer')
     PURCHASE_TYPE_CHOICES = zip(PURCHASE_TYPE_VALUES, PURCHASE_TYPE_TEXTS)
 
     WATERSHED_VALUES = ('please_name', 'no')
@@ -333,10 +333,10 @@ class Project(models.Model):
                                                     max_length=15, default=None, blank=True, null=True)
     priority_watershed = models.CharField('Priority Watershed', choices=WATERSHED_CHOICES, max_length=15, default=None, blank=True, null=True)
 
-    project_area = models.CharField('Total Project Area (square feet)', max_length=15,  default=None, blank=True, null=True)
+    project_area = models.CharField('Total Project Area (square feet)', max_length=15,  default=None, blank=False, null=False)
     land_unit_cost = MoneyField('Cost per ft2 of Project site',
-                                decimal_places=2, max_digits=11, default=None,
-                                default_currency='USD', blank=True, null=True)
+                                decimal_places=2, max_digits=11, default=1,
+                                default_currency='USD', blank=False, null=False)
 
 
     def __str__(self):

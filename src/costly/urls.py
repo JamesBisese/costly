@@ -57,7 +57,7 @@ urlpatterns = [
     path(settings.IIS_APP_ALIAS + 'help/', views.HelpPage.as_view(),   name='help'),
     path(settings.IIS_APP_ALIAS + 'instructions/', views.InstructionsPage.as_view(), name='instructions'),
 
-    path(settings.IIS_APP_ALIAS + 'internal/', views.InternalPage.as_view(),   name='internal'),
+    path(settings.IIS_APP_ALIAS + 'reference/', views.ReferencePage.as_view(),   name='reference'),
 
     path(settings.IIS_APP_ALIAS + 'users/', include(profiles.urls)),
     path(settings.IIS_APP_ALIAS + 'admin/', admin.site.urls),

@@ -1,6 +1,6 @@
 sort_nu,code,name,units,units_html,classification,help_text,
 1,swale,Swales,SF,ft<sup>2</sup>,nonconventional,This is help text for the nonconventional structure Swales,
-2,rain_harvesting_device,Harvesting Device,CF,ft<sup>2</sup>,nonconventional,This is help text for the nonconventional structure Harvesting Device,
+2,rain_harvesting_device,Rainwater Harvesting,CF,ft<sup>2</sup>,nonconventional,This is help text for the nonconventional structure Harvesting Device,
 3,bioretention_cell,Bioretention Cells,SF,ft<sup>2</sup>,nonconventional,This is help text for the nonconventional structure Bioretention Cells,
 4,filter_strip,Filter Strips,SF,ft<sup>2</sup>,nonconventional,This is help text for the nonconventional structure Filter Strips,
 5,green_roof,Green Roof,SF,ft<sup>2</sup>,nonconventional,This is help text for the nonconventional structure Green Roof,

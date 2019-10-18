@@ -48,11 +48,11 @@
     <!--</button>-->
         <div style="float: right; display: inline-block;">
         <!-- the data-url gets set by scenario.js when a single scenario is selected -->
-            <button id='duplicate_scenario' type="button"
-                    style="display: none;"
-                    class="btn btn-primary js-duplicate-scenario">
-                <span class="glyphicon glyphicon-copy"></span> Duplicate scenario
-            </button>
+{#            <button id='duplicate_scenario' type="button"#}
+{#                    style="display: none;"#}
+{#                    class="btn btn-primary js-duplicate-scenario">#}
+{#                <span class="glyphicon glyphicon-copy"></span> Duplicate scenario#}
+{#            </button>#}
             <!-- this loads a modal to enter the new scenario title only -->
             <button id='create_scenario' type="button"
                     data-url="{% url 'scenario:project_scenario_create' project.id %}"

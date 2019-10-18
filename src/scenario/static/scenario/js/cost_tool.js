@@ -439,6 +439,10 @@ function updateResultsPane(data){
         contentTX = data['html_result'];
         // contentTX = 'TBD - return formatted via another ajax?? or just have the routine fiture that out';
     }
+    else if(data.hasOwnProperty('error'))
+    {
+        contentTX = "There is an error in one of the tabs so the results cannot be computed";
+    }
     else
     {
         contentTX = JSON.stringify(data, null, 4);
@@ -1013,6 +1017,11 @@ function loadStructureCosts(formFeature) {
         // get what the new selected value is
         var inputDom = document.getElementById('ui_' + field_nm);
         var structureCode = inputDom.value;
+    }
+
+    if (structureCode == '')
+    {
+        return;
     }
 
     var structureCostTableDom = document.getElementById('structure_costs_table');
@@ -1621,11 +1630,22 @@ function setAllFieldInputFilters()
 
     function set_structures_input_filter(structures){
         for (var structure in structures) {
+            // each Areal Feature has a button
+            var domElement = document.getElementById('checkbox_' + structure);
+            if (! domElement){
+                alert("There is no Structure button: 'checkbox_" + structure + "'");
+            }
+            else {
+                // Adds 'Check this to enable input for this areal feature'
+               domElement.title = open_structure_checkbox_title(structure);
+            }
+
             var fields = structures[structure];
             fields.forEach(function(field) {
                 if (field != 'checkbox'){
                     setFieldInputFilter(structure + '_' + field);
                 }
+
 
             });
         };
@@ -1678,6 +1698,7 @@ function setAllFieldInputFilters()
             alert("There is no Areal Feature button: 'checkbox_" + name + "'");
         }
         else {
+            // Adds 'Check this to enable input for this areal feature'
            domElement.title = open_af_button_title(name);
         }
 
@@ -1687,7 +1708,8 @@ function setAllFieldInputFilters()
             alert("There is no Areal Feature text-box: 'ui_" + name + "'");
         }
         else {
-           domElement.title = open_af_input_title(name);
+           // 2019-09-11 removed since this is just boilerplate
+            // domElement.title = open_af_input_title(name);
            // set the input filter to a float
             setInputFilter(domElement, function (value) {
                 return (/^\d{0,5}\.?\d{0,2}$/.test(value));

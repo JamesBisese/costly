@@ -187,6 +187,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+USE_TZ = True
 
 
 # Crispy Form Theme - Bootstrap 3
@@ -231,4 +232,6 @@ DJANGO_TABLES2_TEMPLATE = {
     "DJANGO_TABLES2_TEMPLATE": "django_tables2/table.html",
 }
 
+# https://github.com/django-money/django-money
 CURRENCIES = ('USD',)
+CURRENCY_CHOICES = [('USD', 'USD $'), ]

@@ -65,7 +65,11 @@ def save_project_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
-            form.cleaned_data['project_area'] = form.cleaned_data['project_area'].replace(",", "")
+            # I don't know how this is supposed to work.  I needed
+            # to add the 'instance' thing, but it doesn't seem right
+            if form.cleaned_data['project_area'] is not None:
+                form.cleaned_data['project_area'] = form.cleaned_data['project_area'].replace(",", "")
+                form.instance.project_area = form.cleaned_data['project_area'].replace(",", "")
             form.save()
             data['form_is_valid'] = True
             projects = Project.objects.all()

@@ -24,7 +24,7 @@
                                         <span >{% autoescape off %}{{ structure.name }}{% endautoescape %}</span>
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" id="ui_{{ structure.code }}_area"
+                                <input type="text" class="form-control" id="ui_{{ structure.code }}_area" disabled
                                        onkeypress="returnCalc(this);" onchange="runCalculate(this);">
                                 <div class="input-group-append">
                                     <span class="input-group-text">{% autoescape off %}{{ structure.units }}{% endautoescape %}</span>
@@ -51,7 +51,7 @@
                                         <span >{% autoescape off %}{{ structure.name }}{% endautoescape %}</span>
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" id="ui_{{ structure.code }}_area"
+                                <input type="text" class="form-control" id="ui_{{ structure.code }}_area" disabled
                                        onkeypress="returnCalc(this);" onchange="runCalculate(this);"
                                 {% if structure.code == 'curb_and_gutter' %}  style="display: none;" {% endif %}>
                                 <div class="input-group-append">
