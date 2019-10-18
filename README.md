@@ -1,13 +1,13 @@
 
 
-# costly was out of here
+# Green Stormwater Infrastructure (GSI) Cost Tool (gsicosttool)
 
-costly is the _City of Raleigh NC GSI_ Cost Tool_. It is built with [Python][0] using the [Django Web Framework][1].
+gsicosttool is the _City of Raleigh NC GSI_ Cost Tool_. It is built with [Python][0] using the [Django Web Framework][1].
 
 This project has the following basic apps:
 
 * Cost Items - each structure has 1 or more Cost Items
-* Structures - each scenario has structures
+* Structures - each scenario has 0 or more structures
 * Scenario - users build scenarios that they can then compare with other scenarios
 * Project - user creates projects, and then (multiple) scenarios for each project
 * Profile - user profile manager
