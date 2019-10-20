@@ -12,6 +12,7 @@ This project has the following basic apps:
 * Project - user creates projects, and then (multiple) scenarios for each project
 * Profile - user profile manager
 * User - user manager
+* GSI - Green Stormwater Infrastructure
 
 ## Installation
 
