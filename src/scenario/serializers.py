@@ -50,6 +50,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     project_ownership = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
+    project_purchase_information = serializers.SerializerMethodField()
 
     scenario_count = serializers.SerializerMethodField()
 
@@ -64,6 +65,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_project_type(self, obj):
         return obj.get_project_type_display()
+
+    def get_project_purchase_information(self, obj):
+        return obj.get_project_purchase_information_display()
 
     def get_scenario_count(self, obj):
         return Scenario.objects.filter(project__id=obj.id).count()
@@ -108,6 +112,8 @@ class EmbeddedProjectFields(serializers.Field):
         return obj.project.get_project_ownership_display()
     def get_project_type(self, obj):
         return obj.project.get_project_type_display()
+    def get_project_purchase_information(self, obj):
+        return obj.get_project_purchase_information_display()
 
     def to_representation(self, value):
 
@@ -123,38 +129,23 @@ class EmbeddedProjectFields(serializers.Field):
             'project_area': value.project_area,
             #
             'project_location': value.project_location,
-            # 'project_purchase_information': value.project.project_purchase_information,
+            'project_purchase_information': value.project_purchase_information,
             'priority_watershed': value.priority_watershed,
-            # 'pervious_area': value.pervious_area,
-            # 'impervious_area': value.impervious_area,
-            #
-            # 'nutrient_req_met': value.nutrient_req_met,
-            # 'captures_90pct_storm': value.captures_90pct_storm,
-            # 'meets_peakflow_req': value.meets_peakflow_req,
+
 
             # these are display fields that show the CHOICE text
             'project_type_display': value.get_project_type_display(),
             'project_ownership_display': value.get_project_ownership_display(),
             'project_purchase_information_display': value.get_project_purchase_information_display(),
             'priority_watershed_display': value.get_priority_watershed_display(),
-            # 'nutrient_req_met_display': value.get_nutrient_req_met_display(),
-            # 'captures_90pct_storm_display': value.get_captures_90pct_storm_display(),
-            # 'meets_peakflow_req_display': value.get_meets_peakflow_req_display(),
         }
         return ret
 
     def to_internal_value(self, data):
         ret = {
-            # 'project_title': data['project_title'],
-            'scenario_title': data['scenario_title'],
-            # 'land_unit_cost': data['land_unit_cost'],
-            # 'project_type': data['project_type'],
-            # 'project_ownership': data['project_ownership'],
-            # 'project_area': data['project_area'],
 
-            # 'project_location': data['project_location'],
-            # 'project_purchase_information': data['project_purchase_information'],
-            # 'priority_watershed': data['priority_watershed'],
+            'scenario_title': data['scenario_title'],
+
             'pervious_area': data['pervious_area'],
             'impervious_area': data['impervious_area'],
 

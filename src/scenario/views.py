@@ -482,7 +482,8 @@ def scenario_save(request):
 
         form_data['user_costs'] = cost_item_serializer.data
 
-        form_data['html_result'] = scenario_table_html(scenario)
+        disclaimer_tx = render_to_string('scenario/results_disclaimer.html')
+        form_data['html_result'] = disclaimer_tx + scenario_table_html(scenario)
             # testobj = ScenarioResults()
 
                 # render_to_string(template_name, context, request=request)
@@ -1283,7 +1284,8 @@ class ScenarioResults(APIView):
         scenario = get_object_or_404(Scenario, pk=pk)
 
         # return the scenario as an HTML table
-        return HttpResponse(scenario_table_html(scenario))
+        disclaimer_tx = '<p>Hello World!</p>'
+        return HttpResponse(disclaimer_tx + scenario_table_html(scenario))
 
 
 
@@ -1693,6 +1695,8 @@ def scenario_update(request, pk):
             obj['code'] = r
             obj['label'] = labels[r]
 
+    disclaimer_tx = render_to_string('scenario/results_disclaimer.html')
+
     context = {
                 'scenario': serializer.data,
                 'project': scenario.project,
@@ -1700,7 +1704,7 @@ def scenario_update(request, pk):
                 'cost_item_user_costs': cost_item_user_costs,
                 # 'cost_item_user_assumptions': cost_item_user_assumptions,#rename StructureCosts
                 'cost_item_default_costs': cost_item_default_costs,
-                'result_table': scenario_table_html(scenario),
+                'result_table': disclaimer_tx + scenario_table_html(scenario),
                }
 
     return render(request, 'scenario/costtool/index.html', context)

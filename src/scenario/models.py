@@ -123,8 +123,11 @@ class Structures(models.Model):
     help_text = models.CharField(unique=False, max_length=1000, default="TBD", blank=False, null=False)
 
     def __str__(self):
-        return self.name
+        return self.classification + ' - ' + self.name
 
+    class Meta:
+        verbose_name_plural = "Structures"
+        ordering = ['sort_nu', ]
 '''
 
     this is a data table of ConventionalStructures
@@ -188,7 +191,10 @@ class CostItem(models.Model):
     help_text = models.CharField(unique=False, max_length=1000, default="TBD", blank=False, null=False)
 
     def __str__(self):
-        return self.code + " -- " + self.name
+        return self.name
+
+    class Meta:
+        ordering = ['sort_nu', ]
 #
 # this stores the 'default' values for the costitem costs.
 # each row is attached to one CostItem for one Scenario
@@ -235,7 +241,9 @@ class CostItemDefaultCosts(models.Model):
     def __str__(self):
         return self.costitem.code + " -- default costs"
 
-
+    class Meta:
+        verbose_name_plural = "Cost Item Default Costs"
+        ordering = ['costitem__sort_nu', ]
 '''
 
     this is a look-up table of the 'default' costs assumptions with each Cost Items
@@ -261,7 +269,7 @@ class CostItemDefaultFactors(models.Model):
     class Meta:
         verbose_name_plural = "Structure Cost Item Default Factors"
         unique_together = (('structure', "costitem"))
-
+        ordering = ['costitem__sort_nu', ]
 
 '''
     2019-08-15 Cost Item Default Equations
@@ -289,7 +297,7 @@ class CostItemDefaultEquations(models.Model):
 
     class Meta:
         verbose_name_plural = "Cost Item Default Equations"
-
+        ordering = ['costitem__sort_nu', ]
 
 class Project(models.Model):
     OWNERSHIP_TYPE_VALUES = ('private', 'public')

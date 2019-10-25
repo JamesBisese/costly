@@ -244,6 +244,7 @@ a.bmplabel:hover {
 #calculate {
 	position: relative;
 	margin: 0 15px;
+	margin-top: 8px;
 	border-top: 1px solid #f8f9fa!important; /* #b0dd24; */
 	background: #f8f9fa!important; /* #639C16 url(../images/bg-calc.gif) 0 0 repeat-x; */
 	zoom: 1;

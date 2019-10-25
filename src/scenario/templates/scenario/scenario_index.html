@@ -26,6 +26,9 @@
         pointer-events: all !important;
     }
 
+.result_table {
+    width: 490px!important;
+}
 .project_table {
   border-collapse: collapse;
 }
@@ -136,4 +139,26 @@
     {% endif %}
 
     <script src="{% static 'scenario/js/scenario_index.js' %}"></script>
+    <script>
+
+    /*TODO make the modal moveable and still work*/
+    {#$('#btn1').click(function() {#}
+    {#  // reset modal if it isn't visible#}
+    {#  if (!($('.modal.in').length)) {#}
+    {#    $('.modal-dialog').css({#}
+    {#      top: 0,#}
+    {#      left: 0#}
+    {#    });#}
+    {#  }#}
+    {#  $('#modal-scenario').modal({#}
+    {#    backdrop: false,#}
+    {#    show: true#}
+    {#  });#}
+    {##}
+    {#  $('.modal-dialog').draggable({#}
+    {#    handle: ".modal-header"#}
+    {#  });#}
+    {#});#}
+
+    </script>
 {% endblock %}

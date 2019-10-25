@@ -1,6 +1,24 @@
-{#<li class="nav-item {% if active_link == 'help' %} active{% endif %}"><a class="nav-link" href="{% url 'help' %}">Help</a></li>#}
-<!--<li class="nav-item {% if active_link == 'about' %} active{% endif %}"><a class="nav-link" href="{% url 'about' %}">About</a></li>-->
+{% load thumbnail %}
 
-<!--{% if user.is_authenticated %}-->
-    <!--<li class="nav-item{% if active_link == 'scope' %} active{% endif %}"><a class="nav-link" href="{% url 'scope' %}">Scope</a></li>-->
-<!--{% endif %}-->
+{% if not user.is_authenticated %}
+    <li class="nav-item active"><a class="nav-link" href="{% url 'accounts:login' %}">Log in</a></li>
+    {% block navbar-auth-login %}
+        <li class="nav-item">
+            <a class="nav-link account-signup" href="{% url 'accounts:signup' %}">Create New Account</a>
+        </li>
+    {% endblock navbar-auth-login %}
+{% else %}
+    <li class="dropdown" style="background: rgba(74,139,44,.9);">
+        <a class="nav-link" href="#" class="dropdown-toggle profile-menu" data-toggle="dropdown">
+        {{ user.get_full_name|truncatechars:20 }}
+        <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+            {% if user.is_superuser %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin Page</a></li>
+            {% endif %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'profiles:show_self' %}">Account</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></li>
+          </ul>
+    </li>
+{% endif %}

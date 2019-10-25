@@ -593,10 +593,10 @@ function validateProjectAreaAndArealFeatures() {
     var pervious_area = pervious_area_featureDom.value;
     var impervious_area = impervious_area_featureDom.value;
 
-    if(! Number.isNaN(parseFloat(pervious_area))) {
+    if(! isNaN(parseFloat(pervious_area))) {
         sum_pervious_impervious_area = parseFloat(pervious_area);
     }
-    if(! Number.isNaN(parseFloat(impervious_area))) {
+    if(! isNaN(parseFloat(impervious_area))) {
         sum_pervious_impervious_area += parseFloat(impervious_area);
     }
 
@@ -699,9 +699,9 @@ function recalculateCosts(formField){
     return true;
 }
 
-function validateForm(ff) {
+function validateForm(formField) {
 
-    if (! ff) {
+    if (! formField) {
         return;
     }
 
@@ -709,7 +709,7 @@ function validateForm(ff) {
 
     var valid_bol = true;
 
-    field_id = ff.id;
+    field_id = formField.id;
     field_nm = field_id.replace('ui_','');
 
 
@@ -857,8 +857,9 @@ function validateForm(ff) {
         field_nm = field_id.replace('checkbox_','') ;
 
         var cost_items_fields = scenario_template['siteData']['cost_items']['fields'];
-        if (cost_items_fields.includes(field_nm)) {
-            suffix = ['a_area', 'z_depth', 'd_density', 'n_number'];
+        // if (cost_items_fields.includes(field_nm)) {
+        if ($.inArray(field_nm, cost_items_fields)) {
+            var suffix = ['a_area', 'z_depth', 'd_density', 'n_number'];
 
             var inputFieldDom = document.getElementById('checkbox_' + field_nm);
             var inputFieldChecked = inputFieldDom.checked;
@@ -892,10 +893,12 @@ function validateForm(ff) {
             }
         }
 
+        // this toggles the Areal Input (area) input boxes
+        suffix = ['area', 'a_area', 'z_depth', 'd_density', 'n_number'];
         for (i in suffix) {
             var inputFieldDom = document.getElementById('ui_' + field_nm + '_' + suffix[i]);
             if (inputFieldDom != null) {
-                if (ff.checked !== true) {
+                if (formField.checked !== true) {
                     inputFieldDom.disabled = true;
                     inputFieldDom.style.textDecoration = 'line-through';
                 }
@@ -969,17 +972,24 @@ function isArray(obj) {
 
 
 /* on each key-stroke, run a calculation each time there is an edit in a field */
-function returnCalc(ff) {
+function returnCalc(formField) {
+
+    // var evt = formField || window.Event;
+    // if (evt.keyCode == 13)
+    // {
+    //     runCalculate(formField);
+    //     return false;
+    // }
 
     if (window.event && window.event.keyCode == 13) {
-        runCalculate(ff);
+        runCalculate(formField);
         return false;
     }
 }
 /* run a calculation each time there is an edit in a field */
-function runCalculate(ff) {
+function runCalculate(formField) {
 
-    var is_valid = validateForm(ff);
+    var is_valid = validateForm(formField);
 
     if (is_valid === false) {
         updateResultsPane({'error': 'form is not valid'});
@@ -987,7 +997,7 @@ function runCalculate(ff) {
     }
     else {
         // this is where the data is sent to the server and when it returns it is loaded into the Results tab
-        saveDB(ff);
+        saveDB(formField);
     }
 
 }

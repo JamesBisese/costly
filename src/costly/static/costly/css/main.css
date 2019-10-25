@@ -1,6 +1,184 @@
-@import "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css";
+/*
 
-#mapid { height: 360px; }
+
+    CSS for Raleigh GSI Cost Tool
+    james.bisese@tetratech.com
+
+    Note: there is lots of borrowed stuff in here, some of which is no longer necessary
+
+ */
+html, body{
+    height:100%;
+}
+.modal-header {
+    display: block;
+}
+
+.alert {
+    margin-top: 55px;
+    margin-bottom: 0;
+}
+
+body>.navbar-transparent {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+/* this is a div to push all navbar content below the image and navbar */
+#topheader {
+    height: 135px;
+}
+
+/* this is the visible navigation (navbar) */
+#navbarMain {
+    position: absolute;
+    top: 100px;
+    left: 0px;
+    width: 100%;
+    background: rgba(74,139,44,1);
+    z-index: 1000;
+}
+
+/* this is customizing the collapsed menu toggle button so it is visible on the image */
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+.custom-toggler.navbar-toggler {
+    border-color: rgb(255,255,255);
+    margin-top: -33px;
+}
+
+/* this is everything on the top of the pages including the image, and the visible navigation bar */
+.navbar {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    height: 100px;
+    padding: .5rem 1rem;
+    background-image: url("../img/Raleigh_skyline_header_smaller.jpg");
+    background-position: 33% 50%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+@media (min-width: 992px) {
+    .navbar {
+        height: 135px;
+    }
+}
+/* put the border on the left side of the 'user' item */
+#navbarMain ul:nth-child(2) li:nth-child(1){
+    border-left: 1px solid #bbb;
+}
+
+.navbar-transparent .navbar-nav > .active > a {
+    background-color: transparent;
+}
+
+.navbar-form {
+    margin-right: 0;
+}
+
+.navbar-nav > li > a.profile-menu {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.navbar-nav > .btn{
+    margin-top:10px;
+    margin-right: 1.7em;
+}
+
+.navbar-nav > li > a {
+    font-size: 16px;
+}
+
+.navbar-nav .nav-link {
+    padding-left: 5px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.navbar-brand > img {
+    float: left;
+    margin-left: 3px;
+    height: 60px;
+    margin-bottom: 46px;
+}
+
+.navbar-light .navbar-nav .active>.nav-link,
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .nav-link.show,
+.navbar-light .navbar-nav .show>.nav-link {
+    color: white;
+    background-color: #004D37;
+}
+
+.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
+    color: white;
+    background-color: #004D37;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: rgba(255,255,255,.9);
+}
+
+.nav-item {
+    background: rgba(74,139,44,.9);
+    border-right: 1px solid #bbb;
+}
+
+/* blue Signup button on menu if user is not logged in */
+.account-signup {
+    background-color: #007bff;
+}
+.account-signup:hover {
+    background-color: #00cefffa!important;
+}
+
+/* dropdown-menu on 'user' item */
+.dropdown-menu {
+    left: -55px;
+    min-width: 7rem;
+    padding: 0;
+}
+
+/*.btn-warning {*/
+/*    color: #fff;*/
+/*}*/
+
+/*#inner {*/
+/*    width: 350px;*/
+/*    margin: 0 auto 100px;*/
+/*    background-clip: border-box;*/
+/*    background: lightgray;*/
+/*    color:darkgreen*/
+/*}*/
+
+.footer {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+}
+
+.footer a:hover {
+    text-decoration: none;
+}
+
+
+/* this section supports icons on buttons and the Home page home icon (left edge of navbar) */
+
+@import "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css";
 
 @font-face {
     font-family: 'Glyphicons Halflings';
@@ -20,6 +198,11 @@
     font-weight: normal;
     line-height: 1;
     -webkit-font-smoothing: antialiased;
+}
+
+.glyphicon-home:before {
+    content: "\e021";
+    padding-right: 2px;
 }
 
 .glyphicon-plus:before {
@@ -80,140 +263,17 @@
     padding-right: 2px;
 }
 
-html, body{
-    height:100%;		/* For full height images */
-}
-.modal-header {
-    display: block;
-}
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
+
+/* this is on the help page (not included in menu) */
+
+#mapid { height: 360px; }
+
+#sec1 {
+    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJklEQVQIW2NkAIILFy78NzAwYATRjCABZEGwAEwFiA1WBlIOUwkA72gTdDIYVO4AAAAASUVORK5CYII=) repeat;
 }
 
-.footer {
-  padding-top: 40px;
-  padding-bottom: 40px;
-  margin-top: 40px;
-  border-top: 1px solid #eee;
-}
+/* About page styling /about (not included in menu) */
 
-.alert {
-    margin-top: 55px;
-    margin-bottom: 0;
-}
-
-body>.navbar-transparent {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-}
-
-.navbar {
-    position: relative;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    -ms-flex-align: center;
-    align-items: center;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    padding: .5rem 1rem;
-    background-image: url("../img/Raleigh_skyline_header_smaller.jpg");
-    background-position: 33% 50%;
-    background-size: 100%;
-    background-repeat: no-repeat;
-}
-
-.navbar-transparent .navbar-nav > .active > a {
-    background-color: transparent;
-}
-
-.navbar-form {
-    margin-right: 0;
-}
-
-.navbar-nav>li>a.profile-menu {
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.navbar-nav>.btn{
-    margin-top:10px;
-    margin-right: 1.7em;
-}
-
-.navbar-nav > li > a {
-    font-size: 16px;
-}
-
-.navbar-brand {
-    font-weight: bold;
-}
-
-.navbar-brand > img {
-    float: left;
-    margin-right: 10px;
-    height: 50px;
-}
-
-.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
-    color: rgba(255,255,255,.9);
-}
-.navbar-light .navbar-nav .nav-link {
-    color: rgba(255,255,255,.9);
-}
-
-.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
-    border-color: #c0c0c0;
-    border-style: solid;
-    border-width: thin;
-    border-radius: 5px;
-}
-
-.nav-item {
-    background: rgba(74,139,44,.9);
-}
-
-#topheader {
-    height: 120px;
-}
-
-#navbarsExample05 {
-    position: absolute;
-    top: 76px;
-    left: 0px;
-    width: 100%;
-    background: rgba(74,139,44,.9);
-}
-
-/*.navbar-light .navbar-nav .nav-link {*/
-/*    color: white;*/
-/*}*/
-/*
-.btn-sm {
-    color: #000;
-    background: #f8f9fa!important;
-    background-image: none;
-    -webkit-box-shadow: 0px 1px 0px #ddd;
-    -moz-box-shadow: 0px 1px 0px #ddd;
-    box-shadow: 1px 1px 1px #ddd;
-}
-.btn-sm .hover {
-    color: #000;
-    background: #f8f9fa!important;
-    background-image: none;
-    -webkit-box-shadow: 0px 1px 0px #ddd;
-    -moz-box-shadow: 0px 1px 0px #ddd;
-    box-shadow: 1px 1px 1px #ddd;
-}
-*/
-.btn-warning {
-    color: #fff;
-}
-#inner { width: 350px; margin: 0 auto 100px; background-clip: border-box; background: lightgray; color:darkgreen}
-/* Home page styling */
 .corporate-jumbo {
     background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)),
       url("../img/treeroad.jpg");
@@ -252,20 +312,7 @@ body>.navbar-transparent {
     left: 15px;
 }
 
-.contact-banner {
-    padding: 100px 0;
-    background: #e0e0e0;
-    margin-top: 100px;
-}
 
-.footer a:hover {
-    text-decoration: none;
-}
-
-/* About page styling */
-#sec1 {
-    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJklEQVQIW2NkAIILFy78NzAwYATRjCABZEGwAEwFiA1WBlIOUwkA72gTdDIYVO4AAAAASUVORK5CYII=) repeat;
-}
 
 /* Profile page styling */
 .profile-head {
@@ -283,21 +330,8 @@ body>.navbar-transparent {
     color: green;
     text-align: center;
 }
-#map-outer {
-    height: 440px;
-    padding: 40px 20px;
-    margin-bottom: 20px;
-    background-color:#FFF
-}
 
-#map-container {
-    height: 400px
-}
 
-.img-dim {
-    opacity: 0.5;
-    box-shadow: inset 0px 0px 64px 64px #EA1717, 0px 0px 4px 4px #EA1717;
-}
 
 /* Authentication forms */
 .form-box form,
@@ -328,3 +362,15 @@ body>.navbar-transparent {
 .form-box form .form-control:focus {
   z-index: 2;
 }
+
+/* TODO make the modal movable */
+/*#modal-scenario {*/
+/*  position: relative;*/
+/*}*/
+
+/*.modal-dialog {*/
+/*  position: fixed;*/
+/*  width: 100%;*/
+/*  margin: 0;*/
+/*  padding: 10px;*/
+/*}*/

@@ -54,52 +54,29 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
       <a class="navbar-brand" href="{% url 'home' %}">
-
         {% block navbar-brand %}
           <img src="{% static 'costly/img/raleigh_city-seal.png' %}" alt="logo">
-
         {% endblock navbar-brand %}
       </a>
-      <button class="navbar-toggler " type="button" data-toggle="collapse" data-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
+
+      <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarMain"
+              aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse " id="navbarsExample05">
+      <div class="collapse navbar-collapse " id="navbarMain">
         <ul class="navbar-nav mr-auto">
             {% block navbar-left %}
               {% include "_navbar.html" with active_link="home" %}
             {% endblock navbar-left %}
-
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
             {% block navbar-right %}
-                {% block navbar-custom-right %}
-                    {% include "_navbar-right.html" with active_link="NONE" %}
-                {% endblock navbar-custom-right %}
-
-                {% if not user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link btn btn-default active" href="{% url 'accounts:login' %}" role="button">Log in</a></li>
-                    {% block navbar-auth-login %}
-                        <li class="nav-item" style="margin-left: 6px;">
-                            <a class="nav-link btn btn-primary" style="color: white;"
-                               href="{% url 'accounts:signup' %}" role="button">Create New Account</a></li>
-                    {% endblock navbar-auth-login %}
-                {% else %}
-                    <li class="dropdown" style="background: rgba(74,139,44,.9);">
-                        <a class="nav-link" href="#" class="dropdown-toggle profile-menu" data-toggle="dropdown">
-                        <!--<img src="{% thumbnail user.profile.picture|default:'default_profile.png' 30x30 crop %}" alt="" />-->
-                        {{ user.get_full_name|truncatechars:20 }}
-                        <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            {% if user.is_superuser %}
-                                <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin Page</a></li>
-                            {% endif %}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'profiles:show_self' %}">Account</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></li>
-                          </ul>
-                    </li>
-                {% endif %}
+              {% include "_navbar-right.html" with active_link="NONE" %}
             {% endblock navbar-right %}
         </ul>
+
+
       </div>
 
     </nav>
@@ -135,13 +112,7 @@
     <div class="container">
 
         {% block content %}
-
-          <div class="starter-template">
-            <h1>New Project</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br>
-                All you get is this text and a mostly barebones HTML document.</p>
-          </div>
-
+          Ipso Facto
         {% endblock content %}
 
         {% block scripts %}

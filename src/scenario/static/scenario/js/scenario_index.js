@@ -131,6 +131,11 @@ $(function () {
              ],
             "columnDefs": [
                 {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                },
+                {
                     "targets": 7,
                     "sWidth": "150px",
                     "render": function (data, type, row) {
@@ -140,7 +145,7 @@ $(function () {
                         var delete_url = SETTINGS.URLS.scenario_delete.replace('<int:pk>', data);
 
                         return '<button type="button" class="btn btn-primary btn-sm js-duplicate-scenario" data-url="' + duplicate_url + '">'+
-                           '<span class="glyphicon glyphicon-duplicate"></span> Duplicate'+
+                           '<span class="glyphicon glyphicon-duplicate"></span> Copy'+
                            '</button>' + '&nbsp;' +
 
                             '<a class="btn btn-warning btn-sm js-update-project" href="' + update_url + '">' +
@@ -152,7 +157,8 @@ $(function () {
                            '</button>'
                     }
                 },
-            ]
+            ],
+            "order": [[ 1, 'asc' ]]
         };
 
         // hide the user column if the user is not a super user - the values should all be that particular user
@@ -166,6 +172,13 @@ $(function () {
         // }
 
         var table = $('#scenario-table').DataTable(options);
+
+        table.on( 'order.dt search.dt', function () {
+            table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+        } );
+    } ).draw();
+
     };
 
     /* Functions */
