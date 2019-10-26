@@ -7,7 +7,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.contrib.auth import get_user_model
 
 from bootstrap_datepicker_plus import DatePickerInput
-from intl_tel_input.widgets import IntlTelInputWidget
+# from intl_tel_input.widgets import IntlTelInputWidget
 
 from . import models
 

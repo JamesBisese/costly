@@ -225,7 +225,7 @@ class CostItemDefaultCosts(models.Model):
 
     # TODO these 2 might be in the wrong model!!!
     replacement_life = models.PositiveIntegerField(default=40,
-                                           validators=[MinValueValidator(5),
+                                           validators=[MinValueValidator(0),
                                                        MaxValueValidator(100)
                                                        ],
                                            blank=True, null=True)
@@ -600,18 +600,18 @@ class Scenario(models.Model):
                 form_values = list_of_values[cost_item]
                 # set empty string to null
 
-                if form_values['a_area'] is '':
+                if form_values['a_area'] == '':
                     form_values['a_area'] = None
-                if form_values['z_depth'] is '':
+                if form_values['z_depth'] == '':
                     form_values['z_depth'] = None
-                if form_values['d_density'] is '':
+                if form_values['d_density'] == '':
                     form_values['d_density'] = None
                 # if form_values['r_ratio'] is '':
                 #     form_values['r_ratio'] = None
-                if form_values['n_number'] is '':
+                if form_values['n_number'] == '':
                     form_values['n_number'] = None
 
-                if form_values['checked'] is False \
+                if form_values['checked'] == False \
                     and form_values['a_area'] is None \
                         and form_values['z_depth'] is None \
                         and form_values['d_density'] is None \

@@ -134,7 +134,7 @@ INSTALLED_APPS = (
     'authtools',
     'profiles',
     'accounts',
-    'testapp',
+    # 'testapp',
     'scenario.apps.ScenarioConfig',
 
 )
