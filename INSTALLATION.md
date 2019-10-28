@@ -2,8 +2,8 @@
 
 ## Installation Notes for django (python) web application 'gsicosttool'
 
-These notes are random as I try to install on a new system running
-Windows 2016 Datacenter
+This is an INTERIM document.
+These notes are copied and pasted from an installation for another package.  I am working through the differences.
 
 
 ## Folder Structure
@@ -11,7 +11,7 @@ Windows 2016 Datacenter
 I download all external (public) software that I'm going to install into  
     `C:\downloads`
 
-I install all new software into folder so admin users can find out what I have installed
+I install all new software into folder so admin users can find out what I have installed  
     `C:\software`
 
 I use a separate folder in inetpub to hold Django applications  
@@ -32,7 +32,7 @@ In Select Components you can uncheck all options
 Download Python 3.8.0 from https://www.python.org/downloads/ (25.2 MB)
 
 Install python version 3.8 into folder  
-	`C:\software\Python\Python38`
+    `C:\software\Python\Python38`
 
 Python is installed via a GUI
 You might have to run the installer as Admin
@@ -40,12 +40,12 @@ In Optional Features only check 'pip'
 Use Advanced Options uncheck everything, but set the location to install.
 
 Customize install location  
-`C:\software\Python\Python38`
+    `C:\software\Python\Python38`
 
 Add python to System Environmental Variable 'Path'
 Include 2 folders
-	`C:\software\Python\Python38` and  
-	`C:\software\Python\Python38\Scripts`
+    `C:\software\Python\Python38` and  
+    `C:\software\Python\Python38\Scripts`
 	
 Install Python in folder
 ~~~~
