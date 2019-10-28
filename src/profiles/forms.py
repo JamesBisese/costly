@@ -21,7 +21,7 @@ class UserForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.include_media = False # this was suggested in https://github.com/benmurden/django-intl-tel-input
+        self.helper.include_media = False
         self.helper.layout = Layout(
             Field('name'),
             Field('email'),
@@ -35,9 +35,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['name', 'phone_tx', 'job_title', 'organization_tx', 'email',]
-        # widgets = {
-        #     'phone_tx': IntlTelInputWidget()
-        # }
+
 
 class ProfileForm(forms.ModelForm):
 

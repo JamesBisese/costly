@@ -8,7 +8,7 @@ from rest_framework import routers
 import profiles.urls
 import accounts.urls
 import scenario.urls
-import testapp.urls
+# import testapp.urls
 
 #
 # TODO: move this into scenario/urls.py where it belongs
@@ -61,7 +61,7 @@ urlpatterns = [
 
     path(settings.IIS_APP_ALIAS + 'users/', include(profiles.urls)),
     path(settings.IIS_APP_ALIAS + 'admin/', admin.site.urls),
-    path(settings.IIS_APP_ALIAS + 'testapp/', include(testapp.urls)),
+    # path(settings.IIS_APP_ALIAS + 'testapp/', include(testapp.urls)),
     path(settings.IIS_APP_ALIAS + '', include(scenario.urls)),
     path(settings.IIS_APP_ALIAS + '', include(accounts.urls)),
 

@@ -471,6 +471,19 @@ Click the 'Handler Mappings' feature, and click 'View ordered list'
 The 'StaticFile' handler should be at the top of the list.  If not, use
 the 'Move Up' option to move it to the top.
 
+The web application uses Django Datatables to display tables of 
+data.  Datatables uses a very exhaustive syntax to display
+the data, and this can make the query strings long - sometimes causing
+IIS to refuse to use run the query.  To fix this
+
+In IIS, select the server machine node (first line after Start Page)
+Then open the Request Filtering feature.
+On the right side menu, select Edit Feature Settings... and in the dialog box, change 
+the 2 settings
+
+* Maximum URL length (Bytes) 4096
+* Maximum query string (Bytes) 5000
+
 ### Test local access via IIS
 
 Now use a web-browser (on the web server) and visit  

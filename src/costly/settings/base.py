@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'django_select2',
     'multiselectfield',
-    'intl_tel_input',
+    # 'intl_tel_input',
     'widget_tweaks',
     'djmoney',
     # 'django_filters',

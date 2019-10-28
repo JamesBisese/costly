@@ -6,7 +6,7 @@ import logging.config
 
 # For security and performance reasons, DEBUG is turned off
 DEBUG = False
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 IIS_APP_ALIAS = r'costly/'
 #testing a 500 error
