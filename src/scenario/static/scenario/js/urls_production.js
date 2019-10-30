@@ -1,7 +1,7 @@
 //used in scenario_index.js
 
 var SETTINGS = {};
-var iis_prefix = '/costly';
+var iis_prefix = '/gsicosttool';
 
 SETTINGS.URLS = {
     'IIS_PREFIX': iis_prefix,
