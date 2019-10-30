@@ -2,6 +2,7 @@ import sys
 import json
 import copy
 
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponse
@@ -57,6 +58,7 @@ def project_list(request):
 
     #jab - added for beta-user-testing.  allow all users to add
     context_data['can_add'] = True
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
 
     return render(request, 'project/project_index.html', context_data)
 
@@ -239,6 +241,7 @@ class StructuresList(ExportMixin, SingleTableView): # TODO , FilterView
 
         context_data['title'] = 'Structures'
         context_data['header_2'] = 'Structures'
+        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
         return context_data
 
 """
@@ -268,6 +271,7 @@ class CostItemsList(ExportMixin, SingleTableView): # TODO , FilterView
 
         context_data['title'] = 'Cost Items'
         context_data['header_2'] = 'Cost Items'
+        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
         return context_data
 
 """
@@ -299,6 +303,7 @@ class CostItemDefaultCostsList(ExportMixin, SingleTableView): # TODO , FilterVie
         context_data['header_2'] = 'Cost Item Default Costs'
         context_data['active_link'] = 'scenario'
         context_data['can_add'] = True
+        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
         # context_data['new_url'] = reverse('scenario:scenario_create')
         return context_data
 
@@ -331,6 +336,7 @@ class CostItemDefaultEquationsList(ExportMixin, SingleTableView): # TODO , Filte
         context_data['title'] = 'Cost ItemDefaultEquationList'
         context_data['header_2'] = 'Cost Item Default Equations'
         context_data['active_link'] = 'scenario'
+        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
         return context_data
 
 """
@@ -361,6 +367,7 @@ class CostItemDefaultFactorsList(ExportMixin, SingleTableView): # TODO , FilterV
         context_data['title'] = 'Cost ItemDefaultFactorsList'
         context_data['header_2'] = 'Cost Item Default Factors'
         context_data['active_link'] = 'scenario'
+        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
         return context_data
 
 """
@@ -373,8 +380,9 @@ def costitem_defaultcosts_update(request, pk):
     serializer_class = CostItemDefaultCostSerializer
     serializer = serializer_class(costitem_defaultcosts)
 
-    context = {'costitem_defaultcosts': serializer.data}
-    return render(request, 'scenario/costtool/index.html', context)
+    context_data = {'costitem_defaultcosts': serializer.data}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'scenario/costtool/index.html', context_data)
 
 """
 
@@ -1495,7 +1503,7 @@ def scenario_list(request, pk=None):
 
     #jab - added for beta-user-testing.  allow all users to add
     context_data['can_add'] = True
-
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
     return render(request, 'scenario/scenario_index.html', context_data)
 
 # def save_scenario_form(request, form, template_name):

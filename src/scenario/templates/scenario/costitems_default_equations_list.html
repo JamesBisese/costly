@@ -75,10 +75,17 @@
     <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
     <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
 
-    {% if debug %}
-        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
-    {% else %}
-        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls_production.js' %}"></script>
+    <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
+    {% if IIS_APP_ALIAS != '' %}
+        <script>
+        // add the IIS Application Alias to each of the URL values
+            var IIS_APP_ALIAS = "{{ IIS_APP_ALIAS }}";
+            if (IIS_APP_ALIAS.length > 0) {
+                for (var key in SETTINGS.URLS) {
+                    SETTINGS.URLS[key] = '/' + IIS_APP_ALIAS + SETTINGS.URLS[key];
+                }
+            }
+        </script>
     {% endif %}
 
     <script src="{% static 'scenario/js/costitems_default_equations_list.js' %}"></script>

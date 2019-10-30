@@ -19,25 +19,30 @@ if os.path.exists(env_file):
     environ.Env.read_env(env_file)
 
 # For security and performance reasons, DEBUG is turned off
-DEBUG = False
+DEBUG = env('DEBUG')
 
 # this is used to map the URLS when app is installed on IIS using an alias
-IIS_APP_ALIAS = r'costly/'
+
+# if running in pycharm or with runserver, you need to clear this
+IIS_APP_ALIAS = env('IIS_APP_ALIAS')
 
 # reset these 2 URIs for IIS alias to work
-MEDIA_URL = '/' + IIS_APP_ALIAS + 'media/'
-STATIC_URL = '/' + IIS_APP_ALIAS + 'static/'
+iis_app_alias = ''
+if len(IIS_APP_ALIAS) > 0:
+    iis_app_alias = IIS_APP_ALIAS + '/'
+
+MEDIA_URL = '/' + iis_app_alias + 'media/'
+STATIC_URL = '/' + iis_app_alias + 'static/'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
 
 # if DEBUG == False, the django application will only run on hosts that are in the ALLOWED_HOSTS list
-ALLOWED_HOSTS = [x.split('|') for x in env.list('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 DATABASES = {
-     # Raises ImproperlyConfigured exception if DATABASE_URL not in
-     # os.environ
+     # Raises ImproperlyConfigured exception if DATABASE_URL not in env file
      'default': env.db(),
 }
 
