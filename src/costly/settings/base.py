@@ -11,7 +11,9 @@ import os
 from django.urls import reverse_lazy
 from pathlib import Path
 
-DEBUG = True
+DEBUG = False
+
+TEMPLATE_DEBUG = False
 
 """
     Note for running in dev and on IIS
@@ -20,11 +22,6 @@ DEBUG = True
     for the app
     
 """
-
-IIS_APP_ALIAS = r'costly/'
-IIS_APP_ALIAS = ''
-
-
 
 # Build paths inside the project like this: BASE_DIR / "directory"
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -44,11 +41,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+MEDIA_URL = '/media/'
 
-MEDIA_URL = '/' + IIS_APP_ALIAS + 'media/'
-
-STATIC_URL = '/' + IIS_APP_ALIAS + 'static/'
-
+STATIC_URL = '/static/'
 
 
 # Use Django templates using the new Django 1.8 TEMPLATES settings
@@ -82,22 +77,14 @@ TEMPLATES = [
     },
 ]
 
-# Use 12factor inspired environment variables or from a file
-import environ
-env = environ.Env()
 
-# Create a local.env file in the settings directory
-# But ideally this env file should be outside the git repo
-env_file = Path(__file__).resolve().parent / 'local.env'
-if env_file.exists():
-    environ.Env.read_env(str(env_file))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = ''
 
 ALLOWED_HOSTS = []
 
@@ -126,7 +113,6 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'django_select2',
     'multiselectfield',
-    # 'intl_tel_input',
     'widget_tweaks',
     'djmoney',
     # 'django_filters',
@@ -156,24 +142,28 @@ WSGI_APPLICATION = 'costly.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
+# the database connection is set in the local.env file
+
+DATABASES = {}
+
 # DATABASES = {
-#     # Raises ImproperlyConfigured exception if DATABASE_URL not in
-#     # os.environ
-#     'default': env.db(),
+#      # Raises ImproperlyConfigured exception if DATABASE_URL not in
+#      # os.environ
+#      'default': env.db(),
 # }
 
 #TODO 2019-05-31 at 15:11
-DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.postgresql',
-		'NAME': 'costtool',
-		'USER': 'postgres',
-		'PASSWORD': 'friedCatRacket21',
-		'HOST': '127.0.0.1',
-		'PORT': '5433',
-		'DATABASE_SCHEMA': 'pubic'
-	}
-}
+# DATABASES = {
+# 	'default': {
+# 		'ENGINE': 'django.db.backends.postgresql',
+# 		'NAME': 'costtool', #testing should be 'costtool'
+# 		'USER': 'postgres',
+# 		'PASSWORD': 'friedCatRacket21',
+# 		'HOST': '127.0.0.1',
+# 		'PORT': '5433',
+# 		'DATABASE_SCHEMA': 'pubic'
+# 	}
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
@@ -189,6 +179,29 @@ USE_L10N = True
 USE_TZ = True
 USE_TZ = True
 
+# Strict password authentication and validation
+# To use this setting, install the Argon2 password hashing algorithm.
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
+#
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 # Crispy Form Theme - Bootstrap 3
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

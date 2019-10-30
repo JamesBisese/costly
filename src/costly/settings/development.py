@@ -1,28 +1,42 @@
+import environ
+import logging.config
+import os
+import sys
+
 from .base import *   # First import base.py and then override settings with this content
 
-import sys
-import logging.config
+# Use 12factor inspired environment variables from a file
+
+env = environ.Env()
+
+# Create a local.env file in the settings directory
+# But ideally this env file should be outside the git repo
+env_file = os.path.join(Path(__file__).resolve().parent, 'local.development.env')
+
+if os.path.exists(env_file):
+    environ.Env.read_env(env_file)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# this is used to map the URLS when app is installed on IIS using an alias
+IIS_APP_ALIAS = r''
+
 #TODO figure what this does. it looks wrong, like it should use DEBUG, not false
 TEMPLATES[0]['OPTIONS'].update({'debug': True})
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost',]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
+SECRET_KEY = env('SECRET_KEY')
 
 # Turn off debug while imported by Celery with a workaround
 # See http://stackoverflow.com/a/4806384
 if "celery" in sys.argv[0]:
     DEBUG = False
 
-# Less strict password authentication and validation
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    'django.contrib.auth.hashers.BCryptPasswordHasher',
-]
+# unsetting this variable allows the testing account passwords to pass, although they are refused for 'production'
 AUTH_PASSWORD_VALIDATORS = []
 
 # Django Debug Toolbar
@@ -46,8 +60,21 @@ INTERNAL_IPS = [
     '0.0.0.1',
 ]
 
+DATABASES = {
+     # Raises ImproperlyConfigured exception if DATABASE_URL not in
+     # os.environ
+     'default': env.db(),
+}
+
 # Log everything to the logs directory at the top
-LOGFILE_ROOT = BASE_DIR.parent / 'logs'
+# LOGFILE_ROOT = BASE_DIR.parent / 'logs'
+LOGFILE_ROOT = os.path.join(BASE_DIR.parent, 'logs', 'development')
+
+if not os.path.exists(LOGFILE_ROOT):
+    try:
+        os.makedirs(LOGFILE_ROOT)
+    except:
+        raise IOError('Log folder does not exist and could not be created: %s' % LOGFILE_ROOT)
 
 # Reset logging
 # (see http://www.caktusgroup.com/blog/2015/01/27/Django-Logging-Configuration-logging_config-default-settings-logger/)
@@ -69,13 +96,13 @@ LOGGING = {
         'django_log_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': str(LOGFILE_ROOT / 'django.log'),
+            'filename': os.path.join(LOGFILE_ROOT, 'django.log'),
             'formatter': 'verbose'
         },
         'proj_log_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': str(LOGFILE_ROOT / 'project.log'),
+            'filename': os.path.join(LOGFILE_ROOT,'project.log'),
             'formatter': 'verbose'
         },
         'console': {

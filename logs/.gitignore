@@ -1,2 +1,6 @@
 project.log
 django20191006.log
+local.development.env
+local.production.env
+django.log
+local.development - Copy.env

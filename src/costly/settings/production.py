@@ -1,49 +1,47 @@
 # In production set the environment variable like this:
 #    DJANGO_SETTINGS_MODULE=costly.settings.production
-from .base import * # First import base.py and then override settings with this content
 
+# First import base.py and then override settings with this content
+import environ
 import logging.config
+
+from .base import *
+
+# Use 12factor inspired environment variables from a file
+
+env = environ.Env()
+
+# Create a local.env file in the settings directory
+# But ideally this env file should be outside the git repo
+env_file = os.path.join(Path(__file__).resolve().parent, 'local.production.env')
+
+if os.path.exists(env_file):
+    environ.Env.read_env(env_file)
 
 # For security and performance reasons, DEBUG is turned off
 DEBUG = False
-TEMPLATE_DEBUG = False
 
+# this is used to map the URLS when app is installed on IIS using an alias
 IIS_APP_ALIAS = r'costly/'
-#testing a 500 error
-# IIS_APP_ALIAS = ''
 
+# reset these 2 URIs for IIS alias to work
 MEDIA_URL = '/' + IIS_APP_ALIAS + 'media/'
-
 STATIC_URL = '/' + IIS_APP_ALIAS + 'static/'
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost',]
+# SECURITY WARNING: keep the secret key used in production secret!
+# Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
+SECRET_KEY = env('SECRET_KEY')
 
-# Strict password authentication and validation
-# To use this setting, install the Argon2 password hashing algorithm.
-PASSWORD_HASHERS = [
-    # 'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    'django.contrib.auth.hashers.BCryptPasswordHasher',
-]
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# if DEBUG == False, the django application will only run on hosts that are in the ALLOWED_HOSTS list
+ALLOWED_HOSTS = [x.split('|') for x in env.list('ALLOWED_HOSTS')]
 
-# Must mention ALLOWED_HOSTS in production!
-# ALLOWED_HOSTS = ["costly.com"]
+DATABASES = {
+     # Raises ImproperlyConfigured exception if DATABASE_URL not in
+     # os.environ
+     'default': env.db(),
+}
+
+TIME_ZONE = env('TIME_ZONE')
 
 # Cache the templates in memory for speed-up
 loaders = [
@@ -58,7 +56,13 @@ TEMPLATES[0].update({"APP_DIRS": False})
 
 
 # Log everything to the logs directory at the top
-LOGFILE_ROOT = BASE_DIR.parent / 'logs'
+LOGFILE_ROOT = os.path.join(BASE_DIR.parent, 'logs', 'production')
+
+if not os.path.exists(LOGFILE_ROOT):
+    try:
+        os.makedirs(LOGFILE_ROOT)
+    except:
+        raise IOError('Log folder does not exist and could not be created: %s' % LOGFILE_ROOT)
 
 # Reset logging
 LOGGING_CONFIG = None
@@ -78,7 +82,7 @@ LOGGING = {
         'proj_log_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': str(LOGFILE_ROOT / 'project.log'),
+            'filename': os.path.join(LOGFILE_ROOT, 'project.log'),
             'formatter': 'verbose'
         },
         'console': {
