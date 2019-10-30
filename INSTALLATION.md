@@ -489,17 +489,11 @@ The data from that site has been exported using `dumpdata`
 That file is then loaded using `loaddata`
 
 ~~~~
-
+TODO: includes a bit of work to drop and reinstall 3 constraints
 ~~~~
 
-Now you have to load the data into the tables using 
-python django 'command' scripts.
-
-
-
-test
-
-~~~~
+___
+## Run `collectstatic`
 
 Now run a command to collect all the files that will be 
 served from IIS as 'static' files (not django application).
@@ -557,7 +551,8 @@ Application under the Default Web Site in IIS.*
 
 In IIS, add the folder `C:\inetpub\wwwdjango\gsicosttool\src` as an Application
 
-Set the `Alias` to **gsicosttool** and set the `Physical path` to `C:\inetpub\wwwdjango\wbd`
+Set the `Alias` to **gsicosttool** and    
+set the `Physical path` to `C:\inetpub\wwwdjango\gsicosttool\src`
 
 In IIS, double-click the 'gsicosttool' application and open the **Handler Mappings** feature.
 
@@ -576,7 +571,7 @@ In IIS, select the server machine node (first line after Start Page)
 
 Then double-click 'FastCGI Settings' feature.
 
-Select the row with the Full Path `C:\software\Python\virtualenvs\wbd\Scripts\python.exe` 
+Select the row with the Full Path `C:\software\Python\virtualenvs\gsicosttool\Scripts\python.exe` 
 
 Click Edit... from the Actions menu 
 
@@ -594,9 +589,9 @@ Value: `django.core.wsgi.get_wsgi_application()`
 Name: `DJANGO_SETTINGS_MODULE`  
 Value: `costly.settings.production`
 
-Now make sure the 'static' folder is configured correctly
+Now make sure the `static` folder is configured correctly
 
-In IIS, expand the 'wbd' node, and then click the 'static' subfolder.
+In IIS, expand the 'gsicosttool' node, and then click the `static` subfolder.
 
 Click the 'Handler Mappings' feature, and click 'View ordered list'
 The 'StaticFile' handler should be at the top of the list.  If not, use
@@ -618,7 +613,7 @@ the 2 settings
 ### Test local access via IIS
 
 Now use a web-browser (on the web server) and visit  
-    [http://localhost/wbd](http://localhost/wbd "http://localhost/wbd")
+    [http://localhost/gsicosttool](http://localhost/gsicosttool "http://localhost/gsicosttool")
 
 # Configure for external access
 
@@ -629,7 +624,7 @@ Django has a security feature that requires setting the HTTP name
 of the server the application is running on.
 
 Edit the file
-    `C:\inetpub\wwwdjango\wbd\wbd\production_settings.py`
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\production.py`
 
 Find the line that looks like this
 
@@ -644,6 +639,6 @@ ALLOWED_HOSTS = ['localhost', 'insdev1.tetratech.com',]
 ### Test external access via IIS
 
 Now use a web-browser (on the web server) and visit  
-    [https://insdev1.tetratech.com/wbd](https://insdev1.tetratech.com/wbd "https://insdev1.tetratech.com/wbd")
+    [https://insdev1.tetratech.com/gsicosttool](https://insdev1.tetratech.com/gsicosttool "https://insdev1.tetratech.com/gsicosttool")
 
 
