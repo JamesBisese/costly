@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.views import generic
 from django.urls import reverse,reverse_lazy
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from djmoney.money import Money
@@ -49,6 +50,7 @@ from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSeria
     
     http://127.0.0.1:92/projects/
 """
+@login_required
 def project_list(request):
     projects = Project.objects.all()
     context_data = {'projects': projects,
@@ -1478,6 +1480,7 @@ def scenario_table_html(scenario):
     
     http://127.0.0.1:92/projects/scenarios/
 """
+@login_required
 def scenario_list(request, pk=None):
     scenarios = Scenario.objects.all()
     projects = Project.objects.all()
@@ -1667,6 +1670,7 @@ def scenario_duplicate(request, pk):
 
 ###########################################################################
 """
+@login_required
 def scenario_update(request, pk):
     scenario = get_object_or_404(Scenario, pk=pk)
 
