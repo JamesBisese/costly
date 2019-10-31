@@ -1713,6 +1713,7 @@ def scenario_update(request, pk):
                 # 'cost_item_user_assumptions': cost_item_user_assumptions,#rename StructureCosts
                 'cost_item_default_costs': cost_item_default_costs,
                 'result_table': disclaimer_tx + scenario_table_html(scenario),
+                'IIS_APP_ALIAS': settings.IIS_APP_ALIAS,
                }
 
     return render(request, 'scenario/costtool/index.html', context)
