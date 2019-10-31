@@ -206,6 +206,23 @@ Installing collected packages: pyodbc
 Successfully installed pyodbc-4.0.27
 ~~~~
 
+Note: if you want to use PostgreSQL instead of Microsoft SQL Server, you need to install one other pre-compiled package
+
+From  `https://www.lfd.uci.edu/~gohlke/pythonlibs/` download the package to your `download` folder 
+(you can download the most recent version of these packages if there are updates)
+1. `C:\downloads\psycopg2-2.8.4-cp38-cp38-win32.whl`
+
+Install pre-compiled python packages
+~~~~
+
+(gsicosttool) C:\inetpub\wwwdjango\gsicosttool\src>pip install C:\downloads\psycopg2-2.8.4-cp38-cp38-win32.whl
+Processing c:\downloads\psycopg2-2.8.4-cp38-cp38-win32.whl
+Installing collected packages: psycopg2
+Successfully installed psycopg2-2.8.4
+~~~~
+
+___
+
 Install all the rest of the required packages using the requirements file
 
 NOTE: the output will vary a bit from this, since I repeated these commands during testing and so have 'caches' of the files
