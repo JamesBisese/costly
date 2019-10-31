@@ -156,9 +156,9 @@ DATABASES = {}
 # DATABASES = {
 # 	'default': {
 # 		'ENGINE': 'django.db.backends.postgresql',
-# 		'NAME': 'costtool', #testing should be 'costtool'
-# 		'USER': 'postgres',
-# 		'PASSWORD': 'friedCatRacket21',
+# 		'NAME': '############',
+# 		'USER': '#############',
+# 		'PASSWORD': '###############',
 # 		'HOST': '127.0.0.1',
 # 		'PORT': '5433',
 # 		'DATABASE_SCHEMA': 'pubic'
