@@ -137,7 +137,7 @@ $(function () {
                 },
                 {
                     "targets": 7,
-                    "sWidth": "150px",
+                    "sWidth": "250px",
                     "render": function (data, type, row) {
 
                         var duplicate_url = SETTINGS.URLS.scenario_duplicate.replace('<int:pk>', data);

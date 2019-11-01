@@ -108,11 +108,11 @@
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
 
-
-    <div class="container">
+{# Was container, but that had too much whitespace #}
+    <div class="container-fluid col-lg-12">
 
         {% block content %}
-          Ipso Facto
+          Ipso Facto testing changes
         {% endblock content %}
 
         {% block scripts %}
@@ -120,6 +120,7 @@
     </div>
 
     {% block new_extra_js %}
+        <script src="//cdn.datatables.net/TESTING UPDATE OF base.html in base.js"></script>
     {% endblock %}
 
     <!-- Site footer -->

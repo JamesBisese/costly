@@ -3,6 +3,7 @@
 var SETTINGS = {};
 
 SETTINGS.URLS = {
+    'IIS_PREFIX': '',
     'project_list':   '/api/projects/?format=datatables',
     'project_update': '/project/<int:pk>/update/',
     'project_delete': '/project/<int:pk>/delete/',
