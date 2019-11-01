@@ -566,10 +566,22 @@ Then us a web-browser (running on the web server) and visit
 **Note:** *In these notes the application is installed as a 
 Application under the Default Web Site in IIS.*
 
-In IIS, add the folder `C:\inetpub\wwwdjango\gsicosttool\src` as an Application
+First, copy the sample web configuration file to the `src` folder.
+Copy file 
+    `C:\inetpub\wwwdjango\gsicosttool\docs\sample.web.config` 
+and paste and change the name to `web.config`
+New file
+    `C:\inetpub\wwwdjango\gsicosttool\src\web.config` 
 
+Then, in IIS, create a new `Application`
 Set the `Alias` to **gsicosttool** and    
 set the `Physical path` to `C:\inetpub\wwwdjango\gsicosttool\src`
+
+Now use a web-browser (on the web server) and visit  
+    [http://localhost/gsicosttool](http://localhost/gsicosttool "http://localhost/gsicosttool")
+
+____
+### These are the longer notes if you don't use the complete sample.web.config file above
 
 In IIS, double-click the 'gsicosttool' application and open the **Handler Mappings** feature.
 
