@@ -563,13 +563,11 @@ class Scenario(models.Model):
         self.nonconventional_structures_id = nonconventional_structures.id
 
         """
-            new code dealing with Structure / Cost Item Costs 
+            new code dealing with content on the 'Structure Cost Item User Assumptions' tab 
               - combination of Structure (single) and Cost Items
             
             form_data should have a single 'structure' - the structure selected
             by the user in the drop-down list
-            
-            TODO: rename this to catch the idea "user structure/cost item equation"
 
         """
         list_of_cost_items = []
@@ -893,10 +891,10 @@ class Scenario(models.Model):
 
         cost_item_default_costs = CostItemDefaultCosts.objects.all()
 
-        #cost_item_user_costs = CostItemUserCosts.objects.filter(scenario=self)
+        cost_item_user_costs = CostItemUserCosts.objects.filter(scenario=self)
 
         # testing using RelatedManager .all()
-        cost_item_user_costs = self.cost_item_user_costs.all()
+        # cost_item_user_costs = self.cost_item_user_costs.all()
 
         # build up the costs dictionaries
         # first add in the cost_item_user_costs
@@ -920,6 +918,8 @@ class Scenario(models.Model):
                 costs[costitem_code] = {'cost_source': cost_source,
                                         'unit_cost': unit_cost,
                                         'units': cost_items_dict[costitem_code]['units'],
+                                        'replacement_life': cost_item_user_costs_obj.replacement_life,
+                                        'o_and_m_pct': cost_item_user_costs_obj.o_and_m_pct,
                                        }
             else:
                 if cost_source == 'user':
@@ -955,6 +955,8 @@ class Scenario(models.Model):
                 costs[costitem_code] = {'cost_source': 'rsmeans',
                                         'unit_cost': cost_item_default_costs_obj.rsmeans_va.amount,
                                         'units': cost_items_dict[costitem_code]['units'],
+                                        'o_and_m_pct': cost_item_default_costs_obj.o_and_m_pct,
+                                        'replacement_life': cost_item_default_costs_obj.replacement_life,
                                        }
 
 
@@ -986,10 +988,17 @@ class Scenario(models.Model):
         result['nonconventional'] = {'sum_value': 0, 'structures': {}}
         result['conventional'] = {'sum_value': 0, 'structures': {} }
 
+        # this is used to compute 'Total PV of Annual O&M Costs' O_and_M costs, Present Value
+        study_life = self.study_life
 
         # dictionary (should be a set) to record which cost items are used
         # in the final results.  later used to remove cost item unit costs if they are not used
         cost_items_seen = set()
+
+        # these are 'Scenario' level values set on the 'Project-Scenario Description' page
+        planning_and_design_factor = int(self.planning_and_design_factor)
+        study_life = int(self.study_life)
+        discount_rate = float(self.discount_rate)
 
         for structure in structures:
 
@@ -1061,15 +1070,6 @@ class Scenario(models.Model):
                 if assumptions['n_number'] in ["", None]:
                     assumptions['n_number'] = "0"
 
-                # if assumptions['equation'] is None:
-                #     if assumptions['units'] in ['Ea.', 'LF']:
-                #         assumptions['equation'] = '=sizing_factor_n*$'
-                #     else:
-                #         assumptions['equation'] = '=x*sizing_factor_k*sizing_factor_n*$'
-                #
-                #     if assumptions['factor_assumption_tx'] is None:
-                #         assumptions['factor_assumption_tx'] = 'Non-standard cost item'
-
                 cost_results[costitem_code]['assumptions'] = assumptions
 
                 cost_results[costitem_code]['costs'] = costs[costitem_code]
@@ -1107,6 +1107,7 @@ class Scenario(models.Model):
                     cost_amount = round(cost_amount, 2)
                     sum_value += cost_amount
                     results['value'] = '${:,.2f}'.format(cost_amount)
+                    results['value_unformatted'] = cost_amount
                 except:
                     cost_amount = equation
                     results['value'] = cost_amount
@@ -1126,8 +1127,176 @@ class Scenario(models.Model):
                                         'cost_data': cost_results
                                     }
 
+        total_construction_cost = 0
         for classification in result:
             result[classification]['sum_value'] = round(result[classification]['sum_value'], 2)
+            total_construction_cost += result[classification]['sum_value']
+
+        """
+             NOW - this is the calculation from post-construction costs (started on this 2019-11-12)
+
+             I think the way to do it is to find all 'data' that where checked == true
+             and then replace all the components of the equation as strings and then eval it
+
+        """
+        total_o_and_m_cost = 0
+        total_replacement_cost = 0
+
+
+        """
+            these are 'Structure' level values for each 'Cost Item' add the costs for each cost item
+        """
+        structure_life_cycle_costs = {}
+        for classification in result:
+
+            structure_life_cycle_costs[classification] = {
+                'meta': {
+                    'name':  ('Conventional' if classification == 'conventional' else 'Non-Conventional') + \
+                                ' (GSI) Structures',
+                },
+                'costs': {
+                    'sum': 0,
+                    'sum_formatted': '',
+                    'o_and_m_sum': 0,
+                    'o_and_m_sum_formatted': '',
+                    'replacement_sum': 0,
+                    'replacement_sum_formatted': '',
+                }
+            }
+
+            for structure_code in result[classification]['structures']:
+                if not 'structures' in structure_life_cycle_costs[classification]:
+                    structure_life_cycle_costs[classification]['structures'] = {}
+
+
+
+                # this has useful labels and size of structures
+                structure_data = result[classification]['structures'][structure_code]
+
+                structure_life_cycle_costs[classification]['structures'][structure_code] = {
+                    'meta': {
+                        'name': structure_data['structure']['name'],
+                        'units': structure_data['structure']['units'],
+                        'area': structure_data['structure']['area'],
+                    },
+                    'costs': {
+                        'sum': 0,
+                        'sum_formatted': '',
+                        'o_and_m_sum': 0,
+                        'o_and_m_sum_formatted': '',
+                        'replacement_sum': 0,
+                        'replacement_sum_formatted': '',
+                    }
+                }
+
+                for costitem_code in result[classification]['structures'][structure_code]['cost_data']:
+
+                    costs_sum = 0
+
+                    if not 'cost_items' in structure_life_cycle_costs[classification]['structures'][structure_code]:
+                        structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'] = {}
+
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][costitem_code] = {'costs': {}}
+
+                    # this has useful labels and size of structures
+                    cost_item_data = result[classification]['structures'][structure_code]['cost_data'][costitem_code]
+
+                    construction_cost = cost_item_data['results']['value_unformatted']
+                    planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 2)
+
+                    replacement_life = cost_item_data['costs']['replacement_life']
+                    o_and_m_pct = cost_item_data['costs']['o_and_m_pct']
+
+                    # =(G$116*(G$115/100))/(1+($D$13/100))^$C120
+                    # = (construction_cost * (o_and_m_pct/100)) / (1 + (discount_rate/100))^i
+                    o_and_m_costs = 0
+                    if o_and_m_pct != 0:
+                        for i in range(1, study_life + 1, 1):
+                            o_and_m_costs += (construction_cost * (o_and_m_pct / 100)) / (1 + (discount_rate / 100)) ** i
+
+                    number_of_replacements = 0
+                    if replacement_life != 0 and study_life > replacement_life:
+                        number_of_replacements = int(round(study_life / replacement_life, 0))
+
+                    value_of_first_replacement = 0
+                    # =(construction_cost/(1+(discount_rate/100))^i)
+                    value_of_first_replacement = 0
+                    replacement_years = []
+                    replacement_costs = 0
+                    if number_of_replacements == 1:
+                        replacement_years.append(replacement_life)
+                        replacement_costs = round((construction_cost / (1 + (discount_rate / 100)) ** replacement_life), 2)
+                        value_of_first_replacement = replacement_costs
+                    elif number_of_replacements > 0:
+                        for i in range(int(study_life / int(number_of_replacements)), study_life + 1, int(study_life / int(number_of_replacements))):
+                            replacement_years.append(i)
+                            replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 2)
+                            replacement_costs += replacement_cost
+                            # replacements.append(replacement_cost)
+                            if value_of_first_replacement == 0:
+                                value_of_first_replacement = replacement_costs
+
+                    o_and_m_costs = round(o_and_m_costs, 2)
+                    replacement_costs = round(replacement_costs, 2)
+
+                    total_o_and_m_cost += o_and_m_costs
+                    total_replacement_cost += replacement_costs
+
+                    costs_sum += o_and_m_costs + replacement_costs
+
+                    # add to structure costs
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'] += costs_sum
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum_formatted'] = \
+                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'])
+
+                    # add to classifiction costs
+                    structure_life_cycle_costs[classification]['costs']['o_and_m_sum'] += o_and_m_costs
+                    structure_life_cycle_costs[classification]['costs']['o_and_m_sum_formatted'] = \
+                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['costs']['o_and_m_sum'])
+
+                    structure_life_cycle_costs[classification]['costs']['replacement_sum'] += replacement_costs
+                    structure_life_cycle_costs[classification]['costs']['replacement_sum_formatted'] = \
+                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['costs']['replacement_sum'])
+
+                    structure_life_cycle_costs[classification]['costs']['sum'] += costs_sum
+                    structure_life_cycle_costs[classification]['costs']['sum_formatted'] = \
+                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['costs']['sum'])
+
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][costitem_code] = {
+                        'meta': {
+                            'name': cost_item_data['assumptions']['name'],
+                            'units': cost_item_data['assumptions']['units'],
+                        },
+                        'costs': {
+                            'construction': construction_cost,
+                            'construction_formatted': '${:,.2f}'.format(construction_cost),
+                            'planning_and_design': planning_and_design_costs,
+                            'planning_and_design_formatted': '${:,.2f}'.format(planning_and_design_costs),
+                            'o_and_m': round(o_and_m_costs, 2),
+                            'o_and_m_formatted': '${:,.2f}'.format(o_and_m_costs),
+                            'first_replacement': value_of_first_replacement,
+                            'replacement': round(replacement_costs, 2),
+                            'replacement_formatted': '${:,.2f}'.format(replacement_costs),
+                            'replacement_years': replacement_years,
+                        }
+                    }
+
+        #TODO sum o_and_m
+        #TODO sum replacement
+
+        project_life_cycle_costs = {'construction': total_construction_cost,
+                                    'planning_and_design': total_construction_cost * (discount_rate / 100),
+                                    'O_and_M': total_o_and_m_cost,
+                                    'replacement': total_replacement_cost,
+                                    }
+
+        total = 0
+        for cost in project_life_cycle_costs:
+            total += project_life_cycle_costs[cost]
+        project_life_cycle_costs['total'] = total
+
+        result['project_life_cycle_costs'] = project_life_cycle_costs
+        result['structure_life_cycle_costs'] = structure_life_cycle_costs
 
         return result
 

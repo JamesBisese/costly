@@ -283,6 +283,7 @@
 {% for r, objClassification in cost_results.items %}
     <div class="structure_costitem_costs_{{ r }}">
         <table  class="result_table " {% if r == 'conventional' %}style="margin-top: 10px;"{% endif %}>
+            <caption>Construction Costs</caption>
             <thead>
                 <th colspan="2" style="text-align: left;">
                     {% if r == 'conventional' %}
@@ -326,8 +327,8 @@
     </div>
 {% endfor %}
 {# Structure / Cost Item Costs - End #}
-
 <br>
+
 
 <div class="final_costs">
     <table  class="result_table">
@@ -354,6 +355,94 @@
           <td style="font-weight: bold;">Total</td>
 {#          <td class="result_col input_col">333</td>#}
           <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+{# Structure / Cost Item O&M and Replacement Costs - Start #}
+<hr>
+
+{% for r, objClassification in structure_life_cycle_costs.items %}
+    <div class="structure_costitem_costs_{{ r }}">
+        <table  class="result_table " {% if r == 'conventional' %}style="margin-top: 10px;"{% endif %}>
+            <caption>O&M and Replacement Costs</caption>
+            <thead>
+                <th colspan="2" style="text-align: left;">
+                    {{ objClassification.meta.name }}
+                </th>
+                <th class="result_col output_col">{{ objClassification.costs.sum_formatted }}</th>
+            </thead>
+            <thead>
+                <th class="cost_item_th">Structure</th>
+                <th class="cost_item_th">Size</th>
+                <th class="cost_item_th">Cost</th>
+            </thead>
+            {% for r,objStructure in objClassification.structures.items %}
+
+                <tr style="height: 30px;">
+                  <td style="font-weight: bold;"> {{ objStructure.meta.name }}  </td>
+                  <td class="result_col input_col"> {{ objStructure.meta.area|intcomma }} {{ objStructure.meta.units }} </td>
+                  <td class="result_col output_col">{{ objStructure.costs.sum_formatted }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
+                            <thead>
+                                <th class="cost_item_th" style="width: 70%;">Cost Item</th>
+                                <th class="cost_item_th">O&amp;M</th>
+                                <th class="cost_item_th">Replacement</th>
+                            </thead>
+                            {% for r,objCostItem in objStructure.cost_items.items %}
+                                <tr>
+                                    <td>{{ objCostItem.meta.name }}</td>
+                                    <td class="result_col output_col"> {{ objCostItem.costs.o_and_m_formatted }}  </td>
+                                   <td class="result_col output_col"> {{ objCostItem.costs.replacement_formatted}} </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endfor %}
+{# Structure / Cost Item O&M and Replacement Costs - End #}
+
+
+<div class="final_costs">
+    <table  class="result_table">
+
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <caption>Total Project Life Cycle Costs</caption>
+        <thead>
+            <th class="cost_item_th">Item</th>
+{#            <th class="cost_item_th">Total Size</th>#}
+            <th class="cost_item_th">Dollars</th>
+        </thead>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">Construction</td>
+{#          <td class="result_col input_col">111</td>#}
+          <td class="result_col output_col">${{ project_life_cycle_costs.construction|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">Planning and Design</td>
+{#          <td class="result_col input_col">222</td>#}
+          <td class="result_col output_col">${{ project_life_cycle_costs.planning_and_design|div:100|floatformat:"0"|intcomma}}</td>
+        </tr>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">O&M</td>
+{#          <td class="result_col input_col">333</td>#}
+          <td class="result_col output_col">${{ project_life_cycle_costs.O_and_M|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">Replacement</td>
+{#          <td class="result_col input_col">333</td>#}
+          <td class="result_col output_col">${{ project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">Total</td>
+{#          <td class="result_col input_col">333</td>#}
+          <td class="result_col output_col">${{ project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>

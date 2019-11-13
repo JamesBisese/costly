@@ -312,10 +312,40 @@ Successfully installed Django-2.1 MarkupPy-1.14 Pillow-6.2.1 PyYAML-5.1.2 Werkze
                                                                                
 ~~~~
 
-## Configure the Application
+# Configure the Application
 
-The web application software is now installed.  Now the backend database needs 
-to be created and populated.
+The web application software is now installed.  Now the application needs to be 
+configured, and the backend database needs to be created and populated.
+
+## Configure the application
+
+The application is configured using a number of `settings` files.  The files
+are all located in folder
+    `C:\inetpub\wwwdjango\costly\costly\settings`
+
+Normally, you will not need to edit any of the settings `.py` files, and 
+the only files that need to be edited are the `.env` files.  These are 
+read into the other files.
+
+For local development, copy file
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.sample.env` and rename it
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.env`
+
+For production, copy file
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.sample.env` and rename it
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.env`
+
+When the application is running using the django development server it uses the files
+    `C:\inetpub\wwwdjango\costly\costly\settings\base.py`    
+    `C:\inetpub\wwwdjango\costly\costly\settings\development.py` and 
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.env`
+
+When the application is running using the django development server it uses the files
+    `C:\inetpub\wwwdjango\costly\costly\settings\base.py`    
+    `C:\inetpub\wwwdjango\costly\costly\settings\production.py` and 
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.env`
+    
+
 
 ## Create the Database
 
@@ -325,25 +355,56 @@ lookup data needs to be loaded from CSV text files into the database.
 **NOTE:** *this documentation is for using SQL Server database,
 it will vary a bit depending on the ODBMS used.*
 
-The connection to the database is defined in the file  
-    `C:\inetpub\wwwdjango\costly\costly\settings\base.py`
+The connection to the database is defined in two places -
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.env` and
+    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.env`    
+
 ~~~~
-DATABASES = {
-	'default': {
-		'ENGINE': 'sql_server.pyodbc',
-		'NAME': 'gsicosttool',
-		'USER': 'gsi_user',
-		'PASSWORD': '#################',
-		'HOST': '{MACHINE_NAME}\SQLEXPRESS',
-		'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 13 for SQL Server',
-        },
-	}
-}
+# Sample Django database settings for PostgreSQL (requires package psycopg2)
+#		DATABASES = {
+#			'default': {
+#		       'ENGINE': 'django.db.backends.postgresql',
+#		       'NAME': '{DATABASENAME}',
+#		       'USER': '{USER}',
+#		       'PASSWORD': '{PASSWORD}',
+#		       'HOST': '127.0.0.1',
+#		       'PORT': '{PORT}',
+#		       'DATABASE_SCHEMA': 'pubic'
+#			}
+#		}
+# PostgreSQL
+DATABASE_URL=postgres://{USER}:{PASSWORD}@127.0.0.1:{PORT}/{DATABASENAME}
+
+# Sample Django database settings for Microsoft SQL Server (requires package pyodbc)
+#		DATABASES = {
+#			'default': {
+#				'ENGINE': 'sql_server.pyodbc',
+#				'NAME': '{DATABASENAME}',
+#				'USER': '{USER}',
+#				'PASSWORD': '{PASSWORD}',
+#				'HOST': '{MACHINE_NAME}',
+#				'PORT': '',
+#		        'OPTIONS': {
+#		            'driver': 'ODBC Driver 13 for SQL Server',
+#		        },
+#			}
+#		}
+# SQL Server
+# DATABASE_URL=mssql://{USER}:{PASSWORD}@{MACHINENAME}:{PORT}/{DATABASENAME}
 ~~~~
 
-Run python django process to make migration scripts that automate the 
+Once the database configurations are saved in the settings file, test to make sure the
+connection works
+
+~~~~
+(gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
+$ python manage.py check_db
+Connecting to the database...
+Database available!
+~~~~
+
+Now that the connection is tested, you can run the python django 
+process to make migration scripts that automate the 
 process of creating tables and related objects in the database.
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
@@ -494,6 +555,7 @@ ___
 As an alternative, you can load the data from the testing/development shared website.
 The data from that site has been exported using `dumpdata`
 
+This command is run on the REMOTE computer (not the one where the app is being installed)
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 # python manage.py dumpdata --indent 4 > costly.json
@@ -503,14 +565,15 @@ The data from that site has been exported using `dumpdata`
 -rw-rw-rw-  1 user.name 0 531553 2019-10-28 10:48 costly.json
 ~~~~
 
-That file is then loaded using `loaddata`
+That file is then copied to the new machine and loaded using `loaddata`
 
 ~~~~
 TODO: includes a bit of work to drop and reinstall 3 constraints
 ~~~~
 
 ___
-## Run `collectstatic`
+
+## Run django `collectstatic` command
 
 Now run a command to collect all the files that will be 
 served from IIS as 'static' files (not django application).
@@ -566,10 +629,22 @@ Then us a web-browser (running on the web server) and visit
 **Note:** *In these notes the application is installed as a 
 Application under the Default Web Site in IIS.*
 
-In IIS, add the folder `C:\inetpub\wwwdjango\gsicosttool\src` as an Application
+First, copy the sample web configuration file to the `src` folder.
+Copy file 
+    `C:\inetpub\wwwdjango\gsicosttool\docs\sample.web.config` 
+and paste and change the name to `web.config`
+New file
+    `C:\inetpub\wwwdjango\gsicosttool\src\web.config` 
 
+Then, in IIS, create a new `Application`
 Set the `Alias` to **gsicosttool** and    
 set the `Physical path` to `C:\inetpub\wwwdjango\gsicosttool\src`
+
+Now use a web-browser (on the web server) and visit  
+    [http://localhost/gsicosttool](http://localhost/gsicosttool "http://localhost/gsicosttool")
+
+____
+### These are the longer notes if you don't use the complete sample.web.config file above
 
 In IIS, double-click the 'gsicosttool' application and open the **Handler Mappings** feature.
 
@@ -641,17 +716,17 @@ Django has a security feature that requires setting the HTTP name
 of the server the application is running on.
 
 Edit the file
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\production.py`
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.env`
 
 Find the line that looks like this
 
-ALLOWED_HOSTS = ['localhost',]
+ALLOWED_HOSTS=127.0.0.1,localhost
 
 and add the hostname that users will use to reach the application.
 
 For example
 
-ALLOWED_HOSTS = ['localhost', 'insdev1.tetratech.com',]
+ALLOWED_HOSTS=127.0.0.1,localhost,insdev1.tetratech.com
 
 ### Test external access via IIS
 
