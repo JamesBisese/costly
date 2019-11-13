@@ -397,11 +397,14 @@ Once the database configurations are saved in the settings file, test to make su
 connection works
 
 ~~~~
-
+(gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
+$ python manage.py check_db
+Connecting to the database...
+Database available!
 ~~~~
 
-
-Run python django process to make migration scripts that automate the 
+Now that the connection is tested, you can run the python django 
+process to make migration scripts that automate the 
 process of creating tables and related objects in the database.
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
@@ -552,6 +555,7 @@ ___
 As an alternative, you can load the data from the testing/development shared website.
 The data from that site has been exported using `dumpdata`
 
+This command is run on the REMOTE computer (not the one where the app is being installed)
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 # python manage.py dumpdata --indent 4 > costly.json
@@ -561,14 +565,15 @@ The data from that site has been exported using `dumpdata`
 -rw-rw-rw-  1 user.name 0 531553 2019-10-28 10:48 costly.json
 ~~~~
 
-That file is then loaded using `loaddata`
+That file is then copied to the new machine and loaded using `loaddata`
 
 ~~~~
 TODO: includes a bit of work to drop and reinstall 3 constraints
 ~~~~
 
 ___
-## Run `collectstatic`
+
+## Run django `collectstatic` command
 
 Now run a command to collect all the files that will be 
 served from IIS as 'static' files (not django application).

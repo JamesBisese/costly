@@ -1017,7 +1017,8 @@ def structure_cost_item_json(structure,
         structure_costs['data'][costitem_code]['cost_source'] = cost_source
         structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
         structure_costs['data'][costitem_code]['unit_cost_formatted'] = unit_cost_formatted
-
+        structure_costs['data'][costitem_code]['o_and_m_pct'] = int(obj.o_and_m_pct)
+        structure_costs['data'][costitem_code]['replacement_life'] = int(obj.replacement_life)
 
     # then add in the default costs to update the non 'user' (cost_source) costs
 
@@ -1027,6 +1028,11 @@ def structure_cost_item_json(structure,
         # make the blank structure
         if not costitem_code in structure_costs['data']:
             structure_costs['data'][costitem_code]['cost_source'] = 'rsmeans'
+
+        if not 'o_and_m_pct' in structure_costs['data'][costitem_code]:
+            structure_costs['data'][costitem_code]['o_and_m_pct'] = obj.o_and_m_pct
+        if not 'replacement_life' in structure_costs['data'][costitem_code]:
+            structure_costs['data'][costitem_code]['replacement_life'] = obj.replacement_life
 
         cost_source = 'rsmeans'
 
@@ -1104,10 +1110,76 @@ def structure_cost_item_json(structure,
             try:
                 cost_amount = eval(equation)
                 cost_item_data['equation_value'] = '${:,.2f}'.format(cost_amount)
+                cost_item_data['construction_cost'] = round(cost_amount, 2)
                 cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
             except :
                 cost_amount = equation
                 cost_item_data['equation_value'] = 'err:' + cost_amount
+
+    """
+         NOW - this is the calculation from post-construction costs (started on this 2019-11-12)
+
+         I think the way to do it is to find all 'data' that where checked == true
+         and then replace all the components of the equation as strings and then eval it
+
+     """
+
+    # these are 'Scenario' level values set on the 'Project-Scenario Description' page
+    planning_and_design_factor = int(scenario_data['embedded_scenario'].value['planning_and_design_factor'])
+    study_life = int(scenario_data['embedded_scenario'].value['study_life'])
+    discount_rate = float(scenario_data['embedded_scenario'].value['discount_rate'])
+
+    """
+        these are 'Structure' level values for each 'Cost Item' add the costs for each cost item
+    """
+    for cost_item in structure_costs['data']:
+        cost_item_data = structure_costs['data'][cost_item]
+        if cost_item_data['checked'] == True:
+            construction_cost = round(float(cost_item_data.pop('construction_cost')), 2)
+            planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 2)
+
+            replacement_life = cost_item_data['replacement_life']
+            o_and_m_pct = cost_item_data['o_and_m_pct']
+
+            # =(G$116*(G$115/100))/(1+($D$13/100))^$C120
+            # = (construction_cost * (o_and_m_pct/100)) / (1 + (discount_rate/100))^i
+            o_and_m_costs = 0
+            if o_and_m_pct != 0:
+                for i in range(1, study_life + 1, 1):
+                    o_and_m_costs += (construction_cost * (o_and_m_pct/100)) / (1 + (discount_rate/100)) ** i
+
+            number_of_replacements = 0
+            if replacement_life != 0 and study_life > replacement_life:
+                number_of_replacements = int(round(study_life / replacement_life, 0))
+
+            value_of_first_replacement = 0
+            # =(construction_cost/(1+(discount_rate/100))^i)
+            value_of_first_replacement = 0
+            replacement_years = []
+            replacement_costs = 0
+            if number_of_replacements == 1:
+                replacement_years.append(replacement_life)
+                replacement_costs = round((construction_cost / (1 + (discount_rate/100)) ** replacement_life), 2)
+                value_of_first_replacement = replacement_costs
+            elif number_of_replacements > 0:
+                for i in range(int(study_life / int(number_of_replacements)), study_life + 1, int(study_life / int(number_of_replacements))):
+                    replacement_years.append(i)
+                    replacement_cost = round(construction_cost / (1 + (discount_rate/100)) ** i, 2)
+                    replacement_costs += replacement_cost
+                    # replacements.append(replacement_cost)
+                    if value_of_first_replacement == 0:
+                        value_of_first_replacement = replacement_costs
+
+            # =IF(U225=0,0,INDEX(U$230:U$329,MATCH(U$223,$C$230:$C$329,)))
+            # =IF(number_of_replacements==0,0,INDEX(U$230:U$329,MATCH(replacement_life,$C$230:$C$329,)))
+            structure_costs['data'][cost_item]['costs'] = {
+                'construction': construction_cost,
+                'planning_and_design': planning_and_design_costs,
+                'o_and_m': round(o_and_m_costs, 2),
+                'first_replacement': value_of_first_replacement,
+                'replacement': round(replacement_costs, 2),
+                'replacement_years': replacement_years,
+            }
 
     return structure_costs
 
@@ -1453,7 +1525,7 @@ def scenario_table_html(scenario):
     # dictionary (should be a set) to record which cost items are used
     # in the final results.  later used to remove cost item unit costs if they are not used
     cost_items_seen = set()
-    for classification in cost_results:
+    for classification in ['conventional', 'nonconventional']:
         for structure in cost_results[classification]['structures']:
             for cost_item in cost_results[classification]['structures'][structure]['cost_data']:
                 cost_items_seen.add(cost_item)
@@ -1464,10 +1536,18 @@ def scenario_table_html(scenario):
         if cost_item['code'] in cost_items_seen:
             final_cost_item_costs.append(cost_item)
 
+
+    project_life_cycle_costs = cost_results.pop('project_life_cycle_costs')
+    structure_life_cycle_costs = cost_results.pop('structure_life_cycle_costs')
+    cost_results_additional = cost_results
+
     context = {'scenario': serializer.data,
                'cost_item_costs': final_cost_item_costs,
                'cost_results': cost_results,
-               'sum_values': sum_values}
+               'cost_results_additional': cost_results_additional,
+               'sum_values': sum_values,
+               'structure_life_cycle_costs': structure_life_cycle_costs,
+               'project_life_cycle_costs': project_life_cycle_costs}
 
     return render_to_string(template_name, context)
 

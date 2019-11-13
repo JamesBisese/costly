@@ -108,7 +108,6 @@ INSTALLED_APPS = (
     'mathfilters',
 
     'django_tables2',
-    # 'authtools',
     'crispy_forms',
     'easy_thumbnails',
     'django_select2',

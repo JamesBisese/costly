@@ -574,12 +574,12 @@ function validateProjectAreaAndArealFeatures() {
     }
 
     var errors = null;
-    if ( sum_area && parseFloat(sum_area) !== NaN && sum_areal_features > sum_area) {
-        errors = {'message':'The sum of all the enabled areal features is '
-            + sum_areal_features.toString() + ' which is greater than the size of the project area.'
-            + ' Calculations are disabled until this error is corrected.'};
-    }
-    showErrorsById('areal_features_validation_error', errors);
+    // if ( sum_area && parseFloat(sum_area) !== NaN && sum_areal_features > sum_area) {
+    //     errors = {'message':'The sum of all the enabled areal features is '
+    //         + sum_areal_features.toString() + ' which is greater than the size of the project area.'
+    //         + ' Calculations are disabled until this error is corrected.'};
+    // }
+    // showErrorsById('areal_features_validation_error', errors);
 
     /*
     *  Handle validation check that the sum of pervious and impervious areas do not exceed project area

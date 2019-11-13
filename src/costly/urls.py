@@ -8,7 +8,7 @@ from rest_framework import routers
 import profiles.urls
 import accounts.urls
 import scenario.urls
-# import testapp.urls
+import authtools.urls
 
 #
 # TODO: move this into scenario/urls.py where it belongs
@@ -67,6 +67,9 @@ urlpatterns = [
     path(iis_app_alias + 'users/', include(profiles.urls)),
     path(iis_app_alias + 'admin/', admin.site.urls),
     # path(iis_app_alias + 'testapp/', include(testapp.urls)),
+
+    path(iis_app_alias + 'accounts/', include(authtools.urls)),
+
     path(iis_app_alias + '', include(scenario.urls)),
     path(iis_app_alias + '', include(accounts.urls)),
 
