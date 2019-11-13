@@ -1285,7 +1285,7 @@ class Scenario(models.Model):
         #TODO sum replacement
 
         project_life_cycle_costs = {'construction': total_construction_cost,
-                                    'planning_and_design': total_construction_cost * (discount_rate / 100),
+                                    'planning_and_design': total_construction_cost * (planning_and_design_factor / 100),
                                     'O_and_M': total_o_and_m_cost,
                                     'replacement': total_replacement_cost,
                                     }
