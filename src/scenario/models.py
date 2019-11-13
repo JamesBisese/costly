@@ -1223,18 +1223,28 @@ class Scenario(models.Model):
                     value_of_first_replacement = 0
                     replacement_years = []
                     replacement_costs = 0
-                    if number_of_replacements == 1:
-                        replacement_years.append(replacement_life)
-                        replacement_costs = round((construction_cost / (1 + (discount_rate / 100)) ** replacement_life), 2)
-                        value_of_first_replacement = replacement_costs
-                    elif number_of_replacements > 0:
-                        for i in range(int(study_life / int(number_of_replacements)), study_life + 1, int(study_life / int(number_of_replacements))):
+
+                    if number_of_replacements > 0:
+                        for i in range(replacement_life, study_life + 1, replacement_life):
                             replacement_years.append(i)
                             replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 2)
                             replacement_costs += replacement_cost
                             # replacements.append(replacement_cost)
                             if value_of_first_replacement == 0:
                                 value_of_first_replacement = replacement_costs
+
+                    # if number_of_replacements == 1:
+                    #     replacement_years.append(replacement_life)
+                    #     replacement_costs = round((construction_cost / (1 + (discount_rate / 100)) ** replacement_life), 2)
+                    #     value_of_first_replacement = replacement_costs
+                    # elif number_of_replacements > 0:
+                    #     for i in range(int(study_life / int(number_of_replacements)), study_life + 1, int(study_life / int(number_of_replacements))):
+                    #         replacement_years.append(i)
+                    #         replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 2)
+                    #         replacement_costs += replacement_cost
+                    #         # replacements.append(replacement_cost)
+                    #         if value_of_first_replacement == 0:
+                    #             value_of_first_replacement = replacement_costs
 
                     o_and_m_costs = round(o_and_m_costs, 2)
                     replacement_costs = round(replacement_costs, 2)
