@@ -20,6 +20,8 @@ if (document.addEventListener) {
 
 window.onload = init;
 
+
+
 function init() {
     // quit if this function has already been called
     if (arguments.callee.done) {

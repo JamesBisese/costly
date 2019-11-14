@@ -13,7 +13,8 @@
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/css/bootstrap-slider.min.css">
-<link rel="stylesheet" href="{% static 'scenario/css/scenario_main.css' %}" title="normal" type="text/css" media="all">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="{% static 'scenario/css/cost_tool.css' %}" title="normal" type="text/css" media="all">
 {% endblock extra_css %}
 
 
@@ -89,51 +90,45 @@
         });
     } );
 
-    $( function() {
-        $( ".accordion" ).accordion({
-          collapsible: true,
-            active: false,
 
-        });
-    });
 </script>
 
 <style>
-.ui-tabs .ui-tabs-nav
-{
-    background: #fff;
-}
-
-.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { background: #7ece32;}
-.highlight {
-	background: #7ece32;
-    color: #fff;
-}
-select.form-control:not([size]):not([multiple]) {
-    height: auto!important;
-}
-
-#calculator  h3 {
-    color: #7ece32;
-    font-size: 25px;
-    margin-left: -30px;
-    margin-top: -28px;
-    margin-bottom: 12px;
-}
-.nav-tabs{
-    display: flex;
-    text-align: center;
-}
-.nav-tabs li {
-    display: flex;
-    flex: 1;
-    border-radius: 15px 15px 0 0;
-}
-
-.nav-tabs li  a {
-    flex: 1;
-    border-radius: 15px 15px 0 0;
-}
+{#.ui-tabs .ui-tabs-nav#}
+{#{#}
+{#    background: #fff;#}
+{#}#}
+{##}
+{#.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { background: #7ece32;}#}
+{#.highlight {#}
+{#	background: #7ece32;#}
+{#    color: #fff;#}
+{#}#}
+{#select.form-control:not([size]):not([multiple]) {#}
+{#    height: auto!important;#}
+{#}#}
+{##}
+{##calculator  h3 {#}
+{#    color: #7ece32;#}
+{#    font-size: 25px;#}
+{#    margin-left: -30px;#}
+{#    margin-top: -28px;#}
+{#    margin-bottom: 12px;#}
+{#}#}
+{#.nav-tabs{#}
+{#    display: flex;#}
+{#    text-align: center;#}
+{#}#}
+{#.nav-tabs li {#}
+{#    display: flex;#}
+{#    flex: 1;#}
+{#    border-radius: 15px 15px 0 0;#}
+{#}#}
+{##}
+{#.nav-tabs li  a {#}
+{#    flex: 1;#}
+{#    border-radius: 15px 15px 0 0;#}
+{#}#}
 </style>
 
 <div id="calculate">
@@ -163,10 +158,10 @@ select.form-control:not([size]):not([multiple]) {
         <h2>    <div id="scenario_name"></div></h2>
 
         <ul id="tab_options" class="nav nav-tabs nav-justified">
-            <li><a href="#project_information">Project-<br>Scenario<br>Description</a></li>
+            <li><a href="#project_information">Project-Scenario<br>Description</a></li>
             <li><a href="#structures">Structures</a></li>
             <li><a href="#costitems">Cost Item<br>Unit Costs</a></li>
-            <li><a href="#structure_costs">Structure/<br>Cost Item<br>Costs</a></li>
+            <li><a href="#structure_costs">Structure/Cost Item<br>Costs</a></li>
             <li><a href="#input-result" style="background-color:#228EA9; color:white;">Results</a></li>
         </ul>
 

@@ -3,51 +3,24 @@
 
 <style>
 
-.result_table td  {
-  border: 1px solid black;
-  padding: 0px 5px 0px 5px;
-}
-.result_col {
-  text-align: right;
-  width:85px;
-}
-.input_col {
-  background: rgb(221, 235, 247);
-}
-.output_col {
-  background: rgb(226, 239, 218);
-}
-.result_table th  {
-  border: 1px solid black;
-  text-align:center;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-.result_table {
-  border-collapse: collapse;
-  border-spacing: 10px;
-  width: 365px;
-  font-family: "Franklin ITC Light",sans-serif;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 13px;
-}
-.caption_table {
-    width: 365px;
-    font-weight: bold;
-}
-.cost_item_th {
-    padding: 0px;
-    height: 10px;
-}
-.structure_areas_nonconventional {
-    padding-top: 10px;
-}
-.structure_costitem_costs_nonconventional {
-    padding-top: 10px;
-}
 </style>
 
+
+<script>
+    /* this has to be replaced by a 'getElementsByClassName' version since there will be multiples on compare pages */
+    function collapseById(id) {
+        var x = document.getElementById(id);
+        x.classList.toggle("w3-show");
+    };
+    /* tada */
+    function collapseByClassName(classname) {
+        var elements = document.getElementsByClassName(classname);
+        var i;
+        for (i = 0; i < elements.length; i++) {
+            elements[i].classList.toggle("w3-show");
+        }
+    };
+</script>
 
 <table class="caption_table">
   <tr>
@@ -127,293 +100,51 @@
 <div class="planning_and_design">
     <table class="result_table">
       <tr>
-        <td>Planning and Design Factor (Multiplier)</td>
-        <td class="result_col input_col"> {{ scenario.embedded_scenario.planning_and_design_factor }}</td>
+        <td>Planning and Design Factor</td>
+        <td class="result_col input_col"> {{ scenario.embedded_scenario.planning_and_design_factor }} %</td>
       </tr>
       <tr>
-        <td>Study Life (years)</td>
-        <td class="result_col input_col"> {{ scenario.embedded_scenario.study_life }}</td>
+        <td>Study Life</td>
+        <td class="result_col input_col"> {{ scenario.embedded_scenario.study_life }} years</td>
       </tr>
       <tr>
-        <td>Discount Rate (DISC)</td>
-        <td class="result_col input_col"> {{ scenario.embedded_scenario.discount_rate }}</td>
+        <td>Discount Rate</td>
+        <td class="result_col input_col"> {{ scenario.embedded_scenario.discount_rate }} %</td>
       </tr>
-    </table>
-</div>
-<br>
-<div class="areal_features">
-    <table class="result_table">
-    <thead>
-      <th>Areal Feature</th>
-      <th>Area ft<sup>2</sup></th>
-      <th>% Project Area</th>
-    </thead>
-    {% for r,obj in scenario.areal_features.items %}
-      {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}
-        <tr>
-          <td> {{ obj.label }}</td>
-          <td class="result_col input_col"> {{ obj.area|intcomma }}</td>
-          <td class="result_col output_col"> {{ obj.area|div:scenario.project.project_area|percentage }}</td>
-        </tr>
-      {% endif %}
-    {% endfor %}
-        <tr>
-          <td style="text-align: center;">Total</td>
-          <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|intcomma }}</td>
-          <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|div:scenario.project.project_area|percentage }}</td>
-        </tr>
     </table>
 </div>
 <br>
 <table class="result_table">
-  <thead>
-    <th>Infiltration Type</th>
-    <th>Area ft<sup>2</sup></th>
-    <th>% Project Area</th>
-  </thead>
+{#  <thead>#}
+{#    <th>Infiltration Type</th>#}
+{#    <th>Area ft<sup>2</sup></th>#}
+{#    <th>% Project Area</th>#}
+{#  </thead>#}
   <tbody>
     <tr>
       <td>Pervious Area</td>
-      <td class="result_col input_col"> {{ scenario.embedded_scenario.pervious_area|intcomma   }}</td>
-      <td class="result_col output_col"> {{ scenario.embedded_scenario.pervious_area|div:scenario.project.project_area|percentage }}</td>
+      <td class="result_col input_col"> {{ scenario.embedded_scenario.pervious_area|intcomma   }} ft<sup>2</sup></td>
+{#      <td class="result_col output_col"> {{ scenario.embedded_scenario.pervious_area|div:scenario.project.project_area|percentage }}</td>#}
     </tr>
     <tr>
       <td>Impervious Area</td>
-      <td class="result_col input_col"> {{ scenario.embedded_scenario.impervious_area|intcomma  }}</td>
-      <td class="result_col output_col"> {{ scenario.embedded_scenario.impervious_area|div:scenario.project.project_area|percentage }}</td>
+      <td class="result_col input_col"> {{ scenario.embedded_scenario.impervious_area|intcomma  }} ft<sup>2</sup></td>
+{#      <td class="result_col output_col"> {{ scenario.embedded_scenario.impervious_area|div:scenario.project.project_area|percentage }}</td>#}
     </tr>
-    <tr>
-      <td style="text-align: center;">Total</td>
-      <td class="result_col output_col"> {{ sum_values.pervious_impervious_area|intcomma }}</td>
-      <td class="result_col output_col"> {{ sum_values.pervious_impervious_area|div:scenario.project.project_area|percentage }}</td>
-    </tr>
+{#    <tr>#}
+{#      <td style="text-align: center;">Total</td>#}
+{#      <td class="result_col output_col"> {{ sum_values.pervious_impervious_area|intcomma }}</td>#}
+{#      <td class="result_col output_col"> {{ sum_values.pervious_impervious_area|div:scenario.project.project_area|percentage }}</td>#}
+{#    </tr>#}
   </tbody>
 </table>
-<br>
-<hr>
-
-{# Structure Areas - Start This is commented out since it doesn't really make sense#}
-{% if 1 == 2 %}
-    {% for r, objClassification in cost_results.items %}
-        <div class="structure_areas_{{ r }}">
-            <table class="result_table"
-                {% if r == 'conventional' %}
-                    style="margin-top: 10px;"
-                {% endif %}>
-                <thead>
-                    <th colspan="3" style="text-align: left;">
-                        {% if r == 'conventional' %}
-                            Conventional Structures
-                        {% else %}
-                            Non-Conventional (GSI) Structures
-                        {% endif %}
-                    </th>
-                </thead>
-                <thead>
-                    <th>Structure</th>
-                    <th>Size</th>
-                    <th>% Project Area</th>
-                </thead>
-                {% for r,obj in objClassification.structures.items %}
-                    <tr style="height: 30px;">
-                      <td> {{ obj.structure.name }}</td>
-                      <td class="result_col input_col"> {{ obj.structure.area|intcomma }} {{ obj.structure.units }}</td>
-                      <td class="result_col output_col"> {{ obj.structure.area|div:scenario.project.project_area|percentage }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                  <td style="text-align: center;">Total</td>
-                  <td class="result_col output_col">
-                      {% if r == 'conventional' %}
-                            {{ sum_values.conventional_structure_sum_area|intcomma }}
-                      {% else %}
-                           {{ sum_values.nonconventional_structure_sum_area|intcomma }}
-                      {% endif %}
-                  </td>
-                  <td class="result_col output_col">
-                      {% if r == 'conventional' %}
-                            {{ sum_values.conventional_structure_sum_area|div:scenario.project.project_area|percentage }}
-                      {% else %}
-                           {{ sum_values.nonconventional_structure_sum_area|div:scenario.project.project_area|percentage }}
-                      {% endif %}
-                  </td>
-                </tr>
-            </table>
-        </div>
-    {% endfor %}
-    <hr>
-{% endif %}
-{# Structure Areas - End #}
-
-
-
-<div class="cost_item_unit_costs">
-    <table class="result_table">
-    <thead>
-        <th>Cost Item<br>Unit Costs</th>
-        <th >Units</th>
-        <th >Source</th>
-        <th >Cost</th>
-
-        <th >Base Year</th>
-        <th >Rep. Life</th>
-        <th >O&amp;M %</th>
-    </thead>
-    {% for obj in cost_item_costs %}
-
-    <tr>
-        <td> {{ obj.label }}</td>
-        <td > {{ obj.units }}</td>
-        <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.cost_source }}</td>
-        <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.unit_cost }}</td>
-
-        <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.base_year }}</td>
-        <td class="result_col output_col"> {{ obj.replacement_life }}</td>
-        <td class="result_col output_col"> {{ obj.o_and_m_pct }}</td>
-    </tr>
-
-    {% endfor %}
-    </table>
-</div>
-<br>
-<hr>
-
-{# Structure / Cost Item Costs - Start #}
-
-{% for r, objClassification in cost_results.items %}
-    <div class="structure_costitem_costs_{{ r }}">
-        <table  class="result_table " {% if r == 'conventional' %}style="margin-top: 10px;"{% endif %}>
-            <caption>Construction Costs</caption>
-            <thead>
-                <th colspan="2" style="text-align: left;">
-                    {% if r == 'conventional' %}
-                        Conventional Structures
-                    {% else %}
-                        Non-Conventional (GSI) Structures
-                    {% endif %}
-                </th>
-                <th class="result_col output_col">${{ objClassification.sum_value|intcomma }}</th>
-            </thead>
-            <thead>
-                <th class="cost_item_th">Structure</th>
-                <th class="cost_item_th">Size</th>
-                <th class="cost_item_th">Cost</th>
-            </thead>
-            {% for r,obj in objClassification.structures.items %}
-
-                <tr style="height: 30px;">
-                  <td style="font-weight: bold;"> {{ obj.structure.name }}</td>
-                  <td class="result_col input_col"> {{ obj.structure.area|intcomma }} {{ obj.structure.units }}</td>
-                  <td class="result_col output_col"> {{ obj.structure.sum_value }}</td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
-                            <thead>
-                                <th class="cost_item_th" style="width: 70%;">Cost Item</th>
-                                <th class="cost_item_th">Cost</th>
-                            </thead>
-                            {% for r,objC in obj.cost_data.items %}
-                                <tr>
-                                    <td>{{ objC.assumptions.name }}</td>
-                                    <td class="result_col output_col">{{ objC.results.value }}</td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-{% endfor %}
-{# Structure / Cost Item Costs - End #}
-<br>
-
 
 <div class="final_costs">
     <table  class="result_table">
 
         <col style="width: 60%">
         <col style="width: 40%">
-        <caption>Total Construction Costs</caption>
-        <thead>
-            <th class="cost_item_th">Structure Class</th>
-{#            <th class="cost_item_th">Total Size</th>#}
-            <th class="cost_item_th">Construction Costs</th>
-        </thead>
-        <tr style="height: 30px;">
-          <td style="font-weight: bold;">Non-Conventional (GSI)</td>
-{#          <td class="result_col input_col">111</td>#}
-          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|floatformat:"0"|intcomma }}</td>
-        </tr>
-        <tr style="height: 30px;">
-          <td style="font-weight: bold;">Conventional (GSI)</td>
-{#          <td class="result_col input_col">222</td>#}
-          <td class="result_col output_col">${{ cost_results.conventional.sum_value|floatformat:"0"|intcomma}}</td>
-        </tr>
-        <tr style="height: 30px;">
-          <td style="font-weight: bold;">Total</td>
-{#          <td class="result_col input_col">333</td>#}
-          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
-        </tr>
-    </table>
-</div>
-{# Structure / Cost Item O&M and Replacement Costs - Start #}
-<hr>
-
-{% for r, objClassification in structure_life_cycle_costs.items %}
-    <div class="structure_costitem_costs_{{ r }}">
-        <table  class="result_table " {% if r == 'conventional' %}style="margin-top: 10px;"{% endif %}>
-            <caption>O&M and Replacement Costs</caption>
-            <thead>
-                <th colspan="2" style="text-align: left;">
-                    {{ objClassification.meta.name }}
-                </th>
-                <th class="result_col output_col">{{ objClassification.costs.sum_formatted }}</th>
-            </thead>
-            <thead>
-                <th class="cost_item_th">Structure</th>
-                <th class="cost_item_th">Size</th>
-                <th class="cost_item_th">Cost</th>
-            </thead>
-            {% for r,objStructure in objClassification.structures.items %}
-
-                <tr style="height: 30px;">
-                  <td style="font-weight: bold;"> {{ objStructure.meta.name }}  </td>
-                  <td class="result_col input_col"> {{ objStructure.meta.area|intcomma }} {{ objStructure.meta.units }} </td>
-                  <td class="result_col output_col">{{ objStructure.costs.sum_formatted }}</td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
-                            <thead>
-                                <th class="cost_item_th" style="width: 70%;">Cost Item</th>
-                                <th class="cost_item_th">O&amp;M</th>
-                                <th class="cost_item_th">Replacement</th>
-                            </thead>
-                            {% for r,objCostItem in objStructure.cost_items.items %}
-                                <tr>
-                                    <td>{{ objCostItem.meta.name }}</td>
-                                    <td class="result_col output_col"> {{ objCostItem.costs.o_and_m_formatted }}  </td>
-                                   <td class="result_col output_col"> {{ objCostItem.costs.replacement_formatted}} </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-{% endfor %}
-{# Structure / Cost Item O&M and Replacement Costs - End #}
-
-
-<div class="final_costs">
-    <table  class="result_table">
-
-        <col style="width: 60%">
-        <col style="width: 40%">
-        <caption>Total Project Life Cycle Costs</caption>
+        <caption>Project Life Cycle Costs</caption>
         <thead>
             <th class="cost_item_th">Item</th>
 {#            <th class="cost_item_th">Total Size</th>#}
@@ -440,9 +171,335 @@
           <td class="result_col output_col">${{ project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr style="height: 30px;">
-          <td style="font-weight: bold;">Total</td>
+          <td style="font-weight: bold;text-align: right;">Total</td>
 {#          <td class="result_col input_col">333</td>#}
           <td class="result_col output_col">${{ project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>
+
+
+<div class="final_costs">
+    <table  class="result_table">
+
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <caption>Project Construction Costs</caption>
+        <thead>
+            <th class="cost_item_th">Structure Class</th>
+{#            <th class="cost_item_th">Total Size</th>#}
+            <th class="cost_item_th">Construction Costs</th>
+        </thead>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+{#          <td class="result_col input_col">111</td>#}
+          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;">Conventional</td>
+{#          <td class="result_col input_col">222</td>#}
+          <td class="result_col output_col">${{ cost_results.conventional.sum_value|floatformat:"0"|intcomma}}</td>
+        </tr>
+        <tr style="height: 30px;">
+          <td style="font-weight: bold;text-align: right;">Total</td>
+{#          <td class="result_col input_col">333</td>#}
+          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="final_costs">
+    <table class="result_table" >
+        <col style="width: 50%">
+        <col style="width: 25%">
+        <col style="width: 25%">
+        <caption>O&M and Replacement Costs</caption>
+        <thead>
+            <th class="cost_item_th" style="width: 70%;">Structure Class</th>
+            <th class="cost_item_th">O&amp;M</th>
+            <th class="cost_item_th">Replacement</th>
+        </thead>
+{% for r, objClassification in structure_life_cycle_costs.items %}
+            <tr style="height: 30px;">
+                <td style="font-weight: bold;">{% if r == 'conventional' %}
+                        Conventional
+                    {% else %}
+                        Non-Conventional (GSI)
+                    {% endif %}</td>
+                <td class="result_col output_col"> {{ objClassification.costs.o_and_m_sum_formatted }}  </td>
+                <td class="result_col output_col"> {{ objClassification.costs.replacement_sum_formatted}} </td>
+            </tr>
+{% endfor %}
+        <tr style="height: 30px;">
+            <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
+            <td class="result_col output_col" style="border-top: double;">${{structure_life_cycle_costs.nonconventional.costs.o_and_m_sum|add:structure_life_cycle_costs.conventional.costs.o_and_m_sum|floatformat:"0"|intcomma }}</td>
+            <td class="result_col output_col" style="border-top: double;">${{ structure_life_cycle_costs.nonconventional.costs.replacement_sum|add:structure_life_cycle_costs.conventional.costs.replacement_sum|floatformat:"0"|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+<br>
+
+<br>
+<hr>
+
+
+
+
+
+
+<div id="accordionZZZ" style="width: 387px;">
+<h3>Details</h3>
+    <button onclick="collapseByClassName('areal_features')" class="w3-button w3-block w3-left-align"
+            style="width: 387px;background: #228EA9;" title="Structure Areas...">
+                        Areal Features </button>
+    <div class="areal_features w3-container w3-hide">
+        <table class="result_table details_result_table">
+        <thead>
+          <th>Areal Feature</th>
+          <th>Area ft<sup>2</sup></th>
+          <th>% Project Area</th>
+        </thead>
+        {% for r,obj in scenario.areal_features.items %}
+          {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}
+            <tr>
+              <td> {{ obj.label }}</td>
+              <td class="result_col input_col"> {{ obj.area|intcomma }}</td>
+              <td class="result_col output_col"> {{ obj.area|div:scenario.project.project_area|percentage }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+            <tr>
+              <td style="text-align: center;">Total</td>
+              <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|intcomma }}</td>
+              <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|div:scenario.project.project_area|percentage }}</td>
+            </tr>
+        </table>
+    </div>
+    <div style="line-height: 5px;">&nbsp; </div>
+
+{# Structure Areas - Start This is commented out since it doesn't really make sense#}
+    <button onclick="collapseByClassName('structure_areas')" class="w3-button w3-block w3-left-align"
+            style="width: 387px;background: #228EA9;" title="Structure Areas...">
+                        Structure Areas </button>
+
+{% for r, objClassification in cost_results.items %}
+
+    <div class="structure_areas_{{ r }} structure_areas w3-container w3-hide">
+        <table class="result_table details_result_table"
+            {% if r == 'conventional' %}
+                style="margin-top: 10px;"
+            {% endif %}>
+            <thead>
+                <th colspan="3" style="text-align: left;">
+                    {% if r == 'conventional' %}
+                        Conventional Structures
+                    {% else %}
+                        Non-Conventional (GSI) Structures
+                    {% endif %}
+                </th>
+            </thead>
+            <thead>
+                <th>Structure</th>
+                <th>Size</th>
+                <th>% Project Area</th>
+            </thead>
+            {% for r,obj in objClassification.structures.items %}
+                <tr style="height: 30px;">
+                  <td> {{ obj.structure.name }}</td>
+                  <td class="result_col input_col"> {{ obj.structure.area|intcomma }} {{ obj.structure.units }}</td>
+                  <td class="result_col output_col"> {{ obj.structure.area|div:scenario.project.project_area|percentage }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+              <td style="text-align: center;">Total</td>
+              <td class="result_col output_col">
+                  {% if r == 'conventional' %}
+                        {{ sum_values.conventional_structure_sum_area|intcomma }}
+                  {% else %}
+                       {{ sum_values.nonconventional_structure_sum_area|intcomma }}
+                  {% endif %}
+              </td>
+              <td class="result_col output_col">
+                  {% if r == 'conventional' %}
+                        {{ sum_values.conventional_structure_sum_area|div:scenario.project.project_area|percentage }}
+                  {% else %}
+                       {{ sum_values.nonconventional_structure_sum_area|div:scenario.project.project_area|percentage }}
+                  {% endif %}
+              </td>
+            </tr>
+        </table>
+    </div>
+{% endfor %}
+<div style="line-height: 5px;">&nbsp; </div>
+
+{# Structure Areas - End #}
+
+
+
+
+
+
+
+<button onclick="collapseByClassName('cost_item_unit_costs')" class="w3-button w3-block w3-left-align"
+        style="width: 387px;background: #228EA9;" title="Unit Cost for each cost item...">
+Cost Item Unit Costs</button>
+
+    <div class="cost_item_unit_costs w3-container w3-hide">
+        <table class="result_table details_result_table">
+        <thead>
+            <th>Cost Item<br>Unit Costs</th>
+            <th >Units</th>
+            <th >Source</th>
+            <th >Cost</th>
+
+            <th >Base Year</th>
+            <th >Rep. Life</th>
+            <th >O&amp;M %</th>
+        </thead>
+        {% for obj in cost_item_costs %}
+
+        <tr>
+            <td> {{ obj.label }}</td>
+            <td > {{ obj.units }}</td>
+            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.cost_source }}</td>
+            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.unit_cost }}</td>
+
+            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.base_year }}</td>
+            <td class="result_col output_col"> {{ obj.replacement_life }}</td>
+            <td class="result_col output_col"> {{ obj.o_and_m_pct }}</td>
+        </tr>
+
+        {% endfor %}
+        </table>
+    </div>
+<div style="line-height: 5px;">&nbsp; </div>
+{# Structure / Cost Item Costs - Start #}
+{% for r, objClassification in cost_results.items %}
+
+    <button onclick="collapseByClassName('structure_costitem_costs_{{ r }}')" class="w3-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
+Construction Costs
+                        {% if r == 'conventional' %}
+                        Conventional Structures
+                    {% else %}
+                        Non-Conventional (GSI) Structures
+                    {% endif %}</button>
+
+    <div class="structure_costitem_costs_{{ r }} w3-container w3-hide">
+        <table  class="result_table details_result_table" style="margin-bottom: 5px;">
+            <thead>
+                <th colspan="2" style="text-align: left;">
+                    Total Construction Costs
+                </th>
+                <th class="result_col output_col">${{ objClassification.sum_value|intcomma }}</th>
+            </thead>
+        </table>
+        <table  class="result_table details_result_table">
+            <thead>
+                <th class="cost_item_th" colspan="2">Structures</th>
+                <th class="cost_item_th">Size</th>
+{#                <th class="cost_item_th">Cost</th>#}
+            </thead>
+            {% for r,obj in objClassification.structures.items %}
+
+                <tr style="height: 30px;">
+                  <td style="font-weight: bold;" colspan="2"> {{ obj.structure.name }}</td>
+                  <td class="result_col input_col"> {{ obj.structure.area|intcomma }} {{ obj.structure.units }}</td>
+{#                  <td class="result_col output_col"> {{ obj.structure.sum_value }}</td>#}
+                </tr>
+                <tr>
+                    <td colspan="3" style="border: 0px solid;">
+                        <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
+                            <thead>
+                                <th class="cost_item_th" style="width: 70%;">Cost Items</th>
+                                <th class="cost_item_th">Cost</th>
+                            </thead>
+                            {% for r,objC in obj.cost_data.items %}
+                                <tr>
+                                    <td>{{ objC.assumptions.name }}</td>
+                                    <td class="result_col output_col">{{ objC.results.value }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
+                                <td class="result_col output_col" style="border-top: double;">{{ obj.structure.sum_value }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div style="line-height: 5px;">&nbsp; </div>
+{% endfor %}
+{# Structure / Cost Item Costs - End #}
+
+{# Structure / Cost Item O&M and Replacement Costs - Start #}
+{% for r, objClassification in structure_life_cycle_costs.items %}
+
+    <button onclick="collapseByClassName('structure_costitem_costs_o_and_m_{{ r }}')" class="w3-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
+O&M and Replacement Costs
+                        {% if r == 'conventional' %}
+                        Conventional Structures
+                    {% else %}
+                        Non-Conventional (GSI) Structures
+                    {% endif %}</button>
+
+    <div class="structure_costitem_costs_o_and_m_{{ r }} w3-container w3-hide">
+
+
+        <table  class="result_table details_result_table" >
+            <thead>
+                <th colspan="2" style="text-align: left;">
+                    Total O&M and Replacement Costs
+                </th>
+                <th class="result_col output_col">{{ objClassification.costs.sum_formatted }}</th>
+            </thead>
+            <thead>
+                <th class="cost_item_th" colspan="2">Structure</th>
+                <th class="cost_item_th">Size</th>
+            </thead>
+            {% for r,objStructure in objClassification.structures.items %}
+
+                <tr style="height: 30px;">
+                  <td style="font-weight: bold;" colspan="2"> {{ objStructure.meta.name }}  </td>
+                  <td class="result_col input_col"> {{ objStructure.meta.area|intcomma }} {{ objStructure.meta.units }} </td>
+{#                  <td class="result_col output_col">{{ objStructure.costs.sum_formatted }}</td>#}
+                </tr>
+                <tr>
+                    <td colspan="3" style="border: 0px solid;">
+                        <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
+                            <thead>
+                                <th class="cost_item_th" style="width: 70%;">Cost Items</th>
+                                <th class="cost_item_th">O&amp;M</th>
+                                <th class="cost_item_th">Replacement</th>
+                            </thead>
+                            {% for r,objCostItem in objStructure.cost_items.items %}
+                                <tr>
+                                    <td>{{ objCostItem.meta.name }}</td>
+                                    <td class="result_col output_col"> {{ objCostItem.costs.o_and_m_formatted }}  </td>
+                                   <td class="result_col output_col"> {{ objCostItem.costs.replacement_formatted}} </td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
+                                <td class="result_col output_col" style="border-top: double;">{{ objStructure.costs.o_and_m_sum_formatted }}</td>
+                                <td class="result_col output_col" style="border-top: double;">{{ objStructure.costs.replacement_sum_formatted }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div style="line-height: 5px;">&nbsp; </div>
+{% endfor %}
+{# Structure / Cost Item O&M and Replacement Costs - End #}
+
+</div>
+
+<hr>
+
+
+
+
+

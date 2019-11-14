@@ -1258,15 +1258,21 @@ class Scenario(models.Model):
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'] += costs_sum
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum_formatted'] = \
                         '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'])
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum'] += o_and_m_costs
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum_formatted'] = \
+                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum'])
 
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum'] += replacement_costs
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum_formatted'] = \
+                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum'])
                     # add to classifiction costs
                     structure_life_cycle_costs[classification]['costs']['o_and_m_sum'] += o_and_m_costs
                     structure_life_cycle_costs[classification]['costs']['o_and_m_sum_formatted'] = \
-                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['costs']['o_and_m_sum'])
+                        '${:,g}'.format(structure_life_cycle_costs[classification]['costs']['o_and_m_sum'])
 
                     structure_life_cycle_costs[classification]['costs']['replacement_sum'] += replacement_costs
                     structure_life_cycle_costs[classification]['costs']['replacement_sum_formatted'] = \
-                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['costs']['replacement_sum'])
+                        '${:,g}'.format(structure_life_cycle_costs[classification]['costs']['replacement_sum'])
 
                     structure_life_cycle_costs[classification]['costs']['sum'] += costs_sum
                     structure_life_cycle_costs[classification]['costs']['sum_formatted'] = \
