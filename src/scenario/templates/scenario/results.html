@@ -3,38 +3,30 @@
 
 <style>
 
+.w3-button {
+    width: 387px;
+    background: #228EA9;
+}
+
 </style>
 
+<div class="caption_table2">
+    <table class="caption_table">
+        <col style="width: 40%">
+        <col style="width: 60%">
+        <tr>
+            <td>Project Title:</td>
+            <td>{{ scenario.project.project_title }}</td>
+        </tr>
+        <tr>
+            <td>Scenario Title:</td>
+            <td>{{ scenario.embedded_scenario.scenario_title }}</td>
+        </tr>
+    </table>
+</div>
 
-<script>
-    /* this has to be replaced by a 'getElementsByClassName' version since there will be multiples on compare pages */
-    function collapseById(id) {
-        var x = document.getElementById(id);
-        x.classList.toggle("w3-show");
-    };
-    /* tada */
-    function collapseByClassName(classname) {
-        var elements = document.getElementsByClassName(classname);
-        var i;
-        for (i = 0; i < elements.length; i++) {
-            elements[i].classList.toggle("w3-show");
-        }
-    };
-</script>
-
-<table class="caption_table">
-  <tr>
-    <td>Project Title:</td>
-    <td> {{ scenario.project.project_title }}</td>
-  </tr>
-  <tr>
-    <td>Scenario Title:</td>
-    <td> {{ scenario.embedded_scenario.scenario_title }}</td>
-  <tr>
-</tr>
-</table>
-
- <table class="result_table">
+<div class="project_table">
+ <table class="result_table ">
     <td  style="width:75px;">Project Organizer</td>
     <td class="input_col"> {{ scenario.project.project_ownership_display }}</td>
   </tr>
@@ -58,14 +50,19 @@
 
   </tr>
   <tr>
-    <td>Total Project Area</td>
+    <td style="height: 22px;">Total Project Area</td>
     <td class="result_col input_col"> {{ scenario.project.project_area|intcomma }} ft<sup>2</sup> ({{ scenario.project.project_area|div:43560|floatformat:2|intcomma }} Acres)</td>
   </tr>
   <tr>
-    <td>Cost per ft<sup>2</sup> of Project site</td>
+    <td style="height: 22px;">Land cost per ft<sup>2</sup></td>
     <td class="result_col input_col"> ${{ scenario.project.land_unit_cost }}</td>
   </tr>
+  <tr>
+    <td style="height: 22px;">Land Value</td>
+    <td class="result_col input_col"> ${{ scenario.project.project_area|mul:scenario.project.land_unit_cost|floatformat:2|intcomma }}</td>
+  </tr>
 </table>
+</div>
 <br>
 <div class="nutrient_storm_peak">
     <table class="result_table">
@@ -77,7 +74,7 @@
         <td>Captures 90<sup>th</sup> pct storm?</td>
         <td class="input_col"> {{ scenario.embedded_scenario.captures_90pct_storm_display }}</td>
       </tr>
-         {% if scenario.embedded_scenario.captures_90pct_storm == 'yes' %}
+{% if scenario.embedded_scenario.captures_90pct_storm == 'yes' %}
       <tr>
         <td colspan="2" style="color: red;line-height: 20px;">
             You have indicated in this scenario a design choice that might make you
@@ -85,60 +82,49 @@
             Check out applying for the Green Raleigh Review!
         </td>
       </tr>
-         {% endif %}
+{% endif %}
       <tr>
         <td>Meets peak flow req?</td>
-        <td class="input_col"
-
-
-
-        > {{ scenario.embedded_scenario.meets_peakflow_req_display }}</td>
+        <td class="input_col"> {{ scenario.embedded_scenario.meets_peakflow_req_display }}</td>
       </tr>
     </table>
 </div>
 <br>
 <div class="planning_and_design">
     <table class="result_table">
-      <tr>
-        <td>Planning and Design Factor</td>
-        <td class="result_col input_col"> {{ scenario.embedded_scenario.planning_and_design_factor }} %</td>
-      </tr>
-      <tr>
-        <td>Study Life</td>
-        <td class="result_col input_col"> {{ scenario.embedded_scenario.study_life }} years</td>
-      </tr>
-      <tr>
-        <td>Discount Rate</td>
-        <td class="result_col input_col"> {{ scenario.embedded_scenario.discount_rate }} %</td>
-      </tr>
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <tr>
+            <td>Planning and Design Factor</td>
+            <td class="result_col input_col"> {{ scenario.embedded_scenario.planning_and_design_factor }} %</td>
+        </tr>
+        <tr>
+            <td>Study Life</td>
+            <td class="result_col input_col"> {{ scenario.embedded_scenario.study_life }} years</td>
+        </tr>
+        <tr>
+            <td>Discount Rate</td>
+            <td class="result_col input_col"> {{ scenario.embedded_scenario.discount_rate }} %</td>
+        </tr>
     </table>
 </div>
 <br>
-<table class="result_table">
-{#  <thead>#}
-{#    <th>Infiltration Type</th>#}
-{#    <th>Area ft<sup>2</sup></th>#}
-{#    <th>% Project Area</th>#}
-{#  </thead>#}
-  <tbody>
-    <tr>
-      <td>Pervious Area</td>
-      <td class="result_col input_col"> {{ scenario.embedded_scenario.pervious_area|intcomma   }} ft<sup>2</sup></td>
-{#      <td class="result_col output_col"> {{ scenario.embedded_scenario.pervious_area|div:scenario.project.project_area|percentage }}</td>#}
-    </tr>
-    <tr>
-      <td>Impervious Area</td>
-      <td class="result_col input_col"> {{ scenario.embedded_scenario.impervious_area|intcomma  }} ft<sup>2</sup></td>
-{#      <td class="result_col output_col"> {{ scenario.embedded_scenario.impervious_area|div:scenario.project.project_area|percentage }}</td>#}
-    </tr>
-{#    <tr>#}
-{#      <td style="text-align: center;">Total</td>#}
-{#      <td class="result_col output_col"> {{ sum_values.pervious_impervious_area|intcomma }}</td>#}
-{#      <td class="result_col output_col"> {{ sum_values.pervious_impervious_area|div:scenario.project.project_area|percentage }}</td>#}
-{#    </tr>#}
-  </tbody>
-</table>
-
+<div class="pervious">
+    <table class="result_table">
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <tbody>
+            <tr>
+                <td>Pervious Area</td>
+                <td class="result_col input_col"> {{ scenario.embedded_scenario.pervious_area|intcomma   }} ft<sup>2</sup></td>
+            </tr>
+            <tr>
+                <td>Impervious Area</td>
+                <td class="result_col input_col"> {{ scenario.embedded_scenario.impervious_area|intcomma  }} ft<sup>2</sup></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 <div class="final_costs">
     <table  class="result_table">
 
@@ -147,33 +133,27 @@
         <caption>Project Life Cycle Costs</caption>
         <thead>
             <th class="cost_item_th">Item</th>
-{#            <th class="cost_item_th">Total Size</th>#}
             <th class="cost_item_th">Dollars</th>
         </thead>
         <tr style="height: 30px;">
           <td style="font-weight: bold;">Construction</td>
-{#          <td class="result_col input_col">111</td>#}
           <td class="result_col output_col">${{ project_life_cycle_costs.construction|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr style="height: 30px;">
           <td style="font-weight: bold;">Planning and Design</td>
-{#          <td class="result_col input_col">222</td>#}
           <td class="result_col output_col">${{ project_life_cycle_costs.planning_and_design|floatformat:"0"|intcomma}}</td>
         </tr>
         <tr style="height: 30px;">
           <td style="font-weight: bold;">O&M</td>
-{#          <td class="result_col input_col">333</td>#}
           <td class="result_col output_col">${{ project_life_cycle_costs.O_and_M|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr style="height: 30px;">
           <td style="font-weight: bold;">Replacement</td>
-{#          <td class="result_col input_col">333</td>#}
           <td class="result_col output_col">${{ project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr style="height: 30px;">
           <td style="font-weight: bold;text-align: right;">Total</td>
-{#          <td class="result_col input_col">333</td>#}
-          <td class="result_col output_col">${{ project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col" style="border-top: double;">${{ project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>
@@ -182,28 +162,32 @@
 <div class="final_costs">
     <table  class="result_table">
 
-        <col style="width: 60%">
-        <col style="width: 40%">
+        <col style="width: 50%">
+        <col style="width: 25%">
+        <col style="width: 25%">
         <caption>Project Construction Costs</caption>
         <thead>
             <th class="cost_item_th">Structure Class</th>
-{#            <th class="cost_item_th">Total Size</th>#}
-            <th class="cost_item_th">Construction Costs</th>
+            <th class="cost_item_th">Construction</th>
+            <th class="cost_item_th">P &amp; D</th>
         </thead>
         <tr style="height: 30px;">
           <td style="font-weight: bold;">Non-Conventional (GSI)</td>
-{#          <td class="result_col input_col">111</td>#}
+
           <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr style="height: 30px;">
           <td style="font-weight: bold;">Conventional</td>
-{#          <td class="result_col input_col">222</td>#}
+
           <td class="result_col output_col">${{ cost_results.conventional.sum_value|floatformat:"0"|intcomma}}</td>
+            <td class="result_col output_col">${{ cost_results.conventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma}}</td>
         </tr>
         <tr style="height: 30px;">
           <td style="font-weight: bold;text-align: right;">Total</td>
-{#          <td class="result_col input_col">333</td>#}
-          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
+
+          <td class="result_col output_col"  style="border-top: double;">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"  style="border-top: double;">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>
@@ -215,7 +199,7 @@
         <col style="width: 25%">
         <caption>O&M and Replacement Costs</caption>
         <thead>
-            <th class="cost_item_th" style="width: 70%;">Structure Class</th>
+            <th class="cost_item_th" >Structure Class</th>
             <th class="cost_item_th">O&amp;M</th>
             <th class="cost_item_th">Replacement</th>
         </thead>
@@ -226,8 +210,8 @@
                     {% else %}
                         Non-Conventional (GSI)
                     {% endif %}</td>
-                <td class="result_col output_col"> {{ objClassification.costs.o_and_m_sum_formatted }}  </td>
-                <td class="result_col output_col"> {{ objClassification.costs.replacement_sum_formatted}} </td>
+                <td class="result_col output_col">${{ objClassification.costs.o_and_m_sum|floatformat:"0"|intcomma }}  </td>
+                <td class="result_col output_col">${{ objClassification.costs.replacement_sum|floatformat:"0"|intcomma }} </td>
             </tr>
 {% endfor %}
         <tr style="height: 30px;">
@@ -237,22 +221,15 @@
         </tr>
     </table>
 </div>
-<br>
 
-<br>
 <hr>
 
-
-
-
-
-
 <div id="accordionZZZ" style="width: 387px;">
-<h3>Details</h3>
-    <button onclick="collapseByClassName('areal_features')" class="w3-button w3-block w3-left-align"
-            style="width: 387px;background: #228EA9;" title="Structure Areas...">
-                        Areal Features </button>
-    <div class="areal_features w3-container w3-hide">
+<h3 style="text-align: center;font-weight: bold;font-size: larger;color: #6c757d;">Details</h3>
+    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align"
+            title="Areal Features...">Areal Features
+    </button>
+    <div class="areal_features w3-container w3-animate-slide w3-hide">
         <table class="result_table details_result_table">
         <thead>
           <th>Areal Feature</th>
@@ -278,13 +255,13 @@
     <div style="line-height: 5px;">&nbsp; </div>
 
 {# Structure Areas - Start This is commented out since it doesn't really make sense#}
-    <button onclick="collapseByClassName('structure_areas')" class="w3-button w3-block w3-left-align"
-            style="width: 387px;background: #228EA9;" title="Structure Areas...">
+    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align"
+            title="Structure Areas...">
                         Structure Areas </button>
 
 {% for r, objClassification in cost_results.items %}
 
-    <div class="structure_areas_{{ r }} structure_areas w3-container w3-hide">
+    <div class="structure_areas w3-container w3-animate-left w3-hide">
         <table class="result_table details_result_table"
             {% if r == 'conventional' %}
                 style="margin-top: 10px;"
@@ -340,19 +317,19 @@
 
 
 
-<button onclick="collapseByClassName('cost_item_unit_costs')" class="w3-button w3-block w3-left-align"
-        style="width: 387px;background: #228EA9;" title="Unit Cost for each cost item...">
+<button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align"
+        title="Unit Cost for each cost item...">
 Cost Item Unit Costs</button>
 
-    <div class="cost_item_unit_costs w3-container w3-hide">
-        <table class="result_table details_result_table">
+    <div class="cost_item_unit_costs w3-container w3-animate-left w3-hide">
+        <table class="result_table details_result_table slightly_smaller_table">
         <thead>
-            <th>Cost Item<br>Unit Costs</th>
+            <th>Cost Items</th>
             <th >Units</th>
             <th >Source</th>
             <th >Cost</th>
 
-            <th >Base Year</th>
+            <th >Yr</th>
             <th >Rep. Life</th>
             <th >O&amp;M %</th>
         </thead>
@@ -376,21 +353,21 @@ Cost Item Unit Costs</button>
 {# Structure / Cost Item Costs - Start #}
 {% for r, objClassification in cost_results.items %}
 
-    <button onclick="collapseByClassName('structure_costitem_costs_{{ r }}')" class="w3-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
-Construction Costs
-                        {% if r == 'conventional' %}
-                        Conventional Structures
-                    {% else %}
-                        Non-Conventional (GSI) Structures
-                    {% endif %}</button>
+    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
+        Construction Costs -<br>
+            {% if r == 'conventional' %}
+                Conventional Structures
+            {% else %}
+                Non-Conventional (GSI) Structures
+            {% endif %}</button>
 
-    <div class="structure_costitem_costs_{{ r }} w3-container w3-hide">
+    <div class="structure_costitem_costs_{{ r }} w3-container w3-animate-left w3-hide">
         <table  class="result_table details_result_table" style="margin-bottom: 5px;">
             <thead>
                 <th colspan="2" style="text-align: left;">
                     Total Construction Costs
                 </th>
-                <th class="result_col output_col">${{ objClassification.sum_value|intcomma }}</th>
+                <th class="result_col output_col">${{ objClassification.sum_value|floatformat:"2"|intcomma }}</th>
             </thead>
         </table>
         <table  class="result_table details_result_table">
@@ -436,17 +413,15 @@ Construction Costs
 {# Structure / Cost Item O&M and Replacement Costs - Start #}
 {% for r, objClassification in structure_life_cycle_costs.items %}
 
-    <button onclick="collapseByClassName('structure_costitem_costs_o_and_m_{{ r }}')" class="w3-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
-O&M and Replacement Costs
-                        {% if r == 'conventional' %}
-                        Conventional Structures
-                    {% else %}
-                        Non-Conventional (GSI) Structures
-                    {% endif %}</button>
+    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align">
+        O&M and Replacement Costs -<br>
+            {% if r == 'conventional' %}
+                Conventional Structures
+            {% else %}
+                Non-Conventional (GSI) Structures
+            {% endif %}</button>
 
-    <div class="structure_costitem_costs_o_and_m_{{ r }} w3-container w3-hide">
-
-
+    <div class="structure_costitem_costs_o_and_m_{{ r }} w3-container w3-animate-left w3-hide">
         <table  class="result_table details_result_table" >
             <thead>
                 <th colspan="2" style="text-align: left;">
@@ -463,7 +438,6 @@ O&M and Replacement Costs
                 <tr style="height: 30px;">
                   <td style="font-weight: bold;" colspan="2"> {{ objStructure.meta.name }}  </td>
                   <td class="result_col input_col"> {{ objStructure.meta.area|intcomma }} {{ objStructure.meta.units }} </td>
-{#                  <td class="result_col output_col">{{ objStructure.costs.sum_formatted }}</td>#}
                 </tr>
                 <tr>
                     <td colspan="3" style="border: 0px solid;">

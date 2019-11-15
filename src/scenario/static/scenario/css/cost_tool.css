@@ -132,6 +132,7 @@ caption {
     color: #6c757d;
     text-align: center;
     caption-side: top;
+	font-weight: 600;
 }
 	
 /*.sft {*/
@@ -955,7 +956,9 @@ select.form-control:not([size]):not([multiple]) {
 .details_result_table {
   width: 100%!important;
 }
-
+.slightly_smaller_table{
+	font-size: 11px!important;
+}
 .caption_table {
     width: 365px;
     font-weight: bold;
@@ -1011,4 +1014,16 @@ a.ui-button:active, .ui-button:active,
 	padding-right: 2px;
 	border-style: solid;
     border-width: thin;
+}
+
+.w3-button:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.w3-button-open:after {
+  content: "\2212";
 }

@@ -566,7 +566,48 @@ function toggleCol2(bmp) {
     }
 }
 
+/* open and close the details parts.
+ *  this relies on the next dom node being the thing to collapse,
+ *  and the first class name being the 'name' to use */
+function collapseDetail(element) {
 
+    element.classList.toggle('w3-button-open');
+
+    className = element.nextElementSibling.classList[0];
+
+    var elements = document.getElementsByClassName(className);
+
+    if (elements.length > 0){
+        var i;
+        var isShowing = elements[0].classList.contains("w3-show");
+        for (i = 0; i < elements.length; i++) {
+            elements[i].classList.toggle("w3-show");
+        }
+        /* if isShowing == true then we are closing.  collapse to 0 height */
+        if (isShowing == true)
+        {
+            for (i = 0; i < elements.length; i++) {
+                elements[i].style.height = 'unset';
+            }
+        }
+        else
+        {
+            var max_height = 0;
+            var i;
+            for (i = 0; i < elements.length; i++) {
+                var height = elements[i].offsetHeight;
+
+                if (height > max_height){
+                    max_height = height;
+                }
+            }
+            for (i = 0; i < elements.length; i++) {
+                elements[i].style.height = max_height;
+            }
+        }
+
+    }
+};
 
 // function toggleInputPane(pane) {
 // 	var panes = new Array ('lotinfo','conventional','green','advanced', 'result'); //jab removed 'start','predevelopment','goal'
