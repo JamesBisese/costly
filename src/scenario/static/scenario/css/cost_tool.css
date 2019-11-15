@@ -990,6 +990,20 @@ a.ui-button:active, .ui-button:active,
     color: #ffffff!important;
 }
 
+/*.resultDetailToggleButtons {*/
+/*	text*/
+/*}*/
+
+.resultDetailToggleButton {
+	float: right;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    color: #fff;
+    background: #228EA9;
+    border-style: solid;
+    border-width: thin;
+}
+
 .w3-btn, .w3-button {
     border: none;
     display: inline-block;

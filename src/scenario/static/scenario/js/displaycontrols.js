@@ -609,6 +609,75 @@ function collapseDetail(element) {
     }
 };
 
+/* open and close the details parts.
+ *  this relies on the next dom node being the thing to collapse,
+ *  and the first class name being the 'name' to use */
+function toggleDetail(element, boolOpen) {
+
+    className = element.nextElementSibling.classList[0];
+
+    var elements = document.getElementsByClassName(className);
+
+    if (elements.length <= 0) {
+        return;
+    }
+    var i;
+    // var isShowing = elements[0].classList.contains("w3-show");
+    for (i = 0; i < elements.length; i++) {
+        var classList = elements[i].className.split(" ");
+        if (boolOpen == true && classList.indexOf("w3-show") == -1){
+            elements[i].className += " " + "w3-show";
+        }
+        else if (boolOpen == false && classList.indexOf("w3-show") != -1) {
+            elements[i].className = elements[i].className.replace(/\bw3-show\b/g, "");
+        }
+
+    }
+    /* if isShowing == true then we are closing.  collapse to 0 height */
+    if (boolOpen == true)
+    {
+        var max_height = 0;
+        var i;
+        for (i = 0; i < elements.length; i++) {
+            var height = elements[i].offsetHeight;
+
+            if (height > max_height){
+                max_height = height;
+            }
+        }
+        for (i = 0; i < elements.length; i++) {
+            elements[i].style.height = max_height;
+        }
+    }
+    else {
+        for (i = 0; i < elements.length; i++) {
+            elements[i].style.height = 'unset';
+        }
+    }
+};
+
+function expandAllDetail(element){
+    var content = document.getElementById('resultDetails');
+    kbButtons = content.getElementsByClassName("w3-container-button ");
+    for (var i = 0; i < kbButtons.length; i++){
+        var classList = kbButtons[i].className.split(" ");
+        if (classList.indexOf("w3-button-open") == -1) {
+            kbButtons[i].className += " " + "w3-button-open";
+        }
+        toggleDetail(kbButtons[i], true);
+    };
+}
+function collapseAllDetail(element){
+    var content = document.getElementById('resultDetails');
+    kbButtons = content.getElementsByClassName("w3-container-button ");
+    for (var i = 0; i < kbButtons.length; i++){
+        var classList = kbButtons[i].className.split(" ");
+        if (classList.indexOf("w3-button-open") != -1) {
+            kbButtons[i].className = kbButtons[i].className.replace(/\bw3-button-open\b/g, "");
+        }
+        toggleDetail(kbButtons[i], false);
+    };
+}
 // function toggleInputPane(pane) {
 // 	var panes = new Array ('lotinfo','conventional','green','advanced', 'result'); //jab removed 'start','predevelopment','goal'
 // 	for (var i in panes) {

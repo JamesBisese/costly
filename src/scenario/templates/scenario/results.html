@@ -224,9 +224,16 @@
 
 <hr>
 
-<div id="accordionZZZ" style="width: 387px;">
-<h3 style="text-align: center;font-weight: bold;font-size: larger;color: #6c757d;">Details</h3>
-    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align"
+<div id="resultDetails" style="width: 387px;">
+
+
+    <h3 style="text-align: center;font-weight: bold;font-size: larger;color: #6c757d;">Details</h3>
+    <div class="resultDetailToggleButtons">
+        <button type="button" class="resultDetailToggleButton" style="margin-left: 3px;" onclick="expandAllDetail()">Show All</button>
+        <button type="button" class="resultDetailToggleButton" onclick="collapseAllDetail()">Hide All</button>
+    </div>
+
+    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
             title="Areal Features...">Areal Features
     </button>
     <div class="areal_features w3-container w3-animate-slide w3-hide">
@@ -255,7 +262,7 @@
     <div style="line-height: 5px;">&nbsp; </div>
 
 {# Structure Areas - Start This is commented out since it doesn't really make sense#}
-    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align"
+    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
             title="Structure Areas...">
                         Structure Areas </button>
 
@@ -317,7 +324,7 @@
 
 
 
-<button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align"
+<button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
         title="Unit Cost for each cost item...">
 Cost Item Unit Costs</button>
 
@@ -353,7 +360,7 @@ Cost Item Unit Costs</button>
 {# Structure / Cost Item Costs - Start #}
 {% for r, objClassification in cost_results.items %}
 
-    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
+    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
         Construction Costs -<br>
             {% if r == 'conventional' %}
                 Conventional Structures
@@ -413,7 +420,7 @@ Cost Item Unit Costs</button>
 {# Structure / Cost Item O&M and Replacement Costs - Start #}
 {% for r, objClassification in structure_life_cycle_costs.items %}
 
-    <button onclick="collapseDetail(this)" class="w3-button w3-block w3-left-align">
+    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align">
         O&M and Replacement Costs -<br>
             {% if r == 'conventional' %}
                 Conventional Structures
