@@ -657,26 +657,31 @@ function toggleDetail(element, boolOpen) {
 };
 
 function expandAllDetail(element){
-    var content = document.getElementById('resultDetails');
-    kbButtons = content.getElementsByClassName("w3-container-button ");
-    for (var i = 0; i < kbButtons.length; i++){
-        var classList = kbButtons[i].className.split(" ");
-        if (classList.indexOf("w3-button-open") == -1) {
-            kbButtons[i].className += " " + "w3-button-open";
-        }
-        toggleDetail(kbButtons[i], true);
-    };
+    var resultDetails = document.getElementsByClassName('resultDetails');
+    for (var j = 0; j < resultDetails.length; j++)
+    {
+        kbButtons = resultDetails[j].getElementsByClassName("w3-container-button");
+        for (var i = 0; i < kbButtons.length; i++){
+            var classList = kbButtons[i].className.split(" ");
+            if (classList.indexOf("w3-button-open") == -1) {
+                kbButtons[i].className += " " + "w3-button-open";
+            }
+            toggleDetail(kbButtons[i], true);
+        };
+    }
 }
 function collapseAllDetail(element){
-    var content = document.getElementById('resultDetails');
-    kbButtons = content.getElementsByClassName("w3-container-button ");
-    for (var i = 0; i < kbButtons.length; i++){
-        var classList = kbButtons[i].className.split(" ");
-        if (classList.indexOf("w3-button-open") != -1) {
-            kbButtons[i].className = kbButtons[i].className.replace(/\bw3-button-open\b/g, "");
-        }
-        toggleDetail(kbButtons[i], false);
-    };
+    var resultDetails = document.getElementsByClassName('resultDetails');
+    for (var j = 0; j < resultDetails.length; j++) {
+        kbButtons = resultDetails[j].getElementsByClassName("w3-container-button");
+        for (var i = 0; i < kbButtons.length; i++) {
+            var classList = kbButtons[i].className.split(" ");
+            if (classList.indexOf("w3-button-open") != -1) {
+                kbButtons[i].className = kbButtons[i].className.replace(/\bw3-button-open\b/g, "");
+            }
+            toggleDetail(kbButtons[i], false);
+        };
+    }
 }
 // function toggleInputPane(pane) {
 // 	var panes = new Array ('lotinfo','conventional','green','advanced', 'result'); //jab removed 'start','predevelopment','goal'
