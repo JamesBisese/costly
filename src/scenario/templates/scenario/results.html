@@ -26,67 +26,68 @@
 </div>
 
 <div class="project_table">
- <table class="result_table ">
-    <td  style="width:75px;">Project Organizer</td>
-    <td class="input_col"> {{ scenario.project.project_ownership_display }}</td>
-  </tr>
-  <tr>
-    <td>Location of the project</td>
-    <td class="input_col"> {{ scenario.project.project_location }}</td>
-  <tr>
-    <td>Project Type</td>
-    <td class="input_col"> {{ scenario.project.project_type_display }}</td>
-  </tr>
-     {% if scenario.project.project_type == 'voluntary_redevelopment' %}
-  <tr>
-    <td colspan="2" style="color: red;line-height: 20px;">You have indicated that your voluntary BMP retrofit project might be
-        eligible for construction material reimbursement!
-        Check out the reimbursement program offered by the City of Raleigh!</td>
-  </tr>
-     {% endif %}
-  <tr>
-    <td>Purchase Information</td>
-    <td class="input_col"> {{ scenario.project.project_purchase_information_display }}</td>
-
-  </tr>
-  <tr>
-    <td style="height: 22px;">Total Project Area</td>
-    <td class="result_col input_col"> {{ scenario.project.project_area|intcomma }} ft<sup>2</sup> ({{ scenario.project.project_area|div:43560|floatformat:2|intcomma }} Acres)</td>
-  </tr>
-  <tr>
-    <td style="height: 22px;">Land cost per ft<sup>2</sup></td>
-    <td class="result_col input_col"> ${{ scenario.project.land_unit_cost }}</td>
-  </tr>
-  <tr>
-    <td style="height: 22px;">Land Value</td>
-    <td class="result_col output_col"> ${{ scenario.project.project_area|mul:scenario.project.land_unit_cost|floatformat:2|intcomma }}</td>
-  </tr>
-</table>
+    <table class="result_table ">
+        <tr>
+            <td  style="width:75px;">Project Organizer</td>
+            <td class="input_col"> {{ scenario.project.project_ownership_display }}</td>
+        </tr>
+        <tr>
+            <td>Location of the project</td>
+            <td class="input_col"> {{ scenario.project.project_location }}</td>
+        <tr>
+            <td>Project Type</td>
+            <td class="input_col"> {{ scenario.project.project_type_display }}</td>
+        </tr>
+{% if scenario.project.project_type == 'voluntary_redevelopment' %}
+        <tr>
+            <td colspan="2" style="color: red;line-height: 20px;">You have indicated that your voluntary BMP retrofit project might be
+                eligible for construction material reimbursement!
+                Check out the reimbursement program offered by the City of Raleigh!
+            </td>
+        </tr>
+{% endif %}
+        <tr>
+            <td>Purchase Information</td>
+            <td class="input_col"> {{ scenario.project.project_purchase_information_display }}</td>
+        </tr>
+        <tr>
+            <td style="height: 22px;">Total Project Area</td>
+            <td class="result_col input_col"> {{ scenario.project.project_area|intcomma }} ft<sup>2</sup> ({{ scenario.project.project_area|div:43560|floatformat:2|intcomma }} Acres)</td>
+        </tr>
+        <tr>
+            <td style="height: 22px;">Land cost per ft<sup>2</sup></td>
+            <td class="result_col input_col"> ${{ scenario.project.land_unit_cost }}</td>
+        </tr>
+        <tr>
+            <td style="height: 22px;">Land Value</td>
+            <td class="result_col output_col"> ${{ scenario.project.project_area|mul:scenario.project.land_unit_cost|floatformat:2|intcomma }}</td>
+        </tr>
+    </table>
 </div>
 <br>
 <div class="nutrient_storm_peak">
     <table class="result_table">
-      <tr>
-        <td>Nutrient requirements met?</td>
-        <td class="input_col"> {{ scenario.embedded_scenario.nutrient_req_met_display }}</td>
-      </tr>
-      <tr>
-        <td>Captures 90<sup>th</sup> pct storm?</td>
-        <td class="input_col"> {{ scenario.embedded_scenario.captures_90pct_storm_display }}</td>
-      </tr>
+        <tr>
+            <td>Nutrient requirements met?</td>
+            <td class="input_col"> {{ scenario.embedded_scenario.nutrient_req_met_display }}</td>
+        </tr>
+        <tr>
+            <td>Captures 90<sup>th</sup> pct storm?</td>
+            <td class="input_col"> {{ scenario.embedded_scenario.captures_90pct_storm_display }}</td>
+        </tr>
 {% if scenario.embedded_scenario.captures_90pct_storm == 'yes' %}
-      <tr>
-        <td colspan="2" style="color: red;line-height: 20px;">
-            You have indicated in this scenario a design choice that might make you
-            eligible for design review fee savings! Are you developing a new site?
-            Check out applying for the Green Raleigh Review!
-        </td>
-      </tr>
+        <tr>
+            <td colspan="2" style="color: red;line-height: 20px;">
+                You have indicated in this scenario a design choice that might make you
+                eligible for design review fee savings! Are you developing a new site?
+                Check out applying for the Green Raleigh Review!
+            </td>
+        </tr>
 {% endif %}
-      <tr>
-        <td>Meets peak flow req?</td>
-        <td class="input_col"> {{ scenario.embedded_scenario.meets_peakflow_req_display }}</td>
-      </tr>
+        <tr>
+            <td>Meets peak flow req?</td>
+            <td class="input_col"> {{ scenario.embedded_scenario.meets_peakflow_req_display }}</td>
+        </tr>
     </table>
 </div>
 <br>
@@ -125,7 +126,7 @@
         </tbody>
     </table>
 </div>
-<div class="final_costs">
+<div class="final_costs life_cycle_costs">
     <table  class="result_table">
 
         <col style="width: 60%">
@@ -159,7 +160,7 @@
 </div>
 
 
-<div class="final_costs">
+<div class="final_costs construction_costs">
     <table  class="result_table">
 
         <col style="width: 50%">
@@ -192,7 +193,7 @@
     </table>
 </div>
 
-<div class="final_costs">
+<div class="final_costs o_and_m_costs">
     <table class="result_table" >
         <col style="width: 50%">
         <col style="width: 25%">
@@ -263,8 +264,7 @@
 
 {# Structure Areas - Start This is commented out since it doesn't really make sense#}
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-            title="Structure Areas...">
-                        Structure Areas </button>
+            title="Structure Areas...">Structure Areas </button>
 
 {% for r, objClassification in cost_results.items %}
 
@@ -325,8 +325,7 @@
 
 
 <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-        title="Unit Cost for each cost item...">
-Cost Item Unit Costs</button>
+        title="Unit Cost for each cost item...">Cost Item Unit Costs</button>
 
     <div class="cost_item_unit_costs w3-container w3-animate-left w3-hide">
         <table class="result_table details_result_table slightly_smaller_table">

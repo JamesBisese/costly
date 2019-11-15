@@ -1,0 +1,84 @@
+{# this is used for results_compare.html ONLY for now. #}
+
+{% load staticfiles %}
+{% load thumbnail %}
+{% load bootstrap4 %}
+
+{#<!DOCTYPE html>#}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block description %}{% endblock description %}">
+    <link rel="shortcut icon" href="{% static 'costly/ico/logo_icon.ico' %}">
+
+    <title>{% block title %}{% include "_brandname.html" %} :: {% endblock %}</title>
+
+
+    {% bootstrap_css %}
+    <style>
+        html, body {
+          height: 100%;
+          min-height: 100%; /* for firefox */
+        }
+
+    </style>
+    {% block extra_css %}
+    {% endblock extra_css %}
+
+    <!-- Custom styles for this site -->
+    {% block styles %}
+    <link href="{% static 'costly/css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'costly/css/jquery-ui.css' %}" rel="stylesheet">
+    {% endblock styles %}
+
+    <!-- Custom tags for the head tag -->
+
+    <!-- block extrahead -->
+    {% block extrahead %}
+    {% endblock extrahead %}
+    <!-- endblock extrahead -->
+
+    {% block extra_javascript %}
+        <!-- block extrajavascript in pre-base.html -->
+    {% endblock extra_javascript %}
+
+</head>
+{##}
+<body>
+
+
+{##}
+{##}
+{# Was container, but that had too much whitespace #}
+{#    <div class="container-fluid col-lg-12">#}
+{##}
+        {% block content %}
+          Ipso Facto testing changes
+        {% endblock content %}
+{##}
+{#    </div>#}
+{##}
+    <!-- Site footer -->
+    {% block footer %}
+        <!-- Copyright notice -->
+        <a name="contact"></a>
+        <div class="container">
+            <div class="footer">
+                <div class="row">
+
+                      <p>&copy; City of Raleigh, NC {% now 'Y' %}. Send comments and questions to <a href="mailto:Jenn.Lenart@tetratech.com">
+                            Jenn.Lenart@tetratech.com</a> or <a href="mailto:Trevor.Clements@tetratech.com">
+Trevor.Clements@tetratech.com</a></p>
+
+                </div>
+            </div>
+        </div>
+    {% endblock footer %}
+{##}
+</body>
+</html>
+{##}
+{##}
+{#{% endcomment %}#}

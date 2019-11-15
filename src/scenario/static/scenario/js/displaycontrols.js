@@ -670,6 +670,7 @@ function expandAllDetail(element){
         };
     }
 }
+
 function collapseAllDetail(element){
     var resultDetails = document.getElementsByClassName('resultDetails');
     for (var j = 0; j < resultDetails.length; j++) {
@@ -683,81 +684,3 @@ function collapseAllDetail(element){
         };
     }
 }
-// function toggleInputPane(pane) {
-// 	var panes = new Array ('lotinfo','conventional','green','advanced', 'result'); //jab removed 'start','predevelopment','goal'
-// 	for (var i in panes) {
-// 		if (pane==panes[i]) {
-// 			document.getElementById('input-' + panes[i]).style.display = 'block';
-// 			document.getElementById('inputlist-' + panes[i]).className = 'active';
-// 		}
-// 		else {
-// 			document.getElementById('input-' + panes[i]).style.display = 'none';
-// 			document.getElementById('inputlist-' + panes[i]).className = 'inactive';
-// 		}
-// 	}
-// 	document.getElementById('inputs').scrollTop = 0;
-// }
-
-// function toggleResultPane(pane) {
-// 	var panes = new Array ('volume-control','land-use','runoff','costs','benefits');
-// 	for (var i in panes) {
-// 		if (document.getElementById('result-' + panes[i])) {
-// 			if (pane==panes[i]) {
-// 				document.getElementById('result-' + panes[i]).style.display = 'block';
-// 				document.getElementById('rlist-' + panes[i]).className = 'active';
-// 			}
-// 			else {
-// 				document.getElementById('result-' + panes[i]).style.display = 'none';
-// 				document.getElementById('rlist-' + panes[i]).className = 'inactive';
-// 			}
-// 		}
-// 	}
-// }
-
-// function checkInputPane() {
-// 	var panes = new Array ('lotinfo','conventional','green','advanced', 'result'); //'start','predevelopment','goal',
-// 	var pane = 'start';
-// 	for (var i in panes) {
-// 		if (document.getElementById('input-' + panes[i]).style.display == 'block') {
-// 			pane = panes[i];
-// 		}
-// 	}
-// 	return pane;
-// }
-
-// function checkResultPane() {
-// 	var panes = new Array ('volume-control','land-use','runoff','costs','benefits');
-// 	var pane = 'volume-control';
-// 	if (document.getElementById('result-volume-control')) {
-// 		for (var i in panes) {
-// 			if (document.getElementById('result-' + panes[i]).style.display == 'block') {
-// 				pane = panes[i];
-// 			}
-// 		}
-// 	}
-// 	return pane;
-// }
-
-// function adjustPane(a) {
-// 	// var minimumSize = 150;
-// 	// var maximumSize = 900;
-// 	// var increment = 100;
-// 	// var pane = document.getElementById('inputs');
-// 	// pane.style.height = '70%';
-// 	// var paneHeight = parseInt(pane.style.height);
-// 	// if (!a) {
-// 	// 		pane.style.height = '700px';
-// 	// }
-// 	// if (a=='smaller') {
-// 	// 	if (paneHeight > minimumSize + increment - 1) {
-// 	// 		paneHeight = paneHeight - increment;
-// 	// 		pane.style.height = paneHeight + 'px';
-// 	// 	}
-// 	// }
-// 	// if (a=='larger') {
-// 	// 	if (paneHeight < maximumSize - increment + 1) {
-// 	// 		paneHeight = paneHeight + increment;
-// 	// 		pane.style.height = paneHeight + 'px';
-// 	// 	}
-// 	// }
-// }

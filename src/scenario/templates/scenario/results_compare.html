@@ -1,23 +1,23 @@
+{% extends 'pre-base.html' %}
+
+
 {% load humanize %}
 {% load mathfilters %}
-    {% load staticfiles %}
+{% load staticfiles %}
+
 
 {% block extra_css %}
-
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
-
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="{% static 'scenario/css/cost_tool.css' %}" title="normal" type="text/css" media="all">
-
 <style>
 
-.parent {
+.scenarioPair {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 2fr;
     grid-column-gap: 5px;
 }
 
-.parent > div {
+.scenarioPair > div {
     text-align: center;
     border:1px solid black;
     padding: 10px;
@@ -29,24 +29,34 @@
 
 
 {% block extra_javascript %}
+    <!-- block extrajavascript in results_compare.html -->
 <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/displaycontrols.js' %}"></script>
 
 <script>
     window.onload = init_results_compare;
 
     function resize_div(div_class){
-        var max_height = 0;
-        var x = document.getElementsByClassName(div_class);
-        var i;
-        for (i = 0; i < x.length; i++) {
-            var height = x[i].offsetHeight;
-
+        let max_height = 0;
+        let max_top = 0;
+        let elements = document.getElementsByClassName(div_class);
+        for (let i = 0; i < elements.length; i++) {
+            let height = elements[i].offsetHeight;
             if (height > max_height){
                 max_height = height;
             }
         }
-        for (i = 0; i < x.length; i++) {
-            x[i].style.height = max_height;
+
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.height = max_height;
+        }
+        for (let i = 0; i < elements.length; i++) {
+            let top = elements[i].offsetTop;
+            if (top > max_top){
+                max_top = top;
+            }
+        }
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.top = max_top;
         }
     }
 
@@ -55,28 +65,45 @@
         resize_div("caption_table2");
         resize_div("project_table");
         resize_div("nutrient_storm_peak");
-        resize_div("pervious");
         resize_div("planning_and_design");
-        {#resize_div("areal_features");#}
-        {#resize_div("structure_areas_conventional");#}
-        {#resize_div("structure_areas_nonconventional");#}
-        {#resize_div("cost_item_unit_costs");#}
-        {#resize_div("structure_costitem_costs_conventional");#}
-        {#resize_div("structure_costitem_costs_nonconventional");#}
-        {#resize_div("final_costs");#}
+        resize_div("pervious");
+        resize_div("life_cycle_costs");
+        resize_div("construction_costs");
+        resize_div("o_and_m_costs");
+
     };
+
 </script>
 
 {% endblock extra_javascript %}
 
+{% block content %}
 
-{% include 'scenario/results_disclaimer.html' %}
-
-<div class="parent">
-    {% for r, obj in scenarios.items %}
-        <div>
-            {{ obj.html }}
-        </div>
-    {% endfor %}
+<div style="height: 35px; margin-top: 10px;margin-left:5px;font-size:18px;text-align: center;">
+    Compare Scenario Results
 </div>
 
+<div style="margin-left: 5px; margin-right: 5px;">
+    <div style="margin-left: 5px; width: 80%;">
+        {% include 'scenario/results_disclaimer.html' %}
+    </div>
+    <div class="scenarioPair">
+        {% for r, obj in scenarios.items %}
+            <div>
+                {{ obj.html }}
+            </div>
+        {% endfor %}
+        <div>
+            Comparison text introduction here.
+            <div class="project_table" style="position: absolute">Project table difference comment.</div>
+            <div class="nutrient_storm_peak" style="position: absolute">Nutrient/Stormwater/Peak difference comment.</div>
+            <div class="planning_and_design" style="position: absolute">Planning and Design difference comment.</div>
+            <div class="pervious" style="position: absolute">Pervious difference comment.</div>
+
+            <div class="life_cycle_costs" style="position: absolute; margin-top:10px;">Life Cycle difference comment.</div>
+            <div class="construction_costs" style="position: absolute; margin-top:10px;">Construction difference comment.</div>
+            <div class="o_and_m_costs" style="position: absolute; margin-top:10px;">O&M and Replacement difference comment.</div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
