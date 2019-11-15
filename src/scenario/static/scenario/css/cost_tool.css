@@ -961,6 +961,11 @@ select.form-control:not([size]):not([multiple]) {
 .details_result_table {
   width: 100%!important;
 }
+
+.details_result_table td  {
+  height: 20px!important;
+}
+
 .slightly_smaller_table{
 	font-size: 11px!important;
 }

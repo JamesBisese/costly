@@ -874,13 +874,13 @@ class Scenario(models.Model):
 
         # this is what serializers are supposed to do, but I don't understand how
         cost_items_dict = {}
-        cost_items = CostItem.objects.all()
+        cost_items = CostItem.objects.all().order_by('sort_nu')
         for cost_item in cost_items:
             cost_items_dict[cost_item.code] = {'code': cost_item.code,
                                                'name': cost_item.name,
                                                'units': cost_item.units}
 
-        cost_item_default_equations = CostItemDefaultEquations.objects.all()
+        cost_item_default_equations = CostItemDefaultEquations.objects.all().order_by('costitem__sort_nu')
         for obj in cost_item_default_equations:
             costitem_code = obj.costitem.code
             cost_items_dict[costitem_code]['equation'] = obj.equation_tx
@@ -889,9 +889,9 @@ class Scenario(models.Model):
 
         structures = Structures.objects.all().order_by('sort_nu')
 
-        cost_item_default_costs = CostItemDefaultCosts.objects.all()
+        cost_item_default_costs = CostItemDefaultCosts.objects.all().order_by('costitem__sort_nu')
 
-        cost_item_user_costs = CostItemUserCosts.objects.filter(scenario=self)
+        cost_item_user_costs = CostItemUserCosts.objects.filter(scenario=self).order_by('costitem__sort_nu')
 
         # testing using RelatedManager .all()
         # cost_item_user_costs = self.cost_item_user_costs.all()
@@ -964,7 +964,7 @@ class Scenario(models.Model):
         nonconventional_structures = self.nonconventional_structures
 
         # prepare the cost item user assumptions - which are per structure per cost item
-        cost_item_user_assumptions = self.cost_item_user_assumptions.all()
+        cost_item_user_assumptions = self.cost_item_user_assumptions.all().order_by('costitem__sort_nu')
 
         user_assumptions = {}
         for user_assumption in cost_item_user_assumptions:
@@ -1085,6 +1085,8 @@ class Scenario(models.Model):
                 results['unit_conversion'] = unit_conversion
 
                 equation = cost_items_dict[costitem_code]['equation']
+                results['equation'] = equation
+
 
                 # TODO: figure out where to put this
                 # equation = equation + '*' + 'unit_conversion'
@@ -1111,6 +1113,19 @@ class Scenario(models.Model):
                 except:
                     cost_amount = equation
                     results['value'] = cost_amount
+
+                results['equation'] = results['equation'].replace('area', 'a')
+                results['equation'] = results['equation'].replace('depth', 'z')
+                results['equation'] = results['equation'].replace('density', 'd')
+                results['equation'] = results['equation'].replace('number', '#')
+                if 'a' not in results['equation']:
+                    assumptions['a_area'] = ''
+                if 'z' not in results['equation']:
+                    assumptions['z_depth'] = ''
+                if 'd' not in results['equation']:
+                    assumptions['d_density'] = ''
+                if '#' not in results['equation']:
+                    assumptions['n_number'] = ''
 
             result[structure.classification]['sum_value'] += sum_value
             result[structure.classification]['structures'][structure_code] = {'structure':
