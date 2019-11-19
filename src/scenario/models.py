@@ -1106,9 +1106,9 @@ class Scenario(models.Model):
 
                 try:
                     cost_amount = eval(equation)
-                    cost_amount = round(cost_amount, 2)
+                    cost_amount = round(cost_amount, 0)
                     sum_value += cost_amount
-                    results['value'] = '${:,.2f}'.format(cost_amount)
+                    results['value'] = '{:,.0f}'.format(cost_amount)
                     results['value_unformatted'] = cost_amount
                 except:
                     cost_amount = equation
@@ -1137,14 +1137,14 @@ class Scenario(models.Model):
                                             'area': structure.area,
                                             'units': structure.units,
                                             'units_html': structure.units_html,
-                                            'sum_value': '${:,.2f}'.format(sum_value)
+                                            'sum_value': '${:,.0f}'.format(round(sum_value, 0))
                                           },
                                         'cost_data': cost_results
                                     }
 
         total_construction_cost = 0
         for classification in result:
-            result[classification]['sum_value'] = round(result[classification]['sum_value'], 2)
+            result[classification]['sum_value'] = round(result[classification]['sum_value'], 0)
             total_construction_cost += result[classification]['sum_value']
 
         """
@@ -1217,7 +1217,7 @@ class Scenario(models.Model):
                     cost_item_data = result[classification]['structures'][structure_code]['cost_data'][costitem_code]
 
                     construction_cost = cost_item_data['results']['value_unformatted']
-                    planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 2)
+                    planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 0)
 
                     replacement_life = cost_item_data['costs']['replacement_life']
                     o_and_m_pct = cost_item_data['costs']['o_and_m_pct']
@@ -1242,7 +1242,7 @@ class Scenario(models.Model):
                     if number_of_replacements > 0:
                         for i in range(replacement_life, study_life + 1, replacement_life):
                             replacement_years.append(i)
-                            replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 2)
+                            replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 0)
                             replacement_costs += replacement_cost
                             # replacements.append(replacement_cost)
                             if value_of_first_replacement == 0:
@@ -1261,8 +1261,8 @@ class Scenario(models.Model):
                     #         if value_of_first_replacement == 0:
                     #             value_of_first_replacement = replacement_costs
 
-                    o_and_m_costs = round(o_and_m_costs, 2)
-                    replacement_costs = round(replacement_costs, 2)
+                    o_and_m_costs = round(o_and_m_costs, 0)
+                    replacement_costs = round(replacement_costs, 0)
 
                     total_o_and_m_cost += o_and_m_costs
                     total_replacement_cost += replacement_costs
@@ -1272,26 +1272,26 @@ class Scenario(models.Model):
                     # add to structure costs
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'] += costs_sum
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum_formatted'] = \
-                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'])
+                        '${:,.0f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['sum'])
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum'] += o_and_m_costs
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum_formatted'] = \
-                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum'])
+                        '${:,.0f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['o_and_m_sum'])
 
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum'] += replacement_costs
                     structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum_formatted'] = \
-                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum'])
+                        '${:,.0f}'.format(structure_life_cycle_costs[classification]['structures'][structure_code]['costs']['replacement_sum'])
                     # add to classifiction costs
                     structure_life_cycle_costs[classification]['costs']['o_and_m_sum'] += o_and_m_costs
                     structure_life_cycle_costs[classification]['costs']['o_and_m_sum_formatted'] = \
-                        '${:,g}'.format(structure_life_cycle_costs[classification]['costs']['o_and_m_sum'])
+                        '${:,.0f}'.format(structure_life_cycle_costs[classification]['costs']['o_and_m_sum'])
 
                     structure_life_cycle_costs[classification]['costs']['replacement_sum'] += replacement_costs
                     structure_life_cycle_costs[classification]['costs']['replacement_sum_formatted'] = \
-                        '${:,g}'.format(structure_life_cycle_costs[classification]['costs']['replacement_sum'])
+                        '${:,.0f}'.format(structure_life_cycle_costs[classification]['costs']['replacement_sum'])
 
                     structure_life_cycle_costs[classification]['costs']['sum'] += costs_sum
                     structure_life_cycle_costs[classification]['costs']['sum_formatted'] = \
-                        '${:,.2f}'.format(structure_life_cycle_costs[classification]['costs']['sum'])
+                        '${:,.0f}'.format(structure_life_cycle_costs[classification]['costs']['sum'])
 
                     structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][costitem_code] = {
                         'meta': {
@@ -1300,14 +1300,14 @@ class Scenario(models.Model):
                         },
                         'costs': {
                             'construction': construction_cost,
-                            'construction_formatted': '${:,.2f}'.format(construction_cost),
+                            'construction_formatted': '${:,.0f}'.format(construction_cost),
                             'planning_and_design': planning_and_design_costs,
-                            'planning_and_design_formatted': '${:,.2f}'.format(planning_and_design_costs),
-                            'o_and_m': round(o_and_m_costs, 2),
-                            'o_and_m_formatted': '${:,.2f}'.format(o_and_m_costs),
+                            'planning_and_design_formatted': '${:,.0f}'.format(planning_and_design_costs),
+                            'o_and_m': round(o_and_m_costs, 0),
+                            'o_and_m_formatted': '${:,.0f}'.format(o_and_m_costs),
                             'first_replacement': value_of_first_replacement,
-                            'replacement': round(replacement_costs, 2),
-                            'replacement_formatted': '${:,.2f}'.format(replacement_costs),
+                            'replacement': round(replacement_costs, 0),
+                            'replacement_formatted': '${:,.0f}'.format(replacement_costs),
                             'replacement_years': replacement_years,
                         }
                     }

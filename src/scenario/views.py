@@ -698,21 +698,8 @@ def structure_cost_item_result_json(structure,
                                                   'help_text': obj.help_text
                                                 }
 
-    # if len(cost_item_user_assumptions) > 0:
-    #     for obj in cost_item_user_assumptions:
-    #         structure_costs['data'][obj.costitem.code] = {'checked': obj.checked,
-    #                                                       # 'factor_assumption_tx': obj.factor_assumption_tx,
-    #                                                       'a_area': obj.a_area,
-    #                                                       'n_number': obj.n_number,
-    #                                                       'cost_source': 'TBD1',
-    #                                                       'unit_cost': 'TBD1',
-    #                                                       'units': obj.costitem.units,
-    #                                                       'equation': 'TBD1'
-    #                                                       }
-    # else:
     for obj in cost_item_default_assumptions:
         structure_costs['data'][obj.costitem.code] = {'checked': True,
-                                                      # 'factor_assumption_tx': obj.factor_assumption_tx,
                                                       'a_area': obj.a_area,
                                                       'n_number': obj.n_number,
                                                       'cost_source': 'rsmeans',
@@ -1011,7 +998,7 @@ def structure_cost_item_json(structure,
             if obj.user_input_cost is not None:
                 # note: this is a Money field and this just uses the decimal part
                 unit_cost = obj.user_input_cost.amount
-                unit_cost_formatted = '${:,.2f}'.format(unit_cost)
+                unit_cost_formatted = '${:,.2f}'.format(obj.user_input_cost.amount)
 
         # add the user costs data
         structure_costs['data'][costitem_code]['cost_source'] = cost_source
@@ -1462,18 +1449,24 @@ def scenario_table_html(scenario):
 
         unit_cost = cost_item_obj.rsmeans_va
         base_year = ''
-        replacement_life =cost_item_obj.replacement_life
+        replacement_life = cost_item_obj.replacement_life
+        replacement_life_source = 'Default'
         o_and_m_pct = cost_item_obj.o_and_m_pct
-
+        o_and_m_pct_source = 'Default'
 
         if code in cost_item_user_cost_dict:
             # update stuff
-            replacement_life = cost_item_user_cost_dict[code]['replacement_life']
-            o_and_m_pct = cost_item_user_cost_dict[code]['o_and_m_pct']
+            if cost_item_user_cost_dict[code]['replacement_life'] != replacement_life:
+                replacement_life = cost_item_user_cost_dict[code]['replacement_life']
+                replacement_life_source = 'User'
+
+            if cost_item_user_cost_dict[code]['o_and_m_pct'] != o_and_m_pct:
+                o_and_m_pct = cost_item_user_cost_dict[code]['o_and_m_pct']
+                o_and_m_pct_source = 'User'
 
             if cost_item_user_cost_dict[code]['cost_source'] == 'user':
                 cost_source_tx = 'User'
-                unit_cost = cost_item_user_cost_dict[code]['user_input_cost']
+                unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
                 base_year = cost_item_user_cost_dict[code]['base_year']
             #TBD the cost_source text should match, or almost match, the variable name
             #TODO change text to db_25pct_va or at least db_25pct
@@ -1493,10 +1486,12 @@ def scenario_table_html(scenario):
             'units': cost_item_obj.costitem.units,
 
             'cost_source': cost_source_tx,
-            'unit_cost': unit_cost,
+            'unit_cost': unit_cost.amount,
             'base_year': base_year,
             'replacement_life': replacement_life,
+            'replacement_life_source': replacement_life_source,
             'o_and_m_pct': o_and_m_pct,
+            'o_and_m_pct_source': o_and_m_pct_source
         })
 
 
@@ -1513,7 +1508,7 @@ def scenario_table_html(scenario):
             if cost_item_user_cost_dict[code]['cost_source'] == 'user':
                 cost_item_obj['cost_source'] = 'User'
                 # change the value to a Money
-                cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
+                cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD').amount
                 cost_item_obj['base_year'] = cost_item_user_cost_dict[code]['base_year']
 
 

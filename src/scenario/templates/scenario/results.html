@@ -10,6 +10,10 @@
 .result_table td  {
   height: 30px;
 }
+.dollar {
+    float: left;
+    display: inline-block;
+}
 </style>
 
 <div class="caption_table2">
@@ -140,23 +144,23 @@
         </thead>
         <tr>
           <td style="font-weight: bold;">Construction</td>
-          <td class="result_col output_col">${{ project_life_cycle_costs.construction|floatformat:"0"|intcomma }}</td>
+            <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.construction|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Planning and Design</td>
-          <td class="result_col output_col">${{ project_life_cycle_costs.planning_and_design|floatformat:"0"|intcomma}}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.planning_and_design|floatformat:"0"|intcomma}}</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">O&M</td>
-          <td class="result_col output_col">${{ project_life_cycle_costs.O_and_M|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.O_and_M|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Replacement</td>
-          <td class="result_col output_col">${{ project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
           <td style="font-weight: bold;text-align: right;">Total</td>
-          <td class="result_col output_col" style="border-top: double;">${{ project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{ project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>
@@ -177,20 +181,20 @@
         <tr>
           <td style="font-weight: bold;">Non-Conventional (GSI)</td>
 
-          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|floatformat:"0"|intcomma }}</td>
-          <td class="result_col output_col">${{ cost_results.nonconventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ cost_results.nonconventional.sum_value|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ cost_results.nonconventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Conventional</td>
 
-          <td class="result_col output_col">${{ cost_results.conventional.sum_value|floatformat:"0"|intcomma}}</td>
-            <td class="result_col output_col">${{ cost_results.conventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma}}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ cost_results.conventional.sum_value|floatformat:"0"|intcomma}}</td>
+            <td class="result_col output_col"><div class="dollar">$</div>{{ cost_results.conventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma}}</td>
         </tr>
         <tr>
           <td style="font-weight: bold;text-align: right;">Total</td>
 
-          <td class="result_col output_col"  style="border-top: double;">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
-          <td class="result_col output_col"  style="border-top: double;">${{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"  style="border-top: double;"><div class="dollar">$</div>{{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"  style="border-top: double;"><div class="dollar">$</div>{{ cost_results.nonconventional.sum_value|add:cost_results.conventional.sum_value|mul:scenario.embedded_scenario.planning_and_design_factor|div:100|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>
@@ -213,14 +217,14 @@
                     {% else %}
                         Non-Conventional (GSI)
                     {% endif %}</td>
-                <td class="result_col output_col">${{ objClassification.costs.o_and_m_sum|floatformat:"0"|intcomma }}  </td>
-                <td class="result_col output_col">${{ objClassification.costs.replacement_sum|floatformat:"0"|intcomma }} </td>
+                <td class="result_col output_col"><div class="dollar">$</div>{{ objClassification.costs.o_and_m_sum|floatformat:"0"|intcomma }}  </td>
+                <td class="result_col output_col"><div class="dollar">$</div>{{ objClassification.costs.replacement_sum|floatformat:"0"|intcomma }} </td>
             </tr>
 {% endfor %}
         <tr>
             <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
-            <td class="result_col output_col" style="border-top: double;">${{structure_life_cycle_costs.nonconventional.costs.o_and_m_sum|add:structure_life_cycle_costs.conventional.costs.o_and_m_sum|floatformat:"0"|intcomma }}</td>
-            <td class="result_col output_col" style="border-top: double;">${{ structure_life_cycle_costs.nonconventional.costs.replacement_sum|add:structure_life_cycle_costs.conventional.costs.replacement_sum|floatformat:"0"|intcomma }}</td>
+            <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{structure_life_cycle_costs.nonconventional.costs.o_and_m_sum|add:structure_life_cycle_costs.conventional.costs.o_and_m_sum|floatformat:"0"|intcomma }}</td>
+            <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{ structure_life_cycle_costs.nonconventional.costs.replacement_sum|add:structure_life_cycle_costs.conventional.costs.replacement_sum|floatformat:"0"|intcomma }}</td>
         </tr>
     </table>
 </div>
@@ -237,7 +241,7 @@
     </div>
 
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-            title="Areal Features...">Areal Features
+            >Areal Features
     </button>
     <div class="areal_features w3-container w3-animate-slide w3-hide">
         <table class="result_table details_result_table">
@@ -266,7 +270,7 @@
 
 {# Structure Areas - Start This is commented out since it doesn't really make sense#}
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-            title="Structure Areas...">Structure Areas </button>
+            >Structure Areas </button>
 
 {% for r, objClassification in cost_results.items %}
 
@@ -322,7 +326,7 @@
 
 
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-        title="Unit Cost for each cost item...">Cost Item Unit Costs</button>
+        >Cost Item Unit Costs</button>
 
     <div class="cost_item_unit_costs w3-container w3-animate-left w3-hide">
         <table class="result_table details_result_table slightly_smaller_table">
@@ -342,11 +346,11 @@
             <td> {{ obj.label }}</td>
             <td > {{ obj.units }}</td>
             <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.cost_source }}</td>
-            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.unit_cost }}</td>
+            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"><div class="dollar">$</div> {{ obj.unit_cost }}</td>
 
             <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.base_year }}</td>
-            <td class="result_col output_col"> {{ obj.replacement_life }}</td>
-            <td class="result_col output_col"> {{ obj.o_and_m_pct }}</td>
+            <td class="result_col {% if obj.replacement_life_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.replacement_life }}</td>
+            <td class="result_col {% if obj.o_and_m_pct_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.o_and_m_pct }}</td>
         </tr>
 
 {% endfor %}
@@ -358,7 +362,7 @@
 
 
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-        title="Structure/Cost Item Factors for each structure / cost item...">Structure/Cost Item Factors</button>
+        >Structure/Cost Item Factors</button>
 {% for r, objClassification in cost_results.items %}
 
 {#    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">#}
@@ -444,7 +448,7 @@
                 <th colspan="2" style="text-align: left;">
                     Total Construction Costs
                 </th>
-                <th class="result_col output_col">${{ objClassification.sum_value|floatformat:"2"|intcomma }}</th>
+                <th class="result_col output_col"><div class="dollar">$</div>{{ objClassification.sum_value|floatformat:"0"|intcomma }}</th>
             </thead>
         </table>
         <table  class="result_table details_result_table">
@@ -470,12 +474,12 @@
                             {% for r,objC in obj.cost_data.items %}
                                 <tr>
                                     <td>{{ objC.assumptions.name }}</td>
-                                    <td class="result_col output_col">{{ objC.results.value }}</td>
+                                    <td class="result_col output_col"><div class="dollar">$</div>{{ objC.results.value }}</td>
                                 </tr>
                             {% endfor %}
                             <tr>
                                 <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
-                                <td class="result_col output_col" style="border-top: double;">{{ obj.structure.sum_value }}</td>
+                                <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{ obj.structure.sum_value }}</td>
                             </tr>
                         </table>
                     </td>
@@ -504,7 +508,7 @@
                 <th colspan="2" style="text-align: left;">
                     Total O&M and Replacement Costs
                 </th>
-                <th class="result_col output_col">{{ objClassification.costs.sum_formatted }}</th>
+                <th class="result_col output_col"><div class="dollar">$</div>{{ objClassification.costs.sum|floatformat:"0"|intcomma }}</th>
             </thead>
         </table>
         <table  class="result_table details_result_table">
@@ -522,22 +526,25 @@
                 <tr>
                     <td colspan="3" style="border: 0px solid;">
                         <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
+                            <col style="width: 50%">
+                            <col style="width: 25%">
+                            <col style="width: 25%">
                             <thead>
-                                <th class="cost_item_th" style="width: 70%;">Cost Items</th>
+                                <th class="cost_item_th">Cost Items</th>
                                 <th class="cost_item_th">O&amp;M</th>
                                 <th class="cost_item_th">Replacement</th>
                             </thead>
                             {% for r,objCostItem in objStructure.cost_items.items %}
                                 <tr>
                                     <td>{{ objCostItem.meta.name }}</td>
-                                    <td class="result_col output_col"> {{ objCostItem.costs.o_and_m_formatted }}  </td>
-                                   <td class="result_col output_col"> {{ objCostItem.costs.replacement_formatted}} </td>
+                                    <td class="result_col output_col"><div class="dollar">$</div> {{ objCostItem.costs.o_and_m|floatformat:"0"|intcomma }}  </td>
+                                   <td class="result_col output_col"><div class="dollar">$</div> {{ objCostItem.costs.replacement|floatformat:"0"|intcomma}} </td>
                                 </tr>
                             {% endfor %}
                             <tr>
                                 <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
-                                <td class="result_col output_col" style="border-top: double;">{{ objStructure.costs.o_and_m_sum_formatted }}</td>
-                                <td class="result_col output_col" style="border-top: double;">{{ objStructure.costs.replacement_sum_formatted }}</td>
+                                <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{ objStructure.costs.o_and_m_sum|floatformat:"0"|intcomma }}</td>
+                                <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{ objStructure.costs.replacement_sum|floatformat:"0"|intcomma }}</td>
                             </tr>
                         </table>
                     </td>
