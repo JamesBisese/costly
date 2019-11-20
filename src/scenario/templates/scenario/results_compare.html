@@ -12,7 +12,9 @@
 <style>
 
 .scenarioPair {
+    display:-ms-grid;
     display: grid;
+    -ms-grid-columns:1fr 1fr 2fr;
     grid-template-columns: 1fr 1fr 2fr;
     grid-column-gap: 5px;
 }
@@ -21,6 +23,19 @@
     text-align: center;
     border:1px solid black;
     padding: 10px;
+}
+
+.scenario_1{
+   -ms-grid-row:1;
+   -ms-grid-column:1;
+}
+.scenario_2{
+   -ms-grid-row:1;
+   -ms-grid-column:2;
+}
+.scenario_compare{
+   -ms-grid-row:1;
+   -ms-grid-column:3;
 }
 </style>
 
@@ -88,12 +103,14 @@
         {% include 'scenario/results_disclaimer.html' %}
     </div>
     <div class="scenarioPair">
+
+
         {% for r, obj in scenarios.items %}
-            <div>
+            <div class="scenario_{{ forloop.counter }}">
                 {{ obj.html }}
             </div>
         {% endfor %}
-        <div>
+        <div class="scenario_compare">
             Comparison text introduction here.
             <div class="project_table" style="position: absolute">Project table difference comment.</div>
             <div class="nutrient_storm_peak" style="position: absolute">Nutrient/Stormwater/Peak difference comment.</div>
@@ -102,7 +119,7 @@
 
             <div class="life_cycle_costs" style="position: absolute; margin-top:10px;">Life Cycle difference comment.</div>
             <div class="construction_costs" style="position: absolute; margin-top:10px;">Construction difference comment.</div>
-            <div class="o_and_m_costs" style="position: absolute; margin-top:10px;">O&M and Replacement difference comment.</div>
+            <div class="o_and_m_costs" style="position: absolute; margin-top:10px;">O&amp;M and Replacement difference comment.</div>
         </div>
     </div>
 </div>

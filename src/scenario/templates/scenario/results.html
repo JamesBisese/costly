@@ -139,8 +139,11 @@
         <col style="width: 40%">
         <caption>Project Life Cycle Costs</caption>
         <thead>
-            <th class="cost_item_th">Item</th>
-            <th class="cost_item_th">Dollars</th>
+            <tr>
+                <th class="cost_item_th">Item</th>
+                <th class="cost_item_th">Dollars</th>
+            </tr>
+
         </thead>
         <tr>
           <td style="font-weight: bold;">Construction</td>
@@ -151,7 +154,7 @@
           <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.planning_and_design|floatformat:"0"|intcomma}}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">O&M</td>
+          <td style="font-weight: bold;">O&amp;M</td>
           <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.O_and_M|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
@@ -174,9 +177,11 @@
         <col style="width: 25%">
         <caption>Project Construction Costs</caption>
         <thead>
+        <tr>
             <th class="cost_item_th">Structure Class</th>
             <th class="cost_item_th">Construction</th>
             <th class="cost_item_th">P &amp; D</th>
+        </tr>
         </thead>
         <tr>
           <td style="font-weight: bold;">Non-Conventional (GSI)</td>
@@ -204,11 +209,11 @@
         <col style="width: 50%">
         <col style="width: 25%">
         <col style="width: 25%">
-        <caption>O&M and Replacement Costs</caption>
-        <thead>
+        <caption>O&amp;M and Replacement Costs</caption>
+        <thead><tr>
             <th class="cost_item_th" >Structure Class</th>
             <th class="cost_item_th">O&amp;M</th>
-            <th class="cost_item_th">Replacement</th>
+            <th class="cost_item_th">Replacement</th></tr>
         </thead>
 {% for r, objClassification in structure_life_cycle_costs.items %}
             <tr>
@@ -245,10 +250,11 @@
     </button>
     <div class="areal_features w3-container w3-animate-slide w3-hide">
         <table class="result_table details_result_table">
-        <thead>
+        <thead><tr>
           <th>Areal Feature</th>
           <th>Area ft<sup>2</sup></th>
           <th>% Project Area</th>
+        </tr>
         </thead>
         {% for r,obj in scenario.areal_features.items %}
           {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}
@@ -279,7 +285,7 @@
             {% if r == 'conventional' %}
                 style="margin-top: 10px;"
             {% endif %}>
-            <thead>
+            <thead><tr>
                 <th colspan="3" style="text-align: left;">
                     {% if r == 'conventional' %}
                         Conventional Structures
@@ -287,11 +293,12 @@
                         Non-Conventional (GSI) Structures
                     {% endif %}
                 </th>
+            </tr>
             </thead>
-            <thead>
+            <thead><tr>
                 <th>Structure</th>
                 <th>Size</th>
-                <th>% Project Area</th>
+                <th>% Project Area</th></tr>
             </thead>
             {% for r,obj in objClassification.structures.items %}
                 <tr>
@@ -330,7 +337,7 @@
 
     <div class="cost_item_unit_costs w3-container w3-animate-left w3-hide">
         <table class="result_table details_result_table slightly_smaller_table">
-        <thead>
+        <thead><tr>
             <th>Cost Item</th>
             <th >Units</th>
             <th >Source</th>
@@ -339,6 +346,7 @@
             <th >Yr</th>
             <th >Rep. Life</th>
             <th >O&amp;M %</th>
+        </tr>
         </thead>
 {% for obj in cost_item_costs %}
 
@@ -371,7 +379,7 @@
 
     <div class="structure_costitem_factors w3-container w3-animate-left w3-hide">
         <table  class="result_table details_result_table" style="margin-bottom: 5px;">
-            <thead>
+            <thead><tr>
                 <th style="text-align: center;">
                     {% if r == 'conventional' %}
                         Conventional Structures
@@ -379,12 +387,13 @@
                         Non-Conventional (GSI) Structures
                     {% endif %}
                 </th>
+            </tr>
             </thead>
         </table>
         <table  class="result_table details_result_table">
-            <thead>
+            <thead><tr>
                 <th class="cost_item_th" colspan="2">Structures</th>
-                <th class="cost_item_th">Size</th>
+                <th class="cost_item_th">Size</th></tr>
 {#                <th class="cost_item_th">Cost</th>#}
             </thead>
             {% for r,obj in objClassification.structures.items %}
@@ -403,13 +412,14 @@
                             <col style="width: 10%">
                             <col style="width: 12%">
                             <col style="width: 12%">
-                            <thead>
+                            <thead><tr>
                                 <th class="cost_item_th">Cost Items</th>
                                 <th class="cost_item_th">Area<br>(a)</th>
                                 <th class="cost_item_th">Depth (z)</th>
                                 <th class="cost_item_th">Density (d)</th>
                                 <th class="cost_item_th">Number (#)</th>
                                 <th class="cost_item_th">Equation</th>
+                            </tr>
                             </thead>
                             {% for r,objC in obj.cost_data.items %}
                                 <tr>
@@ -444,19 +454,20 @@
 
     <div class="structure_costitem_costs_{{ r }} w3-container w3-animate-left w3-hide">
         <table  class="result_table details_result_table" style="margin-bottom: 5px;">
-            <thead>
+            <thead><tr>
                 <th colspan="2" style="text-align: left;">
                     Total Construction Costs
                 </th>
                 <th class="result_col output_col"><div class="dollar">$</div>{{ objClassification.sum_value|floatformat:"0"|intcomma }}</th>
+            </tr>
             </thead>
         </table>
         <table  class="result_table details_result_table">
-            <thead>
+            <thead><tr>
                 <th class="cost_item_th" colspan="2">Structures</th>
                 <th class="cost_item_th">Size</th>
 {#                <th class="cost_item_th">Cost</th>#}
-            </thead>
+           </tr> </thead>
             {% for r,obj in objClassification.structures.items %}
 
                 <tr>
@@ -467,9 +478,9 @@
                 <tr>
                     <td colspan="3" style="border: 0px solid;">
                         <table class="result_table" style="width:100%; margin-top: 2px; margin-bottom: 5px;">
-                            <thead>
+                            <thead><tr>
                                 <th class="cost_item_th" style="width: 70%;">Cost Items</th>
-                                <th class="cost_item_th">Cost</th>
+                                <th class="cost_item_th">Cost</th></tr>
                             </thead>
                             {% for r,objC in obj.cost_data.items %}
                                 <tr>
@@ -495,7 +506,7 @@
 {% for r, objClassification in structure_life_cycle_costs.items %}
 
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align">
-        O&M and Replacement Costs -<br>
+        O&amp;M and Replacement Costs -<br>
             {% if r == 'conventional' %}
                 Conventional Structures
             {% else %}
@@ -504,18 +515,19 @@
 
     <div class="structure_costitem_costs_o_and_m_{{ r }} w3-container w3-animate-left w3-hide">
         <table  class="result_table details_result_table"  style="margin-bottom: 5px;">
-            <thead>
+            <thead><tr>
                 <th colspan="2" style="text-align: left;">
-                    Total O&M and Replacement Costs
+                    Total O&amp;M and Replacement Costs
                 </th>
                 <th class="result_col output_col"><div class="dollar">$</div>{{ objClassification.costs.sum|floatformat:"0"|intcomma }}</th>
-            </thead>
+           </tr> </thead>
         </table>
         <table  class="result_table details_result_table">
-            <thead>
-            <thead>
+
+            <thead><tr>
                 <th class="cost_item_th" colspan="2">Structure</th>
                 <th class="cost_item_th">Size</th>
+        </tr>
             </thead>
             {% for r,objStructure in objClassification.structures.items %}
 
@@ -529,11 +541,11 @@
                             <col style="width: 50%">
                             <col style="width: 25%">
                             <col style="width: 25%">
-                            <thead>
+                            <thead><tr>
                                 <th class="cost_item_th">Cost Items</th>
                                 <th class="cost_item_th">O&amp;M</th>
                                 <th class="cost_item_th">Replacement</th>
-                            </thead>
+                            </tr></thead>
                             {% for r,objCostItem in objStructure.cost_items.items %}
                                 <tr>
                                     <td>{{ objCostItem.meta.name }}</td>
