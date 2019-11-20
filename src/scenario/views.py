@@ -842,7 +842,7 @@ def structure_cost_item_result_json(structure,
             try:
                 cost_amount = eval(equation)
                 cost_item_data['equation_value'] = '${:,.2f}'.format(cost_amount)
-                cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
+                # cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
             except:
                 cost_amount = equation
                 cost_item_data['equation_value'] = cost_amount
@@ -982,7 +982,7 @@ def structure_cost_item_json(structure,
 
         cost_source = None
         unit_cost = None
-        unit_cost_formatted = ''
+        # unit_cost_formatted = ''
 
         if obj.user_input_cost is not None:
             # note: this is a Money field
@@ -998,12 +998,12 @@ def structure_cost_item_json(structure,
             if obj.user_input_cost is not None:
                 # note: this is a Money field and this just uses the decimal part
                 unit_cost = obj.user_input_cost.amount
-                unit_cost_formatted = '${:,.2f}'.format(obj.user_input_cost.amount)
+                # unit_cost_formatted = '${:,.2f}'.format(obj.user_input_cost.amount)
 
         # add the user costs data
         structure_costs['data'][costitem_code]['cost_source'] = cost_source
         structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
-        structure_costs['data'][costitem_code]['unit_cost_formatted'] = unit_cost_formatted
+        # structure_costs['data'][costitem_code]['unit_cost_formatted'] = unit_cost_formatted
         structure_costs['data'][costitem_code]['o_and_m_pct'] = int(obj.o_and_m_pct)
         structure_costs['data'][costitem_code]['replacement_life'] = int(obj.replacement_life)
 
@@ -1038,7 +1038,7 @@ def structure_cost_item_json(structure,
                 unit_cost = obj.db_75pct_va.amount
 
             structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
-            structure_costs['data'][costitem_code]['unit_cost_formatted'] = '${:,.2f}'.format(unit_cost)
+            # structure_costs['data'][costitem_code]['unit_cost_formatted'] = '${:,.2f}'.format(unit_cost)
 
     """
         TADA - this is the calculation (started on this 2019-07-15)
@@ -1098,7 +1098,7 @@ def structure_cost_item_json(structure,
                 cost_amount = eval(equation)
                 cost_item_data['equation_value'] = '${:,.2f}'.format(cost_amount)
                 cost_item_data['construction_cost'] = round(cost_amount, 2)
-                cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
+                # cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
             except :
                 cost_amount = equation
                 cost_item_data['equation_value'] = 'err:' + cost_amount

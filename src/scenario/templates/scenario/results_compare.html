@@ -37,6 +37,22 @@
    -ms-grid-row:1;
    -ms-grid-column:3;
 }
+ .reorderButton {
+    position: relative;
+    top: -5px;
+    float: right;
+    background:none!important;
+    color:inherit;
+    border:none;
+    padding:0!important;
+    font: inherit;
+    /*border is optional*/
+    border-bottom: 0px; /*1px solid #444;*/
+    cursor: pointer;
+}
+ .reorderButton img {
+	border-radius: 10px;
+ }
 </style>
 
 {% endblock extra_css %}
@@ -75,6 +91,37 @@
         }
     }
 
+    function reorderScenarios(button_context) {
+        leftScenarioDiv = document.getElementsByClassName('scenario_1')[0];
+        rightScenarioDiv = document.getElementsByClassName('scenario_2')[0];
+        var leftHTML = leftScenarioDiv.innerHTML;
+        // remove the button
+        rightScenarioDiv.getElementsByClassName('buttonHolder')[0].innerHTML = '';
+
+        leftScenarioDiv.innerHTML = rightScenarioDiv.innerHTML;
+
+        rightScenarioDiv.innerHTML = leftHTML;
+
+        captionTableDiv = rightScenarioDiv.getElementsByClassName('buttonHolder')[0];
+
+        var buttonDiv = document.createElement("button");
+        buttonDiv.type = "button";
+        buttonDiv.classList.add("reorderButton");
+        buttonDiv.addEventListener("click", reorderScenarios);
+
+        var imageDiv = document.createElement("img");
+        imageDiv.src = "/static/scenario/images/swap.png";
+        imageDiv.style.border = "0";
+        imageDiv.style.width = "20";
+        imageDiv.style.height = "20";
+        buttonDiv.appendChild(imageDiv);
+
+        captionTableDiv.appendChild(buttonDiv);
+
+        compareScenarios();
+
+        return;
+    }
     function init_results_compare() {
         // get these divs to take up the same page height
         resize_div("caption_table2");
@@ -86,8 +133,43 @@
         resize_div("construction_costs");
         resize_div("o_and_m_costs");
 
-    };
+        // add a 'switch-sides' button to the top left side of the
+        // right side scenario
+        rightScenarioDiv = document.getElementsByClassName('scenario_2')[0];
 
+        captionTableDiv = rightScenarioDiv.getElementsByClassName('buttonHolder')[0];
+
+        var buttonDiv = document.createElement("button");
+        buttonDiv.type = "button";
+        buttonDiv.classList.add("reorderButton");
+        buttonDiv.addEventListener("click", reorderScenarios);
+
+        var imageDiv = document.createElement("img");
+        imageDiv.src = "/static/scenario/images/swap.png";
+        imageDiv.style.border = "0";
+        imageDiv.style.width = "20";
+        imageDiv.style.height = "20";
+        buttonDiv.appendChild(imageDiv);
+
+        captionTableDiv.appendChild(buttonDiv);
+
+        compareScenarios();
+    };
+    function compareScenarios(button_context) {
+        leftScenarioDiv = document.getElementsByClassName('scenario_1')[0];
+        rightScenarioDiv = document.getElementsByClassName('scenario_2')[0];
+
+        scenario_compareDiv = document.getElementsByClassName('scenario_compare')[0];
+        life_cycle_costsDiv = scenario_compareDiv.getElementsByClassName('life_cycle_costs')[0];
+
+        LEFT_project_life_cycle_costs_total = leftScenarioDiv.getElementsByClassName('project_life_cycle_costs_total')[0].innerHTML;
+        RIGHTproject_life_cycle_costs_total = rightScenarioDiv.getElementsByClassName('project_life_cycle_costs_total')[0].innerHTML;
+
+        life_cycle_costsDiv.innerHTML = 'Left: ' + LEFT_project_life_cycle_costs_total + ' Right: ' + RIGHTproject_life_cycle_costs_total;
+
+
+        return;
+    }
 </script>
 
 {% endblock extra_javascript %}
