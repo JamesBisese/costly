@@ -1318,7 +1318,7 @@ def costitem_help_html(costitem_meta, costitem_code):
 
 
 
-class MultipleScenarioResults(APIView):
+class CompareScenarioResults(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "scenario/results_compare.html"
 
@@ -1334,7 +1334,10 @@ class MultipleScenarioResults(APIView):
             scenario_table = scenario_table_html(scenario)
             scenarios[id] = {'id': id, 'html': scenario_table, 'data': scenario}
 
-        comparison_column_html = comparison_column(ids, scenarios)
+        left_scenario = scenarios[ids[0]]['data']
+        right_scenario = scenarios[ids[1]]['data']
+
+        comparison_column_html = comparison_column(ids, left_scenario, right_scenario)
 
         comparison = {'html': comparison_column_html}
 
@@ -1342,6 +1345,23 @@ class MultipleScenarioResults(APIView):
         #
         #
         return Response(context)
+
+class CompareScenarioColumn(APIView):
+
+    def get(self, request, multiple_pks):
+        pass
+
+    def get(self, request):
+        scenarios = {}
+        id_tx = request.query_params['id']
+        ids = id_tx.split(',')
+
+        left_scenario = get_object_or_404(Scenario, pk=ids[0])
+        right_scenario = get_object_or_404(Scenario, pk=ids[1])
+
+        comparison_column_html = comparison_column(ids, left_scenario, right_scenario)
+
+        return HttpResponse(comparison_column_html)
 
 #
 # this is the scenario data in a single html partial table
@@ -1364,13 +1384,13 @@ class ScenarioResults(APIView):
 #
 # generate the Results table and return as an HTML string (make sure this is true)
 #
-def comparison_column(ids, scenarios):
+def comparison_column(ids, left_scenario, right_scenario):
 
     # this is templates/scenario/results
     template_name = "scenario/comparison_column.html"
 
-    left = scenarios[ids[0]]['data']
-    right = scenarios[ids[1]]['data']
+    left = left_scenario
+    right = right_scenario
 
     left_costs = left.get_costs()
     right_costs = right.get_costs()
@@ -1434,13 +1454,6 @@ def comparison_column(ids, scenarios):
 
     context = {
                 'diff': diff,
-               #  'scenario': serializer.data,
-               # 'cost_item_costs': final_cost_item_costs,
-               # 'cost_results': cost_results,
-               # 'cost_results_additional': cost_results_additional,
-               # 'sum_values': sum_values,
-               # 'structure_life_cycle_costs': structure_life_cycle_costs,
-               # 'project_life_cycle_costs': project_life_cycle_costs
                }
 
     return render_to_string(template_name, context)

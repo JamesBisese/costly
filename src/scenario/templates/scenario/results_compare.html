@@ -63,6 +63,9 @@
 
 {% block extra_javascript %}
     <!-- block extrajavascript in results_compare.html -->
+        <script crossorigin="anonymous" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+            src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/displaycontrols.js' %}"></script>
 
 <script>
@@ -121,7 +124,16 @@
         captionTableDiv.appendChild(buttonDiv);
 
         compareScenarios();
-
+        // get these divs to take up the same page height
+        resize_div("caption_table2");
+        resize_div("project_table");
+        resize_div("nutrient_storm_peak");
+        resize_div("planning_and_design");
+        resize_div("pervious");
+        resize_div("project_life_cycle_costs");
+        resize_div("construction_costs");
+        resize_div("o_and_m_costs");
+        resize_div("life_cycle_costs");
         return;
     }
     function init_results_compare() {
@@ -156,20 +168,29 @@
 
         captionTableDiv.appendChild(buttonDiv);
 
-        compareScenarios();
+        {#compareScenarios();#}
     };
     function compareScenarios(button_context) {
         leftScenarioDiv = document.getElementsByClassName('scenario_1')[0];
         rightScenarioDiv = document.getElementsByClassName('scenario_2')[0];
 
-        scenario_compareDiv = document.getElementsByClassName('scenario_compare')[0];
-        life_cycle_costsDiv = scenario_compareDiv.getElementsByClassName('life_cycle_costs')[0];
-
-        LEFT_project_life_cycle_costs_total = leftScenarioDiv.getElementsByClassName('project_life_cycle_costs_total')[0].innerHTML;
-        RIGHTproject_life_cycle_costs_total = rightScenarioDiv.getElementsByClassName('project_life_cycle_costs_total')[0].innerHTML;
+        leftScenarioID = leftScenarioDiv.getElementsByClassName('scenario_id')[0].innerHTML;
+        rightScenarioID = rightScenarioDiv.getElementsByClassName('scenario_id')[0].innerHTML;
 
         {#life_cycle_costsDiv.innerHTML = 'Left: ' + LEFT_project_life_cycle_costs_total + ' Right: ' + RIGHTproject_life_cycle_costs_total;#}
+        var url = '/scenario/results/column/?id=' + leftScenarioID.toString() + ',' + rightScenarioID.toString();
 
+       $.ajax(url, {
+            type : 'GET',
+            async: false, // wait for the response
+            success: function (data) {
+                compareDiv = document.getElementsByClassName('scenario_compare')[0];
+                compareDiv.innerHTML = data;
+            },
+            error: function(data) {
+                return "unable to get comparison results TBD";
+            }
+        });
 
         return;
     }

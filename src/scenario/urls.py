@@ -44,7 +44,8 @@ urlpatterns = [
 
     # Scenario - Results Read
     path(r'scenario/<int:pk>/results/', views.ScenarioResults.as_view(), name='scenario_results_with_class'),
-    path(r'scenario/results/', views.MultipleScenarioResults.as_view(), name='scenario_results_multiple_with_class'),
+    path(r'scenario/results/', views.CompareScenarioResults.as_view(), name='scenario_compare_results'),
+    path(r'scenario/results/column/', views.CompareScenarioColumn.as_view(), name='scenario_compare_column'),
     path(r'scenario/<string>1-8/results/', views.ScenarioResults.as_view(), name='scenario_results_multiple2_with_class'),
 
 
@@ -76,73 +77,4 @@ urlpatterns = [
 
 urlpatterns += [
 	url(r'^select2/', include('django_select2.urls')),
-	# path(r'', views.ScenarioList.as_view(), name='scenario-index'),
-
-
 ]
-
-# path(r'scenario/addwithclass/', views.ScenarioCreate.as_view(), name='scenario_create_with_class'),
-
-# path(r'json/', views.json_index, name='json_index'),
-# path(r'json_load/', views.json_load, name='json_load'),
-# path(r'part/', views.test_partial, name='test_partial'),
-# path(r's3/', views.CostItemDefaultCostsList.as_view(), name='costitems_create_with_class'),
-# path(r'scenario/<int:pk>/structure_costs/<slug:structure_code>/', views.StructureCosts.as_view(),
-#      name='structure_costs'),
-#
-# path(r'scenario/structure_costs/help/<slug:costitem_code>/', views.StructureCostsHelp.as_view(),
-#      name='structure_costs_help'),
-#
-# # this isn't implemented correctly - it should be returned as part of the API with format=html
-# path(r'scenario/<int:pk>/results/', views.ScenarioResults.as_view(), name='scenario_results_with_class'),
-# path(r'scenario/results/', views.MultipleScenarioResults.as_view(), name='scenario_results_multiple_with_class'),
-# path(r'scenario/<string>1-8/results/', views.ScenarioResults.as_view(), name='scenario_results_multiple2_with_class'),
-# path(r'scenario/costitem/<int:pk>/update/', views.costitem_defaultcosts_update, name='costitem_defaultcosts_update'),
-#
-# path(r'scenario/default/', views.DefaultScenario.as_view(), name='scenario_json_default'),
-# path(r'scenario/template/', views.TemplateScenario.as_view(), name='scenario_json_template'),
-#
-# path(r'scenario/add/', views.scenario_create, name='scenario_create'),
-#
-# path(r'scenario/addwithclass/', views.ScenarioCreate.as_view(), name='scenario_create_with_class'),
-#
-# path(r'scenario/<int:pk>/update/', views.scenario_update, name='scenario_update'),
-# path(r'scenario/<int:pk>/duplicate/', views.scenario_duplicate, name='scenario_duplicate'),
-# path(r'scenario/<int:pk>/increment/', views.scenario_increment, name='scenario_increment'),
-# path(r'scenario/<int:pk>/decrement/', views.scenario_decrement, name='scenario_decrement'),
-# path(r'scenario/<int:pk>/delete/', views.scenario_delete, name='scenario_delete'),
-
-# path(r'', views.project_list, name='index'),
-
-# urlpatterns = [
-# 	path(r'scenario/', views.index, name='index'),
-# ]
-
-# Add URLConf to create, update, and delete person
-# urlpatterns = [
-# 	path(r'persons/', views.PersonList.as_view(), name='person_list'),
-# 	path(r'person/<int:pk>/view/', views.PersonView.as_view(), name='person_view'),
-# 	path(r'person/add/', views.PersonCreate.as_view(), name='person_create'),
-# 	path(r'person/<int:pk>/update/', views.PersonUpdate.as_view(), name='person_update'),
-# 	path(r'person/<int:pk>/delete/', views.PersonDelete.as_view(), name='person_delete'),
-# ]
-
-# urlpatterns += [
-# 	path(r'scenario/', views.ScenarioList.as_view(), name='scenario_list'),
-# 	path(r'scenario/add/', views.ScenarioCreate.as_view(), name='scenario_create'),
-# 	path(r'scenario/<int:pk>/update/', views.ScenarioUpdate.as_view(), name='scenario_update'),
-# 	path(r'scenario/<int:pk>/delete/', views.ScenarioDelete.as_view(), name='scenario_delete'),
-# ]
-
-    # path(r'model/', views.ModelPage.as_view(), name='model'),
-    # path(r'costtool/', views.CostToolModelPage.as_view(), name='cost_tool_model'),
-
-    # path(r'projects/', views.project_list, name='project_list'),
-    # path(r'projects/add/', views.project_create, name='project_create'),
-    # path(r'projects/<int:pk>/update/', views.project_update, name='project_update'),
-    # path(r'projects/<int:pk>/delete/', views.project_delete, name='project_delete'),
-
-	# path(r'location/', views.LocationList.as_view(), name='location_list'),
-	# path(r'location/add/', views.LocationCreate.as_view(), name='location_create'),
-	# path(r'location/<int:pk>/update/', views.LocationUpdate.as_view(), name='location_update'),
-	# path(r'location/<int:pk>/delete/', views.LocationDelete.as_view(), name='location_delete'),
