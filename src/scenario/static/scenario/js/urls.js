@@ -29,6 +29,8 @@ SETTINGS.URLS = {
 
     'scenario_results':  '/scenario/results/?id=',
 
+    'scenario_compare_column': '/scenario/results/column/?id=',
+
     'structures_list': '/api/structures/?format=datatables',
     'costitems_list':  '/api/costitems/?format=datatables',
     'costitems_default_costs_list': '/api/costitemdefaultcosts/?format=datatables',
