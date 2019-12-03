@@ -66,8 +66,20 @@
         <script crossorigin="anonymous" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
             src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
     <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/displaycontrols.js' %}"></script>
-    <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
+
+    {% if IIS_APP_ALIAS != '' %}
+        <script>
+        // add the IIS Application Alias to each of the URL values
+            var IIS_APP_ALIAS = "{{ IIS_APP_ALIAS }}";
+            if (IIS_APP_ALIAS.length > 0) {
+                for (var key in SETTINGS.URLS) {
+                    SETTINGS.URLS[key] = '/' + IIS_APP_ALIAS + SETTINGS.URLS[key];
+                }
+            }
+        </script>
+    {% endif %}
     <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/results_compare.js' %}"></script>
 <script>
 

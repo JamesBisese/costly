@@ -1341,7 +1341,9 @@ class CompareScenarioResults(APIView):
 
         comparison = {'html': comparison_column_html}
 
-        context = {'scenarios': scenarios, 'comparison': comparison}
+        context = {'scenarios': scenarios,
+                   'comparison': comparison,
+                   'IIS_APP_ALIAS': settings.IIS_APP_ALIAS }
         #
         #
         return Response(context)
