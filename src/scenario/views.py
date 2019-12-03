@@ -1332,9 +1332,13 @@ class MultipleScenarioResults(APIView):
         for id in ids:
             scenario = get_object_or_404(Scenario, pk=id)
             scenario_table = scenario_table_html(scenario)
-            scenarios[id] = {'id': id, 'html': scenario_table}
+            scenarios[id] = {'id': id, 'html': scenario_table, 'data': scenario}
 
-        context = {'scenarios': scenarios}
+        comparison_column_html = comparison_column(ids, scenarios)
+
+        comparison = {'html': comparison_column_html}
+
+        context = {'scenarios': scenarios, 'comparison': comparison}
         #
         #
         return Response(context)
@@ -1357,9 +1361,86 @@ class ScenarioResults(APIView):
         return HttpResponse(disclaimer_tx + scenario_table_html(scenario))
 
 
+#
+# generate the Results table and return as an HTML string (make sure this is true)
+#
+def comparison_column(ids, scenarios):
 
+    # this is templates/scenario/results
+    template_name = "scenario/comparison_column.html"
 
+    left = scenarios[ids[0]]['data']
+    right = scenarios[ids[1]]['data']
 
+    left_costs = left.get_costs()
+    right_costs = right.get_costs()
+
+    diff = {}
+    diff['nutrient_storm_peak'] = False
+    if left.nutrient_req_met != right.nutrient_req_met \
+        or left.captures_90pct_storm != right.captures_90pct_storm \
+        or left.meets_peakflow_req != right.meets_peakflow_req:
+        diff['nutrient_storm_peak'] = True
+
+    diff['pervious_area'] = left.pervious_area - right.pervious_area
+    diff['impervious_area'] = left.impervious_area - right.impervious_area
+
+    diff['pervious'] = False
+    if left.pervious_area != right.pervious_area \
+        or left.impervious_area != right.impervious_area:
+        diff['pervious'] = True
+
+    left_total = left_costs['project_life_cycle_costs']['total']
+    right_total = right_costs['project_life_cycle_costs']['total']
+
+    costs = {}
+    costs['construction'] = left_total['construction'] - right_total['construction']
+    costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
+    costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
+    costs['replacement'] = left_total['replacement'] - right_total['replacement']
+    costs['total'] = costs['construction'] + costs['planning_and_design'] + \
+                                        costs['o_and_m'] + costs['replacement']
+
+    diff['project_life_cycle_costs'] = costs
+
+    left_total = left_costs['project_life_cycle_costs']['conventional']['costs']
+    right_total = right_costs['project_life_cycle_costs']['conventional']['costs']
+
+    costs = {}
+    costs['construction'] = left_total['construction'] - right_total['construction']
+    costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
+    costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
+    costs['replacement'] = left_total['replacement'] - right_total['replacement']
+    costs['total'] = costs['construction'] + costs['planning_and_design'] + \
+                                        costs['o_and_m'] + costs['replacement']
+
+    diff['conventional'] = costs
+
+    left_total = left_costs['project_life_cycle_costs']['nonconventional']['costs']
+    right_total = right_costs['project_life_cycle_costs']['nonconventional']['costs']
+
+    costs = {}
+    costs['construction'] = left_total['construction'] - right_total['construction']
+    costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
+    costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
+    costs['replacement'] = left_total['replacement'] - right_total['replacement']
+    costs['total'] = costs['construction'] + costs['planning_and_design'] + \
+                                        costs['o_and_m'] + costs['replacement']
+
+    diff['nonconventional'] = costs
+
+    context = {
+                'diff': diff,
+               #  'scenario': serializer.data,
+               # 'cost_item_costs': final_cost_item_costs,
+               # 'cost_results': cost_results,
+               # 'cost_results_additional': cost_results_additional,
+               # 'sum_values': sum_values,
+               # 'structure_life_cycle_costs': structure_life_cycle_costs,
+               # 'project_life_cycle_costs': project_life_cycle_costs
+               }
+
+    return render_to_string(template_name, context)
 
 #
 # generate the Results table and return as an HTML string (make sure this is true)

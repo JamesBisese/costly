@@ -84,7 +84,7 @@
 {% if scenario.embedded_scenario.captures_90pct_storm == 'yes' %}
         <tr>
             <td colspan="2" style="color: red;height: 30px;">
-                You have indicated in this scenario a design choice that might make you
+                By answering yes, you have indicated in this scenario a design choice that might make you
                 eligible for design review fee savings! Are you developing a new site?
                 Check out applying for the Green Raleigh Review!
             </td>
@@ -132,7 +132,7 @@
         </tbody>
     </table>
 </div>
-<div class="final_costs life_cycle_costs">
+<div class="final_costs project_life_cycle_costs">
     <table  class="result_table">
 
         <col style="width: 60%">
@@ -235,7 +235,7 @@
     </table>
 </div>
 
-<div class="final_costs o_and_m_costs">
+<div class="final_costs life_cycle_costs">
     <table class="result_table" >
         <col style="width: 60%">
         <col style="width: 40%">
@@ -278,7 +278,7 @@
         <thead><tr>
           <th>Areal Feature</th>
           <th>Area ft<sup>2</sup></th>
-          <th>% Project Area</th>
+{#          <th>% Project Area</th>#}
         </tr>
         </thead>
         {% for r,obj in scenario.areal_features.items %}
@@ -286,14 +286,14 @@
             <tr>
               <td> {{ obj.label }}</td>
               <td class="result_col input_col"> {{ obj.area|intcomma }}</td>
-              <td class="result_col output_col"> {{ obj.area|div:scenario.project.project_area|percentage }}</td>
+{#              <td class="result_col output_col"> {{ obj.area|div:scenario.project.project_area|percentage }}</td>#}
             </tr>
           {% endif %}
         {% endfor %}
             <tr>
               <td style="text-align: center;">Total</td>
               <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|intcomma }}</td>
-              <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|div:scenario.project.project_area|percentage }}</td>
+{#              <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|div:scenario.project.project_area|percentage }}</td>#}
             </tr>
         </table>
     </div>

@@ -566,13 +566,13 @@ function validateProjectAreaAndArealFeatures() {
     var errorDom = document.getElementById('areal_features_validation_error');
 
     var sumAreaDom = document.getElementById('ui_sum_areal_features_area');
-    var sumAreaPercentDom = document.getElementById('ui_sum_areal_features_area_percent');
+    // var sumAreaPercentDom = document.getElementById('ui_sum_areal_features_area_percent');
     if(sum_areal_features) {
         sumAreaDom.value = sum_areal_features;
-        if(sum_area && parseFloat(sum_area) !== NaN)
-        {
-            sumAreaPercentDom.value = parseFloat(100 * sum_areal_features / sum_area).toFixed(2) ;
-        }
+        // if(sum_area && parseFloat(sum_area) !== NaN)
+        // {
+        //     sumAreaPercentDom.value = parseFloat(100 * sum_areal_features / sum_area).toFixed(2) ;
+        // }
     }
 
     var errors = null;

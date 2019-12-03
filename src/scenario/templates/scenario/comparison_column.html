@@ -1,0 +1,174 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<style>
+
+
+</style>
+
+
+Check for differences across design scenarios. The differences are presented in absolute value.
+<div class="project_table" style="position: absolute"></div>
+<div class="nutrient_storm_peak" style="position: absolute; {% if diff.nutrient_storm_peak is False %}display: none;{% endif %}">You have indicated a difference between scenarios that may have an impact on
+    your design choices and overall costs.
+    It is recommended to compare scenarios that share
+    similar attributes to get a true comparison of the project costs.</div>
+<div class="planning_and_design" style="position: absolute"></div>
+<div class="pervious" style="position: absolute">
+    <table class="result_table">
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <tbody>
+            <tr>
+                <td>Difference in Pervious Area</td>
+                <td class="result_col input_col"> {{ diff.pervious_area|intcomma   }} ft<sup>2</sup></td>
+            </tr>
+            <tr>
+                <td>Difference in Impervious Area</td>
+                <td class="result_col input_col"> {{ diff.impervious_area|intcomma  }} ft<sup>2</sup></td>
+            </tr>
+            {% if diff.pervious is True %}
+            <tr>
+                <td colspan="2" style="color: red;">Stormwater fees are influenced by the amount of impervious area on your site.
+                    You have indicated a difference in design choice
+                    between scenarios that may impact the amount of stormwater fees you will be required to pay. </td>
+
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="project_life_cycle_costs" style="position: absolute;">
+    <table  class="result_table">
+
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <caption>Difference in Project Life Cycle Costs</caption>
+        <thead>
+            <tr>
+                <th class="cost_item_th">Item</th>
+                <th class="cost_item_th">Dollars</th>
+            </tr>
+
+        </thead>
+        <tr>
+          <td style="font-weight: bold;">Construction</td>
+            <td class="result_col output_col"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.construction|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Planning and Design</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.planning_and_design|floatformat:"0"|intcomma}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">O&amp;M</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.o_and_m|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Replacement</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;text-align: right;">Total</td>
+          <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>
+              <div class="project_life_cycle_costs_total">{{ diff.project_life_cycle_costs.total|floatformat:"0"|intcomma }}</div></td>
+        </tr>
+    </table>
+
+</div>
+
+
+
+<div class="construction_costs"  style="position: absolute;">
+    <table  class="result_table">
+
+        <col style="width: 50%">
+        <col style="width: 25%">
+        <col style="width: 25%">
+        <caption>Difference in Project Construction Costs</caption>
+        <thead>
+        <tr>
+            <th class="cost_item_th">Structure Class</th>
+            <th class="cost_item_th">Construction</th>
+            <th class="cost_item_th">P &amp; D</th>
+        </tr>
+        </thead>
+        <tr>
+          <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+
+          <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.construction|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.planning_and_design|floatformat:"0"|intcomma }}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Conventional</td>
+
+          <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.construction|floatformat:"0"|intcomma}}</td>
+            <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.planning_and_design|floatformat:"0"|intcomma}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;text-align: right;">Total</td>
+
+          <td class="result_col output_col"  style="border-top: double;"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.construction|floatformat:"0"|intcomma }}</td>
+          <td class="result_col output_col"  style="border-top: double;"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.planning_and_design|floatformat:"0"|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="final_costs o_and_m_costs"  style="position: absolute;">
+    <table class="result_table" >
+        <col style="width: 50%">
+        <col style="width: 25%">
+        <col style="width: 25%">
+        <caption>Difference in O&amp;M and Replacement Costs</caption>
+        <thead><tr>
+            <th class="cost_item_th" >Structure Class</th>
+            <th class="cost_item_th">O&amp;M</th>
+            <th class="cost_item_th">Replacement</th></tr>
+        </thead>
+
+            <tr>
+                <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+                <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.o_and_m|floatformat:"0"|intcomma }}  </td>
+                <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.replacement|floatformat:"0"|intcomma }} </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Conventional</td>
+                <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.o_and_m|floatformat:"0"|intcomma }}  </td>
+                <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.replacement|floatformat:"0"|intcomma }} </td>
+            </tr>
+
+        <tr>
+            <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
+            <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{diff.project_life_cycle_costs.o_and_m|floatformat:"0"|intcomma }}</td>
+            <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{ diff.project_life_cycle_costs.replacement|floatformat:"0"|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="life_cycle_costs"  style="position: absolute;">
+    <table class="result_table" >
+        <col style="width: 60%">
+        <col style="width: 40%">
+        <caption>Difference in Life Cycle Costs</caption>
+        <thead><tr>
+            <th class="cost_item_th" >Structure Class</th>
+            <th class="cost_item_th">Life Cycle Total</th>
+        </thead>
+        <tr>
+            <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+            <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.total|floatformat:"0"|intcomma }}  </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Conventional</td>
+            <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.total|floatformat:"0"|intcomma }}  </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; text-align: right; padding-right: 5px;">Total</td>
+            <td class="result_col output_col" style="border-top: double;"><div class="dollar">$</div>{{diff.project_life_cycle_costs.total|floatformat:"0"|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+
+
+
+

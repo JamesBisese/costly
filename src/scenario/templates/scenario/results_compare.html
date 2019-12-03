@@ -36,6 +36,8 @@
 .scenario_compare{
    -ms-grid-row:1;
    -ms-grid-column:3;
+    text-align: left!important;
+    font-size: smaller;
 }
  .reorderButton {
     position: relative;
@@ -129,9 +131,10 @@
         resize_div("nutrient_storm_peak");
         resize_div("planning_and_design");
         resize_div("pervious");
-        resize_div("life_cycle_costs");
+        resize_div("project_life_cycle_costs");
         resize_div("construction_costs");
         resize_div("o_and_m_costs");
+        resize_div("life_cycle_costs");
 
         // add a 'switch-sides' button to the top left side of the
         // right side scenario
@@ -165,7 +168,7 @@
         LEFT_project_life_cycle_costs_total = leftScenarioDiv.getElementsByClassName('project_life_cycle_costs_total')[0].innerHTML;
         RIGHTproject_life_cycle_costs_total = rightScenarioDiv.getElementsByClassName('project_life_cycle_costs_total')[0].innerHTML;
 
-        life_cycle_costsDiv.innerHTML = 'Left: ' + LEFT_project_life_cycle_costs_total + ' Right: ' + RIGHTproject_life_cycle_costs_total;
+        {#life_cycle_costsDiv.innerHTML = 'Left: ' + LEFT_project_life_cycle_costs_total + ' Right: ' + RIGHTproject_life_cycle_costs_total;#}
 
 
         return;
@@ -192,17 +195,11 @@
                 {{ obj.html }}
             </div>
         {% endfor %}
-        <div class="scenario_compare">
-            Comparison text introduction here.
-            <div class="project_table" style="position: absolute">Project table difference comment.</div>
-            <div class="nutrient_storm_peak" style="position: absolute">Nutrient/Stormwater/Peak difference comment.</div>
-            <div class="planning_and_design" style="position: absolute">Planning and Design difference comment.</div>
-            <div class="pervious" style="position: absolute">Pervious difference comment.</div>
 
-            <div class="life_cycle_costs" style="position: absolute; margin-top:10px;">Life Cycle difference comment.</div>
-            <div class="construction_costs" style="position: absolute; margin-top:10px;">Construction difference comment.</div>
-            <div class="o_and_m_costs" style="position: absolute; margin-top:10px;">O&amp;M and Replacement difference comment.</div>
+        <div class="scenario_compare">
+            {{ comparison.html }}
         </div>
+
     </div>
 </div>
 {% endblock content %}
