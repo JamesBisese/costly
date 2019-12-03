@@ -1379,7 +1379,10 @@ def comparison_column(ids, scenarios):
     diff['nutrient_storm_peak'] = False
     if left.nutrient_req_met != right.nutrient_req_met \
         or left.captures_90pct_storm != right.captures_90pct_storm \
-        or left.meets_peakflow_req != right.meets_peakflow_req:
+        or left.meets_peakflow_req != right.meets_peakflow_req \
+        or left.planning_and_design_factor != right.planning_and_design_factor \
+        or left.study_life != right.study_life \
+        or left.discount_rate != right.discount_rate :
         diff['nutrient_storm_peak'] = True
 
     diff['pervious_area'] = left.pervious_area - right.pervious_area
