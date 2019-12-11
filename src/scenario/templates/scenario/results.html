@@ -71,9 +71,12 @@
         </tr>
     </table>
 </div>
-<br>
-<div class="nutrient_storm_peak">
+
+<div class="design_elements">
     <table class="result_table">
+            <col style="width: 50%">
+        <col style="width: 50%">
+        <caption>Design Elements</caption>
         <tr>
             <td>Nutrient requirements met?</td>
             <td class="input_col"> {{ scenario.embedded_scenario.nutrient_req_met_display }}</td>
@@ -98,10 +101,28 @@
     </table>
 </div>
 <br>
+<div class="pervious">
+    <table class="result_table">
+        <col style="width: 50%">
+        <col style="width: 50%">
+        <tbody>
+            <tr>
+                <td>Pervious Area</td>
+                <td class="result_col input_col"> {{ scenario.embedded_scenario.pervious_area|intcomma   }} ft<sup>2</sup></td>
+            </tr>
+            <tr>
+                <td>Impervious Area</td>
+                <td class="result_col input_col"> {{ scenario.embedded_scenario.impervious_area|intcomma  }} ft<sup>2</sup></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 <div class="planning_and_design">
     <table class="result_table">
         <col style="width: 60%">
         <col style="width: 40%">
+        <caption>Life Cycle Costs Assumptions</caption>
         <tr>
             <td>Planning and Design Factor</td>
             <td class="result_col input_col"> {{ scenario.embedded_scenario.planning_and_design_factor }} %</td>
@@ -116,23 +137,7 @@
         </tr>
     </table>
 </div>
-<br>
-<div class="pervious">
-    <table class="result_table">
-        <col style="width: 60%">
-        <col style="width: 40%">
-        <tbody>
-            <tr>
-                <td>Pervious Area</td>
-                <td class="result_col input_col"> {{ scenario.embedded_scenario.pervious_area|intcomma   }} ft<sup>2</sup></td>
-            </tr>
-            <tr>
-                <td>Impervious Area</td>
-                <td class="result_col input_col"> {{ scenario.embedded_scenario.impervious_area|intcomma  }} ft<sup>2</sup></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+
 <div class="final_costs project_life_cycle_costs">
     <table  class="result_table">
 

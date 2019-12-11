@@ -276,54 +276,7 @@ a.bmplabel:hover {
 	margin-left: 0;
 	margin-top: 20px;
 }
-#inputlistA {
-	margin: 0;
-	margin-left: 0;
-	margin-top: 20px;
-	border: 0;
-	padding: 0; 
-	display: block;
-	height: 23px;
-	position: relative;
-	border-bottom: 1px solid #d9f75d;
-	}	
-#inputlistA li	{
-	float: left;
-	display: inline;
-	list-style-type: none;
-	border: 0;
-	margin: 0;
-	padding: 0;
-	height: 23px;
-	z-index: 1100;
-	}	
-#inputlistA a	{
-	display: block;
-	border: 0;
-	margin: 0 1px 0 0;
-	padding: 6px 10px 8px 10px;
-	text-decoration: none;
-	background-color: #b0dd24;
-	font: bold 13px/13px Arial, Helvetica, sans-serif;
-	color: #117700;
-	-moz-border-radius-topleft: 6px;
-	-moz-border-radius-topright: 6px;
-	-webkit-border-top-left-radius: 6px;
-	-webkit-border-top-right-radius: 6px;
-	}
-#inputlistA .active a {
-	background-color: #d9f75d;
-	color: #333;
-	}
-#inputlistA .active a:hover {
-	background-color: #d9f75d;
-	color: #333;
-	}
-#inputlistA .inactive a:hover {
-	background-color: #c9e91d;
-	color: #119900;
-	}	
-	
+
 	
 #inputs {
 	clear: left;
@@ -337,9 +290,7 @@ a.bmplabel:hover {
 	/*border-top: 1px solid #d9f75d;  */
 	padding: 25px;
 	} 
-#green-box {
-	margin: 20px;
-	}
+
 .intro {
 	font-size: 15px;
 	line-height: 19px;
@@ -375,31 +326,7 @@ a.bmplabel:hover {
     background-color: transparent;
 }
 
-/*.ldds { */
-/*	background-color: #666;*/
-/*	position: absolute;*/
-/*	top: null;*/
-/*	left: null;*/
-/*	width: 300px;*/
-/*	}*/
-/*#ld1 {*/
-/*}*/
-/*.land-description {*/
-/*	position: relative;*/
-/*	top: -2px;*/
-/*	left: -2px;*/
-/*	padding: 20px;*/
-/*	background-color: #D9F75D;*/
-/*	border: 1px solid #B0DD24;*/
-/*	color: #170;*/
-/*	}*/
-/*.land-description .close {*/
-/*	position: absolute;*/
-/*	top: 8px;*/
-/*	right: 8px;*/
-/*	}*/
-
-.conventional_structure_help {
+.major_help {
 	position: relative;
 	border: 1px solid #B0DD24;
 	background-color: #dee7eb;
@@ -407,50 +334,24 @@ a.bmplabel:hover {
 	font-size: smaller;
 	}
 
-.conventional_structure_help .closebutton {
-	position: relative;
-	top: -5px;
-	right: 8px;
-	background:none!important;
-	color:inherit;
-	border:none;
-	padding:0!important;
-	font: inherit;
-	/*border is optional*/
-	border-bottom: 0px; /*1px solid #444;*/
-	cursor: pointer;
-}
-.conventional_structure_help .closebutton img {
-	border-radius: 10px;
-}
-
- .closebutton {
+.closebutton {
 	position: relative;
 	top: -5px;
 	float: right;
 	background:none!important;
-     color:inherit;
-     border:none;
-     padding:0!important;
-     font: inherit;
-     /*border is optional*/
-     border-bottom: 0px; /*1px solid #444;*/
-     cursor: pointer;
-	}
- .closebutton img {
+	 color:inherit;
+	 border:none;
+	 padding:0!important;
+	 font: inherit;
+	 /*border is optional*/
+	 border-bottom: 0px; /*1px solid #444;*/
+	 cursor: pointer;
+}
+.closebutton img {
 	border-radius: 10px;
- }
-/*.bmpdescription {*/
-/*	position: relative;*/
-/*	border: 1px solid #B0DD24;*/
-/*	background-color: #D9F75D;*/
-/*	padding: 15px;*/
-/*	}*/
-/*.bmpdescription .closebutton {*/
-/*	position: absolute;*/
-/*	top: 8px;*/
-/*	right: 8px;*/
-/*	}*/
+}
+
+
 #pageoptions {
 	position: absolute;
 	right: 10px;
@@ -1050,4 +951,12 @@ a.ui-button:active, .ui-button:active,
 
 .w3-button-open:after {
   content: "\2212";
+}
+
+.input-group:hover{
+    font-weight: bold;
+}
+.input-group-link-text:hover{
+    font-weight: bold;
+    text-decoration: underline;
 }

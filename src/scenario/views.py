@@ -1005,7 +1005,7 @@ def structure_cost_item_json(structure,
         structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
         # structure_costs['data'][costitem_code]['unit_cost_formatted'] = unit_cost_formatted
         structure_costs['data'][costitem_code]['o_and_m_pct'] = int(obj.o_and_m_pct)
-        structure_costs['data'][costitem_code]['replacement_life'] = int(obj.replacement_life)
+        structure_costs['data'][costitem_code]['replacement_life'] = int(obj.replacement_life or "0")
 
     # then add in the default costs to update the non 'user' (cost_source) costs
 
@@ -1398,14 +1398,14 @@ def comparison_column(ids, left_scenario, right_scenario):
     right_costs = right.get_costs()
 
     diff = {}
-    diff['nutrient_storm_peak'] = False
+    diff['design_elements'] = False
     if left.nutrient_req_met != right.nutrient_req_met \
         or left.captures_90pct_storm != right.captures_90pct_storm \
         or left.meets_peakflow_req != right.meets_peakflow_req \
         or left.planning_and_design_factor != right.planning_and_design_factor \
         or left.study_life != right.study_life \
         or left.discount_rate != right.discount_rate :
-        diff['nutrient_storm_peak'] = True
+        diff['design_elements'] = True
 
     diff['pervious_area'] = left.pervious_area - right.pervious_area
     diff['impervious_area'] = left.impervious_area - right.impervious_area

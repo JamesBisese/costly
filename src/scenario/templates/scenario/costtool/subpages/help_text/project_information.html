@@ -8,42 +8,45 @@
 
 
 
-<div  id="OpportunitiesScreeningHelpText" style="display: none;">
-    <p>Opportunities Screening - The content of this section reflects the opportunities
+<div  id="OpportunitiesScreeningHelpText" class="major_help" style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Opportunities Screening:</span> The content of this section reflects the opportunities
         that are available based on your description of the project and area for each areal
         feature.</p>
 </div>
 
 
-<div  id="ProjectInformationHelpText"  style="display: none;">
+<div  id="ProjectInformationHelpText"  class="major_help" style="display: none;">
     <button type="button" onclick="close_cs_help(this);" class="closebutton">
         <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
     </button>
     <p><span style="font-weight: bold;">Project Information:</span>  This section summarizes the
         Project for this Scenario. To edit any of this information you need to use the Projects page.
         </p>
-{#    The Project information will be summarized with information about the#}
-{#        Project Organizer (responsible entity implementing the project),#}
-{#        Location of the Project (the latitude/longitude or address can be listed),#}
-{#        Project Type (broad characteristic of the developed site), Purchase Information#}
-{#        (indicates whether or not the site needs to be purchased), Priority Watershed#}
-{#        (name of the watershed that the Project takes place in), Total Project Area#}
-{#        (size of Project area in square feet), and Cost per sqft of Project site#}
-{#        (cost to purchase the land for the Project to take place).#}
 </div>
-<div  id="ScenarioInformationHelpText"  style="display: none;">
+
+<div  id="ScenarioTitleHelpText"  class="major_help" style="display: none;">
     <button type="button" onclick="close_cs_help(this);" class="closebutton">
         <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
     </button>
-    <p><span style="font-weight: bold;">Scenario Information:</span>  This section summarizes the
-        Scenario that you will be editing in the Cost Tool. Set the Scenario Title on this page.</p>
-    <p>
-        This section also summarizes the level of compliance that is met by the Project.
+    <p><span style="font-weight: bold;">Scenario Title:</span>  Set the Scenario Title to a unique name for the particular scenario for the selected project.
+        Names should highlight the unique characteristics of the scenario.
+        </p>
+</div>
+
+<div  id="DesignElementsHelpText"  class="major_help" style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Design Elements:</span>  This section summarizes the
+        level of compliance that is met by the Project.
         Developers and designers need to consider stormwater management requirements
-        for a Project site. There are three levels of stormwater compliance requirements
-        that a developer can meet:
+        for a Project site. There are three elements of stormwater compliance requirements
+        that a developer must address:
         <ol>
-            <li>Nutrient management with or without buy down</li>
+            <li>Nutrient management</li>
             <li>Stormwater volume requirements</li>
             <li>Peak flow mitigation</li>
         </ol>
@@ -82,8 +85,9 @@
             development site will be detained or retained using conventional stormwater treatment
             practices, GSI, or a combination.
         </span>
+    <p>
 Stormwater practices that are designed to manage nutrient mitigation (see Level 1) must also be
-designed to detain both the water quality one-inch storm and the one year, 24-hour three-inch storm.
+designed to detain both the water quality one-inch storm and the one year, 24-hour three-inch storm.</p>
     <p>
         <i>Level 3 - Peak Flow Mitigation</i>
     </p>
@@ -135,48 +139,7 @@ eligible for review fee reimbursements.
 
 </div>
 
-<div id="LifeCycleCostAssumptionsHelpText" style="display:none;">
-    <button type="button" onclick="close_cs_help(this);" class="closebutton">
-        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
-    </button>
-    <p><span style="font-weight: bold;">Life Cycle Cost Assumptions</span></p>
-    <ul>
-           <li>Planning and Design Factor (%): This is the basis of the planning and design costs used in the
-                Scenario for each STRUCTURE based upon a percent of the total construction costs for the
-               individual STRUCTURE.
-           </li>
-            <li>Study Life (years): The number of years that determines the life cycle costs used in the Scenario
-                for each STRUCTURE.
-            </li>
-            <li>Discount Rate (%): This is the federal discount rate for water resources projects. This rate is used
-                in the present value equation for annual operations and maintenance costs for each COST ITEM.
-            </li>
-    </ul>
-</div>
-
-
-<div  id="ArealFeaturesHelpText"  style="display: none;">
-    <button type="button" onclick="close_cs_help(this);" class="closebutton">
-        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
-    </button>
-<p>
-<span style="font-weight: bold;">Scenario Areal Features:</span> This section summarizes the Areal Features in this Scenario for the Project site.
-Areal Feature refers to developed land attributes within a Project site (e.g., building, parking area),
-sometimes required by the City UDO (e.g., protective yard, amenity area), that have distinct boundaries
-including stormwater management practices (e.g., wet pond, bioretention, wetland). The area for each
-Areal Feature that is present in the Scenario should be added by the user. Areal Features that do not
-apply to a certain Project Type will be automatically crossed out in the tool.
-</p><p>
-If you would like to learn more information about the Areal Feature, click on the name of the Areal
-Feature. The information will highlight the set of Structures that can be designed in each Areal Feature.
-These Structures are either Conventional end-of-pipe systems or Non-Conventional distributed GSI
-systems. This tool will also provide information about the new opportunities in Raleigh's UDO where
-distributed GSI systems can be implemented in the Areal Features (e.g., planter boxes in parking
-islands). Potential benefits based on the design's ability to meet compliance standards will also be
-presented on this page.
-</p>
-</div>
-<div  id="PerviousAreasHelpText" style="display: none;">
+<div  id="PerviousAreasHelpText"  class="major_help" style="display: none;">
     <button type="button" onclick="close_cs_help(this);" class="closebutton">
         <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
     </button>
@@ -222,6 +185,50 @@ single-family property.
 Note: properties with less than 400 square feet of impervious surfaces are not subject to a Stormwater
         fee.</p>
 </div><!-- PreDevelopmentHelpText -->
+
+
+<div id="LifeCycleCostAssumptionsHelpText"  class="major_help" style="display:none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+    <p><span style="font-weight: bold;">Life Cycle Cost Assumptions</span></p>
+    <ul>
+           <li>Planning and Design Factor (%): This is the basis of the planning and design costs used in the
+                Scenario for each STRUCTURE based upon a percent of the total construction costs for the
+               individual STRUCTURE.
+           </li>
+            <li>Study Life (years): The number of years that determines the life cycle costs used in the Scenario
+                for each STRUCTURE.
+            </li>
+            <li>Discount Rate (%): This is the federal discount rate for water resources projects. This rate is used
+                in the present value equation for annual operations and maintenance costs for each COST ITEM.
+            </li>
+    </ul>
+</div>
+
+
+<div  id="ArealFeaturesHelpText"  class="major_help"  style="display: none;">
+    <button type="button" onclick="close_cs_help(this);" class="closebutton">
+        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+    </button>
+<p>
+<span style="font-weight: bold;">Scenario Areal Features:</span> This section summarizes the Areal Features in this Scenario for the Project site.
+Areal Feature refers to developed land attributes within a Project site (e.g., building, parking area),
+sometimes required by the City UDO (e.g., protective yard, amenity area), that have distinct boundaries
+including stormwater management practices (e.g., wet pond, bioretention, wetland). The area for each
+Areal Feature that is present in the Scenario should be added by the user. Areal Features that do not
+apply to a certain Project Type will be automatically crossed out in the tool.
+</p><p>
+If you would like to learn more information about the Areal Feature, click on the name of the Areal
+Feature. The information will highlight the set of Structures that can be designed in each Areal Feature.
+These Structures are either Conventional end-of-pipe systems or Non-Conventional distributed GSI
+systems. This tool will also provide information about the new opportunities in Raleigh's UDO where
+distributed GSI systems can be implemented in the Areal Features (e.g., planter boxes in parking
+islands). Potential benefits based on the design's ability to meet compliance standards will also be
+presented on this page.
+</p>
+</div>
+
 
 
 

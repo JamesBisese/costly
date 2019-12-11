@@ -49,7 +49,7 @@
 
                     <hr>
 
-                    <h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('ScenarioInformationHelpText');">Scenario Information</h3>
+                    <h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('ScenarioTitleHelpText');">Scenario Information</h3>
                     <div id="scenario_title_validation_error" class="validation_error" style="display: none;">ERROR MESSAGE GOES HERE</div>
 
                     <div id="additional_scenario_information_validation_error" class="validation_error" style="display: none;">ERROR MESSAGE GOES HERE</div>
@@ -67,8 +67,8 @@
                             </tr>
                         </tbody>
                     </table>
-                    <!--<hr>-->
-
+                    <hr>
+                    <h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('DesignElementsHelpText');">Design Elements</h3>
                     <!--<h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('OpportunitiesScreeningHelpText');">Opportunities Screening</h3>-->
                     <table border="0" cellpadding="0" cellspacing="0" class="ft"  style="width:100%;">
                         <tbody>
@@ -122,246 +122,6 @@
                         </tbody>
                    </table>
                     <hr>
-                    <h3 class="bmplabel" style="margin-top: 0px;" onclick="toggleHelpText('LifeCycleCostAssumptionsHelpText');">Life Cycle Cost Assumptions</h3>
-
-                                    <!--<h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('OpportunitiesScreeningHelpText');">Opportunities Screening</h3>-->
-                            <table border="0" cellpadding="0" cellspacing="0" class="ft" style="width: 100%;">
-                                <tbody>
-                                    <col width="70%">
-                                    <col width="30%">
-
-                            <tr>
-                                <td>Planning and Design Factor (Multiplier)</td>
-                                <td class="input-group input-group-sm"><input type="text" id="ui_planning_and_design_factor" class="form-control"
-                                           title="You can enter any number here."
-                                           onkeypress="returnCalc(this);" onchange="runCalculate(this);"
-                                           ><div class="input-group-append"><span class="input-group-text">%</span></div></td>
-                            </tr>
-                            <tr>
-                                <td>Study Life (years)</td>
-                                <td class="input-group input-group-sm"><input type="text" id="ui_study_life" class="form-control"
-                                           title="You can enter any number here."
-                                           onkeypress="returnCalc(this);" onchange="runCalculate(this);"
-                                           ><div class="input-group-append"><span class="input-group-text">yrs</span></div></td>
-                            </tr>
-                            <tr>
-                                <td>Discount Rate (DISC)</td>
-                                <td class="input-group input-group-sm"><input type="text" id="ui_discount_rate" class="form-control"
-                                           title="You can enter any number here."
-                                           onkeypress="returnCalc(this);" onchange="runCalculate(this);"
-                                           ><div class="input-group-append"><span class="input-group-text">%</span></div></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <hr>
-                    <div id="areal_features_header">
-                        <h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('ArealFeaturesHelpText');">Scenario Areal Features</h3>
-                    </div>
-                    <div id="areal_features_validation_error" class="validation_error" style="display: none;">ERROR MESSAGE GOES HERE</div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_stormwater_management_feature"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >i. Areas Exclusively Designated to <br>Stormwater Management</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_stormwater_management_feature_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_amenity_plaza"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >ii. Amenity Areas / Urban Plaza</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_amenity_plaza_area"  disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_protective_yard"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >iii. Protective Yards</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_protective_yard_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_parking_island"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >iv. Parking Islands</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_parking_island_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_building"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >v. Buildings</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_building_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_drive_thru_facility"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >vi. Drive-Thru Facility</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_drive_thru_facility_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_landscape"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >vii. Miscellaneous Landscaping/Open Space</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_landscape_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_sidewalk"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >viii. Sidewalks</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_sidewalk_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_street"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >ix. Streets</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_street_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_median"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >x. Medians</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_median_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_parking_lot"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >xi. Parking Lot</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_parking_lot_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
-                            <div class="input-group-text" style="width: 100%;">
-                                <input type="checkbox" id="checkbox_driveway_and_alley"
-                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
-                                <span >xii. Driveways and Alleys</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_driveway_and_alley_area" disabled
-                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-                    </div>
-
-
-                    <div class="input-group mb-3 input-group-sm">
-                        <div class="input-group-prepend" style="width: 70%;">
-                            <div class="input-group-text" style="width: 100%; display: block;">
-                                <span style="float: right;" >Sum of Areal Features</span>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" id="ui_sum_areal_features_area" readonly>
-                        <div class="input-group-append">
-                            <span class="input-group-text">ft<sup>2</sup></span>
-                        </div>
-{#                        <input type="text" class="form-control" id="ui_sum_areal_features_area_percent"#}
-{#                               title="Sum of Areal Features as percent of Total area of project" readonly>#}
-{#                        <div class="input-group-append">#}
-{#                            <span class="input-group-text">%</span>#}
-{#                        </div>#}
-                    </div>
-
-                    <hr>
 
                     <h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('PerviousAreasHelpText');">Pervious/Impervious</h3>
                     <div id="pervious_validation_error" class="validation_error" style="display: none;">ERROR MESSAGE GOES HERE</div>
@@ -409,6 +169,247 @@
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
+                    <hr>
+                    <h3 class="bmplabel" style="margin-top: 0px;" onclick="toggleHelpText('LifeCycleCostAssumptionsHelpText');">Life Cycle Cost Assumptions</h3>
+
+                                    <!--<h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('OpportunitiesScreeningHelpText');">Opportunities Screening</h3>-->
+                            <table border="0" cellpadding="0" cellspacing="0" class="ft" style="width: 100%;">
+                                <tbody>
+                                    <col width="70%">
+                                    <col width="30%">
+
+                            <tr>
+                                <td>Planning and Design Factor (Multiplier)</td>
+                                <td class="input-group input-group-sm"><input type="text" id="ui_planning_and_design_factor" class="form-control"
+                                           title="You can enter any number here."
+                                           onkeypress="returnCalc(this);" onchange="runCalculate(this);"
+                                           ><div class="input-group-append"><span class="input-group-text">%</span></div></td>
+                            </tr>
+                            <tr>
+                                <td>Study Life (years)</td>
+                                <td class="input-group input-group-sm"><input type="text" id="ui_study_life" class="form-control"
+                                           title="You can enter any number here."
+                                           onkeypress="returnCalc(this);" onchange="runCalculate(this);"
+                                           ><div class="input-group-append"><span class="input-group-text">yrs</span></div></td>
+                            </tr>
+                            <tr>
+                                <td>Discount Rate (DISC)</td>
+                                <td class="input-group input-group-sm"><input type="text" id="ui_discount_rate" class="form-control"
+                                           title="You can enter any number here."
+                                           onkeypress="returnCalc(this);" onchange="runCalculate(this);"
+                                           ><div class="input-group-append"><span class="input-group-text">%</span></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                    <div id="areal_features_header">
+                        <h3 class="bmplabel" style="margin-top: 0px" onclick="toggleHelpText('ArealFeaturesHelpText');">Scenario Areal Features</h3>
+                    </div>
+                    <div id="areal_features_validation_error" class="validation_error" style="display: none;">ERROR MESSAGE GOES HERE</div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_stormwater_management_feature"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >i. Areas Exclusively Designated to <br>Stormwater Management</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_stormwater_management_feature_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_amenity_plaza"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >ii. Amenity Areas / Urban Plaza</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_amenity_plaza_area"  disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_protective_yard"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >iii. Protective Yards</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_protective_yard_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_parking_island"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >iv. Parking Islands</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_parking_island_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_building"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >v. Buildings</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_building_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_drive_thru_facility"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >vi. Drive-Thru Facility</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_drive_thru_facility_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_landscape"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >vii. Miscellaneous Landscaping/Open Space</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_landscape_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_sidewalk"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >viii. Sidewalks</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_sidewalk_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_street"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >ix. Streets</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_street_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_median"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >x. Medians</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_median_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" input-group-link-text style="width: 100%;">
+                                <input type="checkbox" id="checkbox_parking_lot"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >xi. Parking Lot</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_parking_lot_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;" onclick="open_areal_features_help(this);">
+                            <div class="input-group-text input-group-link-text" style="width: 100%;">
+                                <input type="checkbox" id="checkbox_driveway_and_alley"
+                                       value="Active" onclick="event.stopPropagation();runCalculate(this);">
+                                <span >xii. Driveways and Alleys</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_driveway_and_alley_area" disabled
+                               onkeypress="returnCalc(this);" onchange="runCalculate(this);">
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group mb-3 input-group-sm">
+                        <div class="input-group-prepend" style="width: 70%;">
+                            <div class="input-group-text" style="width: 100%; display: block;">
+                                <span style="float: right;" >Sum of Areal Features</span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="ui_sum_areal_features_area" readonly>
+                        <div class="input-group-append">
+                            <span class="input-group-text">ft<sup>2</sup></span>
+                        </div>
+{#                        <input type="text" class="form-control" id="ui_sum_areal_features_area_percent"#}
+{#                               title="Sum of Areal Features as percent of Total area of project" readonly>#}
+{#                        <div class="input-group-append">#}
+{#                            <span class="input-group-text">%</span>#}
+{#                        </div>#}
+                    </div>
+
+
                 </form>
             </div><!-- .col1 -->
 

@@ -9,7 +9,8 @@
 
 <div style="font-weight: bolder;">Check for differences across design scenarios. The differences are presented in absolute value.</div>
 <div class="project_table" style="position: absolute"></div>
-<div class="nutrient_storm_peak" style="position: absolute; color: red; {% if diff.nutrient_storm_peak is False %}display: none;{% endif %}">You have indicated a difference between scenarios that may have an impact on
+<div class="design_elements" style="position: absolute; color: red; margin-right: 10px; {% if diff.design_elements is False %}display: none;{% endif %}">
+    You have indicated a difference between scenarios that may have an impact on
     your design choices and overall costs.
     It is recommended to compare scenarios that share
     similar attributes to get a true comparison of the project costs.</div>
@@ -169,6 +170,28 @@
     </table>
 </div>
 
+
+{#<div class="areal_features" style="position: absolute;">#}
+{#    <table class="result_table details_result_table">#}
+{#    <thead><tr>#}
+{#      <th>Areal Feature</th>#}
+{#      <th>Area ft<sup>2</sup></th>#}
+{#    </tr>#}
+{#    </thead>#}
+{#    {% for r,obj in scenario.areal_features.items %}#}
+{#      {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}#}
+{#        <tr>#}
+{#          <td> {{ obj.label }}</td>#}
+{#          <td class="result_col input_col"> {{ obj.area|intcomma }}</td>#}
+{#        </tr>#}
+{#      {% endif %}#}
+{#    {% endfor %}#}
+{#        <tr>#}
+{#          <td style="text-align: center;">Total</td>#}
+{#          <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|intcomma }}</td>#}
+{#        </tr>#}
+{#    </table>#}
+{#</div>#}
 
 
 

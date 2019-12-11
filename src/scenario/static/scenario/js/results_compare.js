@@ -26,6 +26,7 @@
     }
 
     function reorderScenarios(button_context) {
+        ShowLoading();
         leftScenarioDiv = document.getElementsByClassName('scenario_1')[0];
         rightScenarioDiv = document.getElementsByClassName('scenario_2')[0];
         var leftHTML = leftScenarioDiv.innerHTML;
@@ -56,26 +57,31 @@
         // get these divs to take up the same page height
         resize_div("caption_table2");
         resize_div("project_table");
-        resize_div("nutrient_storm_peak");
+        resize_div("design_elements");
         resize_div("planning_and_design");
         resize_div("pervious");
         resize_div("project_life_cycle_costs");
         resize_div("construction_costs");
         resize_div("o_and_m_costs");
         resize_div("life_cycle_costs");
+
+        // resize_div("areal_features");
+
         return;
     }
     function init_results_compare() {
         // get these divs to take up the same page height
         resize_div("caption_table2");
         resize_div("project_table");
-        resize_div("nutrient_storm_peak");
+        resize_div("design_elements");
         resize_div("planning_and_design");
         resize_div("pervious");
         resize_div("project_life_cycle_costs");
         resize_div("construction_costs");
         resize_div("o_and_m_costs");
         resize_div("life_cycle_costs");
+
+        // resize_div("areal_features");
 
         // add a 'switch-sides' button to the top left side of the
         // right side scenario
@@ -113,11 +119,22 @@
             success: function (data) {
                 compareDiv = document.getElementsByClassName('scenario_compare')[0];
                 compareDiv.innerHTML = data;
+                HideLoading();
             },
             error: function(data) {
                 return "unable to get comparison results TBD";
+                HideLoading();
             }
         });
 
         return;
     }
+
+    function ShowLoading() {
+        let loading = document.getElementsByClassName('scenarioPair')[0];
+        loading.style.backgroundColor = 'red';
+    };
+    function HideLoading() {
+        let loading = document.getElementsByClassName('scenarioPair')[0];
+        loading.style.backgroundColor = '';
+    };

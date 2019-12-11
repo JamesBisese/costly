@@ -97,7 +97,7 @@ function open_areal_features_help(button_context){
 
 create this
 
-<div id="help_stormwater_wetland" class="conventional_structure_help" style="display:none;">
+<div id="help_stormwater_wetland" class="major_help" style="display:none;">
     <button type="button" onclick="close_cs_help(this);" class="closebutton">
         <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
     </button>
@@ -164,7 +164,7 @@ function open_structure_help(button_context, type){
     imageDiv.style.border = "0";
     buttonDiv.appendChild(imageDiv);
 
-    sourceContentDiv.classList.add("conventional_structure_help");
+    sourceContentDiv.classList.add("major_help");
     sourceTitleContentDiv.appendChild(buttonDiv);
     sourceTitleContentDiv.style.fontSize = "18px";
     sourceTitleContentDiv.style.fontWeight = "bold";
@@ -214,7 +214,7 @@ function open_structure_help2(button_context, type){
 
     var helpDiv = document.createElement("div");
     helpDiv.id = help_div_id;
-    helpDiv.classList.add("conventional_structure_help");
+    helpDiv.classList.add("major_help");
     helpDiv.style.display = "none";
 
     var buttonDiv = document.createElement("button");
@@ -571,7 +571,7 @@ function toggleCol2(bmp) {
  *  and the first class name being the 'name' to use */
 function collapseDetail(element) {
 
-    element.classList.toggle('w3-button-open');
+    //element.classList.toggle('w3-button-open');
 
     className = element.nextElementSibling.classList[0];
 
@@ -582,6 +582,15 @@ function collapseDetail(element) {
         var isShowing = elements[0].classList.contains("w3-show");
         for (i = 0; i < elements.length; i++) {
             elements[i].classList.toggle("w3-show");
+
+            let kbButton = elements[i].previousElementSibling;
+            var classList = kbButton.className.split(" ");
+            if (classList.indexOf("w3-button-open") == -1) {
+                kbButton.className += " " + "w3-button-open";
+            }
+            else {
+                kbButton.className = kbButton.className.replace(/\bw3-button-open\b/g, "");
+            }
         }
         /* if isShowing == true then we are closing.  collapse to 0 height */
         if (isShowing == true)

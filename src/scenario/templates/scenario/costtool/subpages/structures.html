@@ -18,7 +18,7 @@
                         {% if structure.classification == 'nonconventional' %}
                             <div class="input-group mb-3 input-group-sm">
                                 <div class="input-group-prepend" style="width: 70%;" onclick="open_nonconventional_structure_help(this);">
-                                    <div class="input-group-text" style="width: 100%;">
+                                    <div class="input-group-text input-group-link-text" style="width: 100%;">
                                         <input type="checkbox" id="checkbox_{{ structure.code }}"
                                                value="Active" onclick="event.stopPropagation();runCalculate(this);">
                                         <span >{% autoescape off %}{{ structure.name }}{% endautoescape %}</span>
@@ -45,7 +45,7 @@
                         {% if structure.classification == 'conventional' %}
                             <div class="input-group mb-3 input-group-sm">
                                 <div class="input-group-prepend" style="width: 70%;" onclick="open_conventional_structure_help(this);">
-                                    <div class="input-group-text" style="width: 100%;">
+                                    <div class="input-group-text input-group-link-text" style="width: 100%;">
                                         <input type="checkbox" id="checkbox_{{ structure.code }}"
                                                 value="Active" onclick="event.stopPropagation();runCalculate(this);">
                                         <span >{% autoescape off %}{{ structure.name }}{% endautoescape %}</span>

@@ -1,14 +1,6 @@
 {% load staticfiles %}
-<style>
-    .conventional_structure_help {
-        position: relative;
-        border: 1px solid #B0DD24;
-        background-color: #dee7eb;
-        padding: 15px;
-    }
-</style>
 
-<div id="StructureCostsHelpText" style="display:none;">
+<div id="StructureCostsHelpText" class="major_help" style="display:none;">
     <button type="button" onclick="close_cs_help(this);" class="closebutton">
         <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
     </button>
@@ -67,6 +59,6 @@ a value of 1. The tool will automatically convert unit costs for those cost item
         </ul>
 </div>
 
-<div id="StructureCostItemHelpText" class="conventional_structure_help" style="display:none;">
+<div id="StructureCostItemHelpText" class="major_help" style="display:none;">
 
 </div>
