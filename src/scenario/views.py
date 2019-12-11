@@ -1458,23 +1458,26 @@ def comparison_column(ids, left_scenario, right_scenario):
     diff['nonconventional'] = costs
 
     areal_features = {
-        'total_area': 9,
+        'total_area': 0,
         'item_list': {}
     }
     serializer_class = ScenarioSerializer
     left_serializer = serializer_class(left_scenario)
     right_serializer = serializer_class(right_scenario)
 
+    diff_area_sum = 0
     for r, left_obj in left_serializer.data['areal_features'].items():
         right_obj = right_serializer.data['areal_features'][r]
         right_area = right_obj['area'] if right_obj['checkbox'] is True else 0
         left_area = left_obj['area'] if left_obj['checkbox'] is True else 0
-        diff_area = 9
-        areal_features['item_list'][r] = {'label': right_obj['label'], 'area': left_area - right_area }
+        diff_area = left_area - right_area
+        diff_area_sum += diff_area
+        areal_features['item_list'][r] = {'label': right_obj['label'], 'area': diff_area }
         if r == 'stormwater_management_feature':
             areal_features['item_list'][r]['project_land_unit_cost'] = left_scenario.project.land_unit_cost
             areal_features['item_list'][r]['project_land_cost_diff'] = (left_area - right_area) * left_scenario.project.land_unit_cost
 
+    areal_features['total_area'] = diff_area_sum
     diff['areal_features'] = areal_features
 
     context = {
