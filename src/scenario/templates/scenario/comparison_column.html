@@ -7,14 +7,19 @@
 </style>
 
 
-<div style="font-weight: bolder;">Check for differences across design scenarios. The differences are presented in absolute value.</div>
+<div>
+    <p>Check for differences across design scenarios. The cost differences presented are impacted by
+    the order of comparison, with the values associated with the scenario on the left side being
+    subtracted from the scenario on the right side. The user may switch the order of the scenarios by clicking
+    on the opposing arrow icon in the upper right corner of the second scenario.
+    </p>
+</div>
 <div class="project_table" style="position: absolute"></div>
-<div class="design_elements" style="position: absolute; color: red; margin-right: 10px; {% if diff.design_elements is False %}display: none;{% endif %}">
-    You have indicated a difference between scenarios that may have an impact on
-    your design choices and overall costs.
-    It is recommended to compare scenarios that share
-    similar attributes to get a true comparison of the project costs.</div>
-<div class="planning_and_design" style="position: absolute"></div>
+<div class="design_elements" style="position: absolute; color: red; margin-top: 42px; margin-right: 10px; {% if diff.design_elements is False %}display: none;{% endif %}">
+ALERT: You have indicated one or more differences in the <b>Design Elements</b> basis for project design.
+For comparisons, it is generally recommended that both designs meet the same performance criteria.
+When this is not the case, reviewers should consider the differences in expected performance along with cost.
+</div>
 <div class="pervious" style="position: absolute">
     <table class="result_table">
         <col style="width: 60%">
@@ -31,13 +36,19 @@
             {% if diff.pervious is True %}
             <tr>
                 <td colspan="2" style="color: red;">Stormwater fees are influenced by the amount of impervious area on your site.
-                    You have indicated a difference in design choice
+                    You have indicated a difference in the <b>Impervious Areas</b>
                     between scenarios that may impact the amount of stormwater fees you will be required to pay. </td>
 
             </tr>
             {% endif %}
         </tbody>
     </table>
+</div>
+
+<div class="planning_and_design" style="position: absolute; color: red; margin-top: 36px; margin-right: 10px; {% if diff.planning_and_design is False %}display: none;{% endif %}">
+ALERT: You have indicated one or more differences in the <b>Life Cycle Costs Assumptions</b> components.
+    For cost comparisons across design,
+    it is recommended that both scenarios use the same life cycle cost values.
 </div>
 
 <div class="project_life_cycle_costs" style="position: absolute;">
@@ -170,28 +181,37 @@
     </table>
 </div>
 
+<div class="resultDetails" style="width: 387px;">
 
-{#<div class="areal_features" style="position: absolute;">#}
-{#    <table class="result_table details_result_table">#}
-{#    <thead><tr>#}
-{#      <th>Areal Feature</th>#}
-{#      <th>Area ft<sup>2</sup></th>#}
-{#    </tr>#}
-{#    </thead>#}
-{#    {% for r,obj in scenario.areal_features.items %}#}
-{#      {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}#}
-{#        <tr>#}
-{#          <td> {{ obj.label }}</td>#}
-{#          <td class="result_col input_col"> {{ obj.area|intcomma }}</td>#}
-{#        </tr>#}
-{#      {% endif %}#}
-{#    {% endfor %}#}
-{#        <tr>#}
-{#          <td style="text-align: center;">Total</td>#}
-{#          <td class="result_col output_col"> {{ sum_values.areal_features_sum_area|intcomma }}</td>#}
-{#        </tr>#}
-{#    </table>#}
-{#</div>#}
-
+    <div class="areal_features comparison_column w3-container w3-animate-slide w3-hide " style="width: 380px;">
+    <table class="result_table details_result_table">
+    <thead><tr>
+      <th>Areal Feature</th>
+      <th>Area ft<sup>2</sup></th>
+    </tr>
+    </thead>
+    {% for r,obj in diff.areal_features.item_list.items %}
+        <tr>
+          <td> {{ obj.label }}</td>
+          <td class="result_col input_col"> {{ obj.area|intcomma }}</td>
+        </tr>
+        {%  if r == 'stormwater_management_feature' and obj.area != 0%}
+            <tr>
+              <td colspan="2" style="color: red;">You have indicated a decision to change the amount of
+                  land used exclusively for stormwater management between scenario designs.
+                  This change could indicate that you have available land for alternative uses.
+                  The value of this land based on the cost per square foot to own the land is
+                  {{ obj.area|intcomma }} * {{ obj.project_land_unit_cost }} = {{ obj.project_land_cost_diff|intcomma }}.
+                  The additional land can be used in the project site development for other uses of higher value. </td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+        <tr>
+          <td style="text-align: center;">Total</td>
+          <td class="result_col output_col"> {{ diff.areal_features.total_area|intcomma }}</td>
+        </tr>
+    </table>
+</div>
+</div>
 
 

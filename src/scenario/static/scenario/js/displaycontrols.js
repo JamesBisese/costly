@@ -584,13 +584,17 @@ function collapseDetail(element) {
             elements[i].classList.toggle("w3-show");
 
             let kbButton = elements[i].previousElementSibling;
-            var classList = kbButton.className.split(" ");
-            if (classList.indexOf("w3-button-open") == -1) {
-                kbButton.className += " " + "w3-button-open";
+            if (kbButton != null)
+            {
+                var classList = kbButton.className.split(" ");
+                if (classList.indexOf("w3-button-open") == -1) {
+                    kbButton.className += " " + "w3-button-open";
+                }
+                else {
+                    kbButton.className = kbButton.className.replace(/\bw3-button-open\b/g, "");
+                }
             }
-            else {
-                kbButton.className = kbButton.className.replace(/\bw3-button-open\b/g, "");
-            }
+
         }
         /* if isShowing == true then we are closing.  collapse to 0 height */
         if (isShowing == true)
@@ -602,16 +606,25 @@ function collapseDetail(element) {
         else
         {
             var max_height = 0;
+            var max_top = 0;
             var i;
             for (i = 0; i < elements.length; i++) {
                 var height = elements[i].offsetHeight;
-
+                var top = elements[i].offsetTop;
                 if (height > max_height){
                     max_height = height;
+                }
+                if (top > max_top){
+                    max_top = top;
                 }
             }
             for (i = 0; i < elements.length; i++) {
                 elements[i].style.height = max_height;
+                // get the content in the comparison column to align using top
+                if (elements[i].classList.contains("comparison_column")) {
+                    elements[i].style.position = 'absolute';
+                    elements[i].style.top = max_top;
+                }
             }
         }
 

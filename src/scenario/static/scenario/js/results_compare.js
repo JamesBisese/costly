@@ -24,6 +24,30 @@
             elements[i].style.top = max_top;
         }
     }
+    function retop_div(div_class){
+        let max_height = 0;
+        let max_top = 0;
+        let elements = document.getElementsByClassName(div_class);
+        for (let i = 0; i < elements.length; i++) {
+            let height = elements[i].offsetTop;
+            if (height > max_height){
+                max_height = height;
+            }
+        }
+
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.height = max_height;
+        }
+        for (let i = 0; i < elements.length; i++) {
+            let top = elements[i].offsetTop;
+            if (top > max_top){
+                max_top = top;
+            }
+        }
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.top = max_top;
+        }
+    }
 
     function reorderScenarios(button_context) {
         ShowLoading();
@@ -58,9 +82,11 @@
         resize_div("caption_table2");
         resize_div("project_table");
         resize_div("design_elements");
-        resize_div("planning_and_design");
+
         resize_div("pervious");
+        resize_div("planning_and_design");
         resize_div("project_life_cycle_costs");
+
         resize_div("construction_costs");
         resize_div("o_and_m_costs");
         resize_div("life_cycle_costs");
@@ -74,14 +100,16 @@
         resize_div("caption_table2");
         resize_div("project_table");
         resize_div("design_elements");
-        resize_div("planning_and_design");
+
         resize_div("pervious");
+        resize_div("planning_and_design");
         resize_div("project_life_cycle_costs");
+
         resize_div("construction_costs");
         resize_div("o_and_m_costs");
         resize_div("life_cycle_costs");
 
-        // resize_div("areal_features");
+        //resize_div("areal_features");
 
         // add a 'switch-sides' button to the top left side of the
         // right side scenario

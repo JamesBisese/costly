@@ -1401,11 +1401,14 @@ def comparison_column(ids, left_scenario, right_scenario):
     diff['design_elements'] = False
     if left.nutrient_req_met != right.nutrient_req_met \
         or left.captures_90pct_storm != right.captures_90pct_storm \
-        or left.meets_peakflow_req != right.meets_peakflow_req \
-        or left.planning_and_design_factor != right.planning_and_design_factor \
+        or left.meets_peakflow_req != right.meets_peakflow_req:
+        diff['design_elements'] = True
+
+    diff['planning_and_design'] = False
+    if left.planning_and_design_factor != right.planning_and_design_factor \
         or left.study_life != right.study_life \
         or left.discount_rate != right.discount_rate :
-        diff['design_elements'] = True
+        diff['planning_and_design'] = True
 
     diff['pervious_area'] = left.pervious_area - right.pervious_area
     diff['impervious_area'] = left.impervious_area - right.impervious_area
@@ -1454,6 +1457,26 @@ def comparison_column(ids, left_scenario, right_scenario):
 
     diff['nonconventional'] = costs
 
+    areal_features = {
+        'total_area': 9,
+        'item_list': {}
+    }
+    serializer_class = ScenarioSerializer
+    left_serializer = serializer_class(left_scenario)
+    right_serializer = serializer_class(right_scenario)
+
+    for r, left_obj in left_serializer.data['areal_features'].items():
+        right_obj = right_serializer.data['areal_features'][r]
+        right_area = right_obj['area'] if right_obj['checkbox'] is True else 0
+        left_area = left_obj['area'] if left_obj['checkbox'] is True else 0
+        diff_area = 9
+        areal_features['item_list'][r] = {'label': right_obj['label'], 'area': left_area - right_area }
+        if r == 'stormwater_management_feature':
+            areal_features['item_list'][r]['project_land_unit_cost'] = left_scenario.project.land_unit_cost
+            areal_features['item_list'][r]['project_land_cost_diff'] = (left_area - right_area) * left_scenario.project.land_unit_cost
+
+    diff['areal_features'] = areal_features
+
     context = {
                 'diff': diff,
                }
@@ -1492,6 +1515,9 @@ def scenario_table_html(scenario):
 
             if obj['checkbox'] == True and obj['area'] != "0" and obj['area'] != None:
                 areal_features_sum_area += int(float(obj['area']))
+                obj['label'] = labels[r]
+            else:
+                obj['area'] = 0
                 obj['label'] = labels[r]
 
     sum_values['areal_features_sum_area'] = areal_features_sum_area

@@ -15,6 +15,7 @@
     display: inline-block;
 }
 </style>
+
 <div class="buttonHolder"></div>
 <div class="scenario_id" style="display: none;">{{ scenario.id }}</div>
 <div class="caption_table2">
@@ -288,13 +289,13 @@
         </tr>
         </thead>
         {% for r,obj in scenario.areal_features.items %}
-          {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}
+{#          {% if obj.checkbox == True and obj.area != "0" and obj.area != null %}#}
             <tr>
               <td> {{ obj.label }}</td>
               <td class="result_col input_col"> {{ obj.area|intcomma }}</td>
 {#              <td class="result_col output_col"> {{ obj.area|div:scenario.project.project_area|percentage }}</td>#}
             </tr>
-          {% endif %}
+{#          {% endif %}#}
         {% endfor %}
             <tr>
               <td style="text-align: center;">Total</td>
@@ -306,16 +307,21 @@
     <div style="line-height: 5px;">&nbsp; </div>
 
 {# Structure Areas - Start This is commented out since it doesn't really make sense#}
-    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-            >Structure Areas </button>
+
 
 {% for r, objClassification in cost_results.items %}
 
-    <div class="structure_areas w3-container w3-animate-left w3-hide">
+    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
+            >Structure Areas
+                        {% if r == 'conventional' %}
+                        Conventional Structures
+                    {% else %}
+                        - <br>Non-Conventional (GSI) Structures
+                    {% endif %}
+    </button>
+
+    <div class="structure_areas_{{ r }} w3-container w3-animate-left w3-hide">
         <table class="result_table details_result_table"
-            {% if r == 'conventional' %}
-                style="margin-top: 10px;"
-            {% endif %}>
             <thead><tr>
                 <th colspan="3" style="text-align: left;">
                     {% if r == 'conventional' %}
@@ -357,8 +363,64 @@
             </tr>
         </table>
     </div>
-{% endfor %}
     <div style="line-height: 5px;">&nbsp; </div>
+{% endfor %}
+
+
+{# Structure Areas - Start This is commented out since it doesn't really make sense#}
+{#    <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"#}
+{#            >Structure Areas </button>#}
+{##}
+{#{% for r, objClassification in cost_results.items %}#}
+{##}
+{#    <div class="structure_areas w3-container w3-animate-left w3-hide">#}
+{#        <table class="result_table details_result_table"#}
+{#            {% if r == 'conventional' %}#}
+{#                style="margin-top: 10px;"#}
+{#            {% endif %}>#}
+{#            <thead><tr>#}
+{#                <th colspan="3" style="text-align: left;">#}
+{#                    {% if r == 'conventional' %}#}
+{#                        Conventional Structures#}
+{#                    {% else %}#}
+{#                        Non-Conventional (GSI) Structures#}
+{#                    {% endif %}#}
+{#                </th>#}
+{#            </tr>#}
+{#            </thead>#}
+{#            <thead><tr>#}
+{#                <th>Structure</th>#}
+{#                <th>Size</th>#}
+{#                <th>% Project Area</th></tr>#}
+{#            </thead>#}
+{#            {% for r,obj in objClassification.structures.items %}#}
+{#                <tr>#}
+{#                  <td> {{ obj.structure.name }}</td>#}
+{#                  <td class="result_col input_col"> {{ obj.structure.area|intcomma }} {{ obj.structure.units }}</td>#}
+{#                  <td class="result_col output_col"> {{ obj.structure.area|div:scenario.project.project_area|percentage }}</td>#}
+{#                </tr>#}
+{#            {% endfor %}#}
+{#            <tr>#}
+{#              <td style="text-align: center;">Total</td>#}
+{#              <td class="result_col output_col">#}
+{#                  {% if r == 'conventional' %}#}
+{#                        {{ sum_values.conventional_structure_sum_area|intcomma }}#}
+{#                  {% else %}#}
+{#                       {{ sum_values.nonconventional_structure_sum_area|intcomma }}#}
+{#                  {% endif %}#}
+{#              </td>#}
+{#              <td class="result_col output_col">#}
+{#                  {% if r == 'conventional' %}#}
+{#                        {{ sum_values.conventional_structure_sum_area|div:scenario.project.project_area|percentage }}#}
+{#                  {% else %}#}
+{#                       {{ sum_values.nonconventional_structure_sum_area|div:scenario.project.project_area|percentage }}#}
+{#                  {% endif %}#}
+{#              </td>#}
+{#            </tr>#}
+{#        </table>#}
+{#    </div>#}
+{#{% endfor %}#}
+{#    <div style="line-height: 5px;">&nbsp; </div>#}
 
 {# Structure Areas - End #}
 

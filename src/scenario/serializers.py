@@ -206,50 +206,62 @@ class EmbeddedArealFeatures(serializers.Field):
     def to_representation(self, value):
         ret = {
                 "stormwater_management_feature": {
+                    "label": 'Stormwater Management Feature',
                     "checkbox": value.stormwater_management_feature_checkbox,
                     "area": value.stormwater_management_feature_area
                 },
                 "amenity_plaza": {
+                    "label": 'Amenity Plaza',
                     "checkbox": value.amenity_plaza_checkbox,
                     "area": value.amenity_plaza_area
                 },
                 "protective_yard": {
+                    "label": 'Protective Yard',
                     "checkbox": value.protective_yard_checkbox,
                     "area": value.protective_yard_area
                 },
                 "parking_island": {
+                    "label": 'Parking Island',
                     "checkbox": value.parking_island_checkbox,
                     "area": value.parking_island_area
                 },
                 "building": {
+                    "label": 'Building',
                     "checkbox": value.building_checkbox,
                     "area": value.building_area
                 },
                 "drive_thru_facility": {
+                    "label": 'Drive-Thru Facility',
                     "checkbox": value.drive_thru_facility_checkbox,
                     "area": value.drive_thru_facility_area
                 },
                 "landscape": {
+                    "label": 'Miscellaneous Landscaping/Open Space',
                     "checkbox": value.landscape_checkbox,
                     "area": value.landscape_area
                 },
                 "sidewalk": {
+                    "label": 'Sidewalk',
                     "checkbox": value.sidewalk_checkbox,
                     "area": value.sidewalk_area
                 },
                 "street": {
+                    "label": 'Street',
                     "checkbox": value.street_checkbox,
                     "area": value.street_area
                 },
                 "median": {
+                    "label": 'Median',
                     "checkbox": value.median_checkbox,
                     "area": value.median_area
                 },
                 "parking_lot": {
+                    "label": 'Parking Lot',
                     "checkbox": value.parking_lot_checkbox,
                     "area": value.parking_lot_area
                 },
                 "driveway_and_alley": {
+                    "label": 'Driveway and Alley',
                     "checkbox": value.driveway_and_alley_checkbox,
                     "area": value.driveway_and_alley_area
                 }
