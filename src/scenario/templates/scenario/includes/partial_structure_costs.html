@@ -121,7 +121,7 @@
                 <div class="input-group mb-3 input-group-sm">
                     <input type="text" class="form-control"
 style="font-size: 10px;" autocomplete="off"
-                           title="Depth in feed of this cost item"
+                           title="Depth in feet of this cost item"
                            id="ui_{{ cost_item_default_cost.costitem.code }}_z_depth"
                            value="{% if cost_item_default_cost.z_depth %}{{  cost_item_default_cost.z_depth  }}{% else  %}{% endif %}"
                            onkeypress="returnCalc(this);" onchange="runCalculate(this);">
@@ -156,25 +156,6 @@ style="font-size: 10px;" autocomplete="off"
 
             <td class="rightaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_cost_V1"></td>
 
-
-{#            <td>#}
-{#                <div class="input-group mb-3 input-group-sm">#}
-{#                    <input type="text" class="form-control leftaligned"#}
-{#                           title="Equation" readonly style="font-size: 10px;"#}
-{#                           id="ui_{{ cost_item_default_cost.costitem.code }}_equation"#}
-{#                           value="" >#}
-{##}
-{#                </div>#}
-{#            </td>#}
-{#            <td>#}
-{#                <div class="input-group mb-3 input-group-sm">#}
-{#                    <input type="text" class="form-control"#}
-{#                           title="Cost" disabled style="text-align: right; font-size: 10px;"#}
-{#                           id="ui_{{ cost_item_default_cost.costitem.code }}_cost_V1"#}
-{#                           value="" >#}
-{##}
-{#                </div>#}
-{#            </td>#}
         </tr>
 
 {% endfor %}

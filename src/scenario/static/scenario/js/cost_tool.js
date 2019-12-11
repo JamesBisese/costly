@@ -371,6 +371,7 @@ function populateStructureEquations(data){
                         title = '=' + title;
                     }
                     var text = document.createTextNode(field_value);
+
                     while (inputDom.firstChild) {
                       inputDom.removeChild(inputDom.firstChild);
                     }
@@ -380,19 +381,30 @@ function populateStructureEquations(data){
                 }
                 else if (field_name == 'equation_value'){
 
+                    var dollar_div = document.createElement('div');
+                    dollar_div.className = 'dollar';
+                    dollar_div.style.paddingLeft = '3px';
+                    dollar_div.innerText = '$';
+
                     var text = document.createTextNode(field_value);
                     while (inputDom.firstChild) {
                       inputDom.removeChild(inputDom.firstChild);
                     }
+                    inputDom.appendChild(dollar_div);
                     inputDom.appendChild(text);
 
                 }
                 else if (field_name == 'unit_cost'){
 
-                    var text = document.createTextNode(cost_item_data['unit_cost_formatted']);
+                    var dollar_div = document.createElement('div');
+                    dollar_div.className = 'dollar';
+                    dollar_div.innerText = '$';
+                    dollar_div.style.paddingLeft = '3px';
+                    var text = document.createTextNode(Number(cost_item_data['unit_cost']).toFixed(2));
                     while (inputDom.firstChild) {
                       inputDom.removeChild(inputDom.firstChild);
                     }
+                    inputDom.appendChild(dollar_div);
                     inputDom.appendChild(text);
 
                 }

@@ -841,7 +841,7 @@ def structure_cost_item_result_json(structure,
 
             try:
                 cost_amount = eval(equation)
-                cost_item_data['equation_value'] = '${:,.2f}'.format(cost_amount)
+                cost_item_data['equation_value'] = '{:,.2f}'.format(cost_amount)
                 # cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
             except:
                 cost_amount = equation
@@ -1096,7 +1096,7 @@ def structure_cost_item_json(structure,
 
             try:
                 cost_amount = eval(equation)
-                cost_item_data['equation_value'] = '${:,.2f}'.format(cost_amount)
+                cost_item_data['equation_value'] = '{:,.2f}'.format(cost_amount)
                 cost_item_data['construction_cost'] = round(cost_amount, 2)
                 # cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
             except :
