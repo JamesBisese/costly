@@ -91,6 +91,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'profiles',
+    'accounts',
+    'costly',
+    'scenario.apps.ScenarioConfig',
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
@@ -117,10 +121,7 @@ INSTALLED_APPS = (
     # 'django_filters',
     'location_field.apps.DefaultConfig',
     'authtools',
-    'profiles',
-    'accounts',
-    'costly',
-    'scenario.apps.ScenarioConfig',
+
 
 )
 
