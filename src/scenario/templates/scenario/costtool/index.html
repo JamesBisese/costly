@@ -34,8 +34,6 @@
     </script>
 {% endif %}
 
-<script type="text/javascript" language="Javascript" src="{% static 'scenario/js/cost_tool.js' %}"></script>
-
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
@@ -45,90 +43,29 @@
 {% endblock extra_js %}
 
 {% block content %}
+{#<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>#}
+    <script type="text/javascript" src="{% static 'scenario/js/cost_tool.js' %}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 
-    function openFileOption()
-    {
-      document.getElementById("file1").click();
-    }
-    var openFile = function(event) {
-      var data = loadJSON(event);
-    };
-
     // on-ready function
-    $( function() {
-        var active_tab = 2;
-        $("#tab_box").tabs({
-            activate: function (event, ui) {
-              //alert("opened tab " + ui.newPanel[0].id);
-              setCookie('tab', ui.newPanel[0].id, 365);
-            }
-        });
-
-        var id = getCookie('tab');
-        if (id != '')
-        {
-          var index = $('#tab_box a[href="#'+id+'"]').parent().index();
-          $("#tab_box").tabs("option", "active", index );
-        }
-
+    $(document).ready(function(){
 
     });
 
-    $( "#tab_box" ).tabs({
-      activate: function( event, ui ) {
-          alert("opened tab ");
-      }
-    });
+    function openFileOption() {
+        document.getElementById("file1").click();
+    }
 
-    $( function() {
-        $( document ).tooltip({
-          classes: {
-            "ui-tooltip": "highlight"
-          }
-        });
-    } );
+    var openFile = function(event) {
+        let data = loadJSON(event);
+    };
 
 
 </script>
 
 <style>
-{#.ui-tabs .ui-tabs-nav#}
-{#{#}
-{#    background: #fff;#}
-{#}#}
-{##}
-{#.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { background: #7ece32;}#}
-{#.highlight {#}
-{#	background: #7ece32;#}
-{#    color: #fff;#}
-{#}#}
-{#select.form-control:not([size]):not([multiple]) {#}
-{#    height: auto!important;#}
-{#}#}
-{##}
-{##calculator  h3 {#}
-{#    color: #7ece32;#}
-{#    font-size: 25px;#}
-{#    margin-left: -30px;#}
-{#    margin-top: -28px;#}
-{#    margin-bottom: 12px;#}
-{#}#}
-{#.nav-tabs{#}
-{#    display: flex;#}
-{#    text-align: center;#}
-{#}#}
-{#.nav-tabs li {#}
-{#    display: flex;#}
-{#    flex: 1;#}
-{#    border-radius: 15px 15px 0 0;#}
-{#}#}
-{##}
-{#.nav-tabs li  a {#}
-{#    flex: 1;#}
-{#    border-radius: 15px 15px 0 0;#}
-{#}#}
+
 </style>
 
 <div id="calculate">
@@ -155,14 +92,14 @@
 
     <div id="tab_box">
 
-        <h2>    <div id="scenario_name"></div></h2>
+        <h2><div id="scenario_name"></div></h2>
 
         <ul id="tab_options" class="nav nav-tabs nav-justified">
             <li><a href="#project_information">Project-Scenario<br>Description</a></li>
             <li><a href="#structures">Structures</a></li>
             <li><a href="#costitems">Cost Item<br>Unit Costs</a></li>
             <li><a href="#structure_costs">Structure/Cost Item<br>Costs</a></li>
-            <li><a href="#input-result" style="background-color:#228EA9; color:white;">Results</a></li>
+            <li><a href="#input-result" id="input_result_tab" style="background-color:#228EA9; color:white;" class="input-result">Results</a></li>
         </ul>
 
         <div class="tab-content" id="inputs">
@@ -171,13 +108,9 @@
                 <!-- the content of these pages are stored separately  -->
 
                 {% include "scenario/costtool/subpages/project_information.html" %}
-
                 {% include "scenario/costtool/subpages/structures.html" %}
-
                 {% include "scenario/costtool/subpages/costitems.html" %}
-
                 {% include "scenario/costtool/subpages/structure_costs.html" %}
-
                 {% include "scenario/costtool/subpages/results.html" %}
 
                 <form name="calculator" onsubmit="return false;" id="calculator" method="get">
@@ -200,6 +133,5 @@
         </div>
     </div>
 </div>
-
 
 {% endblock content %}

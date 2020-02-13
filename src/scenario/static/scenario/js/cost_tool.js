@@ -14,27 +14,48 @@ var _scenario_template = null;
  */
 
 /* for Mozilla */
-if (document.addEventListener) {
-    document.addEventListener("DOMContentLoaded", init, null);
-}
+// if (document.addEventListener) {
+//     document.addEventListener("DOMContentLoaded", init, null);
+// }
 
-window.onload = init;
+// window.onload = init;
+var a = "hello";
+    // on-ready function
+    $(document).ready(function() {
+        a = "here first";
+    });
 
+$(document).ready(function()
+{
+    $("#tab_box").tabs({
+        "activate": function (event, ui) {
+            let id = ui.newPanel[0].id;
+            setCookie('tab', id, 365);
+        }
+    });
 
+    /*
+    *
+    *  populate the results tab if the user is opening the tool right onto the results tab.
+    *
+     */
+    let id = getCookie('tab');
+    if (id != '')
+    {
+        var index = $('#tab_box a[href="#' + id + '"]').parent().index();
+        $("#tab_box").tabs("option", "active", index );
 
-function init() {
-    // quit if this function has already been called
-    if (arguments.callee.done) {
-        return;
+        if (id == "input-result")
+        {
+            populateResultsTab();
+        }
     }
-    // flag this function so we don't do the same thing twice
-    arguments.callee.done = true;
 
     // set field restrictions (i.e. numbers only) on fields
     setAllFieldInputFilters();
-    var scenario_id = null;
+    let scenario_id = null;
 
-    var inputDom = document.getElementById('ui_' + 'scenario_id');
+    let inputDom = document.getElementById('ui_' + 'scenario_id');
 
     if (inputDom){
         scenario_id = inputDom.value;
@@ -51,6 +72,15 @@ function init() {
     {
         url = SETTINGS.URLS.scenario_default;
     }
+
+
+    //var testTarget = document.getElementsByClassName("input-result")[0];
+    var testTarget = document.getElementById("input_result_tab");
+    if(testTarget != undefined){
+        testTarget.addEventListener("click", populateResultsTab, false);
+    }
+
+
 
     $.ajax(url, {
         contentType : 'application/json; charset=utf-8',
@@ -72,7 +102,7 @@ function init() {
     });
 
     //document.getElementById("uploadFile").addEventListener("change", loadJSON, false);
-}
+})
 
 
 /**********************************************************
@@ -288,22 +318,22 @@ function populateStructureEquations(data){
     if (inputDom){
          inputDom.textContent = data.structure.name;
     }
-    var inputDom = document.getElementById('ui_structure_area_2');
+    inputDom = document.getElementById('ui_structure_area_2');
     if (inputDom){
          inputDom.value = data.structure.area.toLocaleString();
     }
-    var inputDom = document.getElementById('ui_structure_units_2');
+    inputDom = document.getElementById('ui_structure_units_2');
     if (inputDom){
          inputDom.innerHTML = data.structure.units;
     }
 
     // clear out the old input
-    for (var cost_item in cost_items) {
+    for (let cost_item in cost_items) {
         var inputDom = document.getElementById('checkbox_' + cost_item);
         if (inputDom){
              inputDom.checked = false;
         }
-        for (var i in ui_field_list) {
+        for (let i in ui_field_list) {
             var ui_field_name = ui_field_list[i];
 
             var inputDom = document.getElementById('ui_' + cost_item + '_' + ui_field_name);
@@ -314,7 +344,7 @@ function populateStructureEquations(data){
     }
 
     // load in the new values
-    for (var cost_item in cost_items){
+    for (let cost_item in cost_items){
         var cost_item_data = cost_items[cost_item];
         // get the boolean for if it is checked or not
         var cost_item_checked = cost_item_data['checked'];
@@ -416,6 +446,7 @@ function populateStructureEquations(data){
     return;
 }
 
+
 // this runs after all widgets have had their data loaded
 function initializeForm()
 {
@@ -431,6 +462,37 @@ function initializeForm()
 
 }
 
+function populateResultsTab(){
+    // alert("ready to populate the results tab")
+    var DivElement = document.getElementById('result-box');
+    DivElement.innerHTML = ""; //  "Loading ...<div style='width: 100%; display: flex;'><progress style='margin-left:auto;margin-right:auto;'></progress></div>";
+
+    let scenario_id;
+    let inputDom = document.getElementById('ui_' + 'scenario_id');
+    if (inputDom){
+        scenario_id = inputDom.value;
+    }
+
+    var url = SETTINGS.URLS.scenario_result.replace('<int:pk>', scenario_id);
+    $.ajax(url, {
+        contentType : 'application/json; charset=utf-8',
+        type : 'GET',
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        },
+        success: function (data) {
+            let data2 = {'html_result': data};
+            // uses the data in the JSON object to populate the UI when the scenario is first opened
+            updateResultsPane(data2);
+        },
+        error: function(data) {
+            updateResultsPane(data);
+        }
+    });
+}
+
 /*******************
 *
 * Insert the results (data) in the Results pane
@@ -440,18 +502,13 @@ function initializeForm()
  */
 function updateResultsPane(data){
 
-    var DivElement = document.getElementById('result-box');
+    var div = document.getElementById('result-box');
 
-    var contentTX = contentTX = JSON.stringify(data, null, 4);
-    if(data.hasOwnProperty('DT_RowId')) // first loaded
-    {
-        contentTX = '<pre>' + JSON.stringify(data, null, 4) + '</pre>';
-        // contentTX = 'TBD';
-    }
-    else if(data.hasOwnProperty('html_result')) // first loaded
+    let contentTX;
+
+    if(data.hasOwnProperty('html_result')) // first loaded
     {
         contentTX = data['html_result'];
-        // contentTX = 'TBD - return formatted via another ajax?? or just have the routine fiture that out';
     }
     else if(data.hasOwnProperty('error'))
     {
@@ -459,18 +516,19 @@ function updateResultsPane(data){
     }
     else
     {
-        contentTX = JSON.stringify(data, null, 4);
+        contentTX = "There is an error somewhere and the results cannot be computed";
     }
 
-    DivElement.innerHTML = contentTX;
+    // wait 700 milliseconds just because it looks better - less flashy
+    setTimeout(function() { div.innerHTML = contentTX;}, 0);
 
 }
 function updateProjectTitle(siteData){
     var inputDom = document.getElementById('scenario_name');
 
     if (inputDom){
-        var project_title = 'PROJECT TITLE';
-        var scenario_title = 'SCENARIO TITLE';
+        let project_title = 'PROJECT TITLE';
+        let scenario_title = 'SCENARIO TITLE';
         if(siteData.hasOwnProperty('project')) // first loaded
         {
             if (siteData['project'] !== undefined) {
@@ -505,9 +563,9 @@ function updateStructureCostDropDown(siteData){
                 structure_obj['area'] = undefined;
             }
 
-            if (structure_obj['checkbox'] == true &&
-                structure_obj['area'] != '' &&
-                structure_obj['area'] != 0)
+            if (structure_obj['checkbox'] === true &&
+                structure_obj['area'] !== '' &&
+                structure_obj['area'] !== 0)
             {
                 structure_list.push({ value: structure,
                                         text: prefix + ' - ' + labels[structure]});
@@ -515,7 +573,7 @@ function updateStructureCostDropDown(siteData){
         }
     }
 
-    var structure_select = document.getElementById('ui_structure_select');
+    let structure_select = document.getElementById('ui_structure_select');
     selected_value = structure_select.value;
     //zed
     structure_list = [];
@@ -525,8 +583,8 @@ function updateStructureCostDropDown(siteData){
 
     //TODO: add them to the drop-down list
     structure_select.options.length = 0;
-    for (var i = 0; i < structure_list.length; i++) {
-        var o = document.createElement("option");
+    for (let i = 0; i < structure_list.length; i++) {
+        const o = document.createElement("option");
         o.value = structure_list[i].value;
         o.text = structure_list[i].text;
         structure_select.appendChild(o);
@@ -545,14 +603,14 @@ function updateStructureCostDropDown(siteData){
  */
 function validateProjectAreaAndArealFeatures() {
     //
-    var sum_area_field = 'project_area';
+    let sum_area_field = 'project_area';
 
-    var sum_area = document.getElementById('ui_' + sum_area_field).value;
+    let sum_area = document.getElementById('ui_' + sum_area_field).value;
 
-    var sum_areal_features = 0.0;
-    var sum_pervious_impervious_area = 0.0;
+    let sum_areal_features = 0.0;
+    let sum_pervious_impervious_area = 0.0;
 
-    var scenario_template = scenarioTemplateJSON();
+    const scenario_template = scenarioTemplateJSON();
     var areal_features_fields = scenario_template['siteData']['areal_features']['fields'];
 
     for (var i in areal_features_fields){
@@ -715,6 +773,7 @@ function recalculateCosts(formField){
 
 function validateForm(formField) {
 
+    let i;
     if (! formField) {
         return;
     }
@@ -731,16 +790,16 @@ function validateForm(formField) {
     // test that all the areal feature areas don't sum up to more than project area
     if (field_nm == 'project_area' ){
         valid_bol = validateProjectAreaAndArealFeatures();
-        if (valid_bol === false) { return false };
+        if (valid_bol === false) { return false }
     }
     var areal_features_fields = scenario_template['siteData']['areal_features']['fields'];
 
-    for (var i in areal_features_fields){
+    for (i in areal_features_fields){
         var areal_feature_name = areal_features_fields[i];
 
         if (field_nm == areal_feature_name + '_area'){
             valid_bol = validateProjectAreaAndArealFeatures();
-            if (valid_bol === false) { return false };
+            if (valid_bol === false) { return false }
         }
     }
 
@@ -748,14 +807,14 @@ function validateForm(formField) {
     if (field_nm == 'project_type') {
 
         valid_bol = validateProjectAreaAndArealFeatures(); // toggle disabled inputs, that are then not used in calculation
-        if (valid_bol === false) { return false };
+        if (valid_bol === false) { return false }
     }
 
 
     // the project type setting affects which of the areal features are disabled
     if (field_nm == 'impervious_area' || field_nm == 'pervious_area') {
         valid_bol = validateProjectAreaAndArealFeatures();
-        if (valid_bol === false) { return false };
+        if (valid_bol === false) { return false }
     }
 
     // this is the drop-down on the Structure Costs page
@@ -925,7 +984,7 @@ function validateForm(formField) {
 
 
         valid_bol = validateProjectAreaAndArealFeatures();
-        if (valid_bol === false) { return false };
+        if (valid_bol === false) { return false }
     }
 
     /*
@@ -1456,7 +1515,7 @@ function saveDB(action) {
             showErrorsById('general_validation_error', errors);
             showErrorsById('scenario_title_validation_error', scenario_title_errors);
 
-            updateResultsPane(data); // loads a snippet of HTML delivered in the data array
+            //updateResultsPane(data); // loads a snippet of HTML delivered in the data array
             updateProjectTitle(data['siteData']);
 
             updateStructureCostDropDown(data['siteData']);
@@ -1574,8 +1633,8 @@ function setAllFieldInputFilters()
         switch (field) {
           case (field.match(/(_pct|_factor)$/) || {}).input:
             setInputFilter(document.getElementById('ui_' + field), function (value) {
-                if (/^\d{0,2}\.\d{0,2}$/.test(value)) { return true };
-                if (/^(100|\d{0,2})$/.test(value)) { return true };
+                if (/^\d{0,2}\.\d{0,2}$/.test(value)) { return true }
+                if (/^(100|\d{0,2})$/.test(value)) { return true }
                 return false;
             });
             break;
@@ -1617,7 +1676,7 @@ function setAllFieldInputFilters()
             break;
           case (field.match(/(_qty|_count)$/) || {}).input:
             setInputFilter(document.getElementById('ui_' + field), function (value) {
-                if (/^\d{0,5}$/.test(value)) { return true };
+                if (/^\d{0,5}$/.test(value)) { return true }
                 return false;
             });
             break;
@@ -1631,7 +1690,7 @@ function setAllFieldInputFilters()
                         return true;
                     }
                     return false;
-                };
+                }
                 return false;
             });
             break;
@@ -1642,7 +1701,7 @@ function setAllFieldInputFilters()
                         return true;
                     }
                     return false;
-                };
+                }
                 return false;
             });
             break;
@@ -1650,7 +1709,7 @@ function setAllFieldInputFilters()
             // console.log("Didn't match '" + field + "'");
             break;
         }
-    };
+    }
 
     function set_structures_input_filter(structures){
         for (var structure in structures) {
@@ -1672,7 +1731,7 @@ function setAllFieldInputFilters()
 
 
             });
-        };
+        }
     }
 
     function set_costitem_unit_costs_input_filter(costitems){

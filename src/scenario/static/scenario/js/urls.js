@@ -19,6 +19,7 @@ SETTINGS.URLS = {
     'scenario_duplicate': '/scenario/<int:pk>/duplicate/',
     'scenario_update': '/scenario/<int:pk>/update/',
     'scenario_delete': '/scenario/<int:pk>/delete/',
+    'scenario_result': '/scenario/<int:pk>/results/',
 
     'scenario_structure_cost': '/scenario/<int:pk>/structure_costs/<str:structure_code>/?format=html',
 
