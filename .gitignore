@@ -1,2 +1,8 @@
 local.production.env
 local.development.env
+__pycache__
+src/static/*
+docs/*
+logs/production/*
+web.config
+.idea/*
