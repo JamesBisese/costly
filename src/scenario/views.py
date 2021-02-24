@@ -46,6 +46,37 @@ from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSeria
 """
 
 """
+    project Audit list as function based views using ajax to feed in data
+
+    http://127.0.0.1:92/audit/projects/
+"""
+
+
+@login_required
+def project_audit_list(request):
+    projects = Project.objects.all()
+    context_data = {'projects': projects,
+                    'header': 'Audit Projects'}
+    if request.user.has_perm('scenario.add_project'):
+        context_data['can_add'] = True
+
+    # jab - added for beta-user-testing.  allow all users to add
+    context_data['can_add'] = True
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+
+    return render(request, 'project/project_audit.html', context_data)
+
+@login_required
+def scenario_audit_list(request):
+    projects = Project.objects.all()
+    context_data = {'projects': projects,
+                    'header': 'Audit Scenarios'}
+
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+
+    return render(request, 'project/project_audit.html', context_data)
+
+"""
     project list as function based views using ajax to feed in data
     
     http://127.0.0.1:92/projects/
@@ -169,7 +200,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ProjectList(ExportMixin, SingleTableView): # TODO , FilterView
     model = Project
     table_class = tables.ProjectTable
-    template_name = 'scenarioOLD/generic_list.html'
+    template_name = 'scenario/generic_list.html'
     exclude_columns = ('edit_column','delete_column',)
     # filterset_class = ScenarioFilter
     #
@@ -308,6 +339,54 @@ class CostItemDefaultCostsList(ExportMixin, SingleTableView): # TODO , FilterVie
         context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
         # context_data['new_url'] = reverse('scenario:scenario_create')
         return context_data
+
+# user version
+# def costitemusercostslist2(request):
+#     costs = CostItemUserCosts.objects.all()
+#     context_data = {'costs': costs,
+#                     'header': 'Projects'}
+#
+#     #jab - added for beta-user-testing.  allow all users to add
+#     context_data['can_add'] = True
+#     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+#
+#     return render(request, 'scenario/costitems_user_costs_list.html', context_data)
+
+
+"""
+    available via /cost_item/user_costs/
+"""
+class CostItemUserCostsList(ExportMixin, SingleTableView): # TODO , FilterView
+    model = CostItemUserCosts
+    table_class = tables.CostItemUserCostsTable
+    template_name = 'scenario/costitems_user_costs_list.html'
+    # exclude_columns = ('id',)
+    # filterset_class = ScenarioFilter
+    #
+    # columns = ['scenario.project.project_title', 'scenario.scenario_title', ]
+    # def dispatch(self, request, *args, **kwargs):
+    #     if not request.user.is_authenticated:
+    #         return HttpResponseRedirect(reverse_lazy('accounts:login'))
+    #     return super(CostItemUserCostsList, self).dispatch(request, *args, **kwargs)
+    #
+    # def get_queryset(self):
+    #     qs = super(CostItemUserCostsList, self).get_queryset()
+    #
+    #     # if not (self.request.user.is_superuser or self.request.user.is_staff):
+    #     #     qs = qs.filter(user=self.request.user)
+    #     return qs
+    #
+    # def get_context_data(self, **kwargs):
+    #     context_data = super(CostItemUserCostsList, self).get_context_data(**kwargs)
+    #
+    #     context_data['title'] = 'Cost ItemUserCostsList'
+    #     context_data['header_2'] = 'Cost Item User Costs'
+    #     context_data['active_link'] = 'scenario'
+    #     context_data['can_add'] = True
+    #     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    #
+    #     return context_data
+
 
 
 """
@@ -882,7 +961,7 @@ def structure_cost_item_json(structure,
 
     scenario_json = scenario_data.data
 
-    # TODO: make this legibile. I can't figure out what is going on.
+    # TODO: make this legible. I can't figure out what is going on.
     # this has all the assumptions, with the 'structure_code' in there.
     #   scenario_json['cost_item_user_assumptions']
     # cost_item_user_assumptions = scenario_json['cost_item_user_assumptions']
@@ -1417,8 +1496,7 @@ def comparison_column(ids, left_scenario, right_scenario):
     diff['impervious_area'] = left.impervious_area - right.impervious_area
 
     diff['pervious'] = False
-    if left.pervious_area != right.pervious_area \
-        or left.impervious_area != right.impervious_area:
+    if left.impervious_area != right.impervious_area:
         diff['pervious'] = True
 
     left_total = left_costs['project_life_cycle_costs']['total']

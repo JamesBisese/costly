@@ -7,6 +7,7 @@ from rest_framework import routers
 
 import profiles.urls
 import accounts.urls
+import users.urls
 import scenario.urls
 import authtools.urls
 
@@ -16,7 +17,8 @@ import authtools.urls
 #
 from . import views
 import scenario.views
-from scenario.views import UserViewSet, ProjectViewSet, \
+from scenario.views import UserViewSet, ProjectViewSet, project_list, \
+    project_audit_list, scenario_audit_list, \
     ScenarioViewSet, ScenarioListViewSet, \
     StructureViewSet, \
     CostItemViewSet, \
@@ -63,6 +65,10 @@ urlpatterns = [
     path(iis_app_alias + 'instructions/', views.InstructionsPage.as_view(), name='instructions'),
 
     path(iis_app_alias + 'reference/', views.ReferencePage.as_view(),   name='reference'),
+    path(iis_app_alias + 'audit/', views.AuditPage.as_view(),   name='audit'),
+
+    path(iis_app_alias + 'audit/projects/', project_audit_list,   name='auditProjects'),
+    path(iis_app_alias + 'audit/scenarios/', scenario_audit_list,   name='auditScenarios'),
 
     path(iis_app_alias + 'users/', include(profiles.urls)),
     path(iis_app_alias + 'admin/', admin.site.urls),
@@ -72,6 +78,7 @@ urlpatterns = [
 
     path(iis_app_alias + '', include(scenario.urls)),
     path(iis_app_alias + '', include(accounts.urls)),
+    path(iis_app_alias + '', include(users.urls)),
 
     path(iis_app_alias + '', views.HomePage.as_view(), name='home'),
 

@@ -12,11 +12,20 @@ User = get_user_model()
 class UserProfileInline(admin.StackedInline):
     model = Profile
 
+"""
+  this defines the page /admin/authtools/user/
 
+"""
 class NewUserAdmin(NamedUserAdmin):
+
     inlines = [UserProfileInline]
-    list_display = ('is_active', 'email', 'name', 'permalink',
-                    'is_superuser', 'is_staff',)
+
+    def user_type(self, obj):
+        return ("%s" % (obj.profile.user_type or 'N/A'))
+    user_type.short_description = 'User Type'
+
+    list_display = ('is_active', 'email', 'name', 'organization_tx', 'user_type', 'permalink',
+                    'is_superuser', 'is_staff','last_login')
 
     # 'View on site' didn't work since the original User model needs to
     # have get_absolute_url defined. So showing on the list display

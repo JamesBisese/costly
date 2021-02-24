@@ -18,6 +18,9 @@ class InstructionsPage(generic.TemplateView):
 class ReferencePage(generic.TemplateView):
     template_name = "costly/reference.html"
 
+class AuditPage(generic.TemplateView):
+    template_name = "costly/audit.html"
+
 class AboutPage(generic.TemplateView):
     template_name = "costly/about.html"
 

@@ -19,12 +19,12 @@ $(function () {
 
     var loadTable = function() {
 
-        var export_columns = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        var export_columns = [0, 1 , 3, 4, 5, 6, 7, 8];
 
         var options = {
             "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.costitems_default_costs_list,
+            "ajax": SETTINGS.URLS.costitems_user_costs_list,
             "paging": false,
             "info" : false,
             "dom": 'Bfrtip',
@@ -36,20 +36,16 @@ $(function () {
                 { 'extend': 'print', 'exportOptions': {'columns': export_columns}},
             ],
             "columns": [
-                // Use dot notation to reference nested serializers.
-                {"data": "costitem.sort_nu", "searchable": true},
-                {"data": "costitem.name", "searchable": true},
-                {"data": "costitem.units", "searchable": true},
+                {"data": "scenario.project_title", "searchable": true},
+                {"data": "scenario.scenario_title", "searchable": true},
+                // {"data": "costitem_name", "searchable": true},
+                // {"data": "units", "searchable": true},
+                // {"data": "base_year", "searchable": true},
+                // {"data": "user_input_cost", "searchable": true},
+                // {"data": "replacement_life", "searchable": true},
+                // {"data": "o_and_m_pct", "searchable": true},
 
-                {"data": "rsmeans_va", "searchable": true},
-
-                //TODO: use this once we have enough data for the db values
-                // {"data": "db_25pct_va", "searchable": false},
-                // {"data": "db_50pct_va", "searchable": false},
-                // {"data": "db_75pct_va", "searchable": false},
-
-                {"data": "replacement_life", "searchable": true},
-                {"data": "o_and_m_pct", "searchable": false},
+                // {"data": "units", "searchable": true},
              ],
             "columnDefs": [],
         };

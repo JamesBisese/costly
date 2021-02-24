@@ -25,15 +25,7 @@
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
 	<span style="font-size: 38px; float:left; ">{{ header }}</span>
-    {%  if can_add %}
-    <button type="button"
-            class="btn btn-primary js-create-project"
-            style="font-size: 16px; float:right; "
-            data-url="{% url 'scenario:project_create' %}">
-      <span class="glyphicon glyphicon-plus"></span>
-      New project
-    </button>
-    {% endif %}
+
 
 	<div style="clear: both;"></div>
 <br>
@@ -87,6 +79,6 @@
     {% endif %}
 
 
-    <script src="{% static 'project/js/project_index.js' %}"></script>
+    <script src="{% static 'project/js/project_audit.js' %}"></script>
 
 {% endblock %}

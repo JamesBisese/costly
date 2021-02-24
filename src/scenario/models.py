@@ -8,6 +8,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from djmoney.models.fields import MoneyField
 from djmoney.money import Money
+
 from .scenario_frameworks import TEMPLATE_SCENARIO, DEFAULT_SCENARIO
 
 User = get_user_model()
@@ -1380,6 +1381,7 @@ class CostItemUserCosts(models.Model):
     class Meta:
         verbose_name_plural = "Cost Item User Costs"
         unique_together = (("scenario", "costitem"))
+
 
 '''
 

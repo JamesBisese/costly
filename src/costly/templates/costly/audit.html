@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Audit{% endblock %}
+
+{% block navbar-left %}
+{% include "_navbar.html" with active_link="audit" %}
+{% endblock %}
+
+{% block navbar-custom-right %}
+{% include "_navbar-right.html" with active_link="NONE" %}
+{% endblock %}
+
+<!-- Benefits of the Django application -->
+{% block content %}
+<div class="container" style="padding-top: 10px;">
+<div id="sec1" class="text-page" >
+
+    <div class="row">
+      <div class="col-md-12">
+<h2>Audit</h2>
+
+
+
+<p>This is an internal page to share audit tables of data of the Cost Tool</p>
+
+          <p>These allow Administrators to pull data from all Users/Projects/Scenarios in concise formats</p>
+          <ol>
+              <li>
+                <a href="{% url 'users:users' %}">List of Users</a>
+              </li>
+              <li>
+                <a href="{% url 'auditProjects' %}">List of Projects</a>
+              </li>
+              <li>
+                <a href="{% url 'auditScenarios' %}">List of Scenarios</a>
+              </li>
+              <li>
+                <a href="{% url 'scenario:costitems_user_costs' %}">List of Cost Item User costs</a>
+              </li>
+          </ol>
+
+
+
+
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}

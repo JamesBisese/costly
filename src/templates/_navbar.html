@@ -14,10 +14,15 @@
 {% if user.is_authenticated %}
 
     <li class="nav-item{% if active_link == 'instructions' %} active{% endif %}">
-        <a class="nav-link" href="{% url 'instructions' %}">INSTRUCTIONS</a>
+        <a class="nav-link" href="{% url 'instructions' %}" {% if active_link == 'project' or active_link == 'scenario'  %}target="_instructions"{% endif %}
+
+        ">INSTRUCTIONS</a>
     </li>
     <li class="nav-item{% if active_link == 'reference' %} active{% endif %}">
         <a class="nav-link" href="{% url 'reference' %}">REFERENCES</a>
+    </li>
+    <li class="nav-item{% if active_link == 'audit' %} active{% endif %}">
+        <a class="nav-link" href="{% url 'audit' %}">AUDIT</a>
     </li>
     <li class="nav-item{% if active_link == 'project' %} active{% endif %}">
         <a class="nav-link" href="{% url 'scenario:project_index' %}">PROJECTS</a>

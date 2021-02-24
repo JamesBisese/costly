@@ -69,6 +69,11 @@ urlpatterns = [
     # a list of all the Cost Item Default Costs in the database
     path(r'cost_item/default_costs/', views.CostItemDefaultCostsList.as_view(), name='costitems_default_costs'),
 
+    # a list of all the Cost Item User Costs in the database
+    path(r'cost_item/user_costs/', views.CostItemUserCostsList.as_view(), name='costitems_user_costs'),
+
+    # path(r'costitemusercostslist2/', views.costitemusercostslist2, name='costitemusercostslist2'),
+
     # a list of all the Structure - Cost Item Default Assumptions in the database
     path(r'cost_item/default_equations/', views.CostItemDefaultEquationsList.as_view(), name='costitems_default_equations'),
     path(r'cost_item/default_factors/', views.CostItemDefaultFactorsList.as_view(), name='costitems_default_factors'),

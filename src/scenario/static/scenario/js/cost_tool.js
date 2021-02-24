@@ -55,11 +55,7 @@ $(document).ready(function()
     setAllFieldInputFilters();
     let scenario_id = null;
 
-    let inputDom = document.getElementById('ui_' + 'scenario_id');
 
-    if (inputDom){
-        scenario_id = inputDom.value;
-    }
 
     var url = '';
 

@@ -35,6 +35,9 @@ SETTINGS.URLS = {
     'structures_list': '/api/structures/?format=datatables',
     'costitems_list':  '/api/costitems/?format=datatables',
     'costitems_default_costs_list': '/api/costitemdefaultcosts/?format=datatables',
+
+    // 'costitems_user_costs_list': '/api/costitemusercosts/?format=datatables',
+
     'costitems_default_equations_list': '/api/costitemdefaultequations/?format=datatables',
     'costitems_default_factors_list': '/api/costitemdefaultfactors/?format=datatables',
 

@@ -20,17 +20,34 @@ from djmoney.contrib.django_rest_framework import MoneyField
 
 from authtools.models import User
 
+from profiles.models import Profile
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
 class UserSerializer(serializers.ModelSerializer):
+
+    profile = ProfileSerializer()
+
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+    last_login = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
 
     class Meta:
         model = User
         fields = (
+            # '__all__'
             'id',
             'name',
             'email',
             'phone_tx',
             'organization_tx',
-            # 'location',
+            'job_title',
+            'is_active',
+            'profile',
+            'date_joined',
+            'last_login',
         )
         # Specifying fields in datatables_always_serialize
         # will also force them to always be serialized.
@@ -163,6 +180,7 @@ class EmbeddedScenarioFields(serializers.Field):
         ret = {
             'scenario_id': value.id,
             'scenario_title': value.scenario_title,
+            'project_title': value.project.project_title,
 
             'nutrient_req_met': value.nutrient_req_met,
             'captures_90pct_storm': value.captures_90pct_storm,
@@ -449,59 +467,7 @@ class CostItemDefaultCostSerializer(serializers.ModelSerializer):
             'db_75pct_va',
         )
         read_only_fields = [f.name for f in CostItemDefaultCosts._meta.get_fields()]
-"""
 
-    scenario - users values
-
-"""
-class CostItemUserCostSerializer(serializers.ModelSerializer):
-
-    # each default cost is applied to a single costitem
-    # scenario_id = serializers.CharField(read_only=True, source="scenario.id")
-    #
-    # costitem_code = serializers.CharField(read_only=True, source="costitem.code")
-
-    scenario_id = serializers.SerializerMethodField()
-    def get_scenario_id(self, obj):
-        return obj.scenario.id
-
-    costitem_code = serializers.SerializerMethodField()
-    def get_costitem_code(self, obj):
-        return obj.costitem.code
-
-    costitem_name = serializers.SerializerMethodField()
-    def get_costitem_name(self, obj):
-        return obj.costitem.name
-
-    units = serializers.SerializerMethodField()
-    def get_units(self, obj):
-        return obj.costitem.units
-
-    o_and_m_pct = serializers.SerializerMethodField()
-    def get_o_and_m_pct(self, obj):
-        return str(obj.o_and_m_pct)
-
-    class Meta:
-        model = CostItemUserCosts
-        fields = (
-            'id',
-
-            'scenario_id',
-
-            'costitem_code',
-            'costitem_name',
-            'units',
-            'cost_source',
-            'user_input_cost',
-            'base_year',
-            'replacement_life',
-            'o_and_m_pct'
-        )
-        read_only_fields = [f.name for f in CostItemUserCosts._meta.get_fields()]
-
-    # def to_representation(self, data):
-    #     res = super(CostItemUserCostSerializer, self).to_representation(data)
-    #     return {res['costitem_code']: res}
 
 """
 
@@ -694,6 +660,87 @@ class ScenarioListSerializer(serializers.ModelSerializer):
             'modified_date',
         )
         read_only_fields = [f.name for f in Scenario._meta.get_fields()]
+
+
+
+"""
+
+    scenario - users values
+
+"""
+class CostItemUserCostSerializer(serializers.ModelSerializer):
+
+    # each default cost is applied to a single costitem
+    # scenario_id = serializers.CharField(read_only=True, source="scenario.id")
+    #
+    costitem_code = serializers.CharField(read_only=True, source="costitem.code")
+    costitem_name = serializers.CharField(read_only=True, source="costitem.name")
+    # each default cost is applied to a single costitem
+    # project = ProjectSerializer(source='scenario')
+    scenario = ScenarioListSerializer(many=False, read_only=True)
+    project = ProjectSerializer(source='scenario.project',many=False, read_only=True)
+
+    # costitem = CostItemSerializer(many=False, read_only=True)
+
+    # # NOTE: the underlying model has to have a field marked with matching related_name. (I have no idea why)
+    # # i.e. related_name="cost_item_user_costs"
+    # cost_item_user_costs = serializers.SerializerMethodField()
+    #
+    # def get_cost_item_user_costs(self, instance):
+    #     user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
+    #     return CostItemUserCostSerializer(user_cost_items, many=True).data
+    # user = serializers.SerializerMethodField()
+    #
+    # def get_user(self, obj):
+    #     user1 = obj.scenario.project.user
+    #     return UserSerializer(user1, many=False).data
+
+    scenario_id = serializers.SerializerMethodField()
+    def get_scenario_id(self, obj):
+        return obj.scenario.id
+
+    costitem_code = serializers.SerializerMethodField()
+    def get_costitem_code(self, obj):
+        return obj.costitem.code
+
+    costitem_name = serializers.SerializerMethodField()
+    def get_costitem_name(self, obj):
+        return obj.costitem.name
+
+    units = serializers.SerializerMethodField()
+    def get_units(self, obj):
+        return obj.costitem.units
+
+    o_and_m_pct = serializers.SerializerMethodField()
+    def get_o_and_m_pct(self, obj):
+        return str(obj.o_and_m_pct)
+
+    class Meta:
+        model = CostItemUserCosts
+        fields = (
+            'id',
+            # 'user',
+            'scenario',
+            'project',
+            'scenario_id',
+            'costitem',
+            'costitem_code',
+            'costitem_name',
+            'units',
+            'cost_source',
+            'user_input_cost',
+            'base_year',
+            'replacement_life',
+            'o_and_m_pct'
+        )
+        read_only_fields = [f.name for f in CostItemUserCosts._meta.get_fields()]
+
+    # def to_representation(self, data):
+    #     res = super(CostItemUserCostSerializer, self).to_representation(data)
+    #     return {res['costitem_code']: res}
+
+
+
 
 """
 

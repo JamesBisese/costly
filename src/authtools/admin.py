@@ -15,7 +15,7 @@ USERNAME_FIELD = get_user_model().USERNAME_FIELD
 REQUIRED_FIELDS = (USERNAME_FIELD,) + tuple(get_user_model().REQUIRED_FIELDS)
 
 BASE_FIELDS = (None, {
-    'fields': REQUIRED_FIELDS + ('password',),
+    'fields': REQUIRED_FIELDS + ('password','organization_tx','phone_tx',),
 })
 
 SIMPLE_PERMISSION_FIELDS = (_('Permissions'), {
@@ -61,9 +61,9 @@ class StrippedUserAdmin(DjangoUserAdmin):
 
 
 class StrippedNamedUserAdmin(StrippedUserAdmin):
-    list_display = ('is_active', 'email', 'name', 'is_superuser', 'is_staff',)
+    list_display = ('is_active', 'organization_tx', 'email', 'name', 'is_superuser', 'is_staff', 'last_login','')
     list_display_links = ('email', 'name',)
-    search_fields = ('email', 'name',)
+    search_fields = ('email', 'name', 'organization_tx',)
 
 
 class UserAdmin(StrippedUserAdmin):

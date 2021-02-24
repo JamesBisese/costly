@@ -52,6 +52,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'users', 'templates'),
             os.path.join(BASE_DIR, 'costly', 'templates'),
             os.path.join(BASE_DIR, 'scenario','templates'),
             # insert more TEMPLATE_DIRS here
@@ -121,6 +122,7 @@ INSTALLED_APPS = (
     # 'django_filters',
     'location_field.apps.DefaultConfig',
     'authtools',
+    'adminsortable'
 
 
 )
@@ -241,9 +243,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
-DJANGO_TABLES2_TEMPLATE = {
-    "DJANGO_TABLES2_TEMPLATE": "django_tables2/table.html",
-}
+# DJANGO_TABLES2_TEMPLATE = {
+#     "DJANGO_TABLES2_TEMPLATE": "django_tables2/table.html",
+# }
 
 # https://github.com/django-money/django-money
 CURRENCIES = ('USD',)

@@ -44,6 +44,39 @@ class CostItemDefaultCostsTable(tables.Table):
         order_by = 'id'
         attrs = {"class": "paleblue"}
 
+
+class CostItemUserCostsTable(tables.Table):
+    export_formats = ['csv', 'xls']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    user = tables.Column(verbose_name='User', accessor='scenario.project.user.name')
+    user_type = tables.Column(verbose_name='Type', accessor='scenario.project.user.profile.user_type')
+    project = tables.Column(verbose_name='Project', accessor='scenario.project.project_title')
+    user_input_cost = tables.Column(verbose_name='User Costs')
+    o_and_m_pct = tables.Column(verbose_name='O & M')
+    first_year_maintenance = tables.Column(verbose_name="First Year")
+    cost_source = tables.Column(verbose_name="Source")
+
+    def render_scenario(self, record):
+        return "%s" % record.scenario.scenario_title
+    def render_user_type(self, record):
+         return "%s" % record.scenario.project.user.profile.user_type.capitalize()
+
+    class Meta:
+        model = models.CostItemUserCosts
+
+        exclude = ('user_input_cost_currency','first_year_maintenance_currency')
+        fields = ('user', 'user_type', 'project','scenario','costitem','cost_source',
+                  'user_input_cost','base_year', 'replacement_life', 'o_and_m_pct','first_year_maintenance')
+        #             'user',
+        #
+        #             'location',
+        #             'name', 'delete_column','create_date', 'modified_date', )
+        template_name = 'django_tables2/bootstrap.html'
+        order_by = 'costitem'
+        # attrs = {"class": "paleblue"}
+
 class CostItemDefaultEquationsTable(tables.Table):
     export_formats = ['csv', 'xls']
     def __init__(self, *args, **kwargs):

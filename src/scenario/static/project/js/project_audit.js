@@ -47,10 +47,7 @@ $(function () {
               {"data": "project_area",
                   "render": $.fn.dataTable.render.number( ',' ),
                   "searchable": true},
-
-
               {"data": "scenario_count", "sortable": true, "searchable": false},
-              {"data": "id", "searchable": false, "sortable": false},
           ],
           "columnDefs": [
               {
@@ -58,32 +55,7 @@ $(function () {
                     "orderable": false,
                     "targets": 0
               },
-              {
-                  "targets": 9,
-                  "sWidth": "260px",
-                  "render": function (data, type, row) {
-                        var scenario_url = SETTINGS.URLS.project_scenario_list.replace('<int:pk>', data);
-                        var update_url = SETTINGS.URLS.project_update.replace('<int:pk>', data);
-                        var delete_url = SETTINGS.URLS.project_delete.replace('<int:pk>', data);
 
-                        return '<a class="btn btn-warning btn-sm " '+
-                            'href="' + scenario_url + '">' +
-                            '<span class="glyphicon glyphicon-pencil"></span> Scenarios' +
-                            '</a>' + '&nbsp;' +
-
-                      '<button type="button"' +
-                            ' class="btn btn-warning btn-sm js-update-project" '+
-                            'data-url="' + update_url + '">' +
-                            '<span class="glyphicon glyphicon-pencil"></span> Edit' +
-                            '</button>' + '&nbsp;' +
-
-                            '<button type="button" ' +
-                            'class="btn btn-danger btn-sm js-delete-project" '+
-                            'data-url="' + delete_url + '">'+
-                           '<span class="glyphicon glyphicon-trash"></span> Delete'+
-                           '</button>'
-                  }
-              },
           ],
           "order": [[ 1, 'asc' ]]
       };
