@@ -30,7 +30,7 @@ jdcal==1.4.1
 MarkupPy==1.14
 odfpy==1.4.0
 openpyxl==3.0.0
-Pillow==6.2.1
+Pillow==7.1.0
 psycopg2==2.8.4
 py-moneyed==0.8.0
 pyodbc==4.0.27
