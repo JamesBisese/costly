@@ -36,7 +36,7 @@ from . import tables
 from authtools.models import User
 
 from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSerializer, \
-    ScenarioSerializer, ScenarioListSerializer, \
+    ScenarioSerializer, ScenarioListSerializer, ScenarioAuditSerializer, \
     StructureSerializer, \
     CostItemDefaultCostSerializer, CostItemUserCostSerializer, \
     CostItemDefaultEquationsSerializer, CostItemDefaultFactorsSerializer, CostItemSerializer, CostItemUserAssumptionsSerializer
@@ -68,13 +68,12 @@ def project_audit_list(request):
 
 @login_required
 def scenario_audit_list(request):
-    projects = Project.objects.all()
-    context_data = {'projects': projects,
-                    'header': 'Audit Scenarios'}
+
+    context_data = {'header': 'Audit Scenarios'}
 
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
 
-    return render(request, 'project/project_audit.html', context_data)
+    return render(request, 'scenario/scenario_audit.html', context_data)
 
 """
     project list as function based views using ajax to feed in data
@@ -355,6 +354,9 @@ class CostItemDefaultCostsList(ExportMixin, SingleTableView): # TODO , FilterVie
 
 """
     available via /cost_item/user_costs/
+    
+    Note: none of the data is loaded from here. This should be a generic view
+    data is loaded using ajax
 """
 class CostItemUserCostsList(ExportMixin, SingleTableView): # TODO , FilterView
     model = CostItemUserCosts
@@ -376,16 +378,15 @@ class CostItemUserCostsList(ExportMixin, SingleTableView): # TODO , FilterView
     #     #     qs = qs.filter(user=self.request.user)
     #     return qs
     #
-    # def get_context_data(self, **kwargs):
-    #     context_data = super(CostItemUserCostsList, self).get_context_data(**kwargs)
-    #
-    #     context_data['title'] = 'Cost ItemUserCostsList'
-    #     context_data['header_2'] = 'Cost Item User Costs'
-    #     context_data['active_link'] = 'scenario'
-    #     context_data['can_add'] = True
-    #     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-    #
-    #     return context_data
+    def get_context_data(self, **kwargs):
+        context_data = super(CostItemUserCostsList, self).get_context_data(**kwargs)
+
+        context_data['title'] = 'Cost ItemUserCostsList'
+        context_data['header'] = 'Audit Cost Item User Costs'
+        context_data['active_link'] = 'audit'
+        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+
+        return context_data
 
 
 
@@ -2328,6 +2329,39 @@ class ScenarioListViewSet(viewsets.ModelViewSet):
 
         return qs
 
+
+'''
+    provided via /api/scenarios and /api/scenarios/<pk:i>/
+
+    also via /api/scenarios/?project=<int>
+
+
+    this is used in the /project/<pk>/scenario list
+
+'''
+class ScenarioAuditViewSet(viewsets.ModelViewSet):
+    queryset = Scenario.objects.all().order_by('id')
+    # serializer_class = ScenarioSerializer
+
+    # this is the change required to use this on the list
+    serializer_class = ScenarioAuditSerializer  # jab 2019-05-24 ScenarioSerializer
+
+    # def get_queryset(self):
+    #     qs = super(ScenarioAuditViewSet, self).get_queryset()
+    #
+    #     if not (self.request.user.is_superuser or self.request.user.is_staff):
+    #         qs = qs.filter(project__user=self.request.user)
+    #
+    #     # this is getting a single scenario by id
+    #     code = self.request.query_params.get('id', None)
+    #     if code is not None:
+    #         qs = qs.filter(id=code)
+    #     # this is getting a list of scenarios for a project
+    #     project = self.request.query_params.get('project', None)
+    #     if project is not None:
+    #         qs = qs.filter(project__id=project)
+    #
+    #     return qs
 
 
 '''

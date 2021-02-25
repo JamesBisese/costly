@@ -19,7 +19,7 @@ from . import views
 import scenario.views
 from scenario.views import UserViewSet, ProjectViewSet, project_list, \
     project_audit_list, scenario_audit_list, \
-    ScenarioViewSet, ScenarioListViewSet, \
+    ScenarioViewSet, ScenarioListViewSet, ScenarioAuditViewSet,\
     StructureViewSet, \
     CostItemViewSet, \
     CostItemDefaultCostViewSet, CostItemDefaultEquationsViewSet, CostItemDefaultFactorsViewSet, \
@@ -30,6 +30,7 @@ router.register(r'users', UserViewSet)
 router.register(r'projects', ProjectViewSet)
 router.register(r'scenarios', ScenarioViewSet)
 router.register(r'scenario_list', ScenarioListViewSet)
+router.register(r'scenario_audit', ScenarioAuditViewSet)
 router.register(r'structures', StructureViewSet)
 router.register(r'costitems', CostItemViewSet)
 

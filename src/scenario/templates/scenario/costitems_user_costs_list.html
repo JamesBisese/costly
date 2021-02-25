@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
-{% load render_table from django_tables2 %}
-{% load export_url from django_tables2 %}
+
 {% load static %}
-{% block title %}{{ block.super }}Scenarios{% endblock %}
+{% block title %}{{ block.super }}User Costs{% endblock %}
 {% block javascriptOLD %}
 {% endblock %}
 
@@ -12,38 +11,35 @@
 {% endblock extra_css %}
 
 {% block navbar-left %}
-    {% include "_navbar.html" with active_link="reference" %}
+    {% include "_navbar.html" with active_link="audit" %}
 {% endblock navbar-left %}
 
 {% block content %}
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
-	<span style="font-size: 38px; float:left; ">{{ header_2 }}</span>
-    {%  if can_add %}
-    <!--This was the ajax (modal) version-->
-    <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
-      <!--<span class="glyphicon glyphicon-plus"></span>-->
-      <!--New scenario-->
-    <!--</button>-->
-    <!-- this loads a new page -->
-
-    {% endif %}
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
 
 	<div style="clear: both;"></div>
     <br>
 </div>
-{% if user.is_superuser %}
-    <div id="is_superuser" display="none";></div>
-{% endif %}
+
+  <table class="table" id="user_cost-audit-table">
+    <thead>
+      <tr>
+        <th>Col1</th>
+        <th>Col2</th>
+{#        <th>User Type</th>#}
+{#        <th>Project</th>#}
+{#        <th>Scenario</th>#}
+{#        <th>Created</th>#}
+{#        <th>Last Modified</th>#}
+      </tr>
+    </thead>
+
+  </table>
 
 
-<div class="modal fade" id="modal-costitem">
-    <div class="modal-dialog">
-        <div class="modal-content"></div>
-    </div>
-</div>
 
-{% render_table table %}
 {% endblock %}
 
 {% block new_extra_js %}
@@ -60,5 +56,51 @@
         </script>
     {% endif %}
 
+    <script>
+                var table;
+            $(document).ready(function() {
+              {#var export_columns = [0, 1, 2, 3, 4, 5, 6, 7];#}
+
+              table = $('#user_cost-audit-table').DataTable({
+                      'serverSide': true,
+                      'ajax': '/api/costitemusercosts/?format=datatables', // SETTINGS.URLS.scenario_list + '?format=datatables',
+                    'pageLength': 200,
+                    "dom": 'Bfrtip',
+                    "buttons": [
+                        { 'extend': 'copy'},
+                        { 'extend': 'csv'},
+                        { 'extend': 'excel'},
+                    ],
+                  'columns': [
+                      // Use dot notation to reference nested serializers.
+                        {#{"data": "id", "searchable": false},#}
+                        {"data": "project.user.name", "searchable": true},
+                        {"data": "project.user.profile.user_type", "searchable": true},
+                        {#{"data": "project.project_title", "searchable": true},#}
+                        {#{"data": "scenario_title", "searchable": true},#}
+                        {#{"data": "create_date", "searchable": true},#}
+                        {#{"data": "modified_date", "searchable": true},#}
+                  ],
+                "columnDefs": [
+                  {
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0
+                  },
+                ],
+                  "order": [[ 1, 'asc' ]]
+
+                      });
+                  });
+
+
+
+        table.on( 'order.dt search.dt', function () {
+            table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+            t.cell(cell).invalidate('dom');
+        } );
+    } ).draw();
+    </script>
 
 {% endblock %}

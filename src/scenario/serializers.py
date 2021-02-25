@@ -105,6 +105,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_purchase_information',
             'priority_watershed',
             'scenario_count',
+            # 'create_date',
+            # 'modified_date',
         )
         read_only_fields = [f.name for f in Project._meta.get_fields()]
 
@@ -661,6 +663,66 @@ class ScenarioListSerializer(serializers.ModelSerializer):
         )
         read_only_fields = [f.name for f in Scenario._meta.get_fields()]
 
+# used for Audit page
+
+#
+class ScenarioAuditSerializer(serializers.ModelSerializer):
+
+    # user = UserSerializer()
+
+    # project = EmbeddedProjectFields()
+    #
+    # embedded_scenario = EmbeddedScenarioFields(source='*')
+    user = UserSerializer(many=False, read_only=True)
+    project = ProjectSerializer()
+
+    create_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+    modified_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+
+    # nutrient_req_met = serializers.SerializerMethodField()
+    # captures_90pct_storm = serializers.SerializerMethodField()
+    # meets_peakflow_req = serializers.SerializerMethodField()
+
+    # def get_nutrient_req_met(self, obj):
+    #     return obj.get_nutrient_req_met_display()
+    # def get_captures_90pct_storm(self, obj):
+    #     return obj.get_captures_90pct_storm_display()
+    # def get_meets_peakflow_req(self, obj):
+    #     return obj.get_meets_peakflow_req_display()
+
+    DT_RowId = serializers.SerializerMethodField()
+    DT_RowAttr = serializers.SerializerMethodField()
+    #
+    def get_DT_RowId(self, scenario):
+        return 'row_%d' % scenario.pk
+
+    def get_DT_RowAttr(self, scenario):
+        return {'data-pk': scenario.pk}
+
+    class Meta:
+        model = Scenario
+        fields = (
+            'DT_RowId', 'DT_RowAttr',
+
+            'id',
+            'user',
+            'project',
+            # 'project_title',
+
+            'scenario_title',
+
+            'nutrient_req_met',
+            'captures_90pct_storm',
+            'meets_peakflow_req',
+
+            'pervious_area',
+            'impervious_area',
+
+            'create_date',
+            'modified_date',
+        )
+
+        read_only_fields = [f.name for f in Scenario._meta.get_fields()]
 
 
 """
