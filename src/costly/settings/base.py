@@ -121,10 +121,7 @@ INSTALLED_APPS = (
     'djmoney',
     # 'django_filters',
     'location_field.apps.DefaultConfig',
-    'authtools',
-    'adminsortable'
-
-
+    'authtools'
 )
 
 MIDDLEWARE = [
