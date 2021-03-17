@@ -21,8 +21,8 @@ This project has the following basic apps:
 To set up a development environment quickly, first install Python 3. It
 comes with virtualenv built-in. So create a virtual env by:
 
-    1. `$ python3 -m venv costly`
-    2. `$ . costly/bin/activate`
+    1. `$ python3 -m venv gsicosttool`
+    2. `$ . gsicosttool/bin/activate`
 
 Install all dependencies:
 
