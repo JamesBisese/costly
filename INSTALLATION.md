@@ -84,7 +84,7 @@ Successfully installed appdirs-1.4.4 distlib-0.3.1 filelock-3.0.12 six-1.15.0 vi
 ## Download a copy of the application from github
 ~~~~
 user.name@MACHINENAME C:\inetpub\wwwdjango
-# git clone https://github.com/JamesBisese/gsicosttool.git
+# git clone https://github.com/JamesBisese/gsicosttool.git gsicosttool
 Cloning into 'gsicosttool'...
 remote: Enumerating objects: 508, done.
 remote: Counting objects: 100% (508/508), done.
@@ -101,10 +101,12 @@ user.name@MACHINENAME C:\inetpub\wwwdjango
 user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool
 # dir
 ...
-10/28/2019  09:55 AM    <DIR>          docs
-10/28/2019  09:55 AM            23,070 INSTALLATION.md
-10/28/2019  09:55 AM             1,133 README.md
-10/28/2019  09:55 AM    <DIR>          src
+d-----        4/26/2021   8:07 AM                docs
+d-----        4/26/2021   8:07 AM                logs
+d-----        4/26/2021   8:07 AM                src
+-a----        4/26/2021   8:07 AM            120 .gitignore
+-a----        4/26/2021   8:07 AM          33826 INSTALLATION.md
+-a----        4/26/2021   8:07 AM           1143 README.md
 ..
 user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool
 # cd src
@@ -112,17 +114,17 @@ user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool
 user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 # dir
 ...
-10/28/2019  09:55 AM    <DIR>          accounts
-10/28/2019  09:55 AM    <DIR>          authtools
-10/28/2019  09:55 AM    <DIR>          costly
-10/28/2019  09:55 AM               458 manage.py
-10/28/2019  09:55 AM    <DIR>          media
-10/28/2019  09:55 AM    <DIR>          profiles
-10/28/2019  09:55 AM             1,026 requirements.txt
-10/28/2019  09:55 AM    <DIR>          scenario
-10/28/2019  09:55 AM    <DIR>          templates
-10/28/2019  09:55 AM    <DIR>          users
-10/28/2019  09:55 AM                 0 __init__.py
+d-----        4/26/2021   8:07 AM                accounts
+d-----        4/26/2021   8:07 AM                authtools
+d-----        4/26/2021   8:07 AM                costly
+d-----        4/26/2021   8:07 AM                media
+d-----        4/26/2021   8:07 AM                profiles
+d-----        4/26/2021   8:07 AM                scenario
+d-----        4/26/2021   8:07 AM                static
+d-----        4/26/2021   8:07 AM                templates
+d-----        4/26/2021   8:07 AM                users
+-a----        4/26/2021   8:07 AM            459 manage.py
+-a----        4/26/2021   8:07 AM           1043 requirements.txt
 ...
 ~~~~
 
@@ -148,7 +150,7 @@ user.name@MACHINENAME C:\software\Python\virtualenvs
 # chdir gsicosttool\Scripts
 
 user.name@MACHINENAME C:\software\Python\virtualenvs\gsicosttool\Scripts
-# activate
+# ./activate
 
 (gsicosttool) user.name@MACHINENAME C:\software\Python\virtualenvs\gsicosttool\Scripts
 #
@@ -321,29 +323,29 @@ configured, and the backend database needs to be created and populated.
 
 The application is configured using a number of `settings` files.  The files
 are all located in folder
-    `C:\inetpub\wwwdjango\costly\costly\settings`
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings`
 
 Normally, you will not need to edit any of the settings `.py` files, and 
 the only files that need to be edited are the `.env` files.  These are 
 read into the other files.
 
 For local development, copy file
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.sample.env` and rename it
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.development.sample.env` and rename it
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.development.env`
 
 For production, copy file
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.sample.env` and rename it
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.sample.env` and rename it
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.env`
 
 When the application is running using the django development server it uses the files
-    `C:\inetpub\wwwdjango\costly\costly\settings\base.py`    
-    `C:\inetpub\wwwdjango\costly\costly\settings\development.py` and 
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\base.py`    
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\development.py` and 
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.development.env`
 
-When the application is running using the django development server it uses the files
-    `C:\inetpub\wwwdjango\costly\costly\settings\base.py`    
-    `C:\inetpub\wwwdjango\costly\costly\settings\production.py` and 
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.env`
+When the application is running using the django production server it uses the files
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\base.py`    
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\production.py` and 
+    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.env`
     
 
 
