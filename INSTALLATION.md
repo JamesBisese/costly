@@ -34,10 +34,10 @@ In Select Components you can uncheck all options
 	
 ## Install Python
 
-Download Python 3.8.0 from https://www.python.org/downloads/ (25.2 MB)
+Download Python 3.9.4 from https://www.python.org/downloads/ (27.6 MB)
 
-Install python version 3.8 into folder  
-    `C:\software\Python\Python38`
+Install python version 3.9.4 into folder  
+    `C:\software\Python\Python39`
 
 Python is installed via a GUI
 You might have to run the installer as Admin
@@ -45,39 +45,39 @@ In Optional Features only check 'pip'
 Use Advanced Options uncheck everything, but set the location to install.
 
 Customize install location  
-    `C:\software\Python\Python38`
+    `C:\software\Python\Python39`
 
 Add python to System Environmental Variable 'Path'
 Include 2 folders
-    `C:\software\Python\Python38` and  
-    `C:\software\Python\Python38\Scripts`
+    `C:\software\Python\Python39` and  
+    `C:\software\Python\Python39\Scripts`
 	
 Install Python in folder
 ~~~~
-user.name@MACHINENAME C:\software\Python\Python38
+user.name@MACHINENAME C:\software\Python\Python39
 $ python --version
-Python 3.8.0
+Python 3.9.4
 ~~~~
 Upgrade Python Installation Program (pip)
 ~~~~a
-user.name@MACHINENAME C:\software\Python\Python38
+user.name@MACHINENAME cd C:\software\Python\Python39
 $ python -m pip install --upgrade pip
 ~~~~
 Show version of pip
 ~~~~
-user.name@MACHINENAME C:\software\Python\Python38
+user.name@MACHINENAME C:\software\Python\Python39
 $ pip --version
-pip 19.3.1 from c:\software\python\python38\lib\site-packages\pip (python 3.8)
+pip 21.1 from c:\software\python\python38\lib\site-packages\pip (python 3.8)
 ~~~~
 Install python package virtualenv
 ~~~~
-user.name@MACHINENAME C:\software\Python\Python38
+user.name@MACHINENAME C:\software\Python\Python39
 $ pip install virtualenv
 Collecting virtualenv
   Downloading https://files.pythonhosted.org/packages/c5/97/00dd42a0fc41e9016b23f07ec7f657f636cb672fad9cf72b80f8f65c6a46/virtualenv-16.7.7-py2.py3-none-any.whl (3.4MB)
      |████████████████████████████████| 3.4MB 939kB/s
-Installing collected packages: virtualenv
-Successfully installed virtualenv-16.7.7
+Installing collected packages: six, filelock, distlib, appdirs, virtualenv
+Successfully installed appdirs-1.4.4 distlib-0.3.1 filelock-3.0.12 six-1.15.0 virtualenv-20.4.4
 ~~~~
 
 
