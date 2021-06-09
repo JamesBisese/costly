@@ -145,6 +145,9 @@ WSGI_APPLICATION = 'costly.wsgi.application'
 
 DATABASES = {}
 
+# added this for newer Django requirement
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # DATABASES = {
 #      # Raises ImproperlyConfigured exception if DATABASE_URL not in
 #      # os.environ
