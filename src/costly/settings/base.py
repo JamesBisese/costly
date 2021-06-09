@@ -145,7 +145,7 @@ WSGI_APPLICATION = 'costly.wsgi.application'
 
 DATABASES = {}
 
-# added this for newer Django requirement
+# added this for newer Django requirement. FOOBAR
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # DATABASES = {
