@@ -145,7 +145,7 @@ WSGI_APPLICATION = 'costly.wsgi.application'
 
 DATABASES = {}
 
-# added this for newer Django requirement. FOOBAR
+# added this for newer Django requirement. TWO FACTOR NOW WORKING
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # DATABASES = {
