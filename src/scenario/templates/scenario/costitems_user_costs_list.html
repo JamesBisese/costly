@@ -63,7 +63,7 @@
 
               table = $('#user_cost-audit-table').DataTable({
                       'serverSide': true,
-                      'ajax': '/api/costitemusercosts/?format=datatables', // SETTINGS.URLS.scenario_list + '?format=datatables',
+                      'ajax': SETTINGS.URLS.costitems_user_costs_list + '?format=datatables',
                     'pageLength': 200,
                     "dom": 'Bfrtip',
                     "buttons": [

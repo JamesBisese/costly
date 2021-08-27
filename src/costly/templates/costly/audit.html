@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load staticfiles %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}{{ block.super }}Audit{% endblock %}
@@ -29,17 +29,17 @@
           <p>These allow Administrators to pull data from all Users/Projects/Scenarios in concise formats</p>
           <ol>
               <li>
-                <a href="{% url 'users:users' %}">List of Users</a>
+                <a href="{% url 'users:audit_users' %}">List of Users</a>
               </li>
               <li>
-                <a href="{% url 'auditProjects' %}">List of Projects</a>
+                <a href="{% url 'audit_projects' %}">List of Projects</a>
               </li>
               <li>
-                <a href="{% url 'auditScenarios' %}">List of Scenarios</a>
+                <a href="{% url 'audit_scenarios' %}">List of Scenarios</a>
               </li>
-              <li>
-                <a href="{% url 'scenario:costitems_user_costs' %}">List of Cost Item User costs</a>
-              </li>
+{#              <li>#}
+{#                <a href="{% url 'scenario:costitems_user_costs' %}">List of Cost Item User costs</a>#}
+{#              </li>#}
           </ol>
 
 

@@ -148,6 +148,9 @@ DATABASES = {}
 # added this for newer Django requirement. TWO FACTOR NOW WORKING
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# added this for newer Django requirement
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # DATABASES = {
 #      # Raises ImproperlyConfigured exception if DATABASE_URL not in
 #      # os.environ

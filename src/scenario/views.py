@@ -54,17 +54,13 @@ from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSeria
 
 @login_required
 def project_audit_list(request):
-    projects = Project.objects.all()
-    context_data = {'projects': projects,
+    # projects = Project.objects.all()
+    context_data = {# 'projects': projects,
                     'header': 'Audit Projects'}
-    if request.user.has_perm('scenario.add_project'):
-        context_data['can_add'] = True
 
-    # jab - added for beta-user-testing.  allow all users to add
-    context_data['can_add'] = True
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
 
-    return render(request, 'project/project_audit.html', context_data)
+    return render(request, 'audit/project.html', context_data)
 
 @login_required
 def scenario_audit_list(request):
@@ -151,7 +147,7 @@ def project_delete(request, pk):
 '''
 class ProjectScenarioViewSet(viewsets.ModelViewSet):
     pk = 1
-    queryset = Scenario.objects.filter(project__id=pk).order_by("sort_nu")
+    queryset = Scenario.objects.filter(project__id=pk)# .order_by("sort_nu")
     serializer_class = ScenarioSerializer
 
     def get_queryset(self):
@@ -351,6 +347,12 @@ class CostItemDefaultCostsList(ExportMixin, SingleTableView): # TODO , FilterVie
 #
 #     return render(request, 'scenario/costitems_user_costs_list.html', context_data)
 
+
+@login_required
+def audit_costitem_user_cost(request):
+    context_data = {'header': 'Audit Cost Item User Costs FOOBAR',
+                     'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
+    return render(request, 'audit/costitem_user_cost.html', context_data)
 
 """
     available via /cost_item/user_costs/
@@ -1182,6 +1184,7 @@ def structure_cost_item_json(structure,
             except :
                 cost_amount = equation
                 cost_item_data['equation_value'] = 'err:' + cost_amount
+                cost_item_data['construction_cost'] = 999 # stub used for debugging error
 
     """
          NOW - this is the calculation from post-construction costs (started on this 2019-11-12)
@@ -1952,6 +1955,8 @@ def scenario_duplicate(request, pk):
     This is the function that displays the Cost Tool.
     It loads everything known about the scenario into the template
     and then javascript stuff does a bunch of work
+    
+    available via /scenario/{id}/update
 
 ###########################################################################
 """
@@ -2191,7 +2196,7 @@ class CostItemDefaultCostViewSet(viewsets.ModelViewSet):
         return qs
 
 '''
-    provided via /api/costitemusercosts and /api/costitemusercosts/?code=fill
+    provided via /api/costitem_user_costs and /api/costitem_user_costs/?code=fill
 '''
 class CostItemUserCostViewSet(viewsets.ModelViewSet):
     queryset = CostItemUserCosts.objects.all().order_by("costitem__sort_nu")

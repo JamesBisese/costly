@@ -17,8 +17,11 @@ import authtools.urls
 #
 from . import views
 import scenario.views
+# audit_costitem_user_costs, \
 from scenario.views import UserViewSet, ProjectViewSet, project_list, \
-    project_audit_list, scenario_audit_list, \
+    project_audit_list, \
+    scenario_audit_list, \
+    audit_costitem_user_cost, \
     ScenarioViewSet, ScenarioListViewSet, ScenarioAuditViewSet,\
     StructureViewSet, \
     CostItemViewSet, \
@@ -35,7 +38,7 @@ router.register(r'structures', StructureViewSet)
 router.register(r'costitems', CostItemViewSet)
 
 router.register(r'costitemdefaultcosts', CostItemDefaultCostViewSet)
-router.register(r'costitemusercosts', CostItemUserCostViewSet)
+router.register(r'costitem_user_costs', CostItemUserCostViewSet)
 
 router.register(r'costitemdefaultequations', CostItemDefaultEquationsViewSet)
 router.register(r'costitemdefaultfactors', CostItemDefaultFactorsViewSet)
@@ -68,8 +71,9 @@ urlpatterns = [
     path(iis_app_alias + 'reference/', views.ReferencePage.as_view(),   name='reference'),
     path(iis_app_alias + 'audit/', views.AuditPage.as_view(),   name='audit'),
 
-    path(iis_app_alias + 'audit/projects/', project_audit_list,   name='auditProjects'),
-    path(iis_app_alias + 'audit/scenarios/', scenario_audit_list,   name='auditScenarios'),
+    path(iis_app_alias + 'audit/projects/', project_audit_list,   name='audit_projects'),
+    path(iis_app_alias + 'audit/scenarios/', scenario_audit_list,   name='audit_scenarios'),
+    path(iis_app_alias + 'audit/costitem_user_costs/', audit_costitem_user_cost, name='audit_costitems_user_costs'),
 
     path(iis_app_alias + 'users/', include(profiles.urls)),
     path(iis_app_alias + 'admin/', admin.site.urls),

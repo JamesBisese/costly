@@ -23,6 +23,12 @@ from authtools.models import User
 from profiles.models import Profile
 
 class ProfileSerializer(serializers.ModelSerializer):
+    user_type = serializers.CharField();
+
+    def get_user_type(self, profile):
+        return '%s' % profile.user_type.capitalize()
+        pass
+
     class Meta:
         model = Profile
         fields = '__all__'
@@ -52,7 +58,8 @@ class UserSerializer(serializers.ModelSerializer):
         # Specifying fields in datatables_always_serialize
         # will also force them to always be serialized.
         datatables_always_serialize = ('id',)
-    read_only_fields = [f.name for f in User._meta.get_fields()]
+
+        read_only_fields = [f.name for f in User._meta.get_fields()]
 
 class ProjectSerializer(serializers.ModelSerializer):
 
@@ -727,7 +734,7 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
 
 """
 
-    scenario - users values
+    CostItem User Cost - users values
 
 """
 class CostItemUserCostSerializer(serializers.ModelSerializer):
@@ -738,9 +745,11 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     costitem_code = serializers.CharField(read_only=True, source="costitem.code")
     costitem_name = serializers.CharField(read_only=True, source="costitem.name")
     # each default cost is applied to a single costitem
-    # project = ProjectSerializer(source='scenario')
     scenario = ScenarioListSerializer(many=False, read_only=True)
-    project = ProjectSerializer(source='scenario.project',many=False, read_only=True)
+
+    # the uncommented 'project' controls what fields are included
+    # project = EmbeddedProjectFields(source='scenario.project')
+    project = ProjectSerializer(source='scenario.project', many=False, read_only=True)
 
     # costitem = CostItemSerializer(many=False, read_only=True)
 
@@ -751,11 +760,11 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     # def get_cost_item_user_costs(self, instance):
     #     user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
     #     return CostItemUserCostSerializer(user_cost_items, many=True).data
-    # user = serializers.SerializerMethodField()
-    #
-    # def get_user(self, obj):
-    #     user1 = obj.scenario.project.user
-    #     return UserSerializer(user1, many=False).data
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        user1 = obj.scenario.project.user
+        return UserSerializer(user1, many=False).data
 
     scenario_id = serializers.SerializerMethodField()
     def get_scenario_id(self, obj):
@@ -781,7 +790,7 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
         model = CostItemUserCosts
         fields = (
             'id',
-            # 'user',
+            'user',
             'scenario',
             'project',
             'scenario_id',

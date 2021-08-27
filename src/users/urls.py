@@ -1,23 +1,17 @@
-from django.urls import path, include, re_path
 from django.conf.urls import url
+from django.urls import path, include
 
-import sys
-
-from . import views
+from users.views import audit_users
 
 """
-    this tag makes all the urls reverse into 'scenario:{name}'
+    this tag makes all the urls reverse into 'users:{name}'
 """
 app_name = 'users'
 
 urlpatterns = [
 
     # Project CRUD
-    path(r'users/', views.UsersPage.as_view(), name='users'),
-
-    # a list of all the Structure - Cost Item Default Assumptions in the database
-    # path(r'cost_item/default_equations/', views.CostItemDefaultEquationsList.as_view(), name='costitems_default_equations'),
-    # path(r'cost_item/default_factors/', views.CostItemDefaultFactorsList.as_view(), name='costitems_default_factors'),
+    path(r'audit/users/', audit_users, name='audit_users'),
 
 ]
 

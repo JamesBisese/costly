@@ -215,15 +215,15 @@ DEFAULT_SCENARIO = {
         "areal_features": {
             "stormwater_management_feature": {
                 "checkbox": True,
-                "area": 1000
+                "area": 0
             },
             "amenity_plaza": {
                 "checkbox": True,
-                "area": 1001
+                "area": 0
             },
             "protective_yard": {
                 "checkbox": True,
-                "area": 1002
+                "area": 0
             },
             "parking_island": {
                 "checkbox": True,

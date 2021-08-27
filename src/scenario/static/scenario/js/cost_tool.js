@@ -55,7 +55,14 @@ $(document).ready(function()
     setAllFieldInputFilters();
     let scenario_id = null;
 
+    // this got lost in an edit and stopped everything from working
+    //start
+    var inputDom = document.getElementById('ui_' + 'scenario_id');
 
+    if (inputDom){
+        scenario_id = inputDom.value;
+    }
+    //end
 
     var url = '';
 
@@ -1682,7 +1689,7 @@ function setAllFieldInputFilters()
                     // if (len(value) == 4 & value >= 1000 & (value < 1990 || value >= 2020)) {
                     //     return false;
                     // }
-                    if (value <= 2020) {
+                    if (value <= 2030) { //timebomb set for 2030?????
                         return true;
                     }
                     return false;

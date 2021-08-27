@@ -1114,6 +1114,7 @@ class Scenario(models.Model):
                 except:
                     cost_amount = equation
                     results['value'] = cost_amount
+                    results['value_unformatted'] = 0 # added to try and fix unhandled key error
 
                 results['equation'] = results['equation'].replace('area', 'a')
                 results['equation'] = results['equation'].replace('depth', 'z')
@@ -1228,6 +1229,7 @@ class Scenario(models.Model):
                     # this has useful labels and size of structures
                     cost_item_data = result[classification]['structures'][structure_code]['cost_data'][costitem_code]
 
+                    # getting a KeyError: 'value_unformatted' error here.  when the item is checked but no area is entered
                     construction_cost = cost_item_data['results']['value_unformatted']
                     planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 0)
 

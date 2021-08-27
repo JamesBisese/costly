@@ -1,14 +1,11 @@
 from django.shortcuts import render
-from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 # list of Users accessed from Audit page
 
-class UsersPage(generic.TemplateView):
-    template_name = "users/user_list.html"
-    def get_context_data(self, **kwargs):
-        context_data = super(UsersPage, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Users'
-        context_data['header_2'] = 'Audit Users'
-
-        return context_data
+@login_required
+def audit_users(request):
+    context_data = {'header': 'Audit Users',
+                     'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
+    return render(request, 'audit/user.html', context_data)

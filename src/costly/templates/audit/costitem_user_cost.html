@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}{{ block.super }}User Costs{% endblock %}
+{% block javascriptOLD %}
+{% endblock %}
+
+{% block extra_css %}
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
+{% endblock extra_css %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="audit" %}
+{% endblock navbar-left %}
+
+{% block content %}
+
+<div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
+
+	<div style="clear: both;"></div>
+    <br>
+</div>
+
+  <table class="table" id="costitem_user_cost-audit-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>User</th>
+        <th>Project</th>
+        <th>Scenario</th>
+
+{#        <th>Type</th>#}
+        <th>Cost Item</th>
+        <th>Units</th>
+        <th>Year</th>
+        <th>User Cost</th>
+        <th>Rep Life</th>
+        <th>First Year</th>
+      </tr>
+    </thead>
+
+  </table>
+
+
+
+{% endblock %}
+
+{% block new_extra_js %}
+    {% include "./includes/extra_js.html" %}
+    {% if IIS_APP_ALIAS != '' %}
+        <script>
+        // add the IIS Application Alias to each of the URL values
+            var IIS_APP_ALIAS = "{{ IIS_APP_ALIAS }}";
+            if (IIS_APP_ALIAS.length > 0) {
+                for (var key in SETTINGS.URLS) {
+                    SETTINGS.URLS[key] = '/' + IIS_APP_ALIAS + SETTINGS.URLS[key];
+                }
+            }
+        </script>
+    {% endif %}
+
+    <script src="{% static 'scenario/js/costitems_user_costs.js' %}"></script>
+
+{% endblock %}
