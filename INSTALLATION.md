@@ -323,29 +323,29 @@ configured, and the backend database needs to be created and populated.
 
 The application is configured using a number of `settings` files.  The files
 are all located in folder
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings`
 
 Normally, you will not need to edit any of the settings `.py` files, and 
 the only files that need to be edited are the `.env` files.  These are 
 read into the other files.
 
 For local development, copy file
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.development.sample.env` and rename it
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.development.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.development.sample.env` and rename it
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.development.env`
 
 For production, copy file
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.sample.env` and rename it
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.production.sample.env` and rename it
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.production.env`
 
 When the application is running using the django development server it uses the files
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\base.py`    
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\development.py` and 
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.development.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\base.py`    
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\development.py` and 
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.development.env`
 
 When the application is running using the django production server it uses the files
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\base.py`    
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\production.py` and 
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\base.py`    
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\production.py` and 
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.production.env`
     
 
 
@@ -537,7 +537,7 @@ users and see/set the passwords assigned to these testing accounts.
 **Note: this is a security hole that should be close.  The user names and passwords 
 could/should be loaded from a non-git file.**
 
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\management\commands\create_users.py`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\management\commands\create_users.py`
 
 The accounts should be removed once testing is completed.
 
@@ -718,7 +718,7 @@ Django has a security feature that requires setting the HTTP name
 of the server the application is running on.
 
 Edit the file
-    `C:\inetpub\wwwdjango\gsicosttool\src\costly\settings\local.production.env`
+    `C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\settings\local.production.env`
 
 Find the line that looks like this
 
