@@ -64,7 +64,7 @@
 
               $('#users-table').DataTable({
                       'serverSide': true,
-                      'ajax': '/api/users/?format=datatables',
+                      'ajax': SETTINGS.URLS.user_list,
                     "dom": 'Bfrtip',
                     "buttons": [
                         { 'extend': 'copy',  'exportOptions': {'columns': export_columns}},
