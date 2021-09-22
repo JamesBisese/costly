@@ -2,7 +2,7 @@ asgiref==3.3.4
 Babel==2.9.1
 beautifulsoup4==4.9.3
 defusedxml==0.7.1
-Django==3.2.4
+Django==3.2.5
 django-admin-sortable==2.2.3
 django-appconf==1.0.4
 django-bootstrap-datepicker-plus==3.0.5
