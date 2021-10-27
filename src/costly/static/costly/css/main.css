@@ -50,6 +50,37 @@ body>.navbar-transparent {
     margin-top: -33px;
 }
 
+/* two images on the homepage */
+#image_container {
+    position:relative;
+    text-align:left;
+    color: red;
+}
+
+.image_container_img {
+    width: 282px;
+    height: 194px;
+    margin-top: 30px;
+    margin-left: 75px;
+    border-style: solid;
+    border-width:10px;
+    border-color: rgb(164,194,66);
+}
+.image_container_text {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    margin-left: 75px;
+    width: 262px;
+    background-color: rgba(0, 50, 67, 0.7);
+    font-size: 20px;
+}
+.image_container_text p {
+    padding-left: 7px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
 /* this is everything on the top of the pages including the image, and the visible navigation bar */
 .navbar {
     position: relative;

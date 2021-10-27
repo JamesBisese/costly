@@ -59,17 +59,19 @@
             <div style="width: 500px;">
                 <div >
                     <a href="{% url 'why' %}">
-                        <img src="{% static 'costly/img/why.jpg' %}" style="float: top;">
+                        <div class="image_container" style="position:relative; text-align:left; color: white; ">
+                            <img class="image_container_img" src="{% static 'costly/img/gi.jpg' %}">
+                            <div class="image_container_text">
+                                <p>Why is Raleigh investing<br>in GSI?</p>
+                            </div>
+                        </div>
                     </a><br>
-{#                    <a href="{% url 'setup' %}">#}
-{#                        <img src="{% static 'costly/img/how.jpg' %}" style="margin-top: 30px;">#}
-{#                    </a><br>#}
                     <a href="{% url 'setup' %}">
                         <div class="image_container" style="position:relative; text-align:left; color: white; ">
-                            <img src="{% static 'costly/img/how2.jpg' %}"
-                                 style="width: 282px; height: 194px; margin-top: 30px; margin-left: 75px; border-style: solid; border-width:10px; border-color: rgb(164,194,66);">
-                            <div style="position:absolute; bottom: 8px; left: 10px; margin-left: 75px; width: 262px; background-color: rgba(0, 50, 67,0.7); font-size: 20px;">
-                                How is the GSI Cost<br>Tool setup?</div>
+                            <img class="image_container_img"  src="{% static 'costly/img/how2.jpg' %}">
+                            <div class="image_container_text">
+                                <p>How is the GSI Cost<br>Tool setup?</p>
+                            </div>
                         </div>
                     </a><br>
                     <div style="font-size: 11px;">
