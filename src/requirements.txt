@@ -23,6 +23,7 @@ django-multiselectfield==0.1.12
 django-mssql-backend
 django-pyodbc-azure==2.1.0.0
 django-select2==7.7.1
+django_settings_export==1.2.1
 django-tables2==2.4.0
 django-utils-six==2.0
 django-widget-tweaks==1.4.8
