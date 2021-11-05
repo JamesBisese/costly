@@ -55,7 +55,7 @@
 
       <a class="navbar-brand" href="{% url 'home' %}">
         {% block navbar-brand %}
-          <img src="{% static 'costly/img/raleigh_city-seal.png' %}" alt="logo">
+          <img src="{% static '' %}{{  settings.HEADER_LOGO_URI}}" alt="logo">
         {% endblock navbar-brand %}
       </a>
 
@@ -131,9 +131,8 @@
             <div class="footer">
                 <div class="row">
 
-                      <p>&copy; City of Raleigh, NC {% now 'Y' %}. Send comments and questions to <a href="mailto:Jenn.Lenart@tetratech.com">
-                            Jenn.Lenart@tetratech.com</a> or <a href="mailto:Trevor.Clements@tetratech.com">
-Trevor.Clements@tetratech.com</a></p>
+                      <p>&copy; City of Raleigh, NC {% now 'Y' %}. Send comments and questions to <a href="mailto:{{ settings.EMAIL_CONTACT }}">
+                            {{ settings.EMAIL_CONTACT }}</a></p>
 
                 </div>
             </div>
