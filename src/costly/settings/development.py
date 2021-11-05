@@ -20,7 +20,25 @@ if os.path.exists(env_file):
 DEBUG = True
 
 # this is used to map the URLS when app is installed on IIS using an alias
-IIS_APP_ALIAS = r''
+# IIS_APP_ALIAS = r''
+
+# this is used to map the URLS when app is installed on IIS using an alias
+## IIS_APP_ALIAS = r''
+
+##region changed to allow DEV and PROD on insdev1 for testing of these systems
+# if running in pycharm or with runserver, you need to clear this
+IIS_APP_ALIAS = env('IIS_APP_ALIAS')
+
+# reset these 2 URIs for IIS alias to work
+iis_app_alias = ''
+if len(IIS_APP_ALIAS) > 0:
+    iis_app_alias = IIS_APP_ALIAS + '/'
+
+MEDIA_URL = '/' + iis_app_alias + 'media/'
+STATIC_URL = '/' + iis_app_alias + 'static/'
+
+##end region
+
 
 #TODO figure what this does. it looks wrong, like it should use DEBUG, not false
 TEMPLATES[0]['OPTIONS'].update({'debug': True})
