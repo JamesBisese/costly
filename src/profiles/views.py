@@ -6,7 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from . import forms
 from . import models
 
+"""
 
+this is the account/profile page accessed via the menu right side dropdown 'Account' option. 
+
+"""
 class ShowProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = "profiles/show_profile.html"
     http_method_names = ['get']
@@ -24,7 +28,11 @@ class ShowProfile(LoginRequiredMixin, generic.TemplateView):
         kwargs["show_user"] = user
         return super().get(request, *args, **kwargs)
 
+"""
 
+this is the Edit Account page accessed via the 'Edit Account' text on the account/profile page. 
+
+"""
 class EditProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = "profiles/edit_profile.html"
     http_method_names = ['get', 'post']
@@ -35,7 +43,6 @@ class EditProfile(LoginRequiredMixin, generic.TemplateView):
             kwargs["user_form"] = forms.UserForm(instance=user)
         if "profile_form" not in kwargs:
             kwargs["profile_form"] = forms.ProfileForm(instance=user.profile)
-
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):

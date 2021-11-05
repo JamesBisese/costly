@@ -48,7 +48,8 @@ urlpatterns = [
     path(r'scenario/results/column/', views.CompareScenarioColumn.as_view(), name='scenario_compare_column'),
     path(r'scenario/<string>1-8/results/', views.ScenarioResults.as_view(), name='scenario_results_multiple2_with_class'),
 
-
+    # Scenario - Results in Excel Format
+    path(r'scenario/<int:pk>/excel/', views.ScenarioExcelResults.as_view(), name='scenario_results_excel'),
 
     path(r'scenario/default/', views.DefaultScenario.as_view(), name='scenario_json_default'),
     path(r'scenario/template/', views.TemplateScenario.as_view(), name='scenario_json_template'),

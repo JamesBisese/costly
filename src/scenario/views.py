@@ -1,3 +1,4 @@
+import io
 import sys
 import json
 import copy
@@ -23,6 +24,8 @@ from rest_framework.decorators import action
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+import xlsxwriter
 
 from .models import Project, Scenario, ArealFeatures, Structures, \
     ConventionalStructures, NonConventionalStructures, \
@@ -62,6 +65,12 @@ def project_audit_list(request):
 
     return render(request, 'audit/project.html', context_data)
 
+"""
+    Audit Scenario list as function based views using ajax to feed in data
+    The template is in scenario/templates/scenario/scenario_audit.html
+    
+    http://127.0.0.1:92/audit/scenarios/
+"""
 @login_required
 def scenario_audit_list(request):
 
@@ -364,22 +373,7 @@ class CostItemUserCostsList(ExportMixin, SingleTableView): # TODO , FilterView
     model = CostItemUserCosts
     table_class = tables.CostItemUserCostsTable
     template_name = 'scenario/costitems_user_costs_list.html'
-    # exclude_columns = ('id',)
-    # filterset_class = ScenarioFilter
-    #
-    # columns = ['scenario.project.project_title', 'scenario.scenario_title', ]
-    # def dispatch(self, request, *args, **kwargs):
-    #     if not request.user.is_authenticated:
-    #         return HttpResponseRedirect(reverse_lazy('accounts:login'))
-    #     return super(CostItemUserCostsList, self).dispatch(request, *args, **kwargs)
-    #
-    # def get_queryset(self):
-    #     qs = super(CostItemUserCostsList, self).get_queryset()
-    #
-    #     # if not (self.request.user.is_superuser or self.request.user.is_staff):
-    #     #     qs = qs.filter(user=self.request.user)
-    #     return qs
-    #
+
     def get_context_data(self, **kwargs):
         context_data = super(CostItemUserCostsList, self).get_context_data(**kwargs)
 
@@ -1679,7 +1673,10 @@ def scenario_table_html(scenario):
 
             if cost_item_user_cost_dict[code]['cost_source'] == 'user':
                 cost_source_tx = 'User'
-                unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
+                if cost_item_user_cost_dict[code]['user_input_cost'] is None:
+                    unit_cost = 0
+                else:
+                    unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
                 base_year = cost_item_user_cost_dict[code]['base_year']
             #TBD the cost_source text should match, or almost match, the variable name
             #TODO change text to db_25pct_va or at least db_25pct
@@ -1760,7 +1757,176 @@ def scenario_table_html(scenario):
     return render_to_string(template_name, context)
 
 
+#
+# this is the Excel export function to return the scenario in Excel
+#
+# created on 2021-11-05
+#
 
+# testing data only
+def get_simple_table_data():
+    # Simulate a more complex table read.
+    return [[1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]]
+
+class ScenarioExcelResults(generic.View):
+
+    def get(self, request, pk):
+        scenario = get_object_or_404(Scenario, pk=pk)
+
+        # Create an in-memory output file for the new workbook.
+        output = io.BytesIO()
+
+        # Even though the final file will be in memory the module uses temp
+        # files during assembly for efficiency. To avoid this on servers that
+        # don't allow temp files, for example the Google APP Engine, set the
+        # 'in_memory' Workbook() constructor option as shown in the docs.
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+
+        # Add a bold format to use to highlight cells.
+        bold = workbook.add_format({'bold': True})
+
+        label_col = workbook.add_format()
+        label_col.set_border(1)
+
+        input_col = workbook.add_format({'bg_color': 'DDEBF7', 'align': 'right'}) # light blue
+        input_col.set_border(1)
+        output_col = workbook.add_format({'bg_color': 'E2EFDA'})  # light green
+        output_col.set_border(1)
+
+        worksheet.set_column(0, 0, 24)
+        worksheet.set_column(1, 1, 45)
+
+        # Write some data headers.
+        worksheet.write('A1', 'Project Title', bold)
+        worksheet.write('B1', scenario.project.project_title, bold)
+        worksheet.write('A2', 'Scenario Title', bold)
+        worksheet.write('B2', scenario.scenario_title, bold)
+
+        # Add a number format for cells with money.
+        money_big = workbook.add_format({'num_format': '$#,##0'})
+        money_big.set_border(1)
+        money_small = workbook.add_format({'num_format': '$#,##0.00', 'bg_color': 'DDEBF7'})
+        money_small.set_border(1)
+
+        output_col_money_big = workbook.add_format({'num_format': '$#,##0', 'bg_color': 'E2EFDA'})
+        output_col_money_big.set_border(1)
+
+        int_big = workbook.add_format({'num_format': '#,##0', 'bg_color': 'DDEBF7'})
+        int_big.set_border(1)
+
+        # header above each sub-section
+        merge_format = workbook.add_format({ 'align': 'center', 'valign': 'vcenter', })
+
+
+        # Some data we want to write to the worksheet.
+        project_description = (
+            ['Project Organizer', scenario.project.get_project_ownership_display(), input_col],
+            ['Location of the project', scenario.project.project_location, input_col],
+            ['Project Type', scenario.project.get_project_type_display(), input_col],
+            ['Purchase Information', scenario.project.get_project_purchase_information_display(), input_col],
+            ['Total Project Area', int(scenario.project.project_area), int_big],
+            ['Land cost per ft', scenario.project.land_unit_cost.amount, money_small],
+            ['Land Value', float(scenario.project.project_area) * float(scenario.project.land_unit_cost.amount), output_col_money_big],
+        )
+
+        # Start from the first cell below the headers.
+        row = 3
+        col = 0
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            worksheet.write(row, col, label, label_col)
+            if format == 'text':
+                worksheet.write(row, col + 1, value)
+            else:
+                worksheet.write(row, col + 1, value, format)
+            row += 1
+
+        # Write a second instance of the total using a formula.
+        worksheet.write(row, 0, 'Land Value', label_col)
+        worksheet.write(row, 1, '=B8*B9', output_col_money_big)
+
+        row += 1
+
+        worksheet.merge_range(row, 0, row + 1, 1, 'Design Elements', merge_format)
+
+        row += 1
+        row += 1
+
+        project_description = (
+            ['Nutrient requirements met?', scenario.get_nutrient_req_met_display(), input_col],
+            ['Captures 90th pct storm?', scenario.get_captures_90pct_storm_display(), input_col],
+            ['Meets peak flow req?', scenario.get_meets_peakflow_req_display(), input_col],
+        )
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            worksheet.write(row, col, label, label_col)
+            if format == 'text':
+                worksheet.write(row, col + 1, value)
+            else:
+                worksheet.write(row, col + 1, value, format)
+            row += 1
+
+        row += 1
+
+        project_description = (
+            ['Pervious Area', scenario.pervious_area, int_big],
+            ['Impervious Area', scenario.impervious_area, int_big],
+        )
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            worksheet.write(row, col, label, label_col)
+            if format == 'text':
+                worksheet.write(row, col + 1, value)
+            else:
+                worksheet.write(row, col + 1, value, format)
+            row += 1
+
+        row += 1
+
+        worksheet.merge_range(row, 0, row + 1, 1, 'Life Cycle Costs Assumptions', merge_format)
+
+        row += 1
+        row += 1
+
+        project_description = (
+            ['Planning and Design Factor', '{} %'.format(scenario.planning_and_design_factor), input_col],
+            ['Study Life', '{} years'.format(scenario.study_life), input_col],
+            ['Discount Rate', '{} %'.format(scenario.discount_rate), input_col],
+        )
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            worksheet.write(row, col, label, label_col)
+            if format == 'text':
+                worksheet.write(row, col + 1, value)
+            else:
+                worksheet.write(row, col + 1, value, format)
+            row += 1
+
+        row += 1
+
+
+        # Close the workbook before sending the data.
+        workbook.close()
+
+        # Rewind the buffer.
+        output.seek(0)
+
+        # Set up the Http response.
+        filename = 'scenario_results.xlsx'
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
 
 
 """

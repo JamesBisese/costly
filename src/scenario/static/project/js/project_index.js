@@ -38,7 +38,9 @@ $(function () {
           "columns": [
               {"data": "id", "searchable": false},
               // Use dot notation to reference nested serializers.
-              {"data": "user.email", "searchable": true},
+              {"data": "user.name", "searchable": true},
+              {"data": "user.organization_tx", "searchable": true},
+              {"data": "user.job_title", "searchable": true},
               {"data": "user.profile.user_type", "searchable": true},
               {"data": "project_title", "searchable": true},
               {"data": "project_location", "searchable": true},
@@ -47,8 +49,6 @@ $(function () {
               {"data": "project_area",
                   "render": $.fn.dataTable.render.number( ',' ),
                   "searchable": true},
-
-
               {"data": "scenario_count", "sortable": true, "searchable": false},
               {"data": "id", "searchable": false, "sortable": false},
           ],
@@ -59,7 +59,7 @@ $(function () {
                     "targets": 0
               },
               {
-                  "targets": 9,
+                  "targets": 11,
                   "sWidth": "260px",
                   "render": function (data, type, row) {
                         var scenario_url = SETTINGS.URLS.project_scenario_list.replace('<int:pk>', data);

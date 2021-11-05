@@ -45,8 +45,8 @@ router.register(r'costitemdefaultfactors', CostItemDefaultFactorsViewSet)
 router.register(r'costitemuserassumptions', CostItemUserAssumptionsViewSet)
 
 # Personalized admin site settings like title and header
-admin.site.site_title = 'Costly Site Admin'
-admin.site.site_header = 'Costly Administration'
+admin.site.site_title = 'GSI Cost Tool'
+admin.site.site_header = 'GSI Cost Tool Administration'
 
 iis_app_alias = ''
 if len(settings.IIS_APP_ALIAS) > 0:
@@ -77,7 +77,6 @@ urlpatterns = [
 
     path(iis_app_alias + 'users/', include(profiles.urls)),
     path(iis_app_alias + 'admin/', admin.site.urls),
-    # path(iis_app_alias + 'testapp/', include(testapp.urls)),
 
     path(iis_app_alias + 'accounts/', include(authtools.urls)),
 

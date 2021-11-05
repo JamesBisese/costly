@@ -38,7 +38,9 @@ $(function () {
           "columns": [
               {"data": "id", "searchable": false},
               // Use dot notation to reference nested serializers.
-              {"data": "user.email", "searchable": true},
+              {"data": "user.name", "searchable": true},
+              {"data": "user.organization_tx", "searchable": true},
+              {"data": "user.job_title", "searchable": true},
               {"data": "user.profile.user_type", "searchable": true},
               {"data": "project_title", "searchable": true},
               {"data": "project_location", "searchable": true},
@@ -48,8 +50,9 @@ $(function () {
                   "render": $.fn.dataTable.render.number( ',' ),
                   "searchable": true},
               {"data": "scenario_count", "sortable": true, "searchable": false},
-                // {"data": "create_date", "searchable": true},
-                // {"data": "modified_date", "searchable": true},
+              //TODO add these fields to Project model!!!!
+              // {"data": "create_date", "searchable": true},
+              // {"data": "modified_date", "searchable": true},
           ],
           "columnDefs": [
               {

@@ -27,6 +27,7 @@ TEMPLATES[0]['OPTIONS'].update({'debug': True})
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+
 # SECURITY WARNING: keep the secret key used in production secret!
 # Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
@@ -125,4 +126,16 @@ LOGGING = {
 }
 
 logging.config.dictConfig(LOGGING)
+
+# these are loaded if they are found in the env file.  else the default is used from base
+
+try:
+    EMAIL_CONTACT = env.str('EMAIL_CONTACT')
+except:
+    pass
+
+try:
+    HEADER_LOGO_URI = env.str('HEADER_LOGO_URI')
+except:
+    pass
 

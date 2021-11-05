@@ -105,3 +105,15 @@ LOGGING = {
 }
 
 logging.config.dictConfig(LOGGING)
+
+# these are loaded if they are found in the env file.  else the default is used from base
+
+try:
+    EMAIL_CONTACT = env.str('EMAIL_CONTACT')
+except:
+    pass
+
+try:
+    HEADER_LOGO_URI = env.str('HEADER_LOGO_URI')
+except:
+    pass

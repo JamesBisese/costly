@@ -17,6 +17,12 @@
 </style>
 
 <div class="buttonHolder"></div>
+
+
+<div class="export_to_excel">
+    <a href="{% url 'scenario:scenario_results_excel' scenario.id %}">Export to Excel</a><p></p>
+</div>
+
 <div class="scenario_id" style="display: none;">{{ scenario.id }}</div>
 <div class="caption_table2">
     <table class="caption_table">

@@ -35,6 +35,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
+    # jab testing how to modify record during serialization
+    name = serializers.CharField();
+    def get_name(self, user):
+        return '%s' % user.name.lower()
+    # end
+
     profile = ProfileSerializer()
 
     date_joined = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")

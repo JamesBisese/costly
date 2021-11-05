@@ -406,3 +406,7 @@ body>.navbar-transparent {
 /*  margin: 0;*/
 /*  padding: 10px;*/
 /*}*/
+
+.dollar {
+    display: inline;
+}

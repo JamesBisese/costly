@@ -36,6 +36,7 @@
       <tr>
         <th>#</th>
         <th>User</th>
+        <th>Affiliation</th>
         <th>User Type</th>
         <th>Project</th>
         <th>Scenario</th>
@@ -80,6 +81,7 @@
                       // Use dot notation to reference nested serializers.
                         {"data": "id", "searchable": false},
                         {"data": "project.user.name", "searchable": true},
+                        {"data": "project.user.organization_tx", "searchable": true},
                         {"data": "project.user.profile.user_type", "searchable": true},
                         {"data": "project.project_title", "searchable": true},
                         {"data": "scenario_title", "searchable": true},

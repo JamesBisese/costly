@@ -15,7 +15,7 @@ USERNAME_FIELD = get_user_model().USERNAME_FIELD
 REQUIRED_FIELDS = (USERNAME_FIELD,) + tuple(get_user_model().REQUIRED_FIELDS)
 
 BASE_FIELDS = (None, {
-    'fields': REQUIRED_FIELDS + ('password','organization_tx','phone_tx',),
+    'fields': REQUIRED_FIELDS + ('password','organization_tx','phone_tx','job_title',),
 })
 
 SIMPLE_PERMISSION_FIELDS = (_('Permissions'), {

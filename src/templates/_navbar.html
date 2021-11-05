@@ -21,9 +21,11 @@
     <li class="nav-item{% if active_link == 'reference' %} active{% endif %}">
         <a class="nav-link" href="{% url 'reference' %}">REFERENCES</a>
     </li>
-    <li class="nav-item{% if active_link == 'audit' %} active{% endif %}">
-        <a class="nav-link" href="{% url 'audit' %}">AUDIT</a>
-    </li>
+    {% if user.is_superuser %}
+        <li class="nav-item{% if active_link == 'audit' %} active{% endif %}">
+            <a class="nav-link" href="{% url 'audit' %}">AUDIT</a>
+        </li>
+        {%  endif %}
     <li class="nav-item{% if active_link == 'project' %} active{% endif %}">
         <a class="nav-link" href="{% url 'scenario:project_index' %}">PROJECTS</a>
     </li>

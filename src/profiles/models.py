@@ -7,7 +7,7 @@ from django.conf import settings
 
 class BaseProfile(models.Model):
 
-    USER_TYPE_VALUES = ('standard', 'professional')
+    USER_TYPE_VALUES = ('Standard', 'Professional')
     USER_TYPE_TEXTS = ('Standard user – educational purposes only',
                        'Professional user – for use with City of Raleigh design review (requires City approval)')
     USER_TYPE_CHOICES = zip(USER_TYPE_VALUES, USER_TYPE_TEXTS)

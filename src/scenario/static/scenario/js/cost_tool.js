@@ -417,6 +417,7 @@ function populateStructureEquations(data){
                     var dollar_div = document.createElement('div');
                     dollar_div.className = 'dollar';
                     dollar_div.style.paddingLeft = '3px';
+
                     dollar_div.innerText = '$';
 
                     var text = document.createTextNode(field_value);
@@ -433,6 +434,7 @@ function populateStructureEquations(data){
                     dollar_div.className = 'dollar';
                     dollar_div.innerText = '$';
                     dollar_div.style.paddingLeft = '3px';
+                    dollar_div.style.display = 'inline';
                     var text = document.createTextNode(Number(cost_item_data['unit_cost']).toFixed(2));
                     while (inputDom.firstChild) {
                       inputDom.removeChild(inputDom.firstChild);

@@ -33,6 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # costly is not an included app, so it needs to be specified directly
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'costly', 'static'),
+    os.path.join(BASE_DIR, 'users', 'static'),
     # os.path.join(BASE_DIR, 'scenario', 'static'), # this is automatically included
 ]
 
@@ -70,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
             'builtins': [
                 'scenario.templatetags.scenario_extras',
@@ -253,3 +255,13 @@ REST_FRAMEWORK = {
 # https://github.com/django-money/django-money
 CURRENCIES = ('USD',)
 CURRENCY_CHOICES = [('USD', 'USD $'), ]
+
+# this can get overridden in local.development.env or local.production.env
+EMAIL_CONTACT='base@tetratech.com'
+
+HEADER_LOGO_URI='costly/img/tetratech-icon-1024.png'
+
+SETTINGS_EXPORT = [
+    'EMAIL_CONTACT',
+    'HEADER_LOGO_URI',
+]
