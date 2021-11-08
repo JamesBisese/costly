@@ -36,6 +36,8 @@ SETTINGS.URLS = {
 
     'scenario_compare_column': '/scenario/results/column/?id=',
 
+    'scenario_audit': '/api/scenario_audit/',
+
     'structures_list': '/api/structures/?format=datatables',
     'costitems_list':  '/api/costitems/?format=datatables',
     'costitems_default_costs_list': '/api/costitemdefaultcosts/?format=datatables',
