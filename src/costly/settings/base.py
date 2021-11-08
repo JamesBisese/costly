@@ -261,10 +261,13 @@ EMAIL_CONTACT='base@tetratech.com'
 
 HEADER_LOGO_URI='costly/img/tetratech-icon-1024.png'
 
-VERSION_INFORMATION='Version 1.016 Updated November 5, 2021'
+IS_TESTING_INSTANCE='true'
+
+VERSION_INFORMATION='Version 1.016 Updated November 8, 2021'
 
 SETTINGS_EXPORT = [
     'VERSION_INFORMATION',
     'EMAIL_CONTACT',
     'HEADER_LOGO_URI',
+    'IS_TESTING_INSTANCE',
 ]

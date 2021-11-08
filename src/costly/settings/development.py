@@ -157,3 +157,7 @@ try:
 except:
     pass
 
+try:
+    IS_TESTING_INSTANCE = env.str('IS_TESTING_INSTANCE')
+except:
+    pass
