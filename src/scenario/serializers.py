@@ -35,7 +35,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    # jab testing how to modify record during serialization
+    #
     name = serializers.CharField();
     def get_name(self, user):
         return '%s' % user.name.lower()
@@ -138,6 +138,7 @@ class EmbeddedProjectSerializer(ProjectSerializer):
             'priority_watershed',
         )
         read_only_fields = [f.name for f in Project._meta.get_fields()]
+
 class EmbeddedProjectFields(serializers.Field):
 
     def get_project_ownership(self, obj):
@@ -754,8 +755,8 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     scenario = ScenarioListSerializer(many=False, read_only=True)
 
     # the uncommented 'project' controls what fields are included
-    # project = EmbeddedProjectFields(source='scenario.project')
-    project = ProjectSerializer(source='scenario.project', many=False, read_only=True)
+    project = EmbeddedProjectFields(source='scenario.project')
+    # project = ProjectSerializer(source='scenario.project', many=False, read_only=True)
 
     # costitem = CostItemSerializer(many=False, read_only=True)
 
@@ -914,7 +915,7 @@ class ScenarioSerializer(serializers.ModelSerializer):
             'id',
             'cost_item_user_assumptions',
             'scenario_title',
-            'project',
+            'project', ##debug - trying to figure out where Cannon resolve keywork project into fields
             'embedded_scenario',
 
             'areal_features',

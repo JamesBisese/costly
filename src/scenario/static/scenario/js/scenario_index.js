@@ -22,13 +22,16 @@ $(function () {
 
         $('#compareScenarios').attr('disabled','disabled');
         $('#compareScenarios2').addClass('disabled');
-
+        $('#exportScenarios2').addClass('disabled');
         // limit user to selecting 2 rows
+
         $('#scenario-table tbody').on( 'click', 'tr', function ()
         {
-            if($('.selected').length < 2 || $(this).hasClass('selected'))
+            //jab changed this to allow selecting more than 2 so the export will work
+            //
+            if($('.selected').length < 4 || $(this).hasClass('selected'))
             {
-                    $(this).toggleClass('selected');
+               $(this).toggleClass('selected');
             }
 
             if($('.selected').length > 0)
@@ -38,18 +41,11 @@ $(function () {
                     var table = $('#scenario-table').DataTable();
                     var tblData = table.rows('.selected').data();
                     scenario_id = tblData[0]['id'];
-
-                    // $('#duplicate_scenario').css('display','');
-                    // $('#duplicate_scenario').attr('data-url',
-                    //     SETTINGS.URLS.scenario_duplicate.replace('<int:pk>', scenario_id));
                 }
-                // else
-                // {
-                //     $('#duplicate_scenario').css('display','none');
-                //
-                // }
+
                $('#compareScenarios').removeAttr('disabled');
                $('#compareScenarios2').removeClass('disabled');
+               $('#exportScenarios2').removeClass('disabled');
 
                 var table = $('#scenario-table').DataTable();
 
@@ -64,14 +60,17 @@ $(function () {
                 var url = SETTINGS.URLS.scenario_results + scenario_id.join(',');
 
                 document.getElementById("compareScenarios2").href= url ;
+
+                // set the url for exporting 1 or 2 scenarios
+                url = SETTINGS.URLS.scenario_export_results + scenario_id.join(',');
+
+                document.getElementById("exportScenarios2").href= url ;
             }
             else
             {
-                // $('#duplicate_scenario').css('display','none');
-
-
                 $('#compareScenarios').attr('disabled','disabled');
                 $('#compareScenarios2').addClass('disabled');
+                $('#exportScenarios2').addClass('disabled');
             }
         } );
 

@@ -50,6 +50,7 @@ urlpatterns = [
 
     # Scenario - Results in Excel Format
     path(r'scenario/<int:pk>/excel/', views.ScenarioExcelResults.as_view(), name='scenario_results_excel'),
+    path(r'scenario/export/results/', views.CompareScenarioExcelResults.as_view(), name='scenario_export_results'),
 
     path(r'scenario/default/', views.DefaultScenario.as_view(), name='scenario_json_default'),
     path(r'scenario/template/', views.TemplateScenario.as_view(), name='scenario_json_template'),

@@ -36,7 +36,7 @@ $(function () {
                 { 'extend': 'print', 'exportOptions': {'columns': export_columns}},
             ],
             "columns": [
-                {"data": "scenario.project_title", "searchable": true},
+                {"data": "project.project_title", "searchable": true},
                 {"data": "scenario.scenario_title", "searchable": true},
                 // {"data": "costitem_name", "searchable": true},
                 // {"data": "units", "searchable": true},

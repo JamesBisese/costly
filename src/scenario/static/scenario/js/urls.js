@@ -32,6 +32,7 @@ SETTINGS.URLS = {
     'scenario_api':      '/api/scenarios/<int:pk>/',
 
     'scenario_results':  '/scenario/results/?id=',
+    'scenario_export_results':  '/scenario/export/results/?id=',
 
     'scenario_compare_column': '/scenario/results/column/?id=',
 

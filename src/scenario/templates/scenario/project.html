@@ -40,10 +40,21 @@
 
 <div style="display: inline-block">
 <table class="caption_table">
+    {% if user.is_superuser %}
+      <tr>
+        <td>User:</td>
+        <td> {{ project.user.name }}</td>
+      </tr>
+      <tr>
+        <td>User Type:</td>
+        <td> {{ project.user.profile.user_type }}</td>
+      </tr>
+    {% endif %}
   <tr>
     <td>Project Title:</td>
     <td> {{ project.project_title }}</td>
   </tr>
+
 </table>
 
  <table class="result_table">

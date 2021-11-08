@@ -63,12 +63,6 @@
                 <span class="glyphicon glyphicon-plus"></span>New Scenario
             </button>
 
-            <!-- this loads a new page -->
-{#            <a class="btn btn-primary" style="font-size: 16px;"#}
-{#               href="{% url 'scenario:project_scenario_create' project.id %}">#}
-{#              <span class="glyphicon glyphicon-plus"></span>#}
-{#              New scenario#}
-{#            </a>#}
         </div>
     {% endif %}
 
@@ -79,22 +73,18 @@
     <div id="is_superuser" display="none";></div>
 {% endif %}
 
-{#<form method="POST" action="{% url 'scenario:scenario_index' %}">#}
-{#    {% csrf_token %}#}
-{#    <select name="project_id" onChange="form.submit();">#}
-{#        {% for project in projects %}#}
-{#            <option value="{{ project.id }}">{{ project.project_title }}</option>#}
-{#        {% endfor %}#}
-{#    </select>#}
-{#</form>#}
-
-
 <div style="display: none" id="project_id" value="{{ project.id  }}">{{ project.id  }}</div>
 <a id="compareScenarios2" class="btn btn-info" style="font-size: 16px; float:left;"
    href="" target="scenarioResults"
     title="Select 1, or 2 scenarios from the table and click to view results and compare">
   <span class="glyphicon glyphicon-zoom-in"></span>
   Compare Scenarios
+</a>
+<a id="exportScenarios2" class="btn btn-info" style="font-size: 16px; float:left; margin-left: 5px;"
+   href="" target="scenarioResults"
+    title="Select 1, or 2 scenarios from the table and click to export to Excel">
+  <span class="glyphicon glyphicon-zoom-in"></span>
+  Export Selected Scenarios
 </a>
 <br><br>
 {#    responsive no-wrap#}
@@ -136,26 +126,5 @@
     {% endif %}
 
     <script src="{% static 'scenario/js/scenario_index.js' %}"></script>
-    <script>
 
-    /*TODO make the modal moveable and still work*/
-    {#$('#btn1').click(function() {#}
-    {#  // reset modal if it isn't visible#}
-    {#  if (!($('.modal.in').length)) {#}
-    {#    $('.modal-dialog').css({#}
-    {#      top: 0,#}
-    {#      left: 0#}
-    {#    });#}
-    {#  }#}
-    {#  $('#modal-scenario').modal({#}
-    {#    backdrop: false,#}
-    {#    show: true#}
-    {#  });#}
-    {##}
-    {#  $('.modal-dialog').draggable({#}
-    {#    handle: ".modal-header"#}
-    {#  });#}
-    {#});#}
-
-    </script>
 {% endblock %}
