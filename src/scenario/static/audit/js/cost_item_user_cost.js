@@ -1,0 +1,36 @@
+
+
+var table;
+$(document).ready(function() {
+  table = $('#user_cost-audit-table').DataTable({
+                'serverSide': false,
+                'ajax': SETTINGS.URLS.audit_cost_item_user_costs_data + '?format=datatables',
+                'pageLength': 200,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    { 'extend': 'copy'},
+                    { 'extend': 'csv'},
+                    { 'extend': 'excel'},
+                ],
+                'columns': [
+                  // Use dot notation to reference nested serializers.
+                  {"data": "user.name", "searchable": true},
+                  {"data": "user.profile.user_type", "searchable": true},
+                  {"data": "costitem_name", "searchable": true},
+                  {"data": "units", "searchable": false},
+                  {"data": "user_input_cost", "searchable": false},
+                  {"data": "base_year", "searchable": false},
+                  {"data": "replacement_life", "searchable": false},
+                  {"data": "o_and_m_pct", "searchable": false},
+                ],
+
+                "order": [[ 2, 'asc' ]]
+            });
+});
+
+table.on( 'order.dt search.dt', function () {
+    table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+        cell.innerHTML = i+1;
+        t.cell(cell).invalidate('dom');
+    } );
+} ).draw();

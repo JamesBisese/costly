@@ -4,7 +4,7 @@
 
               table = $('#scenario-audit-table').DataTable({
                       'serverSide': true,
-                      'ajax': SETTINGS.URLS.scenario_audit + '?format=datatables',
+                      'ajax': SETTINGS.URLS.audit_scenario_data + '?format=datatables',
                     'pageLength': 200,
                     "dom": 'Bfrtip',
                     "buttons": [

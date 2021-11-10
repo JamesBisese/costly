@@ -20,31 +20,24 @@
 
     <div class="row">
       <div class="col-md-12">
-<h2>Audit</h2>
+        <h2>Audit</h2>
+        <p>This is an internal page to share audit tables of user data of the Cost Tool</p>
 
-
-
-<p>This is an internal page to share audit tables of data of the Cost Tool</p>
-
-          <p>These allow Administrators to pull data from all Users/Projects/Scenarios in concise formats</p>
-          <ol>
-              <li>
-                <a href="{% url 'users:audit_users' %}">List of Users</a>
-              </li>
-              <li>
-                <a href="{% url 'audit_projects' %}">List of Projects</a>
-              </li>
-              <li>
-                <a href="{% url 'audit_scenarios' %}">List of Scenarios</a>
-              </li>
-              <li>
-                <a href="{% url 'scenario:costitems_user_costs' %}">List of Cost Item User costs</a>
-              </li>
-          </ol>
-
-
-
-
+        <p>These allow Administrators to pull data for Users, Projects, Scenarios, and Cost Items in concise formats</p>
+        <ol>
+          <li>
+            <a href="{% url 'scenario:audit_users' %}">List of Users</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:audit_projects' %}">List of Projects</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:audit_scenarios' %}">List of Scenarios</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:audit_costitems_user_costs' %}">List of Cost Item User costs</a>
+          </li>
+        </ol>
       </div>
       </div>
     </div>

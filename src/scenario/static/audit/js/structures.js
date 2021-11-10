@@ -23,7 +23,7 @@ $(function () {
         var options = {
             "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.costitems_list,
+            "ajax": SETTINGS.URLS.audit_structure_data + '?format=datatables',
             "paging": false,
             "info" : false,
             "dom": 'Bfrtip',
@@ -37,7 +37,7 @@ $(function () {
             "columns": [
                 // Use dot notation to reference nested serializers.
                 {"data": "sort_nu"},
-                // {"data": "classification_display"},
+                {"data": "classification_display"},
                 {"data": "name"},
                 {"data": "code"},
                  {"data": "units", "searchable": false, "sortable": false},
@@ -63,7 +63,7 @@ $(function () {
         // )
         // }
 
-        var table = $('#costitems-table').DataTable(options);
+        var table = $('#structures-table').DataTable(options);
 };
 
 

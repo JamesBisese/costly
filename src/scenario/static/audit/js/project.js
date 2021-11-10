@@ -21,7 +21,7 @@ $(function () {
 
       var options = {
           "serverSide": true,
-          "ajax": SETTINGS.URLS.project_list,
+          "ajax": SETTINGS.URLS.audit_project_data + '?format=datatables',
           "paging": false,
           "info": false,
           "dom": 'Bfrtip',
@@ -50,9 +50,9 @@ $(function () {
                   "render": $.fn.dataTable.render.number( ',' ),
                   "searchable": true},
               {"data": "scenario_count", "sortable": true, "searchable": false},
-              //TODO add these fields to Project model!!!!
-              // {"data": "create_date", "searchable": true},
-              // {"data": "modified_date", "searchable": true},
+              //added these fields for audit
+              {"data": "create_date", "searchable": true},
+              {"data": "modified_date", "searchable": true},
           ],
           "columnDefs": [
               {

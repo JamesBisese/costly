@@ -34,7 +34,7 @@ $(function () {
         var options = {
             "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.costitems_default_equations_list,
+            "ajax": SETTINGS.URLS.audit_cost_item_default_equations_and_factors_data + '?format=datatables',
             "paging": false,
             "info" : false,
             "dom": 'Bfrtip',

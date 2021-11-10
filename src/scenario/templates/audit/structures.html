@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title %}{{ block.super }}Scenarios{% endblock %}
+{% block title %}{{ block.super }}Structures{% endblock %}
 {% block javascriptOLD %}
 {% endblock %}
 
@@ -17,16 +17,7 @@
 {% block content %}
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
-	<span style="font-size: 38px; float:left; ">{{ header_2 }}</span>
-    {%  if can_add %}
-    <!--This was the ajax (modal) version-->
-    <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
-      <!--<span class="glyphicon glyphicon-plus"></span>-->
-      <!--New scenario-->
-    <!--</button>-->
-    <!-- this loads a new page -->
-
-    {% endif %}
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
 
 	<div style="clear: both;"></div>
     <br>
@@ -34,28 +25,16 @@
 {% if user.is_superuser %}
     <div id="is_superuser" display="none";></div>
 {% endif %}
-<table class="table responsive no-wrap" id="costitem-table">
+<table class="table responsive no-wrap" id="structures-table">
     <thead>
         <tr>
-            <th colspan="5" style="text-align: center">Structure</th>
-            <th colspan="2" style="text-align: center">Cost Item</th>
-            <th colspan="4" style="text-align: center">Factors</th>
-
-        </tr>
-        <tr>
-            <th >structure_sort_nu</th>
-            <th >cost_item_sort_nu</th>
-            <th >id</th>
+            <th >Sort #</th>
+            <th >Classification</th>
             <th>Name</th>
+
+            <th>Code</th>
             <th>Units</th>
-            <th>Name</th>
-            <th>Units</th>
-
-            <th>Area<br>%</th>
-            <th>Depth<br>FT</th>
-            <th>Density<br>TN/CY</th>
-
-
+            <th width="20%">Help</th>
         </tr>
     </thead>
 </table>
@@ -69,7 +48,9 @@
 {% endblock %}
 
 {% block new_extra_js %}
-    {% include "./includes/extra_js.html" %}
+    {% include "includes/extra_js.html" %}
+
+    <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
     {% if IIS_APP_ALIAS != '' %}
         <script>
         // add the IIS Application Alias to each of the URL values
@@ -82,5 +63,5 @@
         </script>
     {% endif %}
 
-    <script src="{% static 'scenario/js/costitems_default_factors_list.js' %}"></script>
+    <script src="{% static 'audit/js/structures.js' %}"></script>
 {% endblock %}

@@ -16,16 +16,13 @@ $(function () {
         loadTable();
     });
 
-
-
-
     var loadTable = function() {
 
         var export_columns = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
         var options = {
           "serverSide": false,
-          "ajax": SETTINGS.URLS.user_list,
+          "ajax": SETTINGS.URLS.audit_user_data + '?format=datatables',
           "paging": false,
           "info": false,
           "dom": 'Bfrtip',
@@ -61,15 +58,6 @@ $(function () {
           ],
           "order": [[ 1, 'asc' ]]
         };
-
-        // hide the user column if the user is not a super user - the values should all be that particular user
-        // if (is_superuser == false) {
-        //   options['columnDefs'].push({
-        //           "targets": 1,
-        //           "visible": false
-        //       }
-        //   )
-        // }
 
         table = $('#users-table').DataTable(options);
 

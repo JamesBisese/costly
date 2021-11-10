@@ -50,6 +50,9 @@ $(function () {
                   "render": $.fn.dataTable.render.number( ',' ),
                   "searchable": true},
               {"data": "scenario_count", "sortable": true, "searchable": false},
+              //added these fields for audit
+              {"data": "create_date", "searchable": true},
+              {"data": "modified_date", "searchable": true},
               {"data": "id", "searchable": false, "sortable": false},
           ],
           "columnDefs": [
@@ -59,7 +62,7 @@ $(function () {
                     "targets": 0
               },
               {
-                  "targets": 11,
+                  "targets": 13,
                   "sWidth": "260px",
                   "render": function (data, type, row) {
                         var scenario_url = SETTINGS.URLS.project_scenario_list.replace('<int:pk>', data);

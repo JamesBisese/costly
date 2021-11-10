@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title %}{{ block.super }}Structures{% endblock %}
+{% block title %}{{ block.super }}{{ title }}{% endblock %}
 {% block javascriptOLD %}
 {% endblock %}
 
@@ -17,7 +17,7 @@
 {% block content %}
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
-	<span style="font-size: 38px; float:left; ">{{ header_2 }}</span>
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
     {%  if can_add %}
     <!--This was the ajax (modal) version-->
     <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
@@ -34,16 +34,20 @@
 {% if user.is_superuser %}
     <div id="is_superuser" display="none";></div>
 {% endif %}
-<table class="table responsive no-wrap" id="structures-table">
+<table class="table responsive no-wrap" id="costitem-table">
     <thead>
         <tr>
             <th >Sort #</th>
-            <th >Classification</th>
-            <th>Name</th>
+            <th >Cost Item</th>
+            <th>Bid Units</th>
 
-            <th>Code</th>
-            <th>Units</th>
-            <th width="20%">Help</th>
+            <th>RSMeans</th>
+{#            <th>DB 25 Percentile</th>#}
+{#            <th>DB Avg</th>#}
+{#            <th>DB 75 Percentile</th>#}
+            <th>Replacement Life</th>
+            <th>O&amp;M</th>
+<!--            <th>Edit</th>-->
         </tr>
     </thead>
 </table>
@@ -57,16 +61,7 @@
 {% endblock %}
 
 {% block new_extra_js %}
-    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
-
-    <script type="text/javascript" language="Javascript" src="{% static 'scenario/js/urls.js' %}"></script>
+    {% include "includes/extra_js.html" %}
     {% if IIS_APP_ALIAS != '' %}
         <script>
         // add the IIS Application Alias to each of the URL values
@@ -79,5 +74,5 @@
         </script>
     {% endif %}
 
-    <script src="{% static 'scenario/js/structures_list.js' %}"></script>
+    <script src="{% static 'audit/js/cost_item_default_cost.js' %}"></script>
 {% endblock %}

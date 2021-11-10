@@ -347,6 +347,10 @@ class Project(models.Model):
                                 decimal_places=2, max_digits=11, default=1,
                                 default_currency='USD', blank=False, null=False)
 
+    # added 2021-11-09 to support audit
+    create_date = models.DateTimeField('Create Date', auto_now_add=True)
+    modified_date = models.DateTimeField('Modified Date', auto_now=True)
+
 
     def __str__(self):
         return self.project_title

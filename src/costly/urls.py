@@ -1,48 +1,19 @@
 from django.contrib import admin
 from django.conf import settings
-from django.conf.urls import url
 from django.conf.urls.static import static
 from django.urls import include, path
-from rest_framework import routers
 
+import authtools.urls
 import profiles.urls
+import scenario.urls
 import accounts.urls
 import users.urls
-import scenario.urls
-import authtools.urls
 
 #
 # TODO: move this into scenario/urls.py where it belongs
 # need to figure out how to still use /api/ as the root though
 #
 from . import views
-import scenario.views
-# audit_costitem_user_costs, \
-from scenario.views import UserViewSet, ProjectViewSet, project_list, \
-    project_audit_list, \
-    scenario_audit_list, \
-    audit_costitem_user_cost, \
-    ScenarioViewSet, ScenarioListViewSet, ScenarioAuditViewSet,\
-    StructureViewSet, \
-    CostItemViewSet, \
-    CostItemDefaultCostViewSet, CostItemDefaultEquationsViewSet, CostItemDefaultFactorsViewSet, \
-    CostItemUserCostViewSet, CostItemUserAssumptionsViewSet
-
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'projects', ProjectViewSet)
-router.register(r'scenarios', ScenarioViewSet)
-router.register(r'scenario_list', ScenarioListViewSet)
-router.register(r'scenario_audit', ScenarioAuditViewSet)
-router.register(r'structures', StructureViewSet)
-router.register(r'costitems', CostItemViewSet)
-
-router.register(r'costitemdefaultcosts', CostItemDefaultCostViewSet)
-router.register(r'costitem_user_costs', CostItemUserCostViewSet)
-
-router.register(r'costitemdefaultequations', CostItemDefaultEquationsViewSet)
-router.register(r'costitemdefaultfactors', CostItemDefaultFactorsViewSet)
-router.register(r'costitemuserassumptions', CostItemUserAssumptionsViewSet)
 
 # Personalized admin site settings like title and header
 admin.site.site_title = 'GSI Cost Tool'
@@ -56,9 +27,6 @@ admin.site.site_url = r'/' + iis_app_alias
 
 urlpatterns = [
 
-
-    path(iis_app_alias + 'api/', include(router.urls)),
-
     path(iis_app_alias + 'about/', views.AboutPage.as_view(), name='about'),
     path(iis_app_alias + 'scope/', views.ScopePage.as_view(), name='scope'),
 
@@ -71,10 +39,6 @@ urlpatterns = [
     path(iis_app_alias + 'reference/', views.ReferencePage.as_view(),   name='reference'),
     path(iis_app_alias + 'audit/', views.AuditPage.as_view(),   name='audit'),
 
-    path(iis_app_alias + 'audit/projects/', project_audit_list,   name='audit_projects'),
-    path(iis_app_alias + 'audit/scenarios/', scenario_audit_list,   name='audit_scenarios'),
-    path(iis_app_alias + 'audit/costitem_user_costs/', audit_costitem_user_cost, name='audit_costitems_user_costs'),
-
     path(iis_app_alias + 'users/', include(profiles.urls)),
     path(iis_app_alias + 'admin/', admin.site.urls),
 
@@ -85,7 +49,6 @@ urlpatterns = [
     path(iis_app_alias + '', include(users.urls)),
 
     path(iis_app_alias + '', views.HomePage.as_view(), name='home'),
-
 ]
 
 # User-uploaded files like profile pics need to be served in development

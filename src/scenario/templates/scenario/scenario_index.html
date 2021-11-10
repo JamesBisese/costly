@@ -86,6 +86,12 @@
   <span class="glyphicon glyphicon-zoom-in"></span>
   Export Selected Scenarios
 </a>
+<a id="exportScenariosExtended" class="btn btn-info" style="font-size: 16px; float:left; margin-left: 5px;"
+   href="" target="scenarioResults"
+    title="Select 1, or 2 scenarios from the table and click to export to Excel">
+  <span class="glyphicon glyphicon-zoom-in"></span>
+  Export Selected Scenarios - Complete
+</a>
 <br><br>
 {#    responsive no-wrap#}
 <table class="table" id="scenario-table">
@@ -112,7 +118,7 @@
 {% endblock %}
 
 {% block new_extra_js %}
-    {% include "./includes/extra_js.html" %}
+    {% include "includes/extra_js.html" %}
     {% if IIS_APP_ALIAS != '' %}
         <script>
         // add the IIS Application Alias to each of the URL values

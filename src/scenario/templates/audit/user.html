@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
-
+{% load render_table from django_tables2 %}
+{% load export_url from django_tables2 %}
 {% load static %}
-{% block title %}{{ block.super }}User Costs{% endblock %}
+{% block title %}{{ block.super }}{{  title }}{% endblock %}
 {% block javascriptOLD %}
 {% endblock %}
 
@@ -19,39 +20,39 @@
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
 	<span style="font-size: 38px; float:left; ">{{ header }}</span>
 
+
 	<div style="clear: both;"></div>
     <br>
 </div>
-
-  <table class="table" id="costitem_user_cost-audit-table">
+<table class="table responsive no-wrap" id="users-table">
     <thead>
-      <tr>
-        <th>#</th>
-        <th>User</th>
-        <th>Project</th>
-        <th>Scenario</th>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Organization</th>
+            <th>Job Title</th>
+            <th>User Type</th>
+            <th>Email</th>
+            <th>Phone</th>
 
-{#        <th>Type</th>#}
-        <th>Cost Item</th>
-        <th>Units</th>
-        <th>Year</th>
-        <th>User Cost</th>
-        <th>Rep Life</th>
-        <th>First Year</th>
-      </tr>
+
+            <th>Date Created</th>
+            <th>Last Login</th>
+        </tr>
     </thead>
-
-  </table>
-
+</table>
 
 
+
+
+{#{% render_table table %}#}
 {% endblock %}
 
 {% block new_extra_js %}
-    {% include "./includes/extra_js.html" %}
+    {% include "includes/extra_js.html" %}
     {% if IIS_APP_ALIAS != '' %}
         <script>
-        // add the IIS Application Alias to each of the URL values
+         // add the IIS Application Alias to each of the URL values
             var IIS_APP_ALIAS = "{{ IIS_APP_ALIAS }}";
             if (IIS_APP_ALIAS.length > 0) {
                 for (var key in SETTINGS.URLS) {
@@ -61,6 +62,6 @@
         </script>
     {% endif %}
 
-    <script src="{% static 'scenario/js/costitems_user_costs.js' %}"></script>
+    <script src="{% static 'audit/js/user.js' %}"></script>
 
 {% endblock %}

@@ -4,8 +4,7 @@ var SETTINGS = {};
 
 SETTINGS.URLS = {
     'IIS_PREFIX': '',
-    // provides JSON formatted version of list of users for Audit > Audit Users page
-    'user_list': '/api/users/?format=datatables',
+
 
     'project_list':   '/api/projects/?format=datatables',
     'project_update': '/project/<int:pk>/update/',
@@ -34,21 +33,26 @@ SETTINGS.URLS = {
     'scenario_results':  '/scenario/results/?id=',
     'scenario_export_results':  '/scenario/export/results/?id=',
 
+    'scenario_export_extended_excel_report':  '/scenario/export/extended_excel_report/?id=',
+
     'scenario_compare_column': '/scenario/results/column/?id=',
 
-    'scenario_audit': '/api/scenario_audit/',
-
-    'structures_list': '/api/structures/?format=datatables',
-    'costitems_list':  '/api/costitems/?format=datatables',
-    'costitems_default_costs_list': '/api/costitemdefaultcosts/?format=datatables',
-
-    'costitems_user_costs_list': '/api/costitem_user_costs',
-
-    'costitems_default_equations_list': '/api/costitemdefaultequations/?format=datatables',
-    'costitems_default_factors_list': '/api/costitemdefaultfactors/?format=datatables',
 
     'costitem_help': '/scenario/costitem/help',
     'scenario_structure_help': '/scenario/structure_costs/help',
+
+    // JSON data for pages in REFERENCES tab
+    'audit_structure_data': '/api/structures/',
+    'audit_cost_item_data':  '/api/cost_item/',
+    'audit_cost_item_default_cost_data': '/api/cost_item_default_costs/',
+    'audit_cost_item_default_equations_and_factors_data': '/api/cost_item_default_equations_and_factors/',
+    'audit_cost_item_default_factors_data': '/api/cost_item_default_factors/',
+
+    // JSON data for pages in AUDIT tab
+    'audit_user_data': '/api/users/',
+    'audit_project_data':   '/api/projects/',
+    'audit_scenario_data': '/api/scenario_audit/',
+    'audit_cost_item_user_costs_data': '/api/cost_item_user_costs',
 }
 
 

@@ -17,38 +17,30 @@
 {% block content %}
 <div class="container" style="padding-top: 10px;">
 <div id="sec1" class="text-page" >
-
     <div class="row">
       <div class="col-md-12">
-<h2>References</h2>
+        <h2>References</h2>
+        <p>This is an internal page to share audit tables of reference data of the Cost Tool</p>
 
-
-
-<p>This is an internal page to share reference lists of elements of the Cost Tool</p>
-
-          <p>Here are a couple of lists that could be useful</p>
-          <ol>
-              <li>
-                <a href="{% url 'scenario:structures' %}">List of Structures</a>
-              </li>
-              <li>
-                <a href="{% url 'scenario:costitems' %}">List of Cost Items</a>
-              </li>
-              <li>
-                <a href="{% url 'scenario:costitems_default_costs' %}">List of Cost Item Default costs</a>
-              </li>
-              <li>
-                <a href="{% url 'scenario:costitems_default_equations' %}">List of Cost Item Equation and Default Factors</a>
-              </li>
-              <li>
-                <a href="{% url 'scenario:costitems_default_factors' %}">List of Structure/Cost Item Default Factors</a>
-              </li>
-          </ol>
-
-
-
-
-      </div>
+        <p>These allow Administrators to pull data for reference data in concise formats</p>
+        <ol>
+          <li>
+            <a href="{% url 'scenario:structures' %}">List of Structures</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:costitems' %}">List of Cost Items</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:costitems_default_costs' %}">List of Cost Item Default Costs</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:costitems_default_equations' %}">List of Cost Item Equation and Default Factors</a>
+          </li>
+          <li>
+            <a href="{% url 'scenario:costitems_default_factors' %}">List of Structure/Cost Item Default Factors</a>
+          </li>
+        </ol>
+       </div>
       </div>
     </div>
   </div>

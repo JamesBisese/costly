@@ -65,6 +65,11 @@ $(function () {
                 url = SETTINGS.URLS.scenario_export_results + scenario_id.join(',');
 
                 document.getElementById("exportScenarios2").href= url ;
+
+                // set the url for exporting 1 or 2 scenarios DETAIL view
+                url = SETTINGS.URLS.scenario_export_extended_excel_report + scenario_id.join(',');
+
+                document.getElementById("exportScenariosExtended").href= url ;
             }
             else
             {

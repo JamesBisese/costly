@@ -82,6 +82,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     project_type = serializers.SerializerMethodField()
     project_purchase_information = serializers.SerializerMethodField()
 
+    create_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+    modified_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+
     scenario_count = serializers.SerializerMethodField()
 
     def get_DT_RowId(self, project):
@@ -118,8 +121,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_purchase_information',
             'priority_watershed',
             'scenario_count',
-            # 'create_date',
-            # 'modified_date',
+            'create_date',
+            'modified_date',
         )
         read_only_fields = [f.name for f in Project._meta.get_fields()]
 
@@ -535,36 +538,7 @@ class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
             'n_number',
         )
         read_only_fields = [f.name for f in CostItemDefaultFactors._meta.get_fields()]
-# example
-# {
-#     "scenario_id": "1",
-#     "project_title": "test 13333",
-#     "scenario_title": "conventional #1",
-#     "structure": {
-#         "id": 1,
-#         "code": "swale",
-#         "name": "Swales",
-#         "classification": "nonconventional",
-#         "classification_display": "Non-Conventional",
-#         "sort_nu": 1,
-#         "units": "ft2",
-#         "units_html": "ft2",
-#         "help_text": "This is help text for the nonconventional structure Swales"
-#     },
-#     "costitem": {
-#         "sort_nu": 1,
-#         "code": "clearing",
-#         "name": "Clearing and Grubbing",
-#         "units": "Ac",
-#         "help_text": "Clearing and Grubbing: includes all costs associated with preparation and mobilization of equipment. "
-#     },
-#     "checked": true,
-#     "conversion_factor": "NOT FOUND for element clearing",
-#     "factor_assumption_tx": "",
-#     "sizing_factor_k": "",
-#     "sizing_factor_n": "",
-#     "construction_cost_factor_equation": ""
-# },
+
 class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
     # scenario = ScenarioSerializer(many=False, read_only=True)
     # structure = StructureSerializer(many=False, read_only=True)
@@ -603,11 +577,11 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
             # 'costitem_units',
 
             'checked',
-            # 'conversion_factor',
-            'factor_assumption_tx',
-            'sizing_factor_k',
-            'sizing_factor_n',
-
+            'a_area',
+            'z_depth',
+            'd_density',
+            'r_ratio',
+            'n_number',
             # 'construction_cost_factor_equation',
         )
         read_only_fields = [f.name for f in CostItemUserAssumptions._meta.get_fields()]

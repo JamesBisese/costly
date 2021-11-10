@@ -23,7 +23,7 @@ $(function () {
         var options = {
             "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.costitems_default_costs_list,
+            "ajax": SETTINGS.URLS.audit_cost_item_default_cost_data + '?format=datatables',
             "paging": false,
             "info" : false,
             "dom": 'Bfrtip',

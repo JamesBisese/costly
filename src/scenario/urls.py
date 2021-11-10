@@ -1,9 +1,31 @@
 from django.urls import path, include, re_path
 from django.conf.urls import url
-
+from django.conf import settings
+from rest_framework import routers
 import sys
 
 from . import views
+
+
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet)
+router.register(r'projects', views.ProjectViewSet)
+router.register(r'scenarios', views.ScenarioViewSet)
+router.register(r'scenario_list', views.ScenarioListViewSet)
+router.register(r'scenario_audit', views.ScenarioAuditViewSet)
+router.register(r'structures', views.StructureViewSet)
+router.register(r'cost_item', views.CostItemViewSet)
+
+router.register(r'cost_item_default_costs', views.CostItemDefaultCostViewSet)
+router.register(r'cost_item_user_costs', views.CostItemUserCostViewSet)
+
+router.register(r'cost_item_default_equations_and_factors', views.CostItemDefaultEquationsViewSet)
+router.register(r'cost_item_default_factors', views.CostItemDefaultFactorsViewSet)
+router.register(r'costitemuserassumptions', views.CostItemUserAssumptionsViewSet)
+
+iis_app_alias = ''
+if len(settings.IIS_APP_ALIAS) > 0:
+    iis_app_alias = settings.IIS_APP_ALIAS + '/'
 
 """
     this tag makes all the urls reverse into 'scenario:{name}'
@@ -11,6 +33,7 @@ from . import views
 app_name = 'scenario'
 
 urlpatterns = [
+    path(iis_app_alias + 'api/', include(router.urls)),
 
     # Project CRUD
     path(r'project/add/', views.project_create, name='project_create'),
@@ -51,6 +74,8 @@ urlpatterns = [
     # Scenario - Results in Excel Format
     path(r'scenario/<int:pk>/excel/', views.ScenarioExcelResults.as_view(), name='scenario_results_excel'),
     path(r'scenario/export/results/', views.CompareScenarioExcelResults.as_view(), name='scenario_export_results'),
+    # new wide version of export
+    path(r'scenario/export/extended_excel_report/', views.ScenarioExtendedExcelReport.as_view(), name='scenario_export_extended_excel_report'),
 
     path(r'scenario/default/', views.DefaultScenario.as_view(), name='scenario_json_default'),
     path(r'scenario/template/', views.TemplateScenario.as_view(), name='scenario_json_template'),
@@ -60,26 +85,21 @@ urlpatterns = [
     # StructureCostHelp - Read. using slug 'all' returns a list of all values, unrecognized code also returns list
     path(r'scenario/costitem/help/<slug:costitem_code>/', views.CostItemHelp.as_view(), name='costitem_help'),
 
-    # path(r'scenario/<int:pk>/increment/', views.scenario_increment, name='scenario_increment'),
-    # path(r'scenario/<int:pk>/decrement/', views.scenario_decrement, name='scenario_decrement'),
+    # audit pages for the (relatively) immutable look-up lists and reference lists
+    path(r'audit/structures/', views.audit_structure, name='structures'),
+    path(r'audit/cost_item/', views.audit_cost_items, name='costitems'),
+    path(r'audit/cost_item/default_costs/', views.audit_cost_item_default_cost,
+         name='costitems_default_costs'),
+    path(r'audit/cost_item/default_equations/', views.audit_cost_item_default_equations_and_factors,
+         name='costitems_default_equations'),
+    path(r'audit/structure_default_cost_item_factors/', views.audit_structure_default_cost_item_factors,
+         name='costitems_default_factors'),
 
-    # a list of all the Cost Item Default Costs in the database
-    path(r'structures/', views.StructuresList.as_view(), name='structures'),
-
-    path(r'costitems/', views.CostItemsList.as_view(), name='costitems'),
-
-    # a list of all the Cost Item Default Costs in the database
-    path(r'cost_item/default_costs/', views.CostItemDefaultCostsList.as_view(), name='costitems_default_costs'),
-
-    # a list of all the Cost Item User Costs in the database
-    path(r'cost_item/user_costs/', views.CostItemUserCostsList.as_view(), name='costitems_user_costs'),
-
-    # path(r'costitemusercostslist2/', views.costitemusercostslist2, name='costitemusercostslist2'),
-
-    # a list of all the Structure - Cost Item Default Assumptions in the database
-    path(r'cost_item/default_equations/', views.CostItemDefaultEquationsList.as_view(), name='costitems_default_equations'),
-    path(r'cost_item/default_factors/', views.CostItemDefaultFactorsList.as_view(), name='costitems_default_factors'),
-
+    # audit pages for user input project, scenario, and cost_items
+    path(r'audit/users/', views.audit_users, name='audit_users'),
+    path(r'audit/projects/', views.audit_project, name='audit_projects'),
+    path(r'audit/scenarios/', views.audit_scenario, name='audit_scenarios'),
+    path(r'audit/cost_item/user_costs/', views.audit_costitem_user_cost, name='audit_costitems_user_costs'),
 ]
 
 urlpatterns += [

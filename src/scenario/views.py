@@ -11,7 +11,8 @@ from django.shortcuts import HttpResponseRedirect, render, get_object_or_404
 from django_tables2 import SingleTableView
 from django_tables2.export.views import ExportMixin
 from django.template.loader import render_to_string
-from django.views import generic
+from django.template.response import TemplateResponse
+from django.views import generic, View
 from django.urls import reverse,reverse_lazy
 
 from django.contrib.auth.decorators import login_required
@@ -42,43 +43,124 @@ from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSeria
     ScenarioSerializer, ScenarioListSerializer, ScenarioAuditSerializer, \
     StructureSerializer, \
     CostItemDefaultCostSerializer, CostItemUserCostSerializer, \
-    CostItemDefaultEquationsSerializer, CostItemDefaultFactorsSerializer, CostItemSerializer, CostItemUserAssumptionsSerializer
+    CostItemDefaultEquationsSerializer, CostItemDefaultFactorsSerializer, \
+    CostItemSerializer, CostItemUserAssumptionsSerializer
+
+# region -- Audit Pages --
 
 """
-    Project functionality
+    Audit Users - function based view using ajax to feed in data
+
+    http://127.0.0.1:92/audit/users/
 """
+@login_required
+def audit_users(request):
+    context_data = {'title': 'Audit Users',
+                    'header': 'Audit Users'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/user.html', context_data)
 
 """
-    project Audit list as function based views using ajax to feed in data
+    Audit Project - function based view using ajax to feed in data
 
     http://127.0.0.1:92/audit/projects/
 """
-
-
 @login_required
-def project_audit_list(request):
-    # projects = Project.objects.all()
-    context_data = {# 'projects': projects,
+def audit_project(request):
+    context_data = { 'title': 'Audit Projects',
                     'header': 'Audit Projects'}
-
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-
     return render(request, 'audit/project.html', context_data)
 
 """
-    Audit Scenario list as function based views using ajax to feed in data
-    The template is in scenario/templates/scenario/scenario_audit.html
+    Audit Scenario - function based view using ajax to feed in data
     
     http://127.0.0.1:92/audit/scenarios/
 """
 @login_required
-def scenario_audit_list(request):
-
-    context_data = {'header': 'Audit Scenarios'}
-
+def audit_scenario(request):
+    context_data = {'title': 'Audit Scenarios',
+                    'header': 'Audit Scenarios'}
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/scenario.html', context_data)
 
-    return render(request, 'scenario/scenario_audit.html', context_data)
+"""
+    Audit Cost Item User Costs - function based view using ajax to feed in data
+
+    http://127.0.0.1:92/audit/cost_item/user_costs/
+"""
+@login_required
+def audit_costitem_user_cost(request):
+    context_data = {'title': 'Cost ItemUserCosts',
+                    'header': 'Audit Cost Item User Costs'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/cost_item_user_cost.html', context_data)
+
+"""
+    Audit Structures - function based view using ajax to feed in data
+
+    URI/audit/structures/
+"""
+@login_required
+def audit_structure(request):
+    context_data = {'title': 'Structures',
+                    'header': 'Structures'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/structures.html', context_data)
+
+"""
+    Audit Cost Items - function based view using ajax to feed in data
+
+    URI/audit/cost_items/
+"""
+@login_required
+def audit_cost_items(request):
+    context_data = {'title': 'Cost Items',
+                    'header': 'Cost Items'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/cost_item.html', context_data)
+
+"""
+    Audit Cost Item Default Costs
+
+    URI/audit/cost_items_default_cost/
+"""
+@login_required
+def audit_cost_item_default_cost(request):
+    context_data = {'title': 'Cost Items Default Costs',
+                    'header': 'Cost Items Default Costs'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/cost_item_default_cost.html', context_data)
+
+"""
+    Audit Cost Item Default Equations and Factors
+
+    URI/audit/cost_items_default_equations_and_factors/
+"""
+@login_required
+def audit_cost_item_default_equations_and_factors(request):
+    context_data = {'title': 'Cost Items Default Equations and Factors',
+                    'header': 'Cost Items Default Equations and Factors'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/cost_item_default_equations_and_factors.html', context_data)
+
+"""
+    Audit Structure Default Cost Item Factors
+
+    URI/audit/structure_default_cost_item_factors/
+"""
+@login_required
+def audit_structure_default_cost_item_factors(request):
+    context_data = {'title': 'Cost Items Default Factors',
+                    'header': 'Structure Default Cost Item Factors'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/structure_cost_item_default_factors.html', context_data)
+
+# endregion -- audit pages --
+
+"""
+    Project functionality
+"""
 
 """
     project list as function based views using ajax to feed in data
@@ -251,202 +333,9 @@ def test_partial(request):
     return render(request, template,   {'cost_item_default_costs':cost_item_default_costs}, context)
 
 
-"""
-    available via /structures/
-"""
-class StructuresList(ExportMixin, SingleTableView): # TODO , FilterView
-    model = Structures
-    table_class = tables.StructuresTable
-    template_name = 'scenario/structures_list.html'
-    # exclude_columns = ('edit_column','delete_column',)
-    # filterset_class = ScenarioFilter
-    #
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('accounts:login'))
-        return super(StructuresList, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super(StructuresList, self).get_queryset()
-
-        # if not (self.request.user.is_superuser or self.request.user.is_staff):
-        #     qs = qs.filter(user=self.request.user)
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context_data = super(StructuresList, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Structures'
-        context_data['header_2'] = 'Structures'
-        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-        return context_data
-
-"""
-    available via /costitems/
-"""
-class CostItemsList(ExportMixin, SingleTableView): # TODO , FilterView
-    model = CostItem
-    table_class = tables.CostItemsTable
-    template_name = 'scenario/costitems_list.html'
-    # exclude_columns = ('edit_column','delete_column',)
-    # filterset_class = ScenarioFilter
-    #
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('accounts:login'))
-        return super(CostItemsList, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super(CostItemsList, self).get_queryset()
-
-        # if not (self.request.user.is_superuser or self.request.user.is_staff):
-        #     qs = qs.filter(user=self.request.user)
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context_data = super(CostItemsList, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Cost Items'
-        context_data['header_2'] = 'Cost Items'
-        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-        return context_data
-
-"""
-    available via /cost_item/default_costs/
-"""
-class CostItemDefaultCostsList(ExportMixin, SingleTableView): # TODO , FilterView
-    model = CostItemDefaultCosts
-    table_class = tables.CostItemDefaultCostsTable
-    template_name = 'scenario/costitems_default_costs_list.html'
-    # exclude_columns = ('edit_column','delete_column',)
-    # filterset_class = ScenarioFilter
-    #
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('accounts:login'))
-        return super(CostItemDefaultCostsList, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super(CostItemDefaultCostsList, self).get_queryset()
-
-        # if not (self.request.user.is_superuser or self.request.user.is_staff):
-        #     qs = qs.filter(user=self.request.user)
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context_data = super(CostItemDefaultCostsList, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Cost ItemDefaultCostsList'
-        context_data['header_2'] = 'Cost Item Default Costs'
-        context_data['active_link'] = 'scenario'
-        context_data['can_add'] = True
-        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-        # context_data['new_url'] = reverse('scenario:scenario_create')
-        return context_data
-
-# user version
-# def costitemusercostslist2(request):
-#     costs = CostItemUserCosts.objects.all()
-#     context_data = {'costs': costs,
-#                     'header': 'Projects'}
-#
-#     #jab - added for beta-user-testing.  allow all users to add
-#     context_data['can_add'] = True
-#     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-#
-#     return render(request, 'scenario/costitems_user_costs_list.html', context_data)
-
-
-@login_required
-def audit_costitem_user_cost(request):
-    context_data = {'header': 'Audit Cost Item User Costs FOOBAR',
-                     'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
-    return render(request, 'audit/costitem_user_cost.html', context_data)
-
-"""
-    available via /cost_item/user_costs/
-    
-    Note: none of the data is loaded from here. This should be a generic view
-    data is loaded using ajax
-"""
-class CostItemUserCostsList(ExportMixin, SingleTableView): # TODO , FilterView
-    model = CostItemUserCosts
-    table_class = tables.CostItemUserCostsTable
-    template_name = 'scenario/costitems_user_costs_list.html'
-
-    def get_context_data(self, **kwargs):
-        context_data = super(CostItemUserCostsList, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Cost ItemUserCostsList'
-        context_data['header'] = 'Audit Cost Item User Costs'
-        context_data['active_link'] = 'audit'
-        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-
-        return context_data
 
 
 
-"""
-    available via /cost_item/default_assumptions/
-"""
-class CostItemDefaultEquationsList(ExportMixin, SingleTableView): # TODO , FilterView
-    model = CostItemDefaultEquations
-    table_class = tables.CostItemDefaultEquationsTable
-    template_name = 'scenario/costitems_default_equations_list.html'
-    # exclude_columns = ('edit_column','delete_column',)
-    # filterset_class = ScenarioFilter
-    #
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('accounts:login'))
-        return super(CostItemDefaultEquationsList, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super(CostItemDefaultEquationsList, self).get_queryset()
-
-        # if not (self.request.user.is_superuser or self.request.user.is_staff):
-        #     qs = qs.filter(user=self.request.user)
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context_data = super(CostItemDefaultEquationsList, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Cost ItemDefaultEquationList'
-        context_data['header_2'] = 'Cost Item Default Equations'
-        context_data['active_link'] = 'scenario'
-        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-        return context_data
-
-"""
-    available via /cost_item/default_factors/
-"""
-class CostItemDefaultFactorsList(ExportMixin, SingleTableView): # TODO , FilterView
-    model = CostItemDefaultFactors
-    table_class = tables.CostItemDefaultFactorsTable
-    template_name = 'scenario/costitems_default_factors_list.html'
-    # exclude_columns = ('edit_column','delete_column',)
-    # filterset_class = ScenarioFilter
-    #
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('accounts:login'))
-        return super(CostItemDefaultFactorsList, self).dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        qs = super(CostItemDefaultFactorsList, self).get_queryset()
-
-        # if not (self.request.user.is_superuser or self.request.user.is_staff):
-        #     qs = qs.filter(user=self.request.user)
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context_data = super(CostItemDefaultFactorsList, self).get_context_data(**kwargs)
-
-        context_data['title'] = 'Cost ItemDefaultFactorsList'
-        context_data['header_2'] = 'Cost Item Default Factors'
-        context_data['active_link'] = 'scenario'
-        context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
-        return context_data
 
 """
     TBD
@@ -1806,6 +1695,30 @@ class CompareScenarioExcelResults(APIView):
 
         return response
 
+"""
+    this is the wide and very complex export of all the data into a spreadsheet
+"""
+class ScenarioExtendedExcelReport(APIView):
+
+    def get(self, request, multiple_pks):
+        pass
+
+    def get(self, request):
+        id_tx = request.query_params['id']
+        ids = id_tx.split(',')
+
+        # create and populate the workbook and return it as an output stream
+        output = scenario_extended_excel_report(ids)
+
+        # Set up the Http response.
+        filename = 'scenario_extended_results.xlsx'
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
 
 """
     this populates the workbook on the output stream provides and using the scenario_id provided
@@ -1835,6 +1748,43 @@ def scenario_workbook(scenario_ids):
         start_col = i
         populate_workbook(workbook, worksheet, id, formats, start_col)
         i += 5
+
+    # Close the workbook before sending the data.
+    workbook.close()
+
+    # Rewind the buffer.
+    output.seek(0)
+
+    return output
+
+"""
+    this populates the workbook on the output stream provides and using the scenario_id provided
+    this is the wide version of the export
+"""
+
+def scenario_extended_excel_report(scenario_ids):
+
+    # Create an in-memory output file for the new workbook.
+    output = io.BytesIO()
+
+    # Even though the final file will be in memory the module uses temp
+    # files during assembly for efficiency. To avoid this on servers that
+    # don't allow temp files, for example the Google APP Engine, set the
+    # 'in_memory' Workbook() constructor option as shown in the docs.
+
+    workbook = xlsxwriter.Workbook(output)
+
+    # build up all the formats required
+    formats = create_formats(workbook)
+
+    worksheet = workbook.add_worksheet()
+
+    i = 0
+    for id in scenario_ids:
+        # add the leftmost scenario
+        start_row = i
+        populate_scenario_extended_excel_report_workbook(workbook, worksheet, id, formats, start_row)
+        i += 1
 
     # Close the workbook before sending the data.
     workbook.close()
@@ -2120,8 +2070,202 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
         # endregion
 
+'''
+make the wide version of the export
+WORK IN PROGRESS
+'''
+def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenario_id, formats, start_row=0):
+    # region --get data--
+    #
+    # generate the data used in the export
+    #
+    scenario = get_object_or_404(Scenario, pk=scenario_id)
+
+    cost_results = scenario.get_costs()
+
+    project_life_cycle_costs = cost_results.pop('project_life_cycle_costs')
+    structure_life_cycle_costs = cost_results.pop('structure_life_cycle_costs')
+    # endregion
+
+    # region --worksheet--
+    start_col = 0
+    col = 0
+
+    worksheet.set_column(start_col, start_col, 27)
+    worksheet.set_column(start_col + 1, start_col + 1, 20)
+    worksheet.set_column(start_col + 2, start_col + 2, 25)
+
+    # Write some data headers.
+    if start_row == 0:
+        worksheet.write(0, col, 'project_title', formats['bold'])
+        worksheet.write(0, col + 1, 'scenario_title', formats['bold'])
+    worksheet.write(start_row + 1, col, scenario.project.project_title)
+    worksheet.write(start_row + 1, col + 1, scenario.scenario_title)
+
+    # Some data we want to write to the worksheet.
+    project_description = (
+        ['project_ownership', scenario.project.get_project_ownership_display(), formats['input_col_text']],
+        ['project_location', scenario.project.project_location, formats['input_col_text']],
+        ['project_type', scenario.project.get_project_type_display(), formats['input_col_text']],
+        ['project_purchase_information', scenario.project.get_project_purchase_information_display(),
+         formats['input_col_text']],
+        ['project_area', int(scenario.project.project_area), formats['int_big']],
+        ['land_unit_cost', scenario.project.land_unit_cost.amount, formats['money_small']],
+        ['land_value', float(scenario.project.project_area) * float(scenario.project.land_unit_cost.amount),
+         formats['output_col_money_big']],
+    )
+
+    # Start from the first cell below the headers.
+    row = start_row + 1
+    col = 2
+
+    # Iterate over the data and write it out row by row.
+    for label, value, format in (project_description):
+        if start_row == 0:
+            worksheet.write(0, col, label, formats['bold'])
+        worksheet.write(start_row + 1, col, value, format)
+
+        col += 1
+
+    project_description = (
+        ['nutrient_req_met', scenario.get_nutrient_req_met_display(), formats['input_col_text']],
+        ['captures_90pct_storm', scenario.get_captures_90pct_storm_display(), formats['input_col_text']],
+        ['meets_peakflow_req', scenario.get_meets_peakflow_req_display(), formats['input_col_text']],
+    )
+
+    # Iterate over the data and write it out row by row.
+    for label, value, format in (project_description):
+        if start_row == 0:
+            worksheet.write(0, col, label, formats['bold'])
+        worksheet.write(start_row + 1, col, value, format)
+
+        col += 1
+
+    project_description = (
+        ['pervious_area', scenario.pervious_area, formats['int_big']],
+        ['impervious_area', scenario.impervious_area, formats['int_big']],
+    )
+
+    # Iterate over the data and write it out row by row.
+    for label, value, format in (project_description):
+        if start_row == 0:
+            worksheet.write(0, col, label, formats['bold'])
+        worksheet.write(start_row + 1, col, value, format)
+
+        col += 1
 
 
+
+    # worksheet.merge_range(row, col, row + 1, col + 2, 'Life Cycle Costs Assumptions', formats['merge_format'])
+    #
+    # row += 1
+    # row += 1
+
+    project_description = (
+        ['planning_and_design_factor', '{} %'.format(scenario.planning_and_design_factor), formats['input_col']],
+        ['study_life', '{} years'.format(scenario.study_life), formats['input_col']],
+        ['discount_rate', '{} %'.format(scenario.discount_rate), formats['input_col']],
+    )
+
+    # Iterate over the data and write it out row by row.
+    for label, value, format in (project_description):
+        if start_row == 0:
+            worksheet.write(0, col, label, formats['bold'])
+        worksheet.write(start_row + 1, col, value, format)
+
+        col += 1
+
+    return
+    # now try and make all 4 cost blocks as a loop on a more complex object
+
+    cost_blocks = (
+        ['Project Life Cycle Costs',
+         ['Item', 'Dollars'],
+         [
+             ['Construction', int(project_life_cycle_costs['total']['construction']), formats['output_col_money_big']],
+             ['Planning and Design', int(project_life_cycle_costs['total']['planning_and_design']),
+              formats['output_col_money_big']],
+             ['O & M', int(project_life_cycle_costs['total']['o_and_m']), formats['output_col_money_big']],
+             ['Replacement', int(project_life_cycle_costs['total']['replacement']), formats['output_col_money_big']],
+             ['Total', int(project_life_cycle_costs['total']['sum']), formats['output_col_money_big']],
+         ]
+         ],
+        ['Project Construction Costs',
+         ['Structure Class', 'Construction', 'P & D'],
+         [
+             ['Non-Conventional (GSI)',
+              int(project_life_cycle_costs['nonconventional']['costs']['construction']),
+              int(project_life_cycle_costs['nonconventional']['costs']['planning_and_design']),
+              formats['output_col_money_big']],
+             ['Conventional',
+              int(project_life_cycle_costs['conventional']['costs']['construction']),
+              int(project_life_cycle_costs['conventional']['costs']['planning_and_design']),
+              formats['output_col_money_big']],
+             ['Total',
+              int(project_life_cycle_costs['total']['construction']),
+              int(project_life_cycle_costs['total']['planning_and_design']), formats['output_col_money_big']],
+         ]
+         ],
+        ['O&M and Replacement Costs',
+         ['Structure Class', 'O & M', 'Replacement'],
+         [
+             ['Non-Conventional (GSI)',
+              int(structure_life_cycle_costs['nonconventional']['costs']['o_and_m_sum']),
+              int(structure_life_cycle_costs['nonconventional']['costs']['replacement_sum']),
+              formats['output_col_money_big']],
+             ['Conventional',
+              int(structure_life_cycle_costs['conventional']['costs']['o_and_m_sum']),
+              int(structure_life_cycle_costs['conventional']['costs']['replacement_sum']),
+              formats['output_col_money_big']],
+             ['Total',
+              int(structure_life_cycle_costs['nonconventional']['costs']['o_and_m_sum'])
+              + int(structure_life_cycle_costs['conventional']['costs']['o_and_m_sum']),
+              int(structure_life_cycle_costs['nonconventional']['costs']['replacement_sum']
+                  + int(structure_life_cycle_costs['conventional']['costs']['replacement_sum'])),
+              formats['output_col_money_big']],
+         ]
+         ],
+        ['Life Cycle Costs',
+         ['Structure', 'Life Cycle Total'],
+         [
+             ['Non-Conventional (GSI)', int(project_life_cycle_costs['nonconventional']['costs']['sum']),
+              formats['output_col_money_big']],
+             ['Conventional', int(project_life_cycle_costs['conventional']['costs']['sum']),
+              formats['output_col_money_big']],
+             ['Total', int(project_life_cycle_costs['total']['sum']), formats['int_big_output']],
+         ]],
+    )
+
+    for header, titles, values in (cost_blocks):
+        worksheet.merge_range(row, col, row + 1, col + 2, header, formats['merge_format'])
+        row += 2
+        if len(titles) == 2:
+            worksheet.write(row, col, titles[0], formats['table_title'])
+            worksheet.write(row, col + 1, titles[1], formats['table_title'])
+            row += 1
+            for label, value, format in values:
+                worksheet.write(row, col, label, formats['label_col'])
+                if format == 'text':
+                    worksheet.write(row, col + 1, value)
+                else:
+                    worksheet.write(row, col + 1, value, format)
+                row += 1
+        else:  # there are 2 values per-line
+            worksheet.write(row, col, titles[0], formats['table_title'])
+            worksheet.write(row, col + 1, titles[1], formats['table_title'])
+            worksheet.write(row, col + 2, titles[2], formats['table_title'])
+            row += 1
+            for label, value1, value2, format in values:
+                worksheet.write(row, col, label, formats['label_col'])
+                if format == 'text':
+                    worksheet.write(row, col + 1, value1)
+                    worksheet.write(row, col + 2, value2)
+                else:
+                    worksheet.write(row, col + 1, value1, format)
+                    worksheet.write(row, col + 2, value2, format)
+                row += 1
+
+        # endregion
 
 """
     scenario as function based views using ajax to feed in data

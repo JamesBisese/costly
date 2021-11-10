@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title %}{{ block.super }}Scenarios{% endblock %}
+{% block title %}{{ block.super }}{{ title }}{% endblock %}
 {% block javascriptOLD %}
 {% endblock %}
 
@@ -17,7 +17,7 @@
 {% block content %}
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
-	<span style="font-size: 38px; float:left; ">{{ header_2 }}</span>
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
     {%  if can_add %}
     <!--This was the ajax (modal) version-->
     <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
@@ -37,17 +37,22 @@
 <table class="table responsive no-wrap" id="costitem-table">
     <thead>
         <tr>
-            <th >Sort #</th>
-            <th >Cost Item</th>
-            <th>Bid Units</th>
+            <th colspan="5">Cost Item</th>
+            <th colspan="4">Factors</th>
+            <th colspan="1">Calculation</th>
+        </tr>
+        <tr>
+            <th >Sort Nu</th>
+            <th >id</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Units</th>
 
-            <th>RSMeans</th>
-{#            <th>DB 25 Percentile</th>#}
-{#            <th>DB Avg</th>#}
-{#            <th>DB 75 Percentile</th>#}
-            <th>Replacement Life</th>
-            <th>O&amp;M</th>
-<!--            <th>Edit</th>-->
+            <th>Area<br>%</th>
+            <th>Depth<br>FT</th>
+            <th>Density<br>TN/CY</th>
+            <th>Number<br>#</th>
+            <th>Equation</th>
         </tr>
     </thead>
 </table>
@@ -61,7 +66,7 @@
 {% endblock %}
 
 {% block new_extra_js %}
-    {% include "./includes/extra_js.html" %}
+    {% include "includes/extra_js.html" %}
     {% if IIS_APP_ALIAS != '' %}
         <script>
         // add the IIS Application Alias to each of the URL values
@@ -74,5 +79,5 @@
         </script>
     {% endif %}
 
-    <script src="{% static 'scenario/js/costitems_default_costs_list.js' %}"></script>
+    <script src="{% static 'audit/js/cost_item_default_equations_and_factors.js' %}"></script>
 {% endblock %}

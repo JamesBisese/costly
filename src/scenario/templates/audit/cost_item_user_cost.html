@@ -1,24 +1,17 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title %}{{ block.super }}{{ header }}{% endblock %}
+{% block title %}{{ block.super }}{{ title }}{% endblock %}
 {% block javascriptOLD %}
-
 {% endblock %}
 
 {% block extra_css %}
-<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
-<style>
-    div.dt-buttons{
-        padding-top: 5px;
-    }
-</style>
-
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
 {% endblock extra_css %}
 
 {% block navbar-left %}
-  {% include "_navbar.html" with active_link="audit" %}
+    {% include "_navbar.html" with active_link="audit" %}
 {% endblock navbar-left %}
 
 {% block content %}
@@ -26,34 +19,34 @@
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
 	<span style="font-size: 38px; float:left; ">{{ header }}</span>
 
-
 	<div style="clear: both;"></div>
-<br>
+    <br>
 </div>
 
-  <table class="table" id="scenario-audit-table">
+  <table class="table" id="user_cost-audit-table">
     <thead>
       <tr>
-        <th>#</th>
         <th>User</th>
-        <th>Affiliation</th>
         <th>User Type</th>
-        <th>Project</th>
-        <th>Scenario</th>
-        <th>Created</th>
-        <th>Last Modified</th>
+        <th>Cost Item</th>
+        <th>Bid Units</th>
+        <th>User Cost</th>
+        <th>Base Year</th>
+        <th>Replacement</th>
+        <th>O&amp;M</th>
       </tr>
     </thead>
-
   </table>
+
+
 
 {% endblock %}
 
 {% block new_extra_js %}
-    {% include "./includes/extra_js.html" %}
+    {% include "includes/extra_js.html" %}
     {% if IIS_APP_ALIAS != '' %}
         <script>
-         // add the IIS Application Alias to each of the URL values
+        // add the IIS Application Alias to each of the URL values
             var IIS_APP_ALIAS = "{{ IIS_APP_ALIAS }}";
             if (IIS_APP_ALIAS.length > 0) {
                 for (var key in SETTINGS.URLS) {
@@ -63,6 +56,6 @@
         </script>
     {% endif %}
 
-    <script src="{% static 'scenario/js/scenario_audit.js' %}"></script>
+    <script src="{% static 'audit/js/cost_item_user_cost.js' %}"></script>
 
 {% endblock %}

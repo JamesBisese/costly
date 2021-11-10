@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title %}{{ block.super }}Cost Items{% endblock %}
+{% block title %}{{ block.super }}{{ title }}{% endblock %}
 {% block javascriptOLD %}
 {% endblock %}
 
@@ -17,7 +17,7 @@
 {% block content %}
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
-	<span style="font-size: 38px; float:left; ">{{ header_2 }}</span>
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
     {%  if can_add %}
     <!--This was the ajax (modal) version-->
     <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
@@ -34,16 +34,28 @@
 {% if user.is_superuser %}
     <div id="is_superuser" display="none";></div>
 {% endif %}
-<table class="table responsive no-wrap" id="costitems-table">
+<table class="table responsive no-wrap" id="costitem-table">
     <thead>
         <tr>
-            <th >Sort #</th>
+            <th colspan="5" style="text-align: center">Structure</th>
+            <th colspan="2" style="text-align: center">Cost Item</th>
+            <th colspan="4" style="text-align: center">Factors</th>
 
+        </tr>
+        <tr>
+            <th >structure_sort_nu</th>
+            <th >cost_item_sort_nu</th>
+            <th >id</th>
             <th>Name</th>
-
-            <th>Code</th>
             <th>Units</th>
-            <th width="50%">Help</th>
+            <th>Name</th>
+            <th>Units</th>
+
+            <th>Area<br>%</th>
+            <th>Depth<br>FT</th>
+            <th>Density<br>TN/CY</th>
+
+
         </tr>
     </thead>
 </table>
@@ -57,7 +69,7 @@
 {% endblock %}
 
 {% block new_extra_js %}
-    {% include "./includes/extra_js.html" %}
+    {% include "includes/extra_js.html" %}
     {% if IIS_APP_ALIAS != '' %}
         <script>
         // add the IIS Application Alias to each of the URL values
@@ -70,5 +82,5 @@
         </script>
     {% endif %}
 
-    <script src="{% static 'scenario/js/costitems_list.js' %}"></script>
+    <script src="{% static 'audit/js/structure_cost_item_default_factors.js' %}"></script>
 {% endblock %}

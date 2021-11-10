@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% block title %}{{ block.super }}Projects{% endblock %}
+{% block title %}{{ block.super }}{{ title }}{% endblock %}
 {% block javascriptOLD %}
 
 {% endblock %}
@@ -18,59 +18,34 @@
 {% endblock extra_css %}
 
 {% block navbar-left %}
-  {% include "_navbar.html" with active_link="project" %}
+  {% include "_navbar.html" with active_link="audit" %}
 {% endblock navbar-left %}
 
 {% block content %}
 
 <div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
 	<span style="font-size: 38px; float:left; ">{{ header }}</span>
-    {%  if can_add %}
-    <button type="button"
-            class="btn btn-primary js-create-project"
-            style="font-size: 16px; float:right; "
-            data-url="{% url 'scenario:project_create' %}">
-      <span class="glyphicon glyphicon-plus"></span>
-      New project
-    </button>
-    {% endif %}
+
 
 	<div style="clear: both;"></div>
 <br>
 </div>
-{% if user.is_superuser %}
-    <div id="is_superuser" display="none";></div>
-{% endif %}
-  <table class="table" id="project-table">
+
+  <table class="table" id="scenario-audit-table">
     <thead>
       <tr>
         <th>#</th>
-        <th>User Name</th>
-        <th>Organization</th>
-        <th>Job Title</th>
+        <th>User</th>
+        <th>Affiliation</th>
         <th>User Type</th>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Type</th>
-        <th>Purchase Information</th>
-        <th>Total Area<sup>2</sup></th>
-        <th>Scenario<br>Count</th>
+        <th>Project</th>
+        <th>Scenario</th>
         <th>Created</th>
         <th>Last Modified</th>
-        <th>&nbsp;</th>
       </tr>
     </thead>
 
   </table>
-
-{#    This is where the modal gets injected #}
-  <div id="modal-project" class="modal fade" >
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-      </div>
-    </div>
-  </div>
 
 {% endblock %}
 
@@ -88,7 +63,6 @@
         </script>
     {% endif %}
 
-
-    <script src="{% static 'project/js/project_index.js' %}"></script>
+    <script src="{% static 'audit/js/scenario.js' %}"></script>
 
 {% endblock %}
