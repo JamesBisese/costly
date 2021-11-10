@@ -131,6 +131,8 @@ $(function () {
                 {"data": "impervious_area",
                     "render": $.fn.dataTable.render.number( ',' ),
                     "searchable": false},
+                {"data": "create_date", "searchable": true},
+                {"data": "modified_date", "searchable": true},
                 {"data": "id", "searchable": false, "sortable": false},
              ],
             "columnDefs": [
@@ -140,7 +142,7 @@ $(function () {
                     "targets": 0
                 },
                 {
-                    "targets": 7,
+                    "targets": 9,
                     "sWidth": "250px",
                     "render": function (data, type, row) {
 

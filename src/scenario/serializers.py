@@ -609,6 +609,9 @@ class ScenarioListSerializer(serializers.ModelSerializer):
     def get_project_title(self, scenario):
         return '%s' % scenario.project.project_title
 
+    create_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+    modified_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+
     nutrient_req_met = serializers.SerializerMethodField()
     captures_90pct_storm = serializers.SerializerMethodField()
     meets_peakflow_req = serializers.SerializerMethodField()
