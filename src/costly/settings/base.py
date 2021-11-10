@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # costly is not an included app, so it needs to be specified directly
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'costly', 'static'),
-    os.path.join(BASE_DIR, 'users', 'static'),
+    # os.path.join(BASE_DIR, 'users', 'static'),
     # os.path.join(BASE_DIR, 'scenario', 'static'), # this is automatically included
 ]
 
