@@ -43,7 +43,7 @@
     {% include "scenario/project.html"  %}
 </span>
 
-    {%  if can_add %}
+    {%  if can_add and project is not none %}
     <!--This was the ajax (modal) version-->
     <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
       <!--<span class="glyphicon glyphicon-plus"></span>-->

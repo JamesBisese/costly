@@ -13,18 +13,21 @@ $(document).ready(function() {
                     { 'extend': 'excel'},
                 ],
                 'columns': [
-                  // Use dot notation to reference nested serializers.
-                  {"data": "user.name", "searchable": true},
-                  {"data": "user.profile.user_type", "searchable": true},
-                  {"data": "costitem_name", "searchable": true},
-                  {"data": "units", "searchable": false},
-                  {"data": "user_input_cost", "searchable": false},
-                  {"data": "base_year", "searchable": false},
-                  {"data": "replacement_life", "searchable": false},
-                  {"data": "o_and_m_pct", "searchable": false},
+                    // Use dot notation to reference nested serializers.
+                    {"data": "user.name", "searchable": true},
+                    {"data": "user.organization_tx", "searchable": true},
+                    {"data": "user.profile.user_type", "searchable": true},
+                    {"data": "project.project_title", "searchable": true},
+                    {"data": "scenario.scenario_title", "searchable": true},
+                    {"data": "costitem_name", "searchable": true},
+                    {"data": "units", "searchable": false},
+                    {"data": "user_input_cost", "searchable": false},
+                    {"data": "base_year", "searchable": false},
+                    {"data": "replacement_life", "searchable": false},
+                    {"data": "o_and_m_pct", "searchable": false},
                 ],
 
-                "order": [[ 2, 'asc' ]]
+                "order": [[ 0, 'asc' ]]
             });
 });
 

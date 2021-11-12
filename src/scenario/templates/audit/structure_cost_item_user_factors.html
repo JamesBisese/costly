@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}{{ block.super }}{{ title }}{% endblock %}
+{% block javascriptOLD %}
+{% endblock %}
+
+{% block extra_css %}
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
+{% endblock extra_css %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="reference" %}
+{% endblock navbar-left %}
+
+{% block content %}
+
+<div style="padding-top: 20px; vertical-align:middle; line-height: 28px" >
+	<span style="font-size: 38px; float:left; ">{{ header }}</span>
+    {%  if can_add %}
+    <!--This was the ajax (modal) version-->
+    <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
+      <!--<span class="glyphicon glyphicon-plus"></span>-->
+      <!--New scenario-->
+    <!--</button>-->
+    <!-- this loads a new page -->
+
+    {% endif %}
+
+	<div style="clear: both;"></div>
+    <br>
+</div>
+{% if user.is_superuser %}
+    <div id="is_superuser" display="none";></div>
+{% endif %}
+<table class="table responsive no-wrap" id="costitem-table">
+    <thead>
+        <tr>
+            <th colspan="5" style="text-align: center">Structure</th>
+            <th colspan="2" style="text-align: center">Cost Item</th>
+            <th colspan="4" style="text-align: center">Factors</th>
+
+        </tr>
+        <tr>
+            <th >structure_sort_nu</th>
+            <th >cost_item_sort_nu</th>
+            <th >id</th>
+            <th>Name</th>
+            <th>Units</th>
+            <th>Name</th>
+            <th>Units</th>
+
+            <th>Area<br>%</th>
+            <th>Depth<br>FT</th>
+            <th>Density<br>TN/CY</th>
+
+
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" id="modal-costitem">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block new_extra_js %}
+    {% include "includes/extra_js.html" %}
+    {% if IIS_APP_ALIAS != '' %}
+        <script>
+        // add the IIS Application Alias to each of the URL values
+            var IIS_APP_ALIAS = "{{ IIS_APP_ALIAS }}";
+            if (IIS_APP_ALIAS.length > 0) {
+                for (var key in SETTINGS.URLS) {
+                    SETTINGS.URLS[key] = '/' + IIS_APP_ALIAS + SETTINGS.URLS[key];
+                }
+            }
+        </script>
+    {% endif %}
+
+    <script src="{% static 'audit/js/structure_cost_item_user_factors.js' %}"></script>
+{% endblock %}

@@ -19,9 +19,9 @@ router.register(r'cost_item', views.CostItemViewSet)
 router.register(r'cost_item_default_costs', views.CostItemDefaultCostViewSet)
 router.register(r'cost_item_user_costs', views.CostItemUserCostViewSet)
 
-router.register(r'cost_item_default_equations_and_factors', views.CostItemDefaultEquationsViewSet)
-router.register(r'cost_item_default_factors', views.CostItemDefaultFactorsViewSet)
-router.register(r'costitemuserassumptions', views.CostItemUserAssumptionsViewSet)
+router.register(r'cost_item_default_equations_and_factors', views.CostItemDefaultEquationsAndFactors)
+router.register(r'structure_cost_item_default_factors', views.CostItemDefaultFactorsViewSet)
+router.register(r'cost_item_user_factors', views.CostItemUserAssumptionsViewSet)
 
 iis_app_alias = ''
 if len(settings.IIS_APP_ALIAS) > 0:
@@ -85,7 +85,7 @@ urlpatterns = [
     # StructureCostHelp - Read. using slug 'all' returns a list of all values, unrecognized code also returns list
     path(r'scenario/costitem/help/<slug:costitem_code>/', views.CostItemHelp.as_view(), name='costitem_help'),
 
-    # audit pages for the (relatively) immutable look-up lists and reference lists
+    # audit HTML pages for the (relatively) immutable look-up lists and reference lists
     path(r'audit/structures/', views.audit_structure, name='structures'),
     path(r'audit/cost_item/', views.audit_cost_items, name='costitems'),
     path(r'audit/cost_item/default_costs/', views.audit_cost_item_default_cost,
@@ -95,11 +95,13 @@ urlpatterns = [
     path(r'audit/structure_default_cost_item_factors/', views.audit_structure_default_cost_item_factors,
          name='costitems_default_factors'),
 
-    # audit pages for user input project, scenario, and cost_items
+    # audit HTML pages for user input project, scenario, and cost_items
     path(r'audit/users/', views.audit_users, name='audit_users'),
     path(r'audit/projects/', views.audit_project, name='audit_projects'),
     path(r'audit/scenarios/', views.audit_scenario, name='audit_scenarios'),
     path(r'audit/cost_item/user_costs/', views.audit_costitem_user_cost, name='audit_costitems_user_costs'),
+    path(r'audit/structure_user_cost_item_factors/', views.audit_structure_user_cost_item_factors,
+         name='audit_structure_user_cost_item_factors'),
 ]
 
 urlpatterns += [

@@ -1001,9 +1001,9 @@ class Scenario(models.Model):
         cost_items_seen = set()
 
         # these are 'Scenario' level values set on the 'Project-Scenario Description' page
-        planning_and_design_factor = int(self.planning_and_design_factor)
-        study_life = int(self.study_life)
-        discount_rate = float(self.discount_rate)
+        planning_and_design_factor = int(self.planning_and_design_factor) if self.planning_and_design_factor else 0
+        study_life = int(self.study_life) if self.study_life else 0
+        discount_rate = float(self.discount_rate) if self.discount_rate else 0
 
         for structure in structures:
 
@@ -1395,6 +1395,8 @@ class CostItemUserCosts(models.Model):
     and stores data by scenario/structure/costitem
     
     the 'user' cost assumptions are stored in CostItemUserAssumptions 
+
+NOTE: this name is terrible.  It should be StructureCostItemUserFactors
 
 '''
 

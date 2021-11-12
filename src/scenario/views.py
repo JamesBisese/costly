@@ -49,7 +49,7 @@ from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSeria
 # region -- Audit Pages --
 
 """
-    Audit Users - function based view using ajax to feed in data
+    Audit Users - function based view using ajax to load data into DataTable
 
     http://127.0.0.1:92/audit/users/
 """
@@ -61,7 +61,7 @@ def audit_users(request):
     return render(request, 'audit/user.html', context_data)
 
 """
-    Audit Project - function based view using ajax to feed in data
+    Audit Project
 
     http://127.0.0.1:92/audit/projects/
 """
@@ -73,7 +73,7 @@ def audit_project(request):
     return render(request, 'audit/project.html', context_data)
 
 """
-    Audit Scenario - function based view using ajax to feed in data
+    Audit Scenario
     
     http://127.0.0.1:92/audit/scenarios/
 """
@@ -85,7 +85,7 @@ def audit_scenario(request):
     return render(request, 'audit/scenario.html', context_data)
 
 """
-    Audit Cost Item User Costs - function based view using ajax to feed in data
+    Audit Cost Item User Costs
 
     http://127.0.0.1:92/audit/cost_item/user_costs/
 """
@@ -97,7 +97,7 @@ def audit_costitem_user_cost(request):
     return render(request, 'audit/cost_item_user_cost.html', context_data)
 
 """
-    Audit Structures - function based view using ajax to feed in data
+    Audit Structures
 
     URI/audit/structures/
 """
@@ -109,7 +109,7 @@ def audit_structure(request):
     return render(request, 'audit/structures.html', context_data)
 
 """
-    Audit Cost Items - function based view using ajax to feed in data
+    Audit Cost Items
 
     URI/audit/cost_items/
 """
@@ -152,9 +152,24 @@ def audit_cost_item_default_equations_and_factors(request):
 @login_required
 def audit_structure_default_cost_item_factors(request):
     context_data = {'title': 'Cost Items Default Factors',
-                    'header': 'Structure Default Cost Item Factors'}
+                    'header': 'Structure/Cost Item Default Factors'}
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
     return render(request, 'audit/structure_cost_item_default_factors.html', context_data)
+
+
+"""
+    Audit Structure User Cost Item Factors
+
+    URI/audit/structure_user_cost_item_factors/
+"""
+@login_required
+def audit_structure_user_cost_item_factors(request):
+    context_data = {'title': 'Cost Items User Factors',
+                    'header': 'Structure/Cost Item User Factors'}
+    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    return render(request, 'audit/structure_cost_item_user_factors.html', context_data)
+
+
 
 # endregion -- audit pages --
 
@@ -1379,8 +1394,8 @@ def comparison_column(ids, left_scenario, right_scenario):
         or left.discount_rate != right.discount_rate :
         diff['planning_and_design'] = True
 
-    diff['pervious_area'] = left.pervious_area - right.pervious_area
-    diff['impervious_area'] = left.impervious_area - right.impervious_area
+    diff['pervious_area'] = left.pervious_area or 0 - right.pervious_area or 0
+    diff['impervious_area'] = left.impervious_area or 0 - right.impervious_area or 0
 
     diff['pervious'] = False
     if left.impervious_area != right.impervious_area:
@@ -1438,12 +1453,12 @@ def comparison_column(ids, left_scenario, right_scenario):
         right_obj = right_serializer.data['areal_features'][r]
         right_area = right_obj['area'] if right_obj['checkbox'] is True else 0
         left_area = left_obj['area'] if left_obj['checkbox'] is True else 0
-        diff_area = left_area - right_area
+        diff_area = left_area or 0 - right_area or 0
         diff_area_sum += diff_area
         areal_features['item_list'][r] = {'label': right_obj['label'], 'area': diff_area }
         if r == 'stormwater_management_feature':
             areal_features['item_list'][r]['project_land_unit_cost'] = left_scenario.project.land_unit_cost
-            areal_features['item_list'][r]['project_land_cost_diff'] = (left_area - right_area) * left_scenario.project.land_unit_cost
+            areal_features['item_list'][r]['project_land_cost_diff'] = (left_area or 0 - right_area or 0 ) * left_scenario.project.land_unit_cost
 
     areal_features['total_area'] = diff_area_sum
     diff['areal_features'] = areal_features
@@ -2091,16 +2106,32 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
     start_col = 0
     col = 0
 
-    worksheet.set_column(start_col, start_col, 27)
-    worksheet.set_column(start_col + 1, start_col + 1, 20)
-    worksheet.set_column(start_col + 2, start_col + 2, 25)
+    # set the column widths
+    worksheet.set_column(start_col, start_col, 13)
+    worksheet.set_column(start_col + 1, start_col + 1, 28)
+    worksheet.set_column(start_col + 2, start_col + 2, 12)
+    worksheet.set_column(start_col + 3, start_col + 3, 29)
+    worksheet.set_column(start_col + 4, start_col + 4, 35)
+    worksheet.set_column(start_col + 5, start_col + 5, 18)
+    worksheet.set_column(start_col + 6, start_col + 6, 38)
+    worksheet.set_column(start_col + 7, start_col + 7, 30)
+    worksheet.set_column(start_col + 8, start_col + 8, 18)
+    worksheet.set_column(start_col + 9, start_col + 9, 11.5)
+
 
     # Write some data headers.
     if start_row == 0:
-        worksheet.write(0, col, 'project_title', formats['bold'])
-        worksheet.write(0, col + 1, 'scenario_title', formats['bold'])
-    worksheet.write(start_row + 1, col, scenario.project.project_title)
-    worksheet.write(start_row + 1, col + 1, scenario.scenario_title)
+        worksheet.write(0, col, 'user_name', formats['bold'])
+        worksheet.write(0, col + 1, 'organization', formats['bold'])
+        worksheet.write(0, col + 2, 'user_type', formats['bold'])
+        worksheet.write(0, col + 3, 'project_title', formats['bold'])
+        worksheet.write(0, col + 4, 'scenario_title', formats['bold'])
+
+    worksheet.write(start_row + 1, col, scenario.project.user.name)
+    worksheet.write(start_row + 1, col + 1, scenario.project.user.organization_tx)
+    worksheet.write(start_row + 1, col + 2, scenario.project.user.profile.user_type)
+    worksheet.write(start_row + 1, col + 3, scenario.project.project_title)
+    worksheet.write(start_row + 1, col + 4, scenario.scenario_title)
 
     # Some data we want to write to the worksheet.
     project_description = (
@@ -2117,7 +2148,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 
     # Start from the first cell below the headers.
     row = start_row + 1
-    col = 2
+    col = 5
 
     # Iterate over the data and write it out row by row.
     for label, value, format in (project_description):
@@ -2274,23 +2305,24 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 """
 @login_required
 def scenario_list(request, pk=None):
-    scenarios = Scenario.objects.all()
-    projects = Project.objects.all()
+    # scenarios = Scenario.objects.all()
+    # projects = Project.objects.all()
     project = None
-
+    #
     if not pk==None:
-        scenarios = Scenario.objects.filter(project__id=pk)
+    #     scenarios = Scenario.objects.filter(project__id=pk)
         project = get_object_or_404(Project, id=pk) # Project.objects.filter(id=pk)
-    elif not (request.user.is_superuser or request.user.is_staff):
-        scenarios = Scenario.objects.filter(project__user=request.user, project__id=projects[0].id)
-        projects = Project.objects.filter(user=request.user)
+    # elif not (request.user.is_superuser or request.user.is_staff):
+    #     scenarios = Scenario.objects.filter(project__user=request.user, project__id=projects[0].id)
+    #     projects = Project.objects.filter(user=request.user)
+    #
+    # if request.method == 'POST':
+    #     # filter scenarios by project
+    #     scenarios = Scenario.objects.filter(project__id=request.POST.get('project_id'))
 
-    if request.method == 'POST':
-        # filter scenarios by project
-        scenarios = Scenario.objects.filter(project__id=request.POST.get('project_id'))
-
-    context_data = {'scenarios': scenarios,
-                    'projects': projects,
+    context_data = {
+        #'scenarios': scenarios,
+                    #'projects': projects,
                     'project': project,
                     'header': 'Scenarios'}
     if request.user.has_perm('scenario.add_project'):
@@ -2723,12 +2755,12 @@ class CostItemUserCostViewSet(viewsets.ModelViewSet):
 '''
     provided via /api/costitemdefaultequations and /api/costitemdefaultassumptions/?structure=pond&costitem=fill
 '''
-class CostItemDefaultEquationsViewSet(viewsets.ModelViewSet):
+class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
     queryset = CostItemDefaultEquations.objects.all().order_by('costitem__sort_nu')
     serializer_class = CostItemDefaultEquationsSerializer
 
     def get_queryset(self):
-        qs = super(CostItemDefaultEquationsViewSet, self).get_queryset()
+        qs = super(CostItemDefaultEquationsAndFactors, self).get_queryset()
 
         code = self.request.query_params.get('costitem', None)
         if code is not None:
@@ -2874,8 +2906,8 @@ class ScenarioAuditViewSet(viewsets.ModelViewSet):
 
 
 '''
-    provided via /api/costitemuserassumptions 
-    and /api/costitemuserassumptions/?structure=pond&costitem=fill&scenario=8
+    provided via /api/cost_item_user_factors 
+    and /api/cost_item_user_factors/?structure=pond&costitem=fill&scenario=8
 '''
 class CostItemUserAssumptionsViewSet(viewsets.ModelViewSet):
     queryset = CostItemUserAssumptions.objects.all().order_by('scenario__id', 'structure__sort_nu', 'costitem__sort_nu')

@@ -46,13 +46,14 @@ SETTINGS.URLS = {
     'audit_cost_item_data':  '/api/cost_item/',
     'audit_cost_item_default_cost_data': '/api/cost_item_default_costs/',
     'audit_cost_item_default_equations_and_factors_data': '/api/cost_item_default_equations_and_factors/',
-    'audit_cost_item_default_factors_data': '/api/cost_item_default_factors/',
+    'audit_structure_cost_item_default_factors_data': '/api/structure_cost_item_default_factors/',
 
     // JSON data for pages in AUDIT tab
     'audit_user_data': '/api/users/',
     'audit_project_data':   '/api/projects/',
     'audit_scenario_data': '/api/scenario_audit/',
     'audit_cost_item_user_costs_data': '/api/cost_item_user_costs',
+    'audit_cost_item_user_factors_data': '/api/cost_item_user_factors/',
 }
 
 

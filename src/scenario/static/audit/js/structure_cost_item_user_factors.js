@@ -34,7 +34,7 @@ $(function () {
         var options = {
             "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.audit_structure_cost_item_default_factors_data + '?format=datatables',
+            "ajax": SETTINGS.URLS.audit_cost_item_user_factors_data + '?format=datatables',
             "paging": false,
             "info" : false,
             "dom": 'Bfrtip',
@@ -47,29 +47,31 @@ $(function () {
             ],
             "columns": [
                 // Use dot notation to reference nested serializers.
-                {"data": "structure.sort_nu"},
-                {"data": "costitem.sort_nu"},
+                {"data": "user.name"},
+                // {"data": "scenario.project.project_title"},
 
-                {"data": "id"},
-
-                {"data": "structure.name", "searchable": true},
-                {"data": "structure.units", "searchable": true},
-
-
-                {"data": "costitem.name", "searchable": true},
-                {"data": "costitem.units", "searchable": true},
-
+                // {"data": "scenario_title"},
+                //
+                // {"data": "structure_code", "searchable": true},
+                // {"data": "costitem_code", "searchable": true},
+                //
+                //
+                {"data": "checked", "searchable": true},
+                // // {"data": "costitem.units", "searchable": true},
+                //
                 {"data": "a_area", "searchable": true},
                 {"data": "z_depth", "searchable": true},
                 {"data": "d_density", "searchable": true},
+                {"data": "r_ratio", "searchable": true},
+                {"data": "n_number", "searchable": true},
 
 
              ],
             "order": [[0, 'asc'],[1, 'asc']],
             "columnDefs": [
-                    { "targets": 0, "visible": false},
-                    { "targets": 1, "visible": false},
-                    { "targets": 2, "visible": false},
+                    // { "targets": 0, "visible": false},
+                    // { "targets": 1, "visible": false},
+                    // { "targets": 2, "visible": false},
 
                 ],
         };

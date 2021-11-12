@@ -517,11 +517,9 @@ class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
 
 
 class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
-
     """
         the logic of the many=False is that in this case,
         there is one structure and one costitem for each 'CostItemDefaultAssumptions'
-
     """
     structure = StructureSerializer(many=False, read_only=True)
     costitem = CostItemSerializer(many=False, read_only=True)
@@ -543,38 +541,44 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
     # scenario = ScenarioSerializer(many=False, read_only=True)
     # structure = StructureSerializer(many=False, read_only=True)
     # costitem = CostItemSerializer(many=False, read_only=True)
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        user1 = obj.scenario.project.user
+        return UserSerializer(user1, many=False).data
 
     scenario_id = serializers.CharField(read_only=True, source="scenario.id")
     project_title = serializers.CharField(read_only=True, source="scenario.project.project_title")
     scenario_title = serializers.CharField(read_only=True, source="scenario.scenario_title")
 
-    structure_code = serializers.CharField(read_only=True, source="structure.code")
+    # structure_code = serializers.CharField(read_only=True, source="structure.code")
     # structure_name = serializers.CharField(read_only=True, source="structure.name")
     # structure_units = serializers.CharField(read_only=True, source="structure.units")
     # structure_classification = serializers.CharField(read_only=True, source="structure.classification")
 
-    # structure = StructureSerializer(many=False, read_only=True)
+    structure = StructureSerializer(many=False, read_only=True)
     # costitem = CostItemSerializer(many=False, read_only=True)
 
     costitem_code = serializers.CharField(read_only=True, source="costitem.code")
-    # costitem_name = serializers.CharField(read_only=True, source="costitem.name")
-    # costitem_units = serializers.CharField(read_only=True, source="costitem.units")
+    costitem_name = serializers.CharField(read_only=True, source="costitem.name")
+    costitem_units = serializers.CharField(read_only=True, source="costitem.units")
 
     class Meta:
         model = CostItemUserAssumptions
         fields = (
+            'user',
             'scenario_id',
             'project_title',
             'scenario_title',
             # 'structure',
-            'structure_code',
+            'structure',
             # 'structure_name',
             # 'structure_units',
             # 'structure_classification',
             # 'costitem',
             'costitem_code',
-            # 'costitem_name',
-            # 'costitem_units',
+            'costitem_name',
+            'costitem_units',
 
             'checked',
             'a_area',
