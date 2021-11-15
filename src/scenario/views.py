@@ -1,19 +1,16 @@
 import io
-import sys
 import json
-import copy
 
 from django.conf import settings
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import HttpResponseRedirect, render, get_object_or_404
 from django_tables2 import SingleTableView
 from django_tables2.export.views import ExportMixin
 from django.template.loader import render_to_string
-from django.template.response import TemplateResponse
-from django.views import generic, View
-from django.urls import reverse,reverse_lazy
+from django.views import generic
+from django.urls import reverse, reverse_lazy
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -31,10 +28,10 @@ import xlsxwriter
 from .models import Project, Scenario, ArealFeatures, Structures, \
     ConventionalStructures, NonConventionalStructures, \
     CostItem, CostItemDefaultEquations, \
-    CostItemDefaultCosts,  CostItemUserCosts, \
+    CostItemDefaultCosts, CostItemUserCosts, \
     CostItemDefaultFactors, CostItemUserAssumptions
 
-from .forms import ProjectForm, ScenarioEditForm, ScenarioDeleteForm
+from .forms import ProjectForm, ScenarioEditForm
 from . import tables
 
 from authtools.models import User
@@ -53,107 +50,119 @@ from .serializers import UserSerializer, ProjectSerializer, EmbeddedProjectSeria
 
     http://127.0.0.1:92/audit/users/
 """
+
+
 @login_required
 def audit_users(request):
-    context_data = {'title': 'Audit Users',
-                    'header': 'Audit Users'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Audit Users', 'header': 'Audit Users', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/user.html', context_data)
+
 
 """
     Audit Project
 
     http://127.0.0.1:92/audit/projects/
 """
+
+
 @login_required
 def audit_project(request):
-    context_data = { 'title': 'Audit Projects',
-                    'header': 'Audit Projects'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Audit Projects', 'header': 'Audit Projects', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/project.html', context_data)
+
 
 """
     Audit Scenario
     
     http://127.0.0.1:92/audit/scenarios/
 """
+
+
 @login_required
 def audit_scenario(request):
-    context_data = {'title': 'Audit Scenarios',
-                    'header': 'Audit Scenarios'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Audit Scenarios', 'header': 'Audit Scenarios', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/scenario.html', context_data)
+
 
 """
     Audit Cost Item User Costs
 
     http://127.0.0.1:92/audit/cost_item/user_costs/
 """
+
+
 @login_required
 def audit_costitem_user_cost(request):
-    context_data = {'title': 'Cost ItemUserCosts',
-                    'header': 'Audit Cost Item User Costs'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Cost ItemUserCosts', 'header': 'Audit Cost Item User Costs',
+                    'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/cost_item_user_cost.html', context_data)
+
 
 """
     Audit Structures
 
     URI/audit/structures/
 """
+
+
 @login_required
 def audit_structure(request):
-    context_data = {'title': 'Structures',
-                    'header': 'Structures'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Structures', 'header': 'Structures', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/structures.html', context_data)
+
 
 """
     Audit Cost Items
 
     URI/audit/cost_items/
 """
+
+
 @login_required
 def audit_cost_items(request):
-    context_data = {'title': 'Cost Items',
-                    'header': 'Cost Items'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Cost Items', 'header': 'Cost Items', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/cost_item.html', context_data)
+
 
 """
     Audit Cost Item Default Costs
 
     URI/audit/cost_items_default_cost/
 """
+
+
 @login_required
 def audit_cost_item_default_cost(request):
-    context_data = {'title': 'Cost Items Default Costs',
-                    'header': 'Cost Items Default Costs'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Cost Items Default Costs', 'header': 'Cost Items Default Costs',
+                    'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/cost_item_default_cost.html', context_data)
+
 
 """
     Audit Cost Item Default Equations and Factors
 
     URI/audit/cost_items_default_equations_and_factors/
 """
+
+
 @login_required
 def audit_cost_item_default_equations_and_factors(request):
     context_data = {'title': 'Cost Items Default Equations and Factors',
-                    'header': 'Cost Items Default Equations and Factors'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+                    'header': 'Cost Items Default Equations and Factors', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/cost_item_default_equations_and_factors.html', context_data)
+
 
 """
     Audit Structure Default Cost Item Factors
 
     URI/audit/structure_default_cost_item_factors/
 """
+
+
 @login_required
 def audit_structure_default_cost_item_factors(request):
-    context_data = {'title': 'Cost Items Default Factors',
-                    'header': 'Structure/Cost Item Default Factors'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Cost Items Default Factors', 'header': 'Structure/Cost Item Default Factors',
+                    'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/structure_cost_item_default_factors.html', context_data)
 
 
@@ -162,13 +171,13 @@ def audit_structure_default_cost_item_factors(request):
 
     URI/audit/structure_user_cost_item_factors/
 """
+
+
 @login_required
 def audit_structure_user_cost_item_factors(request):
-    context_data = {'title': 'Cost Items User Factors',
-                    'header': 'Structure/Cost Item User Factors'}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'title': 'Cost Items User Factors', 'header': 'Structure/Cost Item User Factors',
+                    'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/structure_cost_item_user_factors.html', context_data)
-
 
 
 # endregion -- audit pages --
@@ -182,6 +191,8 @@ def audit_structure_user_cost_item_factors(request):
     
     http://127.0.0.1:92/projects/
 """
+
+
 @login_required
 def project_list(request):
     projects = Project.objects.all()
@@ -190,7 +201,7 @@ def project_list(request):
     if request.user.has_perm('scenario.add_project'):
         context_data['can_add'] = True
 
-    #jab - added for beta-user-testing.  allow all users to add
+    # jab - added for beta-user-testing.  allow all users to add
     context_data['can_add'] = True
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
 
@@ -218,12 +229,14 @@ def save_project_form(request, form, template_name):
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
+
 def project_create(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
     else:
         form = ProjectForm(user_id=request.user.id)
     return save_project_form(request, form, 'project/includes/partial_project_create.html')
+
 
 def project_update(request, pk):
     project = get_object_or_404(Project, pk=pk)
@@ -232,6 +245,7 @@ def project_update(request, pk):
     else:
         form = ProjectForm(instance=project)
     return save_project_form(request, form, 'project/includes/partial_project_update.html')
+
 
 def project_delete(request, pk):
     project = get_object_or_404(Project, pk=pk)
@@ -248,21 +262,19 @@ def project_delete(request, pk):
         data['html_form'] = render_to_string('project/includes/partial_project_delete.html', context, request=request)
     return JsonResponse(data)
 
+
 '''
     TBD provided via /api/structures and /api/structures/?code=TBD
 '''
+
+
 class ProjectScenarioViewSet(viewsets.ModelViewSet):
     pk = 1
-    queryset = Scenario.objects.filter(project__id=pk)# .order_by("sort_nu")
+    queryset = Scenario.objects.filter(project__id=pk)
     serializer_class = ScenarioSerializer
 
     def get_queryset(self):
         qs = super(ProjectScenarioViewSet, self).get_queryset()
-
-        # code = self.request.query_params.get('code', None)
-        # if code is not None:
-        #     qs = qs.filter(code=code)
-
         return qs
 
 
@@ -273,6 +285,7 @@ this is what populates the Scenario table
 
 but it does something strange and the search doesn't work
 '''
+
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
@@ -287,7 +300,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @action(methods=['get'], detail=True)
     def scenarios(self, request, pk):
-
         scenarios = Scenario.objects.filter(project__id=pk)
         serializer_class = ScenarioListSerializer
 
@@ -296,15 +308,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer = serializer_class(scenarios, many=True)
         return Response(serializer.data)
 
-#### also never removed
 
-class ProjectList(ExportMixin, SingleTableView): # TODO , FilterView
+# also never removed
+
+class ProjectList(ExportMixin, SingleTableView):  # TODO , FilterView
     model = Project
     table_class = tables.ProjectTable
     template_name = 'scenario/generic_list.html'
-    exclude_columns = ('edit_column','delete_column',)
-    # filterset_class = ScenarioFilter
-    #
+    exclude_columns = ('edit_column', 'delete_column',)
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return HttpResponseRedirect(reverse_lazy('accounts:login'))
@@ -324,8 +336,9 @@ class ProjectList(ExportMixin, SingleTableView): # TODO , FilterView
         context_data['header_2'] = 'Projects'
         context_data['active_link'] = 'project'
         context_data['can_add'] = True
-        context_data['new_url'] = '' # reverse('scenario:project_create')
+        context_data['new_url'] = ''
         return context_data
+
 
 """
 ###############################################################################
@@ -336,25 +349,22 @@ class ProjectList(ExportMixin, SingleTableView): # TODO , FilterView
 
 
 def test_partial(request):
-    sortid = request.GET.get('sortid')
-    cost_item_default_costs = CostItemDefaultCosts.objects.all() # .order_by('user').order_by('project_title')
+    cost_item_default_costs = CostItemDefaultCosts.objects.all()
 
-    context = {'something':'here'}
+    context = {'something': 'here'}
 
     if request.is_ajax():
         template = 'test_partial/partial-results.html'
     else:
         template = 'test_partial/result-page.html'
-    return render(request, template,   {'cost_item_default_costs':cost_item_default_costs}, context)
-
-
-
-
+    return render(request, template, {'cost_item_default_costs': cost_item_default_costs}, context)
 
 
 """
     TBD
 """
+
+
 def costitem_defaultcosts_update(request, pk):
     costitem_defaultcosts = get_object_or_404(CostItemDefaultCosts, pk=pk)
 
@@ -362,9 +372,9 @@ def costitem_defaultcosts_update(request, pk):
     serializer_class = CostItemDefaultCostSerializer
     serializer = serializer_class(costitem_defaultcosts)
 
-    context_data = {'costitem_defaultcosts': serializer.data}
-    context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
+    context_data = {'costitem_defaultcosts': serializer.data, 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'scenario/costtool/index.html', context_data)
+
 
 """
 
@@ -372,8 +382,9 @@ def costitem_defaultcosts_update(request, pk):
     this is URL scenario_save_url
 
 """
-def scenario_save(request):
 
+
+def scenario_save(request):
     if request.method != 'POST':
         return JsonResponse({'Error': 'Only POST is accepted by scenario_save()'})
 
@@ -382,18 +393,16 @@ def scenario_save(request):
     form_data = json.loads(posted_data)
 
     # CREATE
-    #TODO: remove this - we will do adds using the db, not this UI
+    # TODO: remove this - we will do adds using the db, not this UI
     if ('scenario_id' in form_data
             and (form_data['scenario_id'] == 'undefined'
-                or form_data['scenario_id'] == '')):
+                 or form_data['scenario_id'] == '')):
 
         try:
             scenario = Scenario.objects.create(
-                # user = request.user,
-                project_id = form_data['project_id'],
-                scenario_title = form_data['siteData']['embedded_scenario']['scenario_title'],
-
-             )
+                project_id=form_data['project_id'],
+                scenario_title=form_data['siteData']['embedded_scenario']['scenario_title'],
+            )
 
             if not scenario is None:
                 form_data['scenario_id'] = scenario.id
@@ -404,11 +413,12 @@ def scenario_save(request):
             scenario.save()
         except Exception as error:
             form_data['Error'] = {'Type': type(error).__name__,
-                                 'message': "Unexpected error:" + error.args[0],
-                                 }
+                                  'message': "Unexpected error:" + error.args[0],
+                                  }
 
-            #DB_SPECIFIC
-            if (error.args[0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
+            # DB_SPECIFIC
+            if (error.args[
+                0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
                 form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
                                                 + "scenario with the the same Project Title and Scenario Title"
                 form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
@@ -418,13 +428,13 @@ def scenario_save(request):
         form_data['scenario_id'] = scenario.id
 
         form_data['uiMessage'] = {'redirect_required':
-                                     { 'reason': 'added',
+                                      {'reason': 'added',
                                        'scenario_id': scenario.id,
                                        'redirect_to': reverse('scenario:scenario_update', kwargs={'pk': scenario.id})
-                                     }
-                                }
+                                       }
+                                  }
 
-    else: # UPDATE
+    else:  # UPDATE
         # TODO: check that it found the object
         scenario = get_object_or_404(Scenario, pk=form_data['scenario_id'])
 
@@ -441,7 +451,8 @@ def scenario_save(request):
                                   'message': "1.232 Unexpected error:" + str(error.args[0]),
                                   }
             # DB_SPECIFIC
-            if (error.args[0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
+            if (error.args[
+                0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
                 form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
                                                 + "scenario with the the same Project Title and Scenario Title"
                 form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
@@ -450,7 +461,6 @@ def scenario_save(request):
                 form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
                                                 + "scenario with the the same Project Title and Scenario Title"
                 form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
-
 
         # TADA
 
@@ -474,13 +484,11 @@ def scenario_save(request):
 
         disclaimer_tx = render_to_string('scenario/results_disclaimer.html')
         form_data['html_result'] = disclaimer_tx + scenario_table_html(scenario)
-            # testobj = ScenarioResults()
+        # testobj = ScenarioResults()
 
-                # render_to_string(template_name, context, request=request)
-
+        # render_to_string(template_name, context, request=request)
 
     return JsonResponse(form_data)
-
 
 
 #
@@ -512,21 +520,22 @@ class StructureCosts(APIView):
         if 'format' in request.query_params and request.query_params['format'] == 'json':
             # return the content as JSON
             return JsonResponse(structure_cost_item_json(structure,
-                                                          scenario_data,
-                                                          cost_item_default_costs,
-                                                          cost_item_default_factors,
-                                                          cost_item_user_costs,
-                                                          cost_item_user_assumptions,
-                                                          ))
+                                                         scenario_data,
+                                                         cost_item_default_costs,
+                                                         cost_item_default_factors,
+                                                         cost_item_user_costs,
+                                                         cost_item_user_assumptions,
+                                                         ))
         else:
             # return the scenario as an HTML table
             return HttpResponse(structure_cost_item_table_html(structure,
-                                                              scenario_data,
-                                                              cost_item_default_costs,
-                                                              cost_item_default_factors,
-                                                              # cost_item_user_costs,
-                                                              cost_item_user_assumptions
+                                                               scenario_data,
+                                                               cost_item_default_costs,
+                                                               cost_item_default_factors,
+                                                               # cost_item_user_costs,
+                                                               cost_item_user_assumptions
                                                                ))
+
 
 #
 # this is the Structure Cost data in a single html partial table or JSON
@@ -582,14 +591,14 @@ class StructureCosts(APIView):
 #         return JsonResponse(scenario.get_costs())
 
 
-
 """
     convert units between Structure Units and Cost Item units
     i.e. ft2 and square yards, ft2 and AC
 
 """
-def get_unit_conversion(structure_units, cost_item_units):
 
+
+def get_unit_conversion(structure_units, cost_item_units):
     conversion_factor = '1'
     structure_units = structure_units.upper()
     cost_item_units = cost_item_units.upper()
@@ -625,7 +634,6 @@ def get_unit_conversion(structure_units, cost_item_units):
         elif cost_item_units == 'CY':
             conversion_factor = '1/27'
 
-
     return conversion_factor
 
 
@@ -637,13 +645,13 @@ def get_unit_conversion(structure_units, cost_item_units):
 
 
 def structure_cost_item_result_json(structure,
-                             scenario_data,
-                             cost_item_default_costs,
-                             cost_item_default_assumptions,  # this knows which items to check 'by default'
-                             cost_item_user_costs,
-                             # cost_item_user_assumptions,  # this knows which items the user checked
+                                    scenario_data,
+                                    cost_item_default_costs,
+                                    cost_item_default_assumptions,  # this knows which items to check 'by default'
+                                    cost_item_user_costs,
+                                    # cost_item_user_assumptions,  # this knows which items the user checked
 
-                             ):
+                                    ):
     if structure.classification == 'conventional':
         structure.area = scenario_data['conventional_structures'].value[structure.code]['area']
     else:
@@ -676,7 +684,7 @@ def structure_cost_item_result_json(structure,
                                                   'd_density': obj.d_density,
                                                   'n_number': obj.n_number,
                                                   'help_text': obj.help_text
-                                                }
+                                                  }
 
     for obj in cost_item_default_assumptions:
         structure_costs['data'][obj.costitem.code] = {'checked': True,
@@ -745,7 +753,8 @@ def structure_cost_item_result_json(structure,
     # now add in the equation
     for cost_item_default_assumptions_obj in cost_item_default_assumptions:
         costitem_code = cost_item_default_assumptions_obj.costitem.code
-        structure_costs['data'][costitem_code]['equation'] = cost_item_default_assumptions_obj.construction_cost_factor_equation
+        structure_costs['data'][costitem_code][
+            'equation'] = cost_item_default_assumptions_obj.construction_cost_factor_equation
 
     """
         TADA - this is the calculation (started on this 2019-07-15)
@@ -843,13 +852,12 @@ def structure_cost_item_result_json(structure,
 
 def structure_cost_item_json(structure,
                              scenario_data,
-                              cost_item_default_costs,
-                              cost_item_default_factors, # this knows which items to check 'by default'
-                              cost_item_user_costs,
-                              cost_item_user_assumptions, # this knows which items the user checked
+                             cost_item_default_costs,
+                             cost_item_default_factors,  # this knows which items to check 'by default'
+                             cost_item_user_costs,
+                             cost_item_user_assumptions,  # this knows which items the user checked
 
-                              ):
-
+                             ):
     cost_item_default_equations = CostItemDefaultEquations.objects.all().order_by("costitem__sort_nu")
 
     structure.area = 0
@@ -867,13 +875,13 @@ def structure_cost_item_json(structure,
     #   scenario_json['cost_item_user_assumptions']
     # cost_item_user_assumptions = scenario_json['cost_item_user_assumptions']
 
-    structure_costs = {'structure': { 'code': structure.code,
-                                      'name': structure.name,
-                                      'area': structure.area,
-                                      'units': structure.units,
-                                      'units_html': structure.units_html,
-                                      },
-                                       'data': {} }
+    structure_costs = {'structure': {'code': structure.code,
+                                     'name': structure.name,
+                                     'area': structure.area,
+                                     'units': structure.units,
+                                     'units_html': structure.units_html,
+                                     },
+                       'data': {}}
 
     """
         there are 3 sources of 'Structure Costs' data 
@@ -887,7 +895,7 @@ def structure_cost_item_json(structure,
         1. checked cost item
         2. set value in Factor Assumptions, Sizing Factor (k) or Sizing Factor (n)
     '''
-    #jab new - get equation from CostItemDefaultEquations table
+    # jab new - get equation from CostItemDefaultEquations table
     for obj in cost_item_default_equations:
         costitem_code = obj.costitem.code
         structure_costs['data'][costitem_code] = {'equation': obj.equation_tx,
@@ -898,13 +906,11 @@ def structure_cost_item_json(structure,
                                                   'd_density': obj.d_density,
                                                   'n_number': obj.n_number,
                                                   'help_text': obj.help_text
-                                                }
-
+                                                  }
 
     seen_costitem_codes = set()
     if len(cost_item_user_assumptions) > 0:
-         for obj in cost_item_user_assumptions:
-
+        for obj in cost_item_user_assumptions:
             costitem_code = obj.costitem.code
 
             seen_costitem_codes.add(costitem_code)
@@ -919,13 +925,11 @@ def structure_cost_item_json(structure,
         costitem_code = obj.costitem.code
 
         if costitem_code not in seen_costitem_codes:
-
             structure_costs['data'][costitem_code]['checked'] = True
             structure_costs['data'][costitem_code]['a_area'] = obj.a_area
             structure_costs['data'][costitem_code]['z_depth'] = obj.z_depth
             structure_costs['data'][costitem_code]['d_density'] = obj.d_density
             structure_costs['data'][costitem_code]['n_number'] = obj.n_number
-
 
     '''
         these are cost items that are set as defaults for this Structure 
@@ -935,10 +939,10 @@ def structure_cost_item_json(structure,
     # pass
     # for obj in cost_item_default_assumptions:
     #     costitem_code = obj.costitem.code
-        # structure_costs['data'][costitem_code]['checked'] = obj.checked
-        # structure_costs['data'][costitem_code]['factor_assumption_tx'] = obj.factor_assumption_tx
-        # structure_costs['data'][costitem_code]['sizing_factor_k'] = obj.sizing_factor_k
-        # structure_costs['data'][costitem_code]['sizing_factor_n'] = obj.sizing_factor_n
+    # structure_costs['data'][costitem_code]['checked'] = obj.checked
+    # structure_costs['data'][costitem_code]['factor_assumption_tx'] = obj.factor_assumption_tx
+    # structure_costs['data'][costitem_code]['sizing_factor_k'] = obj.sizing_factor_k
+    # structure_costs['data'][costitem_code]['sizing_factor_n'] = obj.sizing_factor_n
 
     '''
         new change to use defaults from CostItemDefaultEquations table
@@ -954,7 +958,6 @@ def structure_cost_item_json(structure,
     #                      'help_text'):
     #         if getattr(obj, field_nm):
     #             structure_costs['data'][costitem_code][field_nm] = getattr(obj, field_nm)
-
 
     # first add in the cost_item_user_costs
     for obj in cost_item_user_costs:
@@ -1055,7 +1058,7 @@ def structure_cost_item_json(structure,
 
             equation = cost_item_data['equation']
 
-            #TODO: figure out where to put this
+            # TODO: figure out where to put this
             # equation = equation + '*' + 'unit_conversion'
 
             equation = equation.replace('=', '')
@@ -1079,10 +1082,10 @@ def structure_cost_item_json(structure,
                 cost_item_data['equation_value'] = '{:,.2f}'.format(cost_amount)
                 cost_item_data['construction_cost'] = round(cost_amount, 2)
                 # cost_item_data['unit_cost_formatted'] = '${:,.2f}'.format(cost_item_data['unit_cost'])
-            except :
+            except:
                 cost_amount = equation
                 cost_item_data['equation_value'] = 'err:' + cost_amount
-                cost_item_data['construction_cost'] = 999 # stub used for debugging error
+                cost_item_data['construction_cost'] = 999  # stub used for debugging error
 
     """
          NOW - this is the calculation from post-construction costs (started on this 2019-11-12)
@@ -1102,7 +1105,7 @@ def structure_cost_item_json(structure,
     """
     for cost_item in structure_costs['data']:
         cost_item_data = structure_costs['data'][cost_item]
-        if cost_item_data['checked'] == True:
+        if cost_item_data['checked'] is True:
             construction_cost = round(float(cost_item_data.pop('construction_cost')), 2)
             planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 2)
 
@@ -1114,25 +1117,24 @@ def structure_cost_item_json(structure,
             o_and_m_costs = 0
             if o_and_m_pct != 0:
                 for i in range(1, study_life + 1, 1):
-                    o_and_m_costs += (construction_cost * (o_and_m_pct/100)) / (1 + (discount_rate/100)) ** i
+                    o_and_m_costs += (construction_cost * (o_and_m_pct / 100)) / (1 + (discount_rate / 100)) ** i
 
             number_of_replacements = 0
             if replacement_life != 0 and study_life > replacement_life:
                 number_of_replacements = int(round(study_life / replacement_life, 0))
 
             value_of_first_replacement = 0
-            # =(construction_cost/(1+(discount_rate/100))^i)
-            value_of_first_replacement = 0
             replacement_years = []
             replacement_costs = 0
             if number_of_replacements == 1:
                 replacement_years.append(replacement_life)
-                replacement_costs = round((construction_cost / (1 + (discount_rate/100)) ** replacement_life), 2)
+                replacement_costs = round((construction_cost / (1 + (discount_rate / 100)) ** replacement_life), 2)
                 value_of_first_replacement = replacement_costs
             elif number_of_replacements > 0:
-                for i in range(int(study_life / int(number_of_replacements)), study_life + 1, int(study_life / int(number_of_replacements))):
+                for i in range(int(study_life / int(number_of_replacements)), study_life + 1,
+                               int(study_life / int(number_of_replacements))):
                     replacement_years.append(i)
-                    replacement_cost = round(construction_cost / (1 + (discount_rate/100)) ** i, 2)
+                    replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 2)
                     replacement_costs += replacement_cost
                     # replacements.append(replacement_cost)
                     if value_of_first_replacement == 0:
@@ -1194,10 +1196,9 @@ def structure_cost_item_table_html(structure,
                                    scenario_data,
                                    cost_item_default_costs,
 
-                                   structure_cost_items_data,#TODO change to whatever this should be
+                                   structure_cost_items_data,  # TODO change to whatever this should be
                                    cost_item_user_assumptions
-                                ):
-
+                                   ):
     template_name = "scenario/includes/partial_structure_costs.html"
     if structure.classification == 'conventional':
         structure.area = scenario_data['conventional_structures'].value[structure.code]['area']
@@ -1209,7 +1210,6 @@ def structure_cost_item_table_html(structure,
             for cost_item_user_assumptions_obj in cost_item_user_assumptions:
                 if cost_item_user_assumptions_obj.structure.code == structure.code:
                     if cost_item_default_costs_obj.costitem.code == cost_item_user_assumptions_obj.costitem.code:
-
                         cost_item_default_costs_obj.checked = cost_item_user_assumptions_obj.checked
                         cost_item_default_costs_obj.conversion_factor = cost_item_user_assumptions_obj.conversion_factor
                         cost_item_default_costs_obj.factor_assumption_tx = cost_item_user_assumptions_obj.factor_assumption_tx
@@ -1222,19 +1222,19 @@ def structure_cost_item_table_html(structure,
             for structure_cost_items_data_obj in structure_cost_items_data:
                 if structure_cost_items_data_obj.structure.code == structure.code:
                     if cost_item_default_costs_obj.costitem.code == structure_cost_items_data_obj.costitem.code:
-
                         cost_item_default_costs_obj.checked = True
 
                         # print("for " + structure_code + ' checked ' + structure_cost_items_data_obj.costitem.code)
 
     context = {
-                'structure': structure,
-                'scenario': scenario_data,
-                'cost_item_default_costs': cost_item_default_costs,
-                'structure_cost_items': structure_cost_items_data,
-            }
+        'structure': structure,
+        'scenario': scenario_data,
+        'cost_item_default_costs': cost_item_default_costs,
+        'structure_cost_items': structure_cost_items_data,
+    }
 
     return render_to_string(template_name, context)
+
 
 #
 # this is the Structure Help returns a single html partial table
@@ -1256,16 +1256,18 @@ class StructureHelp(APIView):
         # return the scenario as an HTML table
         return HttpResponse(structure_help_html(structure_meta, structure_code))
 
+
 #
 # TBD
 #
 def structure_help_html(structure_meta, structure_code):
     template_name = "scenario/includes/partial_structure_help.html"
     context = {
-                'structure_code': structure_code,
-                'structure_meta': structure_meta,
-            }
+        'structure_code': structure_code,
+        'structure_meta': structure_meta,
+    }
     return render_to_string(template_name, context)
+
 
 #
 # this is the Structure Cost Help returns a single html partial table
@@ -1286,17 +1288,17 @@ class CostItemHelp(APIView):
         # return the scenario as an HTML table
         return HttpResponse(costitem_help_html(costitem_meta, costitem_code))
 
+
 #
 # this is the also scenario data in a single html partial table
 #
 def costitem_help_html(costitem_meta, costitem_code):
     template_name = "scenario/includes/partial_costitem_help.html"
     context = {
-                'costitem_code': costitem_code,
-                'costitem_meta': costitem_meta,
-            }
+        'costitem_code': costitem_code,
+        'costitem_meta': costitem_meta,
+    }
     return render_to_string(template_name, context)
-
 
 
 class CompareScenarioResults(APIView):
@@ -1324,10 +1326,11 @@ class CompareScenarioResults(APIView):
 
         context = {'scenarios': scenarios,
                    'comparison': comparison,
-                   'IIS_APP_ALIAS': settings.IIS_APP_ALIAS }
+                   'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
         #
         #
         return Response(context)
+
 
 class CompareScenarioColumn(APIView):
 
@@ -1335,7 +1338,6 @@ class CompareScenarioColumn(APIView):
         pass
 
     def get(self, request):
-        scenarios = {}
         id_tx = request.query_params['id']
         ids = id_tx.split(',')
 
@@ -1371,7 +1373,6 @@ class ScenarioResults(APIView):
 # generate the Results table and return as an HTML string (make sure this is true)
 #
 def comparison_column(ids, left_scenario, right_scenario):
-
     # this is templates/scenario/results
     template_name = "scenario/comparison_column.html"
 
@@ -1381,17 +1382,16 @@ def comparison_column(ids, left_scenario, right_scenario):
     left_costs = left.get_costs()
     right_costs = right.get_costs()
 
-    diff = {}
-    diff['design_elements'] = False
+    diff = {'design_elements': False}
     if left.nutrient_req_met != right.nutrient_req_met \
-        or left.captures_90pct_storm != right.captures_90pct_storm \
-        or left.meets_peakflow_req != right.meets_peakflow_req:
+            or left.captures_90pct_storm != right.captures_90pct_storm \
+            or left.meets_peakflow_req != right.meets_peakflow_req:
         diff['design_elements'] = True
 
     diff['planning_and_design'] = False
     if left.planning_and_design_factor != right.planning_and_design_factor \
-        or left.study_life != right.study_life \
-        or left.discount_rate != right.discount_rate :
+            or left.study_life != right.study_life \
+            or left.discount_rate != right.discount_rate:
         diff['planning_and_design'] = True
 
     diff['pervious_area'] = left.pervious_area or 0 - right.pervious_area or 0
@@ -1410,7 +1410,7 @@ def comparison_column(ids, left_scenario, right_scenario):
     costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
     costs['replacement'] = left_total['replacement'] - right_total['replacement']
     costs['total'] = costs['construction'] + costs['planning_and_design'] + \
-                                        costs['o_and_m'] + costs['replacement']
+                     costs['o_and_m'] + costs['replacement']
 
     diff['project_life_cycle_costs'] = costs
 
@@ -1423,7 +1423,7 @@ def comparison_column(ids, left_scenario, right_scenario):
     costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
     costs['replacement'] = left_total['replacement'] - right_total['replacement']
     costs['total'] = costs['construction'] + costs['planning_and_design'] + \
-                                        costs['o_and_m'] + costs['replacement']
+                     costs['o_and_m'] + costs['replacement']
 
     diff['conventional'] = costs
 
@@ -1436,7 +1436,7 @@ def comparison_column(ids, left_scenario, right_scenario):
     costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
     costs['replacement'] = left_total['replacement'] - right_total['replacement']
     costs['total'] = costs['construction'] + costs['planning_and_design'] + \
-                                        costs['o_and_m'] + costs['replacement']
+                     costs['o_and_m'] + costs['replacement']
 
     diff['nonconventional'] = costs
 
@@ -1455,25 +1455,26 @@ def comparison_column(ids, left_scenario, right_scenario):
         left_area = left_obj['area'] if left_obj['checkbox'] is True else 0
         diff_area = left_area or 0 - right_area or 0
         diff_area_sum += diff_area
-        areal_features['item_list'][r] = {'label': right_obj['label'], 'area': diff_area }
+        areal_features['item_list'][r] = {'label': right_obj['label'], 'area': diff_area}
         if r == 'stormwater_management_feature':
             areal_features['item_list'][r]['project_land_unit_cost'] = left_scenario.project.land_unit_cost
-            areal_features['item_list'][r]['project_land_cost_diff'] = (left_area or 0 - right_area or 0 ) * left_scenario.project.land_unit_cost
+            areal_features['item_list'][r]['project_land_cost_diff'] = (
+                                                                                   left_area or 0 - right_area or 0) * left_scenario.project.land_unit_cost
 
     areal_features['total_area'] = diff_area_sum
     diff['areal_features'] = areal_features
 
     context = {
-                'diff': diff,
-               }
+        'diff': diff,
+    }
 
     return render_to_string(template_name, context)
+
 
 #
 # generate the Results table and return as an HTML string (make sure this is true)
 #
 def scenario_table_html(scenario):
-
     # this is templates/scenario/results
     template_name = "scenario/results.html"
 
@@ -1582,8 +1583,8 @@ def scenario_table_html(scenario):
                 else:
                     unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
                 base_year = cost_item_user_cost_dict[code]['base_year']
-            #TBD the cost_source text should match, or almost match, the variable name
-            #TODO change text to db_25pct_va or at least db_25pct
+            # TBD the cost_source text should match, or almost match, the variable name
+            # TODO change text to db_25pct_va or at least db_25pct
             elif cost_item_user_cost_dict[code]['cost_source'] == 'db_25_pct':
                 cost_source_tx = 'DB - 25%'
                 unit_cost = cost_item_obj.db_25pct_va
@@ -1608,9 +1609,6 @@ def scenario_table_html(scenario):
             'o_and_m_pct_source': o_and_m_pct_source
         })
 
-
-
-
     for cost_item_obj in cost_item_costs:
         code = cost_item_obj['code']
 
@@ -1624,7 +1622,6 @@ def scenario_table_html(scenario):
                 # change the value to a Money
                 cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD').amount
                 cost_item_obj['base_year'] = cost_item_user_cost_dict[code]['base_year']
-
 
     #
     # TODO: now create the computed costs part
@@ -1644,7 +1641,6 @@ def scenario_table_html(scenario):
     for cost_item in cost_item_costs:
         if cost_item['code'] in cost_items_seen:
             final_cost_item_costs.append(cost_item)
-
 
     project_life_cycle_costs = cost_results.pop('project_life_cycle_costs')
     structure_life_cycle_costs = cost_results.pop('structure_life_cycle_costs')
@@ -1673,9 +1669,8 @@ def scenario_table_html(scenario):
 class ScenarioExcelResults(generic.View):
 
     def get(self, request, pk):
-
         # create and populate the workbook and return it as an output stream
-        output = scenario_workbook([pk,])
+        output = scenario_workbook([pk, ])
 
         # Set up the Http response.
         filename = 'scenario_results.xlsx'
@@ -1710,9 +1705,12 @@ class CompareScenarioExcelResults(APIView):
 
         return response
 
+
 """
     this is the wide and very complex export of all the data into a spreadsheet
 """
+
+
 class ScenarioExtendedExcelReport(APIView):
 
     def get(self, request, multiple_pks):
@@ -1735,13 +1733,14 @@ class ScenarioExtendedExcelReport(APIView):
 
         return response
 
+
 """
     this populates the workbook on the output stream provides and using the scenario_id provided
 
 """
 
-def scenario_workbook(scenario_ids):
 
+def scenario_workbook(scenario_ids):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
 
@@ -1772,13 +1771,14 @@ def scenario_workbook(scenario_ids):
 
     return output
 
+
 """
     this populates the workbook on the output stream provides and using the scenario_id provided
     this is the wide version of the export
 """
 
-def scenario_extended_excel_report(scenario_ids):
 
+def scenario_extended_excel_report(scenario_ids):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
 
@@ -1809,8 +1809,8 @@ def scenario_extended_excel_report(scenario_ids):
 
     return output
 
-def create_formats(workbook):
 
+def create_formats(workbook):
     # helper for reusing partial formats
     def copy_format(book, fmt):
         properties = [f[4:] for f in dir(fmt) if f[0:4] == 'set_']
@@ -1891,7 +1891,6 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
     # region --worksheet--
 
-
     worksheet.set_column(start_col, start_col, 27)
     worksheet.set_column(start_col + 1, start_col + 1, 20)
     worksheet.set_column(start_col + 2, start_col + 2, 25)
@@ -1920,7 +1919,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     col = start_col
 
     # Iterate over the data and write it out row by row.
-    for label, value, format in (project_description):
+    for label, value, format in project_description:
         worksheet.write(row, col, label, formats['label_col'])
         if format == 'text':
             worksheet.write(row, col + 1, value)
@@ -2085,10 +2084,13 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
         # endregion
 
+
 '''
 make the wide version of the export
 WORK IN PROGRESS
 '''
+
+
 def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenario_id, formats, start_row=0):
     # region --get data--
     #
@@ -2117,7 +2119,6 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
     worksheet.set_column(start_col + 7, start_col + 7, 30)
     worksheet.set_column(start_col + 8, start_col + 8, 18)
     worksheet.set_column(start_col + 9, start_col + 9, 11.5)
-
 
     # Write some data headers.
     if start_row == 0:
@@ -2184,8 +2185,6 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
         worksheet.write(start_row + 1, col, value, format)
 
         col += 1
-
-
 
     # worksheet.merge_range(row, col, row + 1, col + 2, 'Life Cycle Costs Assumptions', formats['merge_format'])
     #
@@ -2298,20 +2297,23 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 
         # endregion
 
+
 """
     scenario as function based views using ajax to feed in data
     
     http://127.0.0.1:92/projects/scenarios/
 """
+
+
 @login_required
 def scenario_list(request, pk=None):
     # scenarios = Scenario.objects.all()
     # projects = Project.objects.all()
     project = None
     #
-    if not pk==None:
-    #     scenarios = Scenario.objects.filter(project__id=pk)
-        project = get_object_or_404(Project, id=pk) # Project.objects.filter(id=pk)
+    if not pk == None:
+        #     scenarios = Scenario.objects.filter(project__id=pk)
+        project = get_object_or_404(Project, id=pk)  # Project.objects.filter(id=pk)
     # elif not (request.user.is_superuser or request.user.is_staff):
     #     scenarios = Scenario.objects.filter(project__user=request.user, project__id=projects[0].id)
     #     projects = Project.objects.filter(user=request.user)
@@ -2321,17 +2323,18 @@ def scenario_list(request, pk=None):
     #     scenarios = Scenario.objects.filter(project__id=request.POST.get('project_id'))
 
     context_data = {
-        #'scenarios': scenarios,
-                    #'projects': projects,
-                    'project': project,
-                    'header': 'Scenarios'}
+        # 'scenarios': scenarios,
+        # 'projects': projects,
+        'project': project,
+        'header': 'Scenarios'}
     if request.user.has_perm('scenario.add_project'):
         context_data['can_add'] = True
 
-    #jab - added for beta-user-testing.  allow all users to add
+    # jab - added for beta-user-testing.  allow all users to add
     context_data['can_add'] = True
     context_data['IIS_APP_ALIAS'] = settings.IIS_APP_ALIAS
     return render(request, 'scenario/scenario_index.html', context_data)
+
 
 # def save_scenario_form(request, form, template_name):
 #     data = dict()
@@ -2349,6 +2352,8 @@ def scenario_list(request, pk=None):
 this has to have the pk of the project you are adding the scenario to
 
 '''
+
+
 def scenario_create(request, project_id=None):
     project = get_object_or_404(Project, id=project_id)
     # structures = Structures.objects.all().order_by("sort_nu")
@@ -2422,6 +2427,8 @@ def scenario_create(request, project_id=None):
     
 ###########################################################################
 """
+
+
 def scenario_duplicate(request, pk):
     scenario = get_object_or_404(Scenario, pk=pk)
     data = dict()
@@ -2442,8 +2449,6 @@ def scenario_duplicate(request, pk):
             scenario.scenario_title = form_variable_scenario_title
         else:
             scenario.scenario_title += ' (copy)'
-
-
 
         areal_features.pk = None
         areal_features.scenario = scenario
@@ -2480,7 +2485,8 @@ def scenario_duplicate(request, pk):
 
     else:
         context = {'scenario': scenario}
-        data['html_form'] = render_to_string('scenario/includes/partial_scenario_duplicate.html', context, request=request)
+        data['html_form'] = render_to_string('scenario/includes/partial_scenario_duplicate.html', context,
+                                             request=request)
 
     return JsonResponse(data)
 
@@ -2496,6 +2502,8 @@ def scenario_duplicate(request, pk):
 
 ###########################################################################
 """
+
+
 @login_required
 def scenario_update(request, pk):
     scenario = get_object_or_404(Scenario, pk=pk)
@@ -2536,23 +2544,24 @@ def scenario_update(request, pk):
     # disclaimer_tx = render_to_string('scenario/results_disclaimer.html')
 
     context = {
-                'scenario': serializer.data,
-                'project': scenario.project,
-                'structures': structures,
-                'cost_item_user_costs': cost_item_user_costs,
-                # 'cost_item_user_assumptions': cost_item_user_assumptions,#rename StructureCosts
-                'cost_item_default_costs': cost_item_default_costs,
-                'result_table': 'removing this', # disclaimer_tx + scenario_table_html(scenario),
-                'IIS_APP_ALIAS': settings.IIS_APP_ALIAS,
-               }
+        'scenario': serializer.data,
+        'project': scenario.project,
+        'structures': structures,
+        'cost_item_user_costs': cost_item_user_costs,
+        # 'cost_item_user_assumptions': cost_item_user_assumptions,#rename StructureCosts
+        'cost_item_default_costs': cost_item_default_costs,
+        'result_table': 'removing this',  # disclaimer_tx + scenario_table_html(scenario),
+        'IIS_APP_ALIAS': settings.IIS_APP_ALIAS,
+    }
 
     return render(request, 'scenario/costtool/index.html', context)
-
 
 
 """
     this is the content of the Confirm scenario deletion pop-up
 """
+
+
 def scenario_delete(request, pk):
     scenario = get_object_or_404(Scenario, pk=pk)
     data = dict()
@@ -2564,12 +2573,12 @@ def scenario_delete(request, pk):
         data['html_form'] = render_to_string('scenario/includes/partial_scenario_delete.html', context, request=request)
     return JsonResponse(data)
 
+
 #
 # this returns a JSON template stored in the Scenario model
 #  it is used to toggle disable/enable and look through fields
 #
 class TemplateScenario(APIView):
-
     template_version = Scenario.templateScenario
 
     # this part doesn't work.  it returns nothing except 'sort_nu': null
@@ -2581,10 +2590,10 @@ class TemplateScenario(APIView):
     def get(self, request):
         return Response(self.template_version)
 
+
 class DefaultScenario(APIView):
     def get(self, request):
         return Response(Scenario.defaultScenario)
-
 
 
 """
@@ -2592,11 +2601,14 @@ class DefaultScenario(APIView):
     Scenario
     
 """
-class ScenarioList(ExportMixin, SingleTableView): # TODO , FilterView
+
+
+class ScenarioList(ExportMixin, SingleTableView):  # TODO , FilterView
     model = Scenario
     table_class = tables.ScenarioTable
     template_name = 'scenarioOLD/generic_list.html'
-    exclude_columns = ('edit_column','delete_column',)
+    exclude_columns = ('edit_column', 'delete_column',)
+
     # filterset_class = ScenarioFilter
     #
     def dispatch(self, request, *args, **kwargs):
@@ -2622,12 +2634,13 @@ class ScenarioList(ExportMixin, SingleTableView): # TODO , FilterView
         return context_data
 
 
-
 """
 
 I think this is not used and should be removed
 
 """
+
+
 class ScenarioUpdate(PermissionRequiredMixin, generic.UpdateView):
     model = Scenario
     form_class = ScenarioEditForm
@@ -2641,7 +2654,7 @@ class ScenarioUpdate(PermissionRequiredMixin, generic.UpdateView):
         try:
             obj = self.model.objects.get(pk=self.kwargs['pk'])
         except self.model.DoesNotExist:
-            raise PermissionDenied # this way they can't "find" which things exist and which dont
+            raise PermissionDenied  # this way they can't "find" which things exist and which dont
 
         if (not self.request.user.is_superuser) and (obj.user != self.request.user):
             raise PermissionDenied
@@ -2682,10 +2695,11 @@ class ScenarioUpdate(PermissionRequiredMixin, generic.UpdateView):
         return response
 
 
-
 '''
     provided via /api/structures and /api/structures/?code=TBD
 '''
+
+
 class StructureViewSet(viewsets.ModelViewSet):
     queryset = Structures.objects.all().order_by("sort_nu")
     serializer_class = StructureSerializer
@@ -2699,9 +2713,12 @@ class StructureViewSet(viewsets.ModelViewSet):
 
         return qs
 
+
 '''
     provided via /api/costitems and /api/costitems/?code=fill
 '''
+
+
 class CostItemViewSet(viewsets.ModelViewSet):
     queryset = CostItem.objects.all().order_by("sort_nu")
     serializer_class = CostItemSerializer
@@ -2715,9 +2732,12 @@ class CostItemViewSet(viewsets.ModelViewSet):
 
         return qs
 
+
 '''
     provided via /api/costitemdefaultcosts and /api/costitemdefaultcosts/?code=fill
 '''
+
+
 class CostItemDefaultCostViewSet(viewsets.ModelViewSet):
     queryset = CostItemDefaultCosts.objects.all().order_by("costitem__sort_nu")
     serializer_class = CostItemDefaultCostSerializer
@@ -2731,9 +2751,12 @@ class CostItemDefaultCostViewSet(viewsets.ModelViewSet):
 
         return qs
 
+
 '''
     provided via /api/costitem_user_costs and /api/costitem_user_costs/?code=fill
 '''
+
+
 class CostItemUserCostViewSet(viewsets.ModelViewSet):
     queryset = CostItemUserCosts.objects.all().order_by("costitem__sort_nu")
     serializer_class = CostItemUserCostSerializer
@@ -2755,6 +2778,8 @@ class CostItemUserCostViewSet(viewsets.ModelViewSet):
 '''
     provided via /api/costitemdefaultequations and /api/costitemdefaultassumptions/?structure=pond&costitem=fill
 '''
+
+
 class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
     queryset = CostItemDefaultEquations.objects.all().order_by('costitem__sort_nu')
     serializer_class = CostItemDefaultEquationsSerializer
@@ -2768,9 +2793,12 @@ class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
 
         return qs
 
+
 '''
     provided via /api/costitemdefaultfactors and /api/costitemdefaultfactors/?structure=pond&costitem=fill
 '''
+
+
 class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
     queryset = CostItemDefaultFactors.objects.all().order_by('structure__sort_nu', 'costitem__sort_nu')
     serializer_class = CostItemDefaultFactorsSerializer
@@ -2788,6 +2816,7 @@ class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
 
         return qs
 
+
 '''
     provided via /api/scenarios and /api/scenarios/<pk:i>/
     
@@ -2796,6 +2825,8 @@ class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
     Detailed scenario instance(s)
     
 '''
+
+
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all().order_by('id')
 
@@ -2803,7 +2834,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioSerializer
 
     # this is the change required to use this on the list
-    #serializer_class = ScenarioListSerializer  # jab 2019-05-24 ScenarioSerializer
+    # serializer_class = ScenarioListSerializer  # jab 2019-05-24 ScenarioSerializer
 
     def get_queryset(self):
         qs = super(ScenarioViewSet, self).get_queryset()
@@ -2822,7 +2853,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
 
         return qs
 
-    #jab - learning 2019-06-02
+    # jab - learning 2019-06-02
     # def retrieve(self, request, pk=None):
     #     serializer = self.serializer_class(self.queryset, many=True)
     #     serializer_data = serializer.data
@@ -2837,6 +2868,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
     #     serializer_data['project'] = 'Hello'
     #     return Response(serializer_data)
 
+
 '''
     provided via /api/scenarios and /api/scenarios/<pk:i>/
 
@@ -2846,6 +2878,8 @@ class ScenarioViewSet(viewsets.ModelViewSet):
     this is used in the /project/<pk>/scenario list
 
 '''
+
+
 class ScenarioListViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all().order_by('id')
     # serializer_class = ScenarioSerializer
@@ -2880,6 +2914,8 @@ class ScenarioListViewSet(viewsets.ModelViewSet):
     this is used in the /project/<pk>/scenario list
 
 '''
+
+
 class ScenarioAuditViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all().order_by('id')
     # serializer_class = ScenarioSerializer
@@ -2909,6 +2945,8 @@ class ScenarioAuditViewSet(viewsets.ModelViewSet):
     provided via /api/cost_item_user_factors 
     and /api/cost_item_user_factors/?structure=pond&costitem=fill&scenario=8
 '''
+
+
 class CostItemUserAssumptionsViewSet(viewsets.ModelViewSet):
     queryset = CostItemUserAssumptions.objects.all().order_by('scenario__id', 'structure__sort_nu', 'costitem__sort_nu')
     serializer_class = CostItemUserAssumptionsSerializer
@@ -2930,9 +2968,12 @@ class CostItemUserAssumptionsViewSet(viewsets.ModelViewSet):
 
         return qs
 
+
 '''
     provided via /api/users
 '''
+
+
 class UserViewSet(viewsets.ViewSet):
     queryset = User.objects.all().order_by('name')
     serializer_class = UserSerializer
@@ -2951,9 +2992,9 @@ class UserViewSet(viewsets.ViewSet):
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
 
+
 """
 
     this is old stuff left here just in case I need to reuse something
 
 """
-

@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-import scenario.views
-
 from .models import Project, Scenario, Structures, \
     CostItem, \
     CostItemDefaultCosts, \
@@ -9,21 +7,12 @@ from .models import Project, Scenario, Structures, \
     CostItemDefaultEquations, \
     CostItemDefaultFactors, \
     CostItemUserAssumptions
-from djmoney.contrib.django_rest_framework import MoneyField
-# from django.contrib.auth.models import User
-# from django.conf import settings
-# try:
-#     from django.contrib.auth import get_user_model
-#     User = settings.AUTH_USER_MODEL
-# except ImportError:
-#     from django.contrib.auth.models import User
-
 from authtools.models import User
-
 from profiles.models import Profile
 
+
 class ProfileSerializer(serializers.ModelSerializer):
-    user_type = serializers.CharField();
+    user_type = serializers.CharField()
 
     def get_user_type(self, profile):
         return '%s' % profile.user_type.capitalize()
@@ -33,12 +22,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = '__all__'
 
-class UserSerializer(serializers.ModelSerializer):
 
+class UserSerializer(serializers.ModelSerializer):
     #
-    name = serializers.CharField();
+    name = serializers.CharField()
+
     def get_name(self, user):
         return '%s' % user.name.lower()
+
     # end
 
     profile = ProfileSerializer()
@@ -67,8 +58,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         read_only_fields = [f.name for f in User._meta.get_fields()]
 
-class ProjectSerializer(serializers.ModelSerializer):
 
+class ProjectSerializer(serializers.ModelSerializer):
     # DRF-Datatables can deal with nested serializers as well.
     user = UserSerializer()
 
@@ -142,20 +133,22 @@ class EmbeddedProjectSerializer(ProjectSerializer):
         )
         read_only_fields = [f.name for f in Project._meta.get_fields()]
 
+
 class EmbeddedProjectFields(serializers.Field):
 
     def get_project_ownership(self, obj):
         return obj.project.get_project_ownership_display()
+
     def get_project_type(self, obj):
         return obj.project.get_project_type_display()
+
     def get_project_purchase_information(self, obj):
         return obj.get_project_purchase_information_display()
 
     def to_representation(self, value):
-
         ret = {
             'project_id': value.id,
-            'user': { 'email': value.user.email },
+            'user': {'email': value.user.email},
             'project_title': value.project_title,
             # 'scenario_title': value.scenario_title,
             'land_unit_cost': value.land_unit_cost.amount,
@@ -167,7 +160,6 @@ class EmbeddedProjectFields(serializers.Field):
             'project_location': value.project_location,
             'project_purchase_information': value.project_purchase_information,
             'priority_watershed': value.priority_watershed,
-
 
             # these are display fields that show the CHOICE text
             'project_type_display': value.get_project_type_display(),
@@ -192,10 +184,10 @@ class EmbeddedProjectFields(serializers.Field):
         }
         return ret
 
+
 class EmbeddedScenarioFields(serializers.Field):
 
     def to_representation(self, value):
-
         ret = {
             'scenario_id': value.id,
             'scenario_title': value.scenario_title,
@@ -234,75 +226,76 @@ class EmbeddedScenarioFields(serializers.Field):
         return ret
 
 
-
-
 """
 
 """
+
+
 class EmbeddedArealFeatures(serializers.Field):
+
     def to_representation(self, value):
         ret = {
-                "stormwater_management_feature": {
-                    "label": 'Stormwater Management Feature',
-                    "checkbox": value.stormwater_management_feature_checkbox,
-                    "area": value.stormwater_management_feature_area
-                },
-                "amenity_plaza": {
-                    "label": 'Amenity Plaza',
-                    "checkbox": value.amenity_plaza_checkbox,
-                    "area": value.amenity_plaza_area
-                },
-                "protective_yard": {
-                    "label": 'Protective Yard',
-                    "checkbox": value.protective_yard_checkbox,
-                    "area": value.protective_yard_area
-                },
-                "parking_island": {
-                    "label": 'Parking Island',
-                    "checkbox": value.parking_island_checkbox,
-                    "area": value.parking_island_area
-                },
-                "building": {
-                    "label": 'Building',
-                    "checkbox": value.building_checkbox,
-                    "area": value.building_area
-                },
-                "drive_thru_facility": {
-                    "label": 'Drive-Thru Facility',
-                    "checkbox": value.drive_thru_facility_checkbox,
-                    "area": value.drive_thru_facility_area
-                },
-                "landscape": {
-                    "label": 'Miscellaneous Landscaping/Open Space',
-                    "checkbox": value.landscape_checkbox,
-                    "area": value.landscape_area
-                },
-                "sidewalk": {
-                    "label": 'Sidewalk',
-                    "checkbox": value.sidewalk_checkbox,
-                    "area": value.sidewalk_area
-                },
-                "street": {
-                    "label": 'Street',
-                    "checkbox": value.street_checkbox,
-                    "area": value.street_area
-                },
-                "median": {
-                    "label": 'Median',
-                    "checkbox": value.median_checkbox,
-                    "area": value.median_area
-                },
-                "parking_lot": {
-                    "label": 'Parking Lot',
-                    "checkbox": value.parking_lot_checkbox,
-                    "area": value.parking_lot_area
-                },
-                "driveway_and_alley": {
-                    "label": 'Driveway and Alley',
-                    "checkbox": value.driveway_and_alley_checkbox,
-                    "area": value.driveway_and_alley_area
-                }
+            "stormwater_management_feature": {
+                "label": 'Stormwater Management Feature',
+                "checkbox": value.stormwater_management_feature_checkbox,
+                "area": value.stormwater_management_feature_area
+            },
+            "amenity_plaza": {
+                "label": 'Amenity Plaza',
+                "checkbox": value.amenity_plaza_checkbox,
+                "area": value.amenity_plaza_area
+            },
+            "protective_yard": {
+                "label": 'Protective Yard',
+                "checkbox": value.protective_yard_checkbox,
+                "area": value.protective_yard_area
+            },
+            "parking_island": {
+                "label": 'Parking Island',
+                "checkbox": value.parking_island_checkbox,
+                "area": value.parking_island_area
+            },
+            "building": {
+                "label": 'Building',
+                "checkbox": value.building_checkbox,
+                "area": value.building_area
+            },
+            "drive_thru_facility": {
+                "label": 'Drive-Thru Facility',
+                "checkbox": value.drive_thru_facility_checkbox,
+                "area": value.drive_thru_facility_area
+            },
+            "landscape": {
+                "label": 'Miscellaneous Landscaping/Open Space',
+                "checkbox": value.landscape_checkbox,
+                "area": value.landscape_area
+            },
+            "sidewalk": {
+                "label": 'Sidewalk',
+                "checkbox": value.sidewalk_checkbox,
+                "area": value.sidewalk_area
+            },
+            "street": {
+                "label": 'Street',
+                "checkbox": value.street_checkbox,
+                "area": value.street_area
+            },
+            "median": {
+                "label": 'Median',
+                "checkbox": value.median_checkbox,
+                "area": value.median_area
+            },
+            "parking_lot": {
+                "label": 'Parking Lot',
+                "checkbox": value.parking_lot_checkbox,
+                "area": value.parking_lot_area
+            },
+            "driveway_and_alley": {
+                "label": 'Driveway and Alley',
+                "checkbox": value.driveway_and_alley_checkbox,
+                "area": value.driveway_and_alley_area
             }
+        }
         return ret
 
     def to_internal_value(self, data):
@@ -316,12 +309,15 @@ class EmbeddedArealFeatures(serializers.Field):
         }
         return ret
 
+
 """
 
 """
+
+
 class StructureSerializer(serializers.ModelSerializer):
-
     classification_display = serializers.SerializerMethodField()
+
     def get_classification_display(self, obj):
         return obj.get_classification_display()
 
@@ -339,48 +335,52 @@ class StructureSerializer(serializers.ModelSerializer):
             'help_text',
         )
         read_only_fields = [f.name for f in Structures._meta.get_fields()]
+
+
 """
 
 """
+
+
 class EmbeddedConventionalStructures(serializers.Field):
     def to_representation(self, value):
         ret = {
-                "stormwater_wetland": {
-                    "checkbox": value.stormwater_wetland_checkbox,
-                    "area": value.stormwater_wetland_area
-                },
-                "pond": {
-                    "checkbox": value.pond_checkbox,
-                    "area": value.pond_area
-                },
-                "rooftop": {
-                    "checkbox": value.rooftop_checkbox,
-                    "area": value.rooftop_area
-                },
-                "concrete": {
-                    "checkbox": value.concrete_checkbox,
-                    "area": value.concrete_area
-                },
-                "asphalt": {
-                    "checkbox": value.asphalt_checkbox,
-                    "area": value.asphalt_area
-                },
-                "lawn": {
-                    "checkbox": value.lawn_checkbox,
-                    "area": value.lawn_area
-                },
-                "landscaping": {
-                    "checkbox": value.landscaping_checkbox,
-                    "area": value.landscaping_area
-                },
-                "trench": {
-                    "checkbox": value.trench_checkbox,
-                    "area": value.trench_area
-                },
-                "curb_and_gutter": {
-                    "checkbox": value.curb_and_gutter_checkbox,
-                    "area": value.curb_and_gutter_area
-                },
+            "stormwater_wetland": {
+                "checkbox": value.stormwater_wetland_checkbox,
+                "area": value.stormwater_wetland_area
+            },
+            "pond": {
+                "checkbox": value.pond_checkbox,
+                "area": value.pond_area
+            },
+            "rooftop": {
+                "checkbox": value.rooftop_checkbox,
+                "area": value.rooftop_area
+            },
+            "concrete": {
+                "checkbox": value.concrete_checkbox,
+                "area": value.concrete_area
+            },
+            "asphalt": {
+                "checkbox": value.asphalt_checkbox,
+                "area": value.asphalt_area
+            },
+            "lawn": {
+                "checkbox": value.lawn_checkbox,
+                "area": value.lawn_area
+            },
+            "landscaping": {
+                "checkbox": value.landscaping_checkbox,
+                "area": value.landscaping_area
+            },
+            "trench": {
+                "checkbox": value.trench_checkbox,
+                "area": value.trench_area
+            },
+            "curb_and_gutter": {
+                "checkbox": value.curb_and_gutter_checkbox,
+                "area": value.curb_and_gutter_area
+            },
         }
         return ret
 
@@ -395,17 +395,19 @@ class EmbeddedConventionalStructures(serializers.Field):
         }
         return ret
 
+
 """
 
 """
+
+
 class EmbeddedNonConventionalStructures(serializers.Field):
     def to_representation(self, value):
         ret = {
-                "swale": {
-                    "checkbox": value.swale_checkbox,
-                    "area": value.swale_area
-                },
-
+            "swale": {
+                "checkbox": value.swale_checkbox,
+                "area": value.swale_area
+            },
             "rain_harvesting_device": {
                 "checkbox": value.rain_harvesting_device_checkbox,
                 "area": value.rain_harvesting_device_area
@@ -444,13 +446,17 @@ class EmbeddedNonConventionalStructures(serializers.Field):
         }
         return ret
 
+
 """
 
 """
+
+
 class CostItemSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         many = kwargs.pop('many', True)
         super(CostItemSerializer, self).__init__(many=many, *args, **kwargs)
+
     class Meta:
         model = CostItem
         fields = (
@@ -462,14 +468,16 @@ class CostItemSerializer(serializers.ModelSerializer):
         )
         read_only_fields = [f.name for f in CostItem._meta.get_fields()]
 
+
 """
 
     default values
     /api/costitemdefaultcosts
 
 """
-class CostItemDefaultCostSerializer(serializers.ModelSerializer):
 
+
+class CostItemDefaultCostSerializer(serializers.ModelSerializer):
     # each default cost is applied to a single costitem
     costitem = CostItemSerializer(many=False, read_only=True)
 
@@ -491,8 +499,9 @@ class CostItemDefaultCostSerializer(serializers.ModelSerializer):
 """
 
 """
-class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
 
+
+class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
     """
         the logic of the many=False is that in this case,
         there is one structure and one costitem for each 'CostItemDefaultAssumptions'
@@ -536,6 +545,7 @@ class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
             'n_number',
         )
         read_only_fields = [f.name for f in CostItemDefaultFactors._meta.get_fields()]
+
 
 class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
     # scenario = ScenarioSerializer(many=False, read_only=True)
@@ -589,6 +599,8 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
             # 'construction_cost_factor_equation',
         )
         read_only_fields = [f.name for f in CostItemUserAssumptions._meta.get_fields()]
+
+
 """
     this is returned into results in /projects/{pk}/scenario to just 
     list all the scenarios is first loaded
@@ -598,11 +610,12 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
 http://127.0.0.1:92/api/projects/1/scenarios/
 
 """
+
+
 #
 
 #
 class ScenarioListSerializer(serializers.ModelSerializer):
-
     # user = UserSerializer()
 
     # project = EmbeddedProjectFields()
@@ -610,6 +623,7 @@ class ScenarioListSerializer(serializers.ModelSerializer):
     # embedded_scenario = EmbeddedScenarioFields(source='*')
 
     project_title = serializers.SerializerMethodField()
+
     def get_project_title(self, scenario):
         return '%s' % scenario.project.project_title
 
@@ -622,13 +636,16 @@ class ScenarioListSerializer(serializers.ModelSerializer):
 
     def get_nutrient_req_met(self, obj):
         return obj.get_nutrient_req_met_display()
+
     def get_captures_90pct_storm(self, obj):
         return obj.get_captures_90pct_storm_display()
+
     def get_meets_peakflow_req(self, obj):
         return obj.get_meets_peakflow_req_display()
 
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
+
     #
     def get_DT_RowId(self, scenario):
         return 'row_%d' % scenario.pk
@@ -658,11 +675,11 @@ class ScenarioListSerializer(serializers.ModelSerializer):
         )
         read_only_fields = [f.name for f in Scenario._meta.get_fields()]
 
+
 # used for Audit page
 
 #
 class ScenarioAuditSerializer(serializers.ModelSerializer):
-
     # user = UserSerializer()
 
     # project = EmbeddedProjectFields()
@@ -687,6 +704,7 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
 
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
+
     #
     def get_DT_RowId(self, scenario):
         return 'row_%d' % scenario.pk
@@ -725,8 +743,9 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
     CostItem User Cost - users values
 
 """
-class CostItemUserCostSerializer(serializers.ModelSerializer):
 
+
+class CostItemUserCostSerializer(serializers.ModelSerializer):
     # each default cost is applied to a single costitem
     # scenario_id = serializers.CharField(read_only=True, source="scenario.id")
     #
@@ -755,22 +774,27 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
         return UserSerializer(user1, many=False).data
 
     scenario_id = serializers.SerializerMethodField()
+
     def get_scenario_id(self, obj):
         return obj.scenario.id
 
     costitem_code = serializers.SerializerMethodField()
+
     def get_costitem_code(self, obj):
         return obj.costitem.code
 
     costitem_name = serializers.SerializerMethodField()
+
     def get_costitem_name(self, obj):
         return obj.costitem.name
 
     units = serializers.SerializerMethodField()
+
     def get_units(self, obj):
         return obj.costitem.units
 
     o_and_m_pct = serializers.SerializerMethodField()
+
     def get_o_and_m_pct(self, obj):
         return str(obj.o_and_m_pct)
 
@@ -799,8 +823,6 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     #     return {res['costitem_code']: res}
 
 
-
-
 """
 
     this contains all the data for the scenario
@@ -812,8 +834,8 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
 
 """
 
-class ScenarioSerializer(serializers.ModelSerializer):
 
+class ScenarioSerializer(serializers.ModelSerializer):
     # user = UserSerializer()
 
     project = EmbeddedProjectFields()
@@ -878,7 +900,6 @@ class ScenarioSerializer(serializers.ModelSerializer):
     #
     #     return CostItemUserCostSerializer(user_cost_items, many=True).data
 
-
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
 
@@ -896,13 +917,12 @@ class ScenarioSerializer(serializers.ModelSerializer):
             'id',
             'cost_item_user_assumptions',
             'scenario_title',
-            'project', ##debug - trying to figure out where Cannon resolve keywork project into fields
+            'project',  # debug - trying to figure out where Cannon resolve keywork project into fields
             'embedded_scenario',
 
             'areal_features',
             'nonconventional_structures',
             'conventional_structures',
-
 
             'cost_item_user_costs',
 

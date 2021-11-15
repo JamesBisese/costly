@@ -1,10 +1,5 @@
-from decimal import Decimal
-
 from django.db import models
-
-from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django import forms
 from django.contrib.auth import get_user_model
 from djmoney.models.fields import MoneyField
 from djmoney.money import Money
@@ -18,8 +13,9 @@ User = get_user_model()
     i.e. ft2 and square yards, ft2 and AC
 
 """
-def get_unit_conversion(structure_units, cost_item_units):
 
+
+def get_unit_conversion(structure_units, cost_item_units):
     conversion_factor = '1'
     structure_units = structure_units.upper()
     cost_item_units = cost_item_units.upper()
@@ -56,8 +52,8 @@ def get_unit_conversion(structure_units, cost_item_units):
         elif cost_item_units == 'CY':
             conversion_factor = '1/27'
 
-
     return conversion_factor
+
 
 '''
     this starts with all the 1-1 and 1-many models that are included in the scenario
@@ -69,39 +65,40 @@ def get_unit_conversion(structure_units, cost_item_units):
     TODO: label the fields as necessary.
     
 '''
-class ArealFeatures(models.Model):
 
+
+class ArealFeatures(models.Model):
     stormwater_management_feature_area = models.IntegerField("Stormwater Management Feature Area", default=0,
                                                              blank=True, null=True)
     stormwater_management_feature_checkbox = models.BooleanField("Stormwater Management Feature Checked", default=False,
-                                                             blank=True, null=True)
+                                                                 blank=True, null=True)
     amenity_plaza_area = models.IntegerField("Amenity Areas/Urban Plaza Area", default=0,
-                                                             blank=True, null=True)
+                                             blank=True, null=True)
     amenity_plaza_checkbox = models.BooleanField("Amenity Areas/Urban Plaza Checked", default=False,
-                                                             blank=True, null=True)
+                                                 blank=True, null=True)
     protective_yard_area = models.IntegerField("Protective Yards Area", default=0,
-                                                             blank=True, null=True)
+                                               blank=True, null=True)
     protective_yard_checkbox = models.BooleanField("Protective Yards Checked", default=False,
-                                                             blank=True, null=True)
+                                                   blank=True, null=True)
 
-    parking_island_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    parking_island_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    building_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    building_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    drive_thru_facility_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    drive_thru_facility_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    landscape_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    landscape_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    sidewalk_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    sidewalk_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    street_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    street_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    median_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    median_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    parking_lot_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    parking_lot_area = models.IntegerField(" Area", default=0,blank=True, null=True)
-    driveway_and_alley_checkbox = models.BooleanField(" Checked", default=False,blank=True, null=True)
-    driveway_and_alley_area = models.IntegerField(" Area", default=0,blank=True, null=True)
+    parking_island_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    parking_island_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    building_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    building_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    drive_thru_facility_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    drive_thru_facility_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    landscape_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    landscape_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    sidewalk_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    sidewalk_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    street_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    street_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    median_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    median_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    parking_lot_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    parking_lot_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+    driveway_and_alley_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+    driveway_and_alley_area = models.IntegerField(" Area", default=0, blank=True, null=True)
 
 
 '''
@@ -109,15 +106,17 @@ class ArealFeatures(models.Model):
     this is a look-up table of Structures. Meta data table
 
 '''
-class Structures(models.Model):
 
+
+class Structures(models.Model):
     CLASSIFICATION_VALUES = ('conventional', 'nonconventional')
     CLASSIFICATION_TEXTS = ('Conventional', 'Non-Conventional')
     CLASSIFICATION_CHOICES = zip(CLASSIFICATION_VALUES, CLASSIFICATION_TEXTS)
 
     code = models.CharField(unique=True, max_length=100, default=None, blank=False, null=False)
     name = models.CharField(unique=True, max_length=100, default=None, blank=False, null=False)
-    classification = models.CharField(unique=False, choices=CLASSIFICATION_CHOICES, max_length=15, default=None, blank=False, null=False)
+    classification = models.CharField(unique=False, choices=CLASSIFICATION_CHOICES, max_length=15, default=None,
+                                      blank=False, null=False)
     sort_nu = models.PositiveIntegerField("Sort Number", default=0, blank=True, null=True)
     units = models.CharField(unique=False, max_length=12, default=None, blank=False, null=False)
     units_html = models.CharField(unique=False, max_length=25, default=None, blank=False, null=False)
@@ -129,16 +128,22 @@ class Structures(models.Model):
     class Meta:
         verbose_name_plural = "Structures"
         ordering = ['sort_nu', ]
+
+
 '''
 
     this is a data table of ConventionalStructures
 
 '''
+
+
 class ConventionalStructures(models.Model):
-    stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True, null=True)
+    stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True,
+                                                      null=True)
     stormwater_wetland_area = models.IntegerField("Stormwater Wetland Area", default=0, blank=True, null=True)
-    stormwater_wetland_first_year_costs = MoneyField("1st year maintenance costs", \
-        decimal_places=2, max_digits=11, default=0, default_currency='USD', blank=True, null=True)
+    stormwater_wetland_first_year_costs = MoneyField("1st year maintenance costs",
+                                                     decimal_places=2, max_digits=11, default=0, default_currency='USD',
+                                                     blank=True, null=True)
 
     pond_checkbox = models.BooleanField(default=False, blank=True, null=True)
     pond_area = models.IntegerField(default=0, blank=True, null=True)
@@ -157,11 +162,14 @@ class ConventionalStructures(models.Model):
     curb_and_gutter_checkbox = models.BooleanField(default=False, blank=True, null=True)
     curb_and_gutter_area = models.IntegerField(default=0, blank=True, null=True)
 
+
 '''
 
     this is a OneToOne data table of senario.NonConventionalStructures
 
 '''
+
+
 class NonConventionalStructures(models.Model):
     swale_area = models.IntegerField("Swale Area", default=0, blank=True, null=True)
     swale_checkbox = models.BooleanField("Swale Checked", default=False, blank=True, null=True)
@@ -184,6 +192,8 @@ class NonConventionalStructures(models.Model):
     this is Meta Data table for Cost Items - 
 
 '''
+
+
 class CostItem(models.Model):
     code = models.CharField(unique=True, max_length=50, default=None, blank=False, null=False)
     name = models.CharField(unique=True, max_length=50, default=None, blank=False, null=False)
@@ -196,6 +206,8 @@ class CostItem(models.Model):
 
     class Meta:
         ordering = ['sort_nu', ]
+
+
 #
 # this stores the 'default' values for the costitem costs.
 # each row is attached to one CostItem for one Scenario
@@ -209,27 +221,28 @@ class CostItem(models.Model):
     the 'user' costs are stored in CostItemUserCosts which is defined after Scenario model
     
 '''
-class CostItemDefaultCosts(models.Model):
 
+
+class CostItemDefaultCosts(models.Model):
     costitem = models.OneToOneField(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
-    #TODO: this is 'Engineering Estimate' and should be named 'eng_estimate' or similar
+    # TODO: this is 'Engineering Estimate' and should be named 'eng_estimate' or similar
     rsmeans_va = MoneyField('RSMeans unit cost', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=True, null=True)
+                            default_currency='USD', blank=True, null=True)
     db_25pct_va = MoneyField('DB 25-percentile unit cost', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=True, null=True)
+                             default_currency='USD', blank=True, null=True)
     db_50pct_va = MoneyField('DB Average unit cost', decimal_places=2, max_digits=11,
-                                default_currency='USD',
-                                blank=True, null=True)
+                             default_currency='USD',
+                             blank=True, null=True)
     db_75pct_va = MoneyField('DB 75-percentile unit cost', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=True, null=True)
+                             default_currency='USD', blank=True, null=True)
 
     # TODO these 2 might be in the wrong model!!!
     replacement_life = models.PositiveIntegerField(default=40,
-                                           validators=[MinValueValidator(0),
-                                                       MaxValueValidator(100)
-                                                       ],
-                                           blank=True, null=True)
+                                                   validators=[MinValueValidator(0),
+                                                               MaxValueValidator(100)
+                                                               ],
+                                                   blank=True, null=True)
     o_and_m_pct = models.PositiveIntegerField(default=0,
                                               validators=[MinValueValidator(0),
                                                           MaxValueValidator(100)
@@ -245,6 +258,8 @@ class CostItemDefaultCosts(models.Model):
     class Meta:
         verbose_name_plural = "Cost Item Default Costs"
         ordering = ['costitem__sort_nu', ]
+
+
 '''
 
     this is a look-up table of the 'default' costs assumptions with each Cost Items
@@ -269,21 +284,21 @@ class CostItemDefaultFactors(models.Model):
 
     class Meta:
         verbose_name_plural = "Structure Cost Item Default Factors"
-        unique_together = (('structure', "costitem"))
+        unique_together = ('structure', "costitem")
         ordering = ['costitem__sort_nu', ]
-
-'''
-    2019-08-15 Cost Item Default Equations
-    
-    this is a look-up table of the 'default' costs equations and factors for each Cost Items
-    AND NOT connected to a specific structure
-
-    Loaded from CSV file CostItemDefaultEquations
-'''
 
 
 class CostItemDefaultEquations(models.Model):
-    costitem = models.OneToOneField(CostItem, unique=True, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
+    """
+        2019-08-15 Cost Item Default Equations
+
+        this is a look-up table of the 'default' costs equations and factors for each Cost Items
+        AND NOT connected to a specific structure
+
+        Loaded from CSV file CostItemDefaultEquations
+    """
+    costitem = models.OneToOneField(CostItem, unique=True, on_delete=models.DO_NOTHING, default=None, blank=False,
+                                    null=False)
 
     equation_tx = models.CharField("Equation", max_length=150, default=None, blank=True, null=True)
     a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
@@ -299,6 +314,7 @@ class CostItemDefaultEquations(models.Model):
     class Meta:
         verbose_name_plural = "Cost Item Default Equations"
         ordering = ['costitem__sort_nu', ]
+
 
 class Project(models.Model):
     OWNERSHIP_TYPE_VALUES = ('private', 'public')
@@ -332,17 +348,21 @@ class Project(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
-    project_title = models.CharField('Project Title', unique=False, max_length=200, default=None, blank=False,null=False)
+    project_title = models.CharField('Project Title', unique=False, max_length=200, default=None, blank=False,
+                                     null=False)
 
-    project_ownership = models.CharField('Project Organizer', choices=OWNERSHIP_TYPE_CHOICES, max_length=15, blank=True, null=True)
+    project_ownership = models.CharField('Project Organizer', choices=OWNERSHIP_TYPE_CHOICES, max_length=15, blank=True,
+                                         null=True)
     project_location = models.CharField('Location of the project', max_length=150, default=None, blank=True, null=True)
 
     project_type = models.CharField('Project Type', choices=PROJECT_TYPE_CHOICES, max_length=25, blank=True, null=True)
     project_purchase_information = models.CharField('Purchase Information', choices=PURCHASE_TYPE_CHOICES,
                                                     max_length=15, default=None, blank=True, null=True)
-    priority_watershed = models.CharField('Priority Watershed', choices=WATERSHED_CHOICES, max_length=15, default=None, blank=True, null=True)
+    priority_watershed = models.CharField('Priority Watershed', choices=WATERSHED_CHOICES, max_length=15, default=None,
+                                          blank=True, null=True)
 
-    project_area = models.CharField('Total Project Area (square feet)', max_length=15,  default=None, blank=False, null=False)
+    project_area = models.CharField('Total Project Area (square feet)', max_length=15, default=None, blank=False,
+                                    null=False)
     land_unit_cost = MoneyField('Cost per ft2 of Project site',
                                 decimal_places=2, max_digits=11, default=1,
                                 default_currency='USD', blank=False, null=False)
@@ -351,20 +371,19 @@ class Project(models.Model):
     create_date = models.DateTimeField('Create Date', auto_now_add=True)
     modified_date = models.DateTimeField('Modified Date', auto_now=True)
 
-
     def __str__(self):
         return self.project_title
 
     class Meta:
         verbose_name_plural = "Projects"
-        unique_together = (("user", "project_title"))
+        unique_together = ("user", "project_title")
 
-"""
-    TODO: replace this with building the JSON object using model content
 
-"""
 def get_TEMPLATE_SCENARIO():
+    """
+        TODO: replace this with building the JSON object using model content
 
+    """
     raw_ts = TEMPLATE_SCENARIO
     structures = Structures.objects.all().order_by('sort_nu').values()
     fields = []
@@ -400,8 +419,8 @@ def get_TEMPLATE_SCENARIO():
 
     return raw_ts
 
-class Scenario(models.Model):
 
+class Scenario(models.Model):
     # this is a template used in Javascript to figure out how to manage the UI
     # it is stored in a module 'scenario_frameworks' just because it is big and ugly
     templateScenario = get_TEMPLATE_SCENARIO()
@@ -422,20 +441,25 @@ class Scenario(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     # project_title = models.CharField('Project Name', unique=False, max_length=200, default=None, blank=True,null=True)
-    scenario_title = models.CharField('Scenario Name', unique=False, max_length=200, default=None, blank=False, null=False)
-    scenario_date = models.DateField('Scenario Date', auto_now_add=False, default=None, blank=True,null=True)
+    scenario_title = models.CharField('Scenario Name', unique=False, max_length=200, default=None, blank=False,
+                                      null=False)
+    scenario_date = models.DateField('Scenario Date', auto_now_add=False, default=None, blank=True, null=True)
 
     pervious_area = models.IntegerField(default=0, blank=True, null=True)
     impervious_area = models.IntegerField(default=0, blank=True, null=True)
 
-    nutrient_req_met = models.CharField('Level of nutrient requirements met', choices=NUTRIENT_CHOICES, max_length=25,  default='unknown', blank=True, null=True)
-    captures_90pct_storm = models.CharField('Site captures the 90th percentile storm volume', choices=REGS_CHOICES, max_length=25,  default='unknown', blank=True, null=True)
-    meets_peakflow_req = models.CharField('Site meets peak flow requirements', choices=REGS_CHOICES2, max_length=25,  default='unknown', blank=True, null=True)
+    nutrient_req_met = models.CharField('Level of nutrient requirements met', choices=NUTRIENT_CHOICES, max_length=25,
+                                        default='unknown', blank=True, null=True)
+    captures_90pct_storm = models.CharField('Site captures the 90th percentile storm volume', choices=REGS_CHOICES,
+                                            max_length=25, default='unknown', blank=True, null=True)
+    meets_peakflow_req = models.CharField('Site meets peak flow requirements', choices=REGS_CHOICES2, max_length=25,
+                                          default='unknown', blank=True, null=True)
 
     # cost elements
-    planning_and_design_factor = models.CharField("Planning and Design Factor (Multiplier)", max_length=12, default='', blank=True, null=True)
+    planning_and_design_factor = models.CharField("Planning and Design Factor (Multiplier)", max_length=12, default='',
+                                                  blank=True, null=True)
     study_life = models.IntegerField("Study Life(years)", default=0, blank=True, null=True)
-    discount_rate =models.FloatField("Discount Rate(DISC)", default=0, blank=True, null=True)
+    discount_rate = models.FloatField("Discount Rate(DISC)", default=0, blank=True, null=True)
 
     areal_features = models.OneToOneField(
         ArealFeatures,
@@ -472,18 +496,19 @@ class Scenario(models.Model):
 
     class Meta:
         verbose_name_plural = "Scenarios"
-        unique_together = (("project", "scenario_title"))
+        unique_together = ("project", "scenario_title")
 
     """
     
         process all the scenario related data (structures, costs, assumptions, etc.)
     
     """
+
     def process_related_data(self, form_data):
 
         scenarioTemplate = Scenario.templateScenario['siteData']
 
-        #TODO: need to change this to split out project and scenario fields
+        # TODO: need to change this to split out project and scenario fields
         list_of_attributes = scenarioTemplate['embedded_scenario']['fields']
         list_of_values = form_data['embedded_scenario']
 
@@ -505,7 +530,7 @@ class Scenario(models.Model):
 
         areal_features = self.areal_features
 
-        if areal_features == None:
+        if areal_features is None:
             areal_features = ArealFeatures()
 
         list_of_attributes = scenarioTemplate['areal_features']['inputs']
@@ -525,7 +550,7 @@ class Scenario(models.Model):
         ''' now structures '''
         conventional_structures = self.conventional_structures
 
-        if conventional_structures == None:
+        if conventional_structures is None:
             conventional_structures = ConventionalStructures()
 
         list_of_attributes = scenarioTemplate['conventional_structures']['inputs']
@@ -543,14 +568,14 @@ class Scenario(models.Model):
             conventional_structures.save()
         except Exception:
             test = {'Type': type(Exception).__name__,
-                                 'message': "1. Unexpected error:" + Exception.args[0],
-                                 }
+                    'message': "1. Unexpected error:" + Exception.args[0],
+                    }
 
         self.conventional_structures_id = conventional_structures.id
 
         nonconventional_structures = self.nonconventional_structures
 
-        if nonconventional_structures == None:
+        if nonconventional_structures is None:
             nonconventional_structures = NonConventionalStructures()
 
         list_of_attributes = scenarioTemplate['nonconventional_structures']['inputs']
@@ -580,12 +605,11 @@ class Scenario(models.Model):
         # if the user has not selected anything from the Structure Costs drop-down then there is none of this data
         structure_code = None
         if 'user_assumptions' in form_data['cost_items']:
-
             list_of_cost_items = scenarioTemplate['cost_items']['fields']
 
-            structure_code = form_data['cost_items']['user_assumptions']['structure'];
+            structure_code = form_data['cost_items']['user_assumptions']['structure']
 
-            list_of_values = form_data['cost_items']['user_assumptions']['data'];
+            list_of_values = form_data['cost_items']['user_assumptions']['data']
 
         # have to run through all the cost_items to delete any that are not found
         structure_obj = None
@@ -595,7 +619,7 @@ class Scenario(models.Model):
 
             cost_item_assumptions_obj = CostItemUserAssumptions.objects.filter(scenario__id=self.id,
                                                                                structure__code=structure_code,
-                                                                                costitem__code=cost_item).first()
+                                                                               costitem__code=cost_item).first()
 
             # remove the values if they are all ''
             input_empty = False
@@ -614,8 +638,8 @@ class Scenario(models.Model):
                 if form_values['n_number'] == '':
                     form_values['n_number'] = None
 
-                if form_values['checked'] == False \
-                    and form_values['a_area'] is None \
+                if form_values['checked'] is False \
+                        and form_values['a_area'] is None \
                         and form_values['z_depth'] is None \
                         and form_values['d_density'] is None \
                         and form_values['n_number'] is None:
@@ -632,7 +656,7 @@ class Scenario(models.Model):
 
                     continue
                 elif cost_item_assumptions_obj.checked != form_values['checked'] or \
-                    cost_item_assumptions_obj.a_area != form_values['a_area'] or \
+                        cost_item_assumptions_obj.a_area != form_values['a_area'] or \
                         cost_item_assumptions_obj.z_depth != form_values['z_depth'] or \
                         cost_item_assumptions_obj.d_density != form_values['d_density'] or \
                         cost_item_assumptions_obj.n_number != form_values['n_number']:
@@ -660,19 +684,19 @@ class Scenario(models.Model):
                 if structure_obj is None:
                     structure_obj = Structures.objects.get(code=structure_code)
 
-                cost_item_obj = CostItem.objects.get(code = cost_item)
+                cost_item_obj = CostItem.objects.get(code=cost_item)
                 # print("create structure: {} cost_item: {}".format(structure_code, cost_item))
                 c = CostItemUserAssumptions(
-                    scenario = self,
-                    structure = structure_obj,
-                    costitem = cost_item_obj,
+                    scenario=self,
+                    structure=structure_obj,
+                    costitem=cost_item_obj,
 
                     checked=form_values['checked'],
 
-                    a_area = form_values['a_area'],
-                    z_depth = form_values['z_depth'],
-                    d_density = form_values['d_density'],
-                    n_number = form_values['n_number'],
+                    a_area=form_values['a_area'],
+                    z_depth=form_values['z_depth'],
+                    d_density=form_values['d_density'],
+                    n_number=form_values['n_number'],
                 )
                 c.save()
 
@@ -703,9 +727,8 @@ class Scenario(models.Model):
                 form_costs['user_input_cost'] = None
                 form_costs['base_year'] = None
 
-
             user_costs_obj = CostItemUserCosts.objects.filter(scenario__id=self.id,
-                                                                   costitem__code=cost_item).first()
+                                                              costitem__code=cost_item).first()
 
             default_costs_obj = CostItemDefaultCosts.objects.filter(costitem__code=cost_item).first()
 
@@ -719,7 +742,7 @@ class Scenario(models.Model):
             # process checking for user changing 'cost_source'
             cost_source = form_costs['cost_source']
             if cost_source == 'user':
-                list_of_attributes.extend(['user_input_cost','base_year'])
+                list_of_attributes.extend(['user_input_cost', 'base_year'])
                 # if str(user_costs_obj.user_input_cost) != str(form_costs['user_input_cost']   )
 
             """
@@ -756,7 +779,7 @@ class Scenario(models.Model):
                     if isinstance(db_field_value, Money):
                         db_field_value = str(db_field_value.amount)
                     elif field == 'cost_source':
-                        if db_record_exists == True and form_value != 'rsmeans' and form_value != db_field_value:
+                        if db_record_exists is True and form_value != 'rsmeans' and form_value != db_field_value:
                             is_default -= 1
                             change_count += 1
                             """
@@ -775,7 +798,6 @@ class Scenario(models.Model):
                     else:
                         default_field_value = getattr(default_costs_obj, field, None)
 
-
                 if db_field_value != -1 and default_field_value != -1 \
                         and str(db_field_value) != str(default_field_value):
                     # store the data
@@ -784,49 +806,45 @@ class Scenario(models.Model):
                     # the user changed the value from what they set earlier
                     change_count += 1
                     if default_field_value != -1 and str(form_value) == str(default_field_value):
-                        pass # is_default = True
+                        pass  # is_default = True
                     else:
                         is_default -= 1
 
                 if db_field_value == -1 and default_field_value != -1 \
-                    and str(form_value) != str(default_field_value):
+                        and str(form_value) != str(default_field_value):
                     # the user changed the value from the default
                     is_default -= 1
                     change_count += 1
                 elif db_field_value == -1 and default_field_value == -1 \
-                    and str(form_value) != '':
+                        and str(form_value) != '':
                     # there is a value (this is for user_input_cost and base_year)
                     is_default -= 1
                     change_count += 1
 
                 print_str = "cost_item: {}; field: {}; form_value: {}, " + \
-                      "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
+                            "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
 
                 if change_count > 0 and True is False:
                     print(print_str.format(
-                                            cost_item,
-                                            field,
-                                            form_value,
-                                            db_field_value,
-                                            default_field_value,
-                                            is_default,
-                                            change_count,
-                                          )
+                        cost_item,
+                        field,
+                        form_value,
+                        db_field_value,
+                        default_field_value,
+                        is_default,
+                        change_count,
+                    )
                     )
                 # if is_default != 1 and change_count > 0:
                 #     break
-
 
             # dont store copies that are just the default
             if is_default == 1 and db_record_exists is True:
                 # print("delete cost_item from db {}".format(cost_item))
                 user_costs_obj.delete()
 
-
-
             if is_default != 1 and change_count > 0:
-                if user_costs_obj != None:
-                    # print("update cost_item {}".format(cost_item))
+                if user_costs_obj is not None:
                     user_costs_obj.cost_source = form_costs['cost_source']
                     user_costs_obj.user_input_cost = form_costs['user_input_cost']
                     user_costs_obj.base_year = form_costs['base_year']
@@ -839,45 +857,29 @@ class Scenario(models.Model):
 
                     user_costs_obj.save()
 
-                    string_template = "updated cost_item {}. cost_source:'{}',replacement_life:'{}',o_and_m_pct:'{}'"
-                    # print(string_template.format(cost_item,
-                    #                              user_costs_obj.cost_source,
-                    #                              user_costs_obj.replacement_life,
-                    #                              user_costs_obj.o_and_m_pct))
                 else:
                     costitem = CostItem.objects.filter(code=cost_item).first()
 
                     # print("create cost_item {}".format(cost_item))
                     c = CostItemUserCosts(
                         scenario=self,
-                        costitem = costitem,
-
-                        cost_source = form_costs['cost_source'],
+                        costitem=costitem,
+                        cost_source=form_costs['cost_source'],
                         user_input_cost=form_costs['user_input_cost'],
                         base_year=form_costs['base_year'],
                         replacement_life=form_costs['replacement_life'],
                         o_and_m_pct=form_costs['o_and_m_pct'],
                     )
                     c.save()
-                    string_template = "created cost_item {}. cost_source:'{}',replacement_life:'{}',o_and_m_pct:'{}'"
-                    # print(string_template.format(cost_item,
-                    #                              c.cost_source,
-                    #                              c.replacement_life,
-                    #                              c.o_and_m_pct))
-
-
 
         return
 
-    """
-
-        generate the cost from database content
-
-    """
-
     def get_costs(self):
+        """
 
-        # this is what serializers are supposed to do, but I don't understand how
+            generate the cost from database content
+
+        """
         cost_items_dict = {}
         cost_items = CostItem.objects.all().order_by('sort_nu')
         for cost_item in cost_items:
@@ -909,23 +911,23 @@ class Scenario(models.Model):
         for cost_item_user_costs_obj in cost_item_user_costs:
             costitem_code = cost_item_user_costs_obj.costitem.code
             unit_cost = None
-            cost_source = None
             if cost_item_user_costs_obj.user_input_cost is not None:
                 # note: this is a Money field
                 unit_cost = cost_item_user_costs_obj.user_input_cost.amount
+
             cost_source = cost_item_user_costs_obj.cost_source
             if cost_source == 'user':
                 if cost_item_user_costs_obj.user_input_cost is not None:
                     # note: this is a Money field
                     unit_cost = cost_item_user_costs_obj.user_input_cost.amount
 
-            if not costitem_code in costs:
+            if costitem_code not in costs:
                 costs[costitem_code] = {'cost_source': cost_source,
                                         'unit_cost': unit_cost,
                                         'units': cost_items_dict[costitem_code]['units'],
                                         'replacement_life': cost_item_user_costs_obj.replacement_life,
                                         'o_and_m_pct': cost_item_user_costs_obj.o_and_m_pct,
-                                       }
+                                        }
             else:
                 if cost_source == 'user':
                     costs[costitem_code]['unit_cost'] = unit_cost
@@ -962,8 +964,7 @@ class Scenario(models.Model):
                                         'units': cost_items_dict[costitem_code]['units'],
                                         'o_and_m_pct': cost_item_default_costs_obj.o_and_m_pct,
                                         'replacement_life': cost_item_default_costs_obj.replacement_life,
-                                       }
-
+                                        }
 
         conventional_structures = self.conventional_structures
         nonconventional_structures = self.nonconventional_structures
@@ -985,13 +986,15 @@ class Scenario(models.Model):
                 # the defaults are by definition checked
                 default_assumption.checked = True
                 user_assumptions[default_assumption.structure.code] = {}
-                user_assumptions[default_assumption.structure.code][default_assumption.costitem.code] = default_assumption
-            #added to try and fix single only cost item on all but first result structure
+                user_assumptions[default_assumption.structure.code][
+                    default_assumption.costitem.code] = default_assumption
+            # added to try and fix single only cost item on all but first result structure
             elif default_assumption.costitem.code not in user_assumptions[default_assumption.structure.code]:
                 default_assumption.checked = True
-                user_assumptions[default_assumption.structure.code][default_assumption.costitem.code] = default_assumption
+                user_assumptions[default_assumption.structure.code][
+                    default_assumption.costitem.code] = default_assumption
         result['nonconventional'] = {'sum_value': 0, 'structures': {}}
-        result['conventional'] = {'sum_value': 0, 'structures': {} }
+        result['conventional'] = {'sum_value': 0, 'structures': {}}
 
         # this is used to compute 'Total PV of Annual O&M Costs' o_and_m costs, Present Value
         study_life = self.study_life
@@ -1025,18 +1028,15 @@ class Scenario(models.Model):
                 if hasattr(nonconventional_structures, structure_code + '_area'):
                     structure.area = getattr(nonconventional_structures, structure_code + '_area')
 
-            if is_checked == False:
+            if not is_checked:
                 continue
 
-            if not structure_code in user_assumptions:
+            if structure_code not in user_assumptions:
                 continue
-
-
-            # cost_item_user_assumptions = CostItemUserAssumptions.objects.filter(scenario=self, structure=structure, checked=True)
 
             cost_results = {}
 
-            for costitem_code in user_assumptions[structure_code]: # cost_item_user_assumptions:
+            for costitem_code in user_assumptions[structure_code]:  # cost_item_user_assumptions:
 
                 cost_item = user_assumptions[structure_code][costitem_code]
 
@@ -1061,7 +1061,6 @@ class Scenario(models.Model):
 
                 # this is the default for these fields
                 default = str(9)
-
 
                 # this is dealing with blank factors ...
                 if assumptions['a_area'] in ["", None]:
@@ -1092,7 +1091,6 @@ class Scenario(models.Model):
                 equation = cost_items_dict[costitem_code]['equation']
                 results['equation'] = equation
 
-
                 # TODO: figure out where to put this
                 # equation = equation + '*' + 'unit_conversion'
 
@@ -1118,7 +1116,7 @@ class Scenario(models.Model):
                 except:
                     cost_amount = equation
                     results['value'] = cost_amount
-                    results['value_unformatted'] = 0 # added to try and fix unhandled key error
+                    results['value_unformatted'] = 0  # added to try and fix unhandled key error
 
                 results['equation'] = results['equation'].replace('area', 'a')
                 results['equation'] = results['equation'].replace('depth', 'z')
@@ -1135,18 +1133,18 @@ class Scenario(models.Model):
 
             result[structure.classification]['sum_value'] += sum_value
             result[structure.classification]['structures'][structure_code] = {'structure':
-                                          {
-                                            'code': structure.code,
-                                            'classification': structure.classification,
-                                            'sort_nu': structure.sort_nu,
-                                            'name': structure.name,
-                                            'area': structure.area,
-                                            'units': structure.units,
-                                            'units_html': structure.units_html,
-                                            'sum_value': '${:,.0f}'.format(round(sum_value, 0))
-                                          },
-                                        'cost_data': cost_results
-                                    }
+                {
+                    'code': structure.code,
+                    'classification': structure.classification,
+                    'sort_nu': structure.sort_nu,
+                    'name': structure.name,
+                    'area': structure.area,
+                    'units': structure.units,
+                    'units_html': structure.units_html,
+                    'sum_value': '${:,.0f}'.format(round(sum_value, 0))
+                },
+                'cost_data': cost_results
+            }
 
         total_construction_cost = 0
         for classification in result:
@@ -1163,14 +1161,13 @@ class Scenario(models.Model):
         total_o_and_m_cost = 0
         total_replacement_cost = 0
 
-
         """
             these are 'Structure' level values for each 'Cost Item' add the costs for each cost item
         """
-        project_life_cycle_costs = { 'total': {},
-                                     'conventional': {},
-                                     'nonconventional': {},
-                                     }
+        project_life_cycle_costs = {'total': {},
+                                    'conventional': {},
+                                    'nonconventional': {},
+                                    }
         structure_life_cycle_costs = {}
         for classification in result:
 
@@ -1189,8 +1186,8 @@ class Scenario(models.Model):
 
             structure_life_cycle_costs[classification] = {
                 'meta': {
-                    'name':  ('Conventional' if classification == 'conventional' else 'Non-Conventional') + \
-                                ' (GSI) Structures',
+                    'name': ('Conventional' if classification == 'conventional' else 'Non-Conventional') +
+                            ' (GSI) Structures',
                 },
                 'costs': {
                     'sum': 0,
@@ -1202,7 +1199,7 @@ class Scenario(models.Model):
             }
 
             for structure_code in result[classification]['structures']:
-                if not 'structures' in structure_life_cycle_costs[classification]:
+                if 'structures' not in structure_life_cycle_costs[classification]:
                     structure_life_cycle_costs[classification]['structures'] = {}
 
                 # this has useful labels and size of structures
@@ -1225,15 +1222,15 @@ class Scenario(models.Model):
 
                     costs_sum = 0
 
-                    if not 'cost_items' in structure_life_cycle_costs[classification]['structures'][structure_code]:
+                    if 'cost_items' not in structure_life_cycle_costs[classification]['structures'][structure_code]:
                         structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'] = {}
 
-                    structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][costitem_code] = {'costs': {}}
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][
+                        costitem_code] = {'costs': {}}
 
                     # this has useful labels and size of structures
                     cost_item_data = result[classification]['structures'][structure_code]['cost_data'][costitem_code]
 
-                    # getting a KeyError: 'value_unformatted' error here.  when the item is checked but no area is entered
                     construction_cost = cost_item_data['results']['value_unformatted']
                     planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 0)
 
@@ -1245,14 +1242,13 @@ class Scenario(models.Model):
                     o_and_m_costs = 0
                     if o_and_m_pct != 0:
                         for i in range(1, study_life + 1, 1):
-                            o_and_m_costs += (construction_cost * (o_and_m_pct / 100)) / (1 + (discount_rate / 100)) ** i
+                            o_and_m_costs += (construction_cost * (o_and_m_pct / 100)) / (
+                                    1 + (discount_rate / 100)) ** i
 
                     number_of_replacements = 0
                     if replacement_life != 0 and study_life > replacement_life:
                         number_of_replacements = int(round(study_life / replacement_life, 0))
 
-                    value_of_first_replacement = 0
-                    # =(construction_cost/(1+(discount_rate/100))^i)
                     value_of_first_replacement = 0
                     replacement_years = []
                     replacement_costs = 0
@@ -1307,7 +1303,8 @@ class Scenario(models.Model):
 
                     classification_costs['sum'] += costs_sum
 
-                    structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][costitem_code] = {
+                    structure_life_cycle_costs[classification]['structures'][structure_code]['cost_items'][
+                        costitem_code] = {
                         'meta': {
                             'name': cost_item_data['assumptions']['name'],
                             'units': cost_item_data['assumptions']['units'],
@@ -1322,8 +1319,8 @@ class Scenario(models.Model):
                         }
                     }
 
-        #TODO sum o_and_m
-        #TODO sum replacement
+        # TODO sum o_and_m
+        # TODO sum replacement
 
         project_life_cycle_costs['total'] = {
             'construction': total_construction_cost,
@@ -1342,13 +1339,15 @@ class Scenario(models.Model):
 
         return result
 
+
 #
 # this stores the 'scenario' values for the costitem costs.
 # each row is attached to one CostItem for one Scenario
 #
 #
 class CostItemUserCosts(models.Model):
-    scenario = models.ForeignKey(Scenario, related_name="cost_item_user_costs", on_delete=models.CASCADE, default=None, blank=False, null=False)
+    scenario = models.ForeignKey(Scenario, related_name="cost_item_user_costs", on_delete=models.CASCADE, default=None,
+                                 blank=False, null=False)
     costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     COST_SOURCE_VALUES = ('rsmeans', 'db_25_pct', 'db_50_pct', 'db_75_pct')
@@ -1358,17 +1357,17 @@ class CostItemUserCosts(models.Model):
     # content of dropdown list
     cost_source = models.CharField("Source of user_input_cost", choices=COST_SOURCE_CHOICES,
                                    unique=False, max_length=24,
-                                   default=None, blank=False,null=False)
+                                   default=None, blank=False, null=False)
     #
     user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=True, null=True)
+                                 default_currency='USD', blank=True, null=True)
     base_year = models.PositiveIntegerField(default=1990, validators=[MinValueValidator(1990),
-                                                       MaxValueValidator(2090)
-                                                       ], blank=True, null=True)
+                                                                      MaxValueValidator(2090)
+                                                                      ], blank=True, null=True)
     replacement_life = models.PositiveIntegerField("Replacement Life ('R')",
-                                                   default=40,validators=[MinValueValidator(5),
-                                                       MaxValueValidator(100)
-                                                       ], blank=True, null=True)
+                                                   default=40, validators=[MinValueValidator(5),
+                                                                           MaxValueValidator(100)
+                                                                           ], blank=True, null=True)
 
     #
     o_and_m_pct = models.PositiveIntegerField("Ongoing Operations and Maintenance Factor (%)",
@@ -1379,14 +1378,14 @@ class CostItemUserCosts(models.Model):
                                               blank=True, null=True)
 
     first_year_maintenance = MoneyField('User supplied First Year Maintenance Cost', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=True, null=True)
+                                        default_currency='USD', blank=True, null=True)
 
     def __str__(self):
         return self.scenario.scenario_title + " -- " + self.costitem.code + " -- " + self.cost_source
 
     class Meta:
         verbose_name_plural = "Cost Item User Costs"
-        unique_together = (("scenario", "costitem"))
+        unique_together = ("scenario", "costitem")
 
 
 '''
@@ -1400,8 +1399,10 @@ NOTE: this name is terrible.  It should be StructureCostItemUserFactors
 
 '''
 
+
 class CostItemUserAssumptions(models.Model):
-    scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE, default=None, blank=False, null=False)
+    scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
+                                 default=None, blank=False, null=False)
     structure = models.ForeignKey(Structures, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
     costitem = models.ForeignKey(CostItem, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
 
@@ -1418,4 +1419,4 @@ class CostItemUserAssumptions(models.Model):
 
     class Meta:
         verbose_name_plural = "Structure Cost Item User Assumptions"
-        unique_together = (("scenario", 'structure', "costitem"))
+        unique_together = ("scenario", 'structure', "costitem")

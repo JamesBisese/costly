@@ -2,23 +2,19 @@ import datetime
 
 from django import forms
 from django.urls import reverse_lazy
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, HTML, Div, Field, Button, Row
-from crispy_forms.bootstrap    import FormActions, InlineRadios, AppendedText, PrependedText, FormActions, TabHolder, Tab
-from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
-
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, Submit, HTML, Div
+from crispy_forms.bootstrap import FormActions
+from bootstrap_datepicker_plus import DatePickerInput
 
 from .models import Project, Scenario
 
-from .fields import ListTextWidget, OptionalChoiceField
-
 User = get_user_model()
 
-# this is the Project Create / Update pop-up form
-class ProjectForm(forms.ModelForm):
 
+class ProjectForm(forms.ModelForm):
+    """ this is the Project Create / Update pop-up form """
     class Meta:
         model = Project
         fields = ('user',
@@ -46,7 +42,7 @@ class ProjectForm(forms.ModelForm):
 
         self.fields['project_location'].widget.attrs['placeholder'] = 'Lat/Long or Address as applicable'
         self.fields['project_area'].widget.attrs['class'] = 'col-sm-6'
-        self.fields['project_area'].widget.attrs['placeholder']= 'Area in square feet'
+        self.fields['project_area'].widget.attrs['placeholder'] = 'Area in square feet'
         self.fields['land_unit_cost'].widget.attrs['class'] = 'col-sm-6 row'
         # self.fields['id_land_unit_cost_1'].widget.attrs['class'] = 'col-sm-6'
         if _user_id:
@@ -98,22 +94,20 @@ class ProjectForm(forms.ModelForm):
 #             self.fields['user'].empty_label = '--- Select User (required) ---'
 
 
-
-"""
-
-    Scenario Form - used in Create and Update
-    this returns the Cost Tool
-    
-"""
-
 class ScenarioEditForm(forms.ModelForm):
+    """
+
+        Scenario Form - used in Create and Update
+        this returns the Cost Tool
+
+    """
     template_name = 'scenario/costtool/index.html'
 
     class Meta:
         model = Scenario
         fields = '__all__'
 
-        #TODO: need to get minDate and maxDate working.  Should set a range of valid dates.
+        # TODO: need to get minDate and maxDate working.  Should set a range of valid dates.
         # so far, I get a javascript error if either are set.  causes the scenario_date widget to
         # display the current date.
         minDate_tx = f"{(datetime.datetime.now() - datetime.timedelta(weeks=52)):%m/%d/%Y}"
@@ -121,12 +115,8 @@ class ScenarioEditForm(forms.ModelForm):
 
         widgets = {'name': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
                    'scenario_date': DatePickerInput(format='%m/%d/%Y',
-                                                   attrs={'autocomplete': 'off', },
-                                                   # options={'debug': True
-                                                   #          # 'minDate': minDate_tx,
-                                                   #          # 'maxDate': maxDate_tx
-                                                   #          }
-                                                   ),
+                                                    attrs={'autocomplete': 'off', },
+                                                    ),
                    }
 
     def __init__(self, *args, **kwargs):
@@ -143,11 +133,6 @@ class ScenarioEditForm(forms.ModelForm):
         else:
             self.fields['user'].empty_label = '--- Select User (required) ---'
 
-        # if 'instance' in kwargs and kwargs['instance'] is not None:
-        #     self.fields['user'].empty_label = None # a User is a required field and can't be set to none
-        # else:
-
-
         self.helper = FormHelper()
         self.helper.form_id = 'id-scenarioForm'
         self.helper.form_method = 'POST'
@@ -159,7 +144,7 @@ class ScenarioEditForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('user',css_class='col-sm-6',),
+                    Div('user', css_class='col-sm-6',),
                     # Div('location',css_class='col-sm-6',),
                     css_class='row',
                 ),
@@ -183,6 +168,7 @@ class ScenarioEditForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
 
 class ScenarioDeleteForm(forms.ModelForm):
     class Meta:

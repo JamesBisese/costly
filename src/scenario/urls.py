@@ -1,11 +1,9 @@
-from django.urls import path, include, re_path
+from django.urls import path, include
 from django.conf.urls import url
 from django.conf import settings
 from rest_framework import routers
-import sys
 
 from . import views
-
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -37,7 +35,7 @@ urlpatterns = [
 
     # Project CRUD
     path(r'project/add/', views.project_create, name='project_create'),
-    path(r'projects/', views.project_list, name='project_index'), # plural version
+    path(r'projects/', views.project_list, name='project_index'),  # plural version
     path(r'project/', views.project_list, name='index'),
     path(r'project/<int:pk>/update/', views.project_update, name='project_update'),
     path(r'project/<int:pk>/delete/', views.project_delete, name='project_delete'),
@@ -52,7 +50,7 @@ urlpatterns = [
     url(r'project/(?P<project_id>\d+)/scenario/add/', views.scenario_create, name='project_scenario_create'),
 
     path(r'scenario/<int:pk>/duplicate/', views.scenario_duplicate, name='scenario_duplicate'),
-    path(r'scenarios/', views.scenario_list, name='scenario_index'), # plural version
+    path(r'scenarios/', views.scenario_list, name='scenario_index'),  # plural version
     path(r'scenario/', views.scenario_list),
     path(r'scenario/<int:pk>/update/', views.scenario_update, name='scenario_update'),
     path(r'scenario/save/', views.scenario_save, name='scenario_save'),
@@ -105,5 +103,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-	url(r'^select2/', include('django_select2.urls')),
+    url(r'^select2/', include('django_select2.urls')),
 ]

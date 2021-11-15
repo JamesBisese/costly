@@ -1,12 +1,14 @@
 from django.contrib.auth import get_user_model
 import django_tables2 as tables
 
-from . import models # import Project, Scenario, Structures, CostItemDefaultCosts, CostItemDefaultAssumptions
+from . import models
 
 User = get_user_model()
 
+
 class StructuresTable(tables.Table):
     export_formats = ['csv', 'xls']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -16,8 +18,10 @@ class StructuresTable(tables.Table):
         order_by = 'id'
         attrs = {"class": "paleblue"}
 
+
 class CostItemsTable(tables.Table):
     export_formats = ['csv', 'xls']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -27,8 +31,10 @@ class CostItemsTable(tables.Table):
         order_by = 'id'
         attrs = {"class": "paleblue"}
 
+
 class CostItemDefaultCostsTable(tables.Table):
     export_formats = ['csv', 'xls']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -44,18 +50,19 @@ class CostItemDefaultCostsTable(tables.Table):
         order_by = 'id'
         attrs = {"class": "paleblue"}
 
+
 #
 #  this is somehow related to /api/costitem_user_costs/?format=datatables
 #
 #
 class CostItemUserCostsTable(tables.Table):
     export_formats = ['csv', 'xls']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     user = tables.Column(verbose_name='User', accessor='project.user.email')
-    #user_type = tables.Column(verbose_name='Type', accessor='project.user.email') # profile.user_type')
-    #project = tables.Column(verbose_name='Project', accessor='project.project_title')
+
     user_input_cost = tables.Column(verbose_name='User Costs')
     o_and_m_pct = tables.Column(verbose_name='O & M')
     first_year_maintenance = tables.Column(verbose_name="First Year")
@@ -63,28 +70,19 @@ class CostItemUserCostsTable(tables.Table):
 
     def render_scenario(self, record):
         return "%s" % record.scenario.scenario_title
+
     def render_user_type(self, record):
-         return "%s" % "FOOBAR" # record.scenario.project.user.profile.user_type.capitalize()
+        return "%s" % "FOOBAR"  # record.scenario.project.user.profile.user_type.capitalize()
 
     class Meta:
         model = models.CostItemUserCosts
-        # model = models.CostItemDefaultEquations
-        # # exclude = ('user_input_cost_currency','first_year_maintenance_currency')
-        # fields = ('user',
-        #         # 'user_type',
-        #         #  'project',
-        #           'scenario','costitem','cost_source',
-        #           'user_input_cost','base_year', 'replacement_life', 'o_and_m_pct','first_year_maintenance')
-        #             'user',
-        #
-        #             'location',
-        #             'name', 'delete_column','create_date', 'modified_date', )
         template_name = 'django_tables2/bootstrap.html'
         order_by = 'costitem'
 
 
 class CostItemDefaultEquationsTable(tables.Table):
     export_formats = ['csv', 'xls']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -94,8 +92,10 @@ class CostItemDefaultEquationsTable(tables.Table):
         order_by = 'id'
         attrs = {"class": "paleblue"}
 
+
 class CostItemDefaultFactorsTable(tables.Table):
     export_formats = ['csv', 'xls']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -104,6 +104,7 @@ class CostItemDefaultFactorsTable(tables.Table):
         template_name = 'django_tables2/bootstrap.html'
         order_by = 'id'
         attrs = {"class": "paleblue"}
+
 
 class ProjectTable(tables.Table):
     export_formats = ['csv', 'xls']
@@ -146,7 +147,7 @@ class ProjectTable(tables.Table):
                     'user',
 
                     'project',
-                    'name', 'delete_column','create_date', 'modified_date', )
+                    'name', 'delete_column', 'create_date', 'modified_date', )
         template_name = 'django_tables2/bootstrap.html'
         order_by = 'user'
         attrs = {"class": "paleblue"}
@@ -194,7 +195,7 @@ class ScenarioTable(tables.Table):
                     'project.user',
                     'location',
                     'name',
-                    'delete_column','create_date', 'modified_date', )
+                    'delete_column', 'create_date', 'modified_date', )
         template_name = 'django_tables2/bootstrap.html'
         order_by = 'user'
         attrs = {"class": "paleblue"}
