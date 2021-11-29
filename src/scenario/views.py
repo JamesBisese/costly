@@ -152,31 +152,33 @@ def audit_cost_item_default_equations_and_factors(request):
     return render(request, 'audit/cost_item_default_equations_and_factors.html', context_data)
 
 
-"""
-    Audit Structure Default Cost Item Factors
-
-    URI/audit/structure_default_cost_item_factors/
-"""
-
-
 @login_required
 def audit_structure_default_cost_item_factors(request):
-    context_data = {'title': 'Cost Items Default Factors', 'header': 'Structure/Cost Item Default Factors',
-                    'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
+    """
+        Audit Structure Default Cost Item Factors
+
+        URI/audit/structure_default_cost_item_factors/
+    """
+    context_data = {
+        'title': 'Cost Items Default Factors',
+        'header': 'Structure/Cost Item Default Factors',
+        'IIS_APP_ALIAS': settings.IIS_APP_ALIAS
+    }
     return render(request, 'audit/structure_cost_item_default_factors.html', context_data)
-
-
-"""
-    Audit Structure User Cost Item Factors
-
-    URI/audit/structure_user_cost_item_factors/
-"""
 
 
 @login_required
 def audit_structure_user_cost_item_factors(request):
-    context_data = {'title': 'Cost Items User Factors', 'header': 'Structure/Cost Item User Factors',
-                    'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
+    """
+        Audit Structure User Cost Item Factors
+
+        URI/audit/structure_user_cost_item_factors/
+    """
+    context_data = {
+        'title': 'Cost Items User Factors',
+        'header': 'Structure/Cost Item User Factors',
+        'IIS_APP_ALIAS': settings.IIS_APP_ALIAS
+    }
     return render(request, 'audit/structure_cost_item_user_factors.html', context_data)
 
 
@@ -186,15 +188,14 @@ def audit_structure_user_cost_item_factors(request):
     Project functionality
 """
 
-"""
-    project list as function based views using ajax to feed in data
-    
-    http://127.0.0.1:92/projects/
-"""
-
 
 @login_required
 def project_list(request):
+    """
+        project list as function based views using ajax to feed in data
+
+        http://127.0.0.1:92/projects/
+    """
     projects = Project.objects.all()
     context_data = {'projects': projects,
                     'header': 'Projects'}
@@ -2752,12 +2753,12 @@ class CostItemDefaultCostViewSet(viewsets.ModelViewSet):
         return qs
 
 
-'''
-    provided via /api/costitem_user_costs and /api/costitem_user_costs/?code=fill
-'''
-
-
 class CostItemUserCostViewSet(viewsets.ModelViewSet):
+    """
+
+        provided via /api/cost_item_user_costs and /api/costitem_user_costs/?code=fill
+
+    """
     queryset = CostItemUserCosts.objects.all().order_by("costitem__sort_nu")
     serializer_class = CostItemUserCostSerializer
 
@@ -2775,12 +2776,10 @@ class CostItemUserCostViewSet(viewsets.ModelViewSet):
         return qs
 
 
-'''
-    provided via /api/costitemdefaultequations and /api/costitemdefaultassumptions/?structure=pond&costitem=fill
-'''
-
-
 class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
+    """
+        provided via /api/costitemdefaultequations and /api/costitemdefaultassumptions/?structure=pond&costitem=fill
+    """
     queryset = CostItemDefaultEquations.objects.all().order_by('costitem__sort_nu')
     serializer_class = CostItemDefaultEquationsSerializer
 
@@ -2794,12 +2793,13 @@ class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
         return qs
 
 
-'''
-    provided via /api/costitemdefaultfactors and /api/costitemdefaultfactors/?structure=pond&costitem=fill
-'''
+
 
 
 class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
+    """
+        provided via /api/costitemdefaultfactors and /api/costitemdefaultfactors/?structure=pond&costitem=fill
+    """
     queryset = CostItemDefaultFactors.objects.all().order_by('structure__sort_nu', 'costitem__sort_nu')
     serializer_class = CostItemDefaultFactorsSerializer
 
@@ -2941,13 +2941,11 @@ class ScenarioAuditViewSet(viewsets.ModelViewSet):
     #     return qs
 
 
-'''
-    provided via /api/cost_item_user_factors 
-    and /api/cost_item_user_factors/?structure=pond&costitem=fill&scenario=8
-'''
-
-
 class CostItemUserAssumptionsViewSet(viewsets.ModelViewSet):
+    """
+        provided via /api/cost_item_user_factors
+        and /api/cost_item_user_factors/?structure=pond&costitem=fill&scenario=8
+    """
     queryset = CostItemUserAssumptions.objects.all().order_by('scenario__id', 'structure__sort_nu', 'costitem__sort_nu')
     serializer_class = CostItemUserAssumptionsSerializer
 
@@ -2969,12 +2967,10 @@ class CostItemUserAssumptionsViewSet(viewsets.ModelViewSet):
         return qs
 
 
-'''
-    provided via /api/users
-'''
-
-
 class UserViewSet(viewsets.ViewSet):
+    """
+        provided via /api/users
+    """
     queryset = User.objects.all().order_by('name')
     serializer_class = UserSerializer
 
