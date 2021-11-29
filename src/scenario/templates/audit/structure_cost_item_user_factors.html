@@ -34,27 +34,34 @@
 {% if user.is_superuser %}
     <div id="is_superuser" display="none";></div>
 {% endif %}
-<table class="table responsive no-wrap" id="costitem-table">
+<table class="table responsive no-wrap  cell-border" id="costitem-table">
     <thead>
         <tr>
-            <th colspan="5" style="text-align: center">Structure</th>
-            <th colspan="2" style="text-align: center">Cost Item</th>
-            <th colspan="4" style="text-align: center">Factors</th>
+            <th colspan="5" style="text-align: center">User/Project/Scenario</th>
+            <th colspan="2" style="text-align: center;border-style: solid; border-right: black">Structure</th>
+            <th colspan="2" style="text-align: center;border-style: solid; border-right: black">Cost Item</th>
+            <th colspan="6" style="text-align: center; border-style: solid; border-right: black">Factors</th>
 
         </tr>
         <tr>
-            <th >structure_sort_nu</th>
-            <th >cost_item_sort_nu</th>
-            <th >id</th>
-            <th>Name</th>
-            <th>Units</th>
-            <th>Name</th>
+            <th >User Name</th>
+            <th>Affiliation</th>
+            <th>User Type</th>
+            <th >Project</th>
+            <th>Scenario</th>
+
+            <th style="border-style: solid; border-right: black">Name</th>
             <th>Units</th>
 
+            <th style="border-style: solid; border-right: black">Name</th>
+            <th>Units</th>
+
+            <th style="border-style: solid; border-right: black">Checked</th>
             <th>Area<br>%</th>
             <th>Depth<br>FT</th>
             <th>Density<br>TN/CY</th>
-
+            <th>Ratio</th>
+            <th>Count</th>
 
         </tr>
     </thead>

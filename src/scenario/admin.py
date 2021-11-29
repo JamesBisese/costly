@@ -1,8 +1,27 @@
 from django.contrib import admin
 
-from .models import Scenario, Structures, \
+from .models import Project, Scenario, Structures, \
     CostItem, CostItemDefaultFactors, CostItemDefaultCosts, CostItemDefaultEquations, \
     CostItemUserCosts
+
+
+class ObjectAdmin(admin.ModelAdmin):
+    ordering = ['-order']
+
+
+def custom_titled_filter(title):
+    """
+    this allows overriding the name shown in the right-side FILTER panel
+
+    :param title:
+    :return:
+    """
+    class Wrapper(admin.FieldListFilter):
+        def __new__(cls, *args, **kwargs):
+            instance = admin.FieldListFilter.create(*args, **kwargs)
+            instance.title = title
+            return instance
+    return Wrapper
 
 
 def project_title(obj):
@@ -12,13 +31,6 @@ def project_title(obj):
 project_title.short_description = 'Project'
 
 
-def scenario_title1(obj):
-    return "%s" % obj.scenario_title
-
-
-scenario_title1.short_description = 'Scenario'
-
-
 def user_fullname(obj):
     return "%s" % obj.project.user.get_full_name()
 
@@ -26,17 +38,49 @@ def user_fullname(obj):
 user_fullname.short_description = 'User'
 
 
-def user_type(obj):
+def user_affilitation(obj):
     return "%s" % obj.project.user.organization_tx
 
 
-user_type.short_description = 'User Type'
+user_affilitation.short_description = 'Affiliation'
+
+
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('user_fullname', 'user_affilitation', 'user_type', 'project_title')
+    list_display_links = ('project_title',)
+    list_filter = (('user__profile__user_type', custom_titled_filter("User Type")),)
+
+    @admin.display(description='User Name')
+    def user_fullname(self, obj):
+        return "%s" % obj.user.get_full_name()
+
+    def user_type(self, obj):
+        return "%s" % obj.user.profile.user_type
+
+    @admin.display(description='Affiliation')
+    def user_affilitation(self, obj):
+        return "%s" % obj.user.organization_tx
+
+    @admin.display(description='Project', ordering='project_title')
+    def project_title(self, obj):
+        return "%s" % obj.project_title
+
+
+admin.site.register(Project, ProjectAdmin)
 
 
 class ScenarioAdmin(admin.ModelAdmin):
-    list_display = (user_fullname, user_type, project_title, scenario_title1)
-    # list_display_links = (costitem_name,)
-    pass
+    list_display = (user_fullname, user_affilitation, 'user_type', project_title, 'scenario_title')
+    list_display_links = ('scenario_title',)
+    list_filter = (('project__user__profile__user_type', custom_titled_filter("User Type")),)
+
+    def user_type(self, obj):
+        return "%s" % obj.project.user.profile.user_type
+
+
+    @admin.display(ordering='scenario_title')
+    def scenario_title(self, obj):
+        return "%s" % obj.scenario_title
 
 
 admin.site.register(Scenario, ScenarioAdmin)
@@ -57,7 +101,7 @@ class StructuresAdmin(admin.ModelAdmin):
 
 
 class CostItemAdmin(StructuresAdmin):
-    list_display = ('sort_nu', 'name')
+    list_display = ('sort_nu', 'name', 'units', 'help_text')
     list_display_links = ('name',)
     pass
 
@@ -77,15 +121,57 @@ costitem_name.short_description = 'CostItem Name'
 
 
 class CostItemDefaultCostsAdmin(StructuresAdmin):
-    list_display = (costitem_sort_nu, costitem_name)
+    list_display = (costitem_sort_nu, costitem_name, 'costitem_units', 'rsmeans_va',
+                    'db_25pct_va','db_50pct_va', 'db_75pct_va',
+                    'replacement_life', 'o_and_m_pct', 'equation')
     list_display_links = (costitem_name,)
-    pass
+
+    def costitem_units(self, obj):
+        return "%s" % obj.costitem.units
 
 
 class CostItemDefaultEquationsAdmin(StructuresAdmin):
-    list_display = (costitem_sort_nu, costitem_name)
+    list_display = (costitem_sort_nu, costitem_name, 'equation_tx', 'a_area', 'z_depth', 'd_density', 'n_number')
     list_display_links = (costitem_name,)
     pass
+
+
+
+
+class CostItemDefaultFactorsAdmin(StructuresAdmin):
+    list_display = ('structure_name', 'costitem_name', 'a_area', 'z_depth', 'd_density', 'n_number')
+    list_display_links = ('structure_name', 'costitem_name',)
+    list_filter = (('structure__name', custom_titled_filter("Structure Name")),
+                   ('costitem__name', custom_titled_filter('Cost Item Name')))
+
+    @admin.display(empty_value='unknown', ordering='structure__name')
+    def structure_name(self, obj):
+        return "%s" % obj.structure.name
+
+    @admin.display(empty_value='unknown', ordering='costitem__name')
+    def costitem_name(self, obj):
+        return "%s" % obj.costitem.name
+
+    @admin.display(description = 'Area (a)')
+    def a_area(self, obj):
+        return "%s" % obj.a_area
+
+
+    @admin.display(description='Depth (z)')
+    def z_depth(obj):
+        return obj.z_depth
+
+
+    @admin.display(description='Density (d)')
+    def d_density(obj):
+        return obj.d_density
+
+
+    @admin.display(description='Count (n)')
+    def n_number(obj):
+        return obj.z_depth
+
+
 
 
 def user_name(obj):
@@ -180,7 +266,7 @@ class CostItemUserCostsAdmin(admin.ModelAdmin):
 
 admin.site.register(Structures, StructuresAdmin)
 admin.site.register(CostItem, CostItemAdmin)
-admin.site.register(CostItemDefaultFactors)
+admin.site.register(CostItemDefaultFactors, CostItemDefaultFactorsAdmin)
 admin.site.register(CostItemDefaultCosts, CostItemDefaultCostsAdmin)
 admin.site.register(CostItemDefaultEquations, CostItemDefaultEquationsAdmin)
 

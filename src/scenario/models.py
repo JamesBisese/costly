@@ -8,14 +8,13 @@ from .scenario_frameworks import TEMPLATE_SCENARIO, DEFAULT_SCENARIO
 
 User = get_user_model()
 
-"""
-    convert units between Structure Units and Cost Item units
-    i.e. ft2 and square yards, ft2 and AC
-
-"""
-
 
 def get_unit_conversion(structure_units, cost_item_units):
+    """
+        convert units between Structure Units and Cost Item units
+        i.e. ft2 and square yards, ft2 and AC
+
+    """
     conversion_factor = '1'
     structure_units = structure_units.upper()
     cost_item_units = cost_item_units.upper()
@@ -55,16 +54,16 @@ def get_unit_conversion(structure_units, cost_item_units):
     return conversion_factor
 
 
-'''
+"""
     this starts with all the 1-1 and 1-many models that are included in the scenario
-'''
+"""
 
-'''
+"""
 
     this is a set of tuples - each tuple has a checkbox and an area
     TODO: label the fields as necessary.
     
-'''
+"""
 
 
 class ArealFeatures(models.Model):
@@ -101,14 +100,12 @@ class ArealFeatures(models.Model):
     driveway_and_alley_area = models.IntegerField(" Area", default=0, blank=True, null=True)
 
 
-'''
-
-    this is a look-up table of Structures. Meta data table
-
-'''
-
-
 class Structures(models.Model):
+    """
+
+        this is a look-up table of Structures. Meta data table
+
+    """
     CLASSIFICATION_VALUES = ('conventional', 'nonconventional')
     CLASSIFICATION_TEXTS = ('Conventional', 'Non-Conventional')
     CLASSIFICATION_CHOICES = zip(CLASSIFICATION_VALUES, CLASSIFICATION_TEXTS)
@@ -130,14 +127,12 @@ class Structures(models.Model):
         ordering = ['sort_nu', ]
 
 
-'''
-
-    this is a data table of ConventionalStructures
-
-'''
-
-
 class ConventionalStructures(models.Model):
+    """
+
+        this is a data table of ConventionalStructures
+
+    """
     stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True,
                                                       null=True)
     stormwater_wetland_area = models.IntegerField("Stormwater Wetland Area", default=0, blank=True, null=True)
@@ -163,14 +158,12 @@ class ConventionalStructures(models.Model):
     curb_and_gutter_area = models.IntegerField(default=0, blank=True, null=True)
 
 
-'''
-
-    this is a OneToOne data table of senario.NonConventionalStructures
-
-'''
-
-
 class NonConventionalStructures(models.Model):
+    """
+
+        this is a OneToOne data table of senario.NonConventionalStructures
+
+    """
     swale_area = models.IntegerField("Swale Area", default=0, blank=True, null=True)
     swale_checkbox = models.BooleanField("Swale Checked", default=False, blank=True, null=True)
     rain_harvesting_device_checkbox = models.BooleanField(default=False, blank=True, null=True)
@@ -187,14 +180,12 @@ class NonConventionalStructures(models.Model):
     porous_pavement_area = models.IntegerField(default=0, blank=True, null=True)
 
 
-'''
-
-    this is Meta Data table for Cost Items - 
-
-'''
-
-
 class CostItem(models.Model):
+    """
+
+        this is Meta Data table for Cost Items -
+
+    """
     code = models.CharField(unique=True, max_length=50, default=None, blank=False, null=False)
     name = models.CharField(unique=True, max_length=50, default=None, blank=False, null=False)
     sort_nu = models.PositiveIntegerField("Sort Number", default=0, blank=True, null=True)
@@ -214,13 +205,13 @@ class CostItem(models.Model):
 #
 #
 #
-'''
+"""
 
     this is a look-up table of the 'default' costs associated with each Cost Items
     
     the 'user' costs are stored in CostItemUserCosts which is defined after Scenario model
     
-'''
+"""
 
 
 class CostItemDefaultCosts(models.Model):
@@ -253,24 +244,22 @@ class CostItemDefaultCosts(models.Model):
     equation = models.CharField("Construction Costs Equation ", max_length=150, default=None, blank=True, null=True)
 
     def __str__(self):
-        return self.costitem.code + " -- default costs"
+        return self.costitem.name + " -- default costs"
 
     class Meta:
         verbose_name_plural = "Cost Item Default Costs"
         ordering = ['costitem__sort_nu', ]
 
 
-'''
-
-    this is a look-up table of the 'default' costs assumptions with each Cost Items
-    each one is connected to a specific structure
-
-    the 'user' cost assumptions are stored in CostItemUserAssumptions which is defined after Scenario model
-
-'''
-
-
 class CostItemDefaultFactors(models.Model):
+    """
+
+        this is a look-up table of the 'default' costs assumptions with each Cost Items
+        each one is connected to a specific structure
+
+        the 'user' cost assumptions are stored in CostItemUserAssumptions which is defined after Scenario model
+
+    """
     structure = models.ForeignKey(Structures, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
     costitem = models.ForeignKey(CostItem, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
 
@@ -317,6 +306,11 @@ class CostItemDefaultEquations(models.Model):
 
 
 class Project(models.Model):
+    """
+
+    a Project is owned by a User.  It may have 0 or many Scenario(s) attached.
+
+    """
     OWNERSHIP_TYPE_VALUES = ('private', 'public')
     OWNERSHIP_TYPE_TEXTS = ('Private', 'Public')
     OWNERSHIP_TYPE_CHOICES = zip(OWNERSHIP_TYPE_VALUES, OWNERSHIP_TYPE_TEXTS)
@@ -421,6 +415,11 @@ def get_TEMPLATE_SCENARIO():
 
 
 class Scenario(models.Model):
+    """
+
+    a Scenario is attached to 1 Project attached.
+
+    """
     # this is a template used in Javascript to figure out how to manage the UI
     # it is stored in a module 'scenario_frameworks' just because it is big and ugly
     templateScenario = get_TEMPLATE_SCENARIO()
@@ -440,7 +439,6 @@ class Scenario(models.Model):
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
-    # project_title = models.CharField('Project Name', unique=False, max_length=200, default=None, blank=True,null=True)
     scenario_title = models.CharField('Scenario Name', unique=False, max_length=200, default=None, blank=False,
                                       null=False)
     scenario_date = models.DateField('Scenario Date', auto_now_add=False, default=None, blank=True, null=True)
@@ -498,14 +496,12 @@ class Scenario(models.Model):
         verbose_name_plural = "Scenarios"
         unique_together = ("project", "scenario_title")
 
-    """
-    
-        process all the scenario related data (structures, costs, assumptions, etc.)
-    
-    """
-
     def process_related_data(self, form_data):
+        """
 
+            process all the scenario related data (structures, costs, assumptions, etc.)
+
+        """
         scenarioTemplate = Scenario.templateScenario['siteData']
 
         # TODO: need to change this to split out project and scenario fields
@@ -541,7 +537,6 @@ class Scenario(models.Model):
                     field_value = list_of_values[feature_name][field]
                     if field == 'area' and field_value == '':
                         field_value = None
-                    # print(feature_name + '_' + field + ": " + str(field_value))
                     setattr(areal_features, feature_name + '_' + field, field_value)
 
         areal_features.save()
@@ -561,7 +556,6 @@ class Scenario(models.Model):
                     field_value = list_of_values[feature_name][field]
                     if field == 'area' and field_value == '':
                         field_value = None
-                    # print(feature_name + '_' + field + ": " + str(field_value))
                     setattr(conventional_structures, feature_name + '_' + field, field_value)
 
         try:
@@ -586,7 +580,6 @@ class Scenario(models.Model):
                     field_value = list_of_values[feature_name][field]
                     if field == 'area' and field_value == '':
                         field_value = None
-                    # print(feature_name + '_' + field + ": " + str(field_value))
                     setattr(nonconventional_structures, feature_name + '_' + field, field_value)
 
         nonconventional_structures.save()
@@ -1040,7 +1033,7 @@ class Scenario(models.Model):
 
                 cost_item = user_assumptions[structure_code][costitem_code]
 
-                if not cost_item.checked is True:
+                if cost_item.checked is not True:
                     continue
 
                 # record that you have seen this

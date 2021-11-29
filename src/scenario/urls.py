@@ -19,7 +19,7 @@ router.register(r'cost_item_user_costs', views.CostItemUserCostViewSet)
 
 router.register(r'cost_item_default_equations_and_factors', views.CostItemDefaultEquationsAndFactors)
 router.register(r'structure_cost_item_default_factors', views.CostItemDefaultFactorsViewSet)
-router.register(r'cost_item_user_factors', views.CostItemUserAssumptionsViewSet)
+router.register(r'structure_user_cost_item_factors', views.CostItemUserAssumptionsViewSet)
 
 iis_app_alias = ''
 if len(settings.IIS_APP_ALIAS) > 0:

@@ -548,10 +548,17 @@ class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
 
 
 class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
-    # scenario = ScenarioSerializer(many=False, read_only=True)
-    # structure = StructureSerializer(many=False, read_only=True)
-    # costitem = CostItemSerializer(many=False, read_only=True)
+    """
+
+    via /api/cost_item_user_factors
+
+    NOTE: this is really driving me crazy. The naming is confusing. It is called Structure/Cost Item User Factors
+    but also Assumptions. I am not able to get this to work using DataTables, but the API looks fine.
+
+    """
     user = serializers.SerializerMethodField()
+    structure = StructureSerializer(many=False, read_only=True)
+    costitem = CostItemSerializer(many=False, read_only=True)
 
     def get_user(self, obj):
         user1 = obj.scenario.project.user
@@ -560,18 +567,6 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
     scenario_id = serializers.CharField(read_only=True, source="scenario.id")
     project_title = serializers.CharField(read_only=True, source="scenario.project.project_title")
     scenario_title = serializers.CharField(read_only=True, source="scenario.scenario_title")
-
-    # structure_code = serializers.CharField(read_only=True, source="structure.code")
-    # structure_name = serializers.CharField(read_only=True, source="structure.name")
-    # structure_units = serializers.CharField(read_only=True, source="structure.units")
-    # structure_classification = serializers.CharField(read_only=True, source="structure.classification")
-
-    structure = StructureSerializer(many=False, read_only=True)
-    # costitem = CostItemSerializer(many=False, read_only=True)
-
-    costitem_code = serializers.CharField(read_only=True, source="costitem.code")
-    costitem_name = serializers.CharField(read_only=True, source="costitem.name")
-    costitem_units = serializers.CharField(read_only=True, source="costitem.units")
 
     class Meta:
         model = CostItemUserAssumptions
@@ -585,10 +580,10 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
             # 'structure_name',
             # 'structure_units',
             # 'structure_classification',
-            # 'costitem',
-            'costitem_code',
-            'costitem_name',
-            'costitem_units',
+            'costitem',
+            # 'costitem_code',
+            # 'costitem_name',
+            # 'costitem_units',
 
             'checked',
             'a_area',
@@ -601,26 +596,16 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in CostItemUserAssumptions._meta.get_fields()]
 
 
-"""
-    this is returned into results in /projects/{pk}/scenario to just 
-    list all the scenarios is first loaded
-    it is used to populate the table on the Scenarios page
-    
-    Example:
-http://127.0.0.1:92/api/projects/1/scenarios/
-
-"""
-
-
-#
-
-#
 class ScenarioListSerializer(serializers.ModelSerializer):
-    # user = UserSerializer()
+    """
+        this is returned into results in /projects/{pk}/scenario to just
+        list all the scenarios is first loaded
+        it is used to populate the table on the Scenarios page
 
-    # project = EmbeddedProjectFields()
-    #
-    # embedded_scenario = EmbeddedScenarioFields(source='*')
+        Example:
+    http://127.0.0.1:92/api/projects/1/scenarios/
+
+    """
 
     project_title = serializers.SerializerMethodField()
 
@@ -738,14 +723,15 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Scenario._meta.get_fields()]
 
 
-"""
 
-    CostItem User Cost - users values
-
-"""
 
 
 class CostItemUserCostSerializer(serializers.ModelSerializer):
+    """
+
+        CostItem User Cost - users values
+
+    """
     # each default cost is applied to a single costitem
     # scenario_id = serializers.CharField(read_only=True, source="scenario.id")
     #
@@ -767,6 +753,7 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     # def get_cost_item_user_costs(self, instance):
     #     user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
     #     return CostItemUserCostSerializer(user_cost_items, many=True).data
+
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj):

@@ -263,7 +263,7 @@ HEADER_LOGO_URI='costly/img/tetratech-icon-1024.png'
 
 IS_TESTING_INSTANCE='true'
 
-VERSION_INFORMATION='Version 1.017 Updated November 15, 2021'
+VERSION_INFORMATION='Version 1.018 Updated November 29, 2021'
 
 SETTINGS_EXPORT = [
     'VERSION_INFORMATION',

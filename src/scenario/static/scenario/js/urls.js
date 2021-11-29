@@ -53,7 +53,7 @@ SETTINGS.URLS = {
     'audit_project_data':   '/api/projects/',
     'audit_scenario_data': '/api/scenario_audit/',
     'audit_cost_item_user_costs_data': '/api/cost_item_user_costs',
-    'audit_cost_item_user_factors_data': '/api/cost_item_user_factors/',
+    'audit_cost_item_user_factors_data': '/api/structure_user_cost_item_factors/',
 }
 
 

@@ -960,3 +960,20 @@ a.ui-button:active, .ui-button:active,
     font-weight: bold;
     text-decoration: underline;
 }
+
+#ui_stormwater_management_feature_area {
+	height: 49px;
+}
+
+.input-group-prepend .input-group-text input[type=checkbox], .input-group-text input[type=radio] {
+    margin-right: 5px;
+}
+
+#structures .input-group-text input[type=checkbox], .input-group-text input[type=radio] {
+    margin-right: 5px;
+}
+
+
+#structure_costs_table .input-group-text input[type=checkbox], .input-group-text input[type=radio] {
+    margin-right: 5px;
+}

@@ -32,7 +32,7 @@ $(function () {
         var export_columns = [ 0, 1, 3, 4, 5, 6, 7, 8, 9];
 
         var options = {
-            "serverSide": true,
+            "serverSide": false,
             "responsive": true,
             "ajax": SETTINGS.URLS.audit_cost_item_user_factors_data + '?format=datatables',
             "paging": false,
@@ -47,18 +47,20 @@ $(function () {
             ],
             "columns": [
                 // Use dot notation to reference nested serializers.
-                {"data": "user.name"},
-                // {"data": "scenario.project.project_title"},
 
-                // {"data": "scenario_title"},
-                //
-                // {"data": "structure_code", "searchable": true},
-                // {"data": "costitem_code", "searchable": true},
-                //
-                //
+                {"data": "user.name", "searchable": true},
+                {"data": "user.organization_tx", "searchable": true},
+                {"data": "user.profile.user_type", "searchable": true},
+                {"data": "project_title"},
+                {"data": "scenario_title"},
+
+                {"data": "structure.name", "searchable": true},
+                {"data": "structure.units", "searchable": true},
+
+                {"data": "costitem.name", "searchable": true},
+                {"data": "costitem.units", "searchable": true},
+
                 {"data": "checked", "searchable": true},
-                // // {"data": "costitem.units", "searchable": true},
-                //
                 {"data": "a_area", "searchable": true},
                 {"data": "z_depth", "searchable": true},
                 {"data": "d_density", "searchable": true},
@@ -67,7 +69,7 @@ $(function () {
 
 
              ],
-            "order": [[0, 'asc'],[1, 'asc']],
+            // "order": [[0, 'asc'],[1, 'asc']],
             "columnDefs": [
                     // { "targets": 0, "visible": false},
                     // { "targets": 1, "visible": false},
