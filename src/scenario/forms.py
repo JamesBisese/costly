@@ -43,7 +43,8 @@ class ProjectForm(forms.ModelForm):
         self.fields['project_location'].widget.attrs['placeholder'] = 'Lat/Long or Address as applicable'
         self.fields['project_area'].widget.attrs['class'] = 'col-sm-6'
         self.fields['project_area'].widget.attrs['placeholder'] = 'Area in square feet'
-        self.fields['land_unit_cost'].widget.attrs['class'] = 'col-sm-6 row'
+        #self.fields['land_unit_cost'].widget.attrs['class'] = 'col-sm-3 row land_unit_cost_money_field'
+        self.fields['land_unit_cost'].widget.attrs['class'] = 'land_unit_cost_money_field'
         # self.fields['id_land_unit_cost_1'].widget.attrs['class'] = 'col-sm-6'
         if _user_id:
             self.fields['user'].queryset = User.objects.filter(id=_user_id)

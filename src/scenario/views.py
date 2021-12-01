@@ -1658,17 +1658,17 @@ def scenario_table_html(scenario):
     return render_to_string(template_name, context)
 
 
-#
-# this is the Excel export function to return the scenario in Excel
-#
-# NOTE: this needs to be redone so that multiple results can be exported to a single workbook
-#
-#
-# created on 2021-11-05
-#
-
 class ScenarioExcelResults(generic.View):
-
+    """
+    #
+    # this is the Excel export function to return the scenario in Excel
+    #
+    # NOTE: this needs to be redone so that multiple results can be exported to a single workbook
+    #
+    #
+    # created on 2021-11-05
+    #
+    """
     def get(self, request, pk):
         # create and populate the workbook and return it as an output stream
         output = scenario_workbook([pk, ])
@@ -1707,13 +1707,11 @@ class CompareScenarioExcelResults(APIView):
         return response
 
 
-"""
-    this is the wide and very complex export of all the data into a spreadsheet
-"""
-
-
 class ScenarioExtendedExcelReport(APIView):
+    """
+        this is the wide and very complex export of all the data into a spreadsheet
 
+    """
     def get(self, request, multiple_pks):
         pass
 
@@ -1873,6 +1871,11 @@ def create_formats(workbook):
 
     # header above each sub-section
     formats['merge_format'] = workbook.add_format({'align': 'center', 'valign': 'vcenter', })
+    formats['merge_format'].set_top(1)
+    formats['merge_format'].set_bottom(1)
+    formats['merge_format'].set_left(1)
+    formats['merge_format'].set_right(1)
+
 
     return formats
 
@@ -2086,13 +2089,17 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
         # endregion
 
 
-'''
-make the wide version of the export
-WORK IN PROGRESS
-'''
+
 
 
 def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenario_id, formats, start_row=0):
+    """
+
+    make the wide version of the export
+    Note: this tries to make a sensible row-col inserts, and deals with writing the header also.
+    But it is confusing and the names of the navigation variables is ... strange.
+
+    """
     # region --get data--
     #
     # generate the data used in the export
@@ -2108,220 +2115,195 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
     # region --worksheet--
     start_col = 0
     col = 0
+    col_title_row = 1
+    insert_header = start_row == 0
+    # Start from the first cell below the headers.
+    row = start_row + 2
 
     # set the column widths
     worksheet.set_column(start_col, start_col, 13)
     worksheet.set_column(start_col + 1, start_col + 1, 28)
     worksheet.set_column(start_col + 2, start_col + 2, 12)
     worksheet.set_column(start_col + 3, start_col + 3, 29)
-    worksheet.set_column(start_col + 4, start_col + 4, 35)
-    worksheet.set_column(start_col + 5, start_col + 5, 18)
-    worksheet.set_column(start_col + 6, start_col + 6, 38)
-    worksheet.set_column(start_col + 7, start_col + 7, 30)
-    worksheet.set_column(start_col + 8, start_col + 8, 18)
-    worksheet.set_column(start_col + 9, start_col + 9, 11.5)
 
-    # Write some data headers.
-    if start_row == 0:
-        worksheet.write(0, col, 'user_name', formats['bold'])
-        worksheet.write(0, col + 1, 'organization', formats['bold'])
-        worksheet.write(0, col + 2, 'user_type', formats['bold'])
-        worksheet.write(0, col + 3, 'project_title', formats['bold'])
-        worksheet.write(0, col + 4, 'scenario_title', formats['bold'])
+    worksheet.set_column(start_col + 4, start_col + 4, 18)
+    worksheet.set_column(start_col + 5, start_col + 5, 38)
+    worksheet.set_column(start_col + 6, start_col + 6, 30)
+    worksheet.set_column(start_col + 7, start_col + 7, 18)
+    worksheet.set_column(start_col + 8, start_col + 8, 11.5)
+    worksheet.set_column(start_col + 9, start_col + 9, 12)
+    worksheet.set_column(start_col + 10, start_col + 10, 12)
 
-    worksheet.write(start_row + 1, col, scenario.project.user.name)
-    worksheet.write(start_row + 1, col + 1, scenario.project.user.organization_tx)
-    worksheet.write(start_row + 1, col + 2, scenario.project.user.profile.user_type)
-    worksheet.write(start_row + 1, col + 3, scenario.project.project_title)
-    worksheet.write(start_row + 1, col + 4, scenario.scenario_title)
+    worksheet.set_column(start_col + 11, start_col + 11, 35)
+    worksheet.set_column(start_col + 12, start_col + 12, 21)
 
-    # Some data we want to write to the worksheet.
-    project_description = (
-        ['project_ownership', scenario.project.get_project_ownership_display(), formats['input_col_text']],
-        ['project_location', scenario.project.project_location, formats['input_col_text']],
-        ['project_type', scenario.project.get_project_type_display(), formats['input_col_text']],
-        ['project_purchase_information', scenario.project.get_project_purchase_information_display(),
-         formats['input_col_text']],
-        ['project_area', int(scenario.project.project_area), formats['int_big']],
-        ['land_unit_cost', scenario.project.land_unit_cost.amount, formats['money_small']],
-        ['land_value', float(scenario.project.project_area) * float(scenario.project.land_unit_cost.amount),
-         formats['output_col_money_big']],
-    )
+    for col_index in range(13, 13 + 15 + 7):
+        worksheet.set_column(col_index, col_index, 12)
 
-    # Start from the first cell below the headers.
-    row = start_row + 1
-    col = 5
+    # remove the blue or green background from some formats
+    formats['input_col'].set_bg_color('white')
+    formats['input_col_text'].set_bg_color('white')
+    formats['int_big'].set_bg_color('white')
+    formats['money_small'].set_bg_color('white')
+    formats['output_col_money_big'].set_bg_color('white')
 
-    # Iterate over the data and write it out row by row.
-    for label, value, format in (project_description):
-        if start_row == 0:
-            worksheet.write(0, col, label, formats['bold'])
-        worksheet.write(start_row + 1, col, value, format)
+    # this was just used for debugging.  it can be removed
+    skip_this_section = False
 
-        col += 1
+    if skip_this_section is False:
+        # Write some data headers.
+        if insert_header is True:
+            worksheet.merge_range(0, col, 0, 2, 'User', formats['merge_format'])
+            worksheet.write(col_title_row, col, 'user_name', formats['bold'])
+            worksheet.write(col_title_row, col + 1, 'organization', formats['bold'])
+            worksheet.write(col_title_row, col + 2, 'user_type', formats['bold'])
 
-    project_description = (
-        ['nutrient_req_met', scenario.get_nutrient_req_met_display(), formats['input_col_text']],
-        ['captures_90pct_storm', scenario.get_captures_90pct_storm_display(), formats['input_col_text']],
-        ['meets_peakflow_req', scenario.get_meets_peakflow_req_display(), formats['input_col_text']],
-    )
+            worksheet.merge_range(0, 3, 0, 10, 'Project', formats['merge_format'])
+            worksheet.write(col_title_row, col + 3, 'project_title', formats['bold'])
 
-    # Iterate over the data and write it out row by row.
-    for label, value, format in (project_description):
-        if start_row == 0:
-            worksheet.write(0, col, label, formats['bold'])
-        worksheet.write(start_row + 1, col, value, format)
 
-        col += 1
+        worksheet.write(row, col, scenario.project.user.name)
+        worksheet.write(row, col + 1, scenario.project.user.organization_tx)
+        worksheet.write(row, col + 2, scenario.project.user.profile.user_type)
+        worksheet.write(row, col + 3, scenario.project.project_title)
 
-    project_description = (
-        ['pervious_area', scenario.pervious_area, formats['int_big']],
-        ['impervious_area', scenario.impervious_area, formats['int_big']],
-    )
 
-    # Iterate over the data and write it out row by row.
-    for label, value, format in (project_description):
-        if start_row == 0:
-            worksheet.write(0, col, label, formats['bold'])
-        worksheet.write(start_row + 1, col, value, format)
+        # Some data we want to write to the worksheet.
+        project_description = (
+            ['project_ownership', scenario.project.get_project_ownership_display(), formats['input_col_text']],
+            ['project_location', scenario.project.project_location, formats['input_col_text']],
+            ['project_type', scenario.project.get_project_type_display(), formats['input_col_text']],
+            ['project_purchase_information', scenario.project.get_project_purchase_information_display(),
+             formats['input_col_text']],
+            ['project_area', int(scenario.project.project_area), formats['int_big']],
+            ['land_unit_cost', scenario.project.land_unit_cost.amount, formats['money_small']],
+            ['land_value', float(scenario.project.project_area) * float(scenario.project.land_unit_cost.amount),
+             formats['output_col_money_big']],
+        )
 
-        col += 1
+        col = 4
 
-    # worksheet.merge_range(row, col, row + 1, col + 2, 'Life Cycle Costs Assumptions', formats['merge_format'])
-    #
-    # row += 1
-    # row += 1
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            if insert_header is True:
+                worksheet.write(col_title_row, col, label, formats['bold'])
+            worksheet.write(row, col, value, format)
+            col += 1
 
-    project_description = (
-        ['planning_and_design_factor', '{} %'.format(scenario.planning_and_design_factor), formats['input_col']],
-        ['study_life', '{} years'.format(scenario.study_life), formats['input_col']],
-        ['discount_rate', '{} %'.format(scenario.discount_rate), formats['input_col']],
-    )
+        #TODO: fix this.  it is causing an Excel error, and I can't figure out what.
+        worksheet.merge_range(0, 11, 0, 12, 'Scenario', formats['merge_format'])
 
-    # Iterate over the data and write it out row by row.
-    for label, value, format in (project_description):
-        if start_row == 0:
-            worksheet.write(0, col, label, formats['bold'])
-        worksheet.write(start_row + 1, col, value, format)
+        worksheet.write(col_title_row, col , 'scenario_title', formats['bold'])
+        worksheet.write(row, col , scenario.scenario_title)
 
-        col += 1
 
-    return
-    # now try and make all 4 cost blocks as a loop on a more complex object
+        project_description = (
+            ['nutrient_req_met', scenario.get_nutrient_req_met_display(), formats['input_col_text']],
+            ['captures_90pct_storm', scenario.get_captures_90pct_storm_display(), formats['input_col_text']],
+            ['meets_peakflow_req', scenario.get_meets_peakflow_req_display(), formats['input_col_text']],
+        )
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            if insert_header is True:
+                worksheet.write(col_title_row, col, label, formats['bold'])
+            worksheet.write(row, col, value, format)
+            col += 1
+
+        project_description = (
+            ['pervious_area', scenario.pervious_area, formats['int_big']],
+            ['impervious_area', scenario.impervious_area, formats['int_big']],
+        )
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            if insert_header is True:
+                worksheet.write(col_title_row, col, label, formats['bold'])
+            worksheet.write(row, col, value, format)
+            col += 1
+
+        project_description = (
+            ['planning_and_design_factor', '{} %'.format(scenario.planning_and_design_factor), formats['input_col']],
+            ['study_life', '{} years'.format(scenario.study_life), formats['input_col']],
+            ['discount_rate', '{} %'.format(scenario.discount_rate), formats['input_col']],
+        )
+
+        # Iterate over the data and write it out row by row.
+        for label, value, format in (project_description):
+            if insert_header is True:
+                worksheet.write(col_title_row, col, label, formats['bold'])
+            worksheet.write(row, col, value, format)
+            col += 1
+
+
+    # now add the 3 cost-blocks, each with 5 values
 
     cost_blocks = (
+        ['Non-Conventional (GSI) Structures Costs',
+         ['Construction', 'P & D', 'O & M', 'Replacement', 'Total'],
+         [
+             int(structure_life_cycle_costs['nonconventional']['costs']['construction']),
+             int(structure_life_cycle_costs['nonconventional']['costs']['planning_and_design']),
+             int(structure_life_cycle_costs['nonconventional']['costs']['o_and_m_sum']),
+             int(structure_life_cycle_costs['nonconventional']['costs']['replacement_sum']),
+             int(project_life_cycle_costs['nonconventional']['costs']['sum']),
+         ]
+        ],
+        ['Conventional Structures Costs',
+         ['Construction', 'P & D', 'O & M', 'Replacement', 'Total'],
+         [
+             int(structure_life_cycle_costs['conventional']['costs']['construction']),
+             int(structure_life_cycle_costs['conventional']['costs']['planning_and_design']),
+             int(structure_life_cycle_costs['conventional']['costs']['o_and_m_sum']),
+             int(structure_life_cycle_costs['conventional']['costs']['replacement_sum']),
+             int(project_life_cycle_costs['conventional']['costs']['sum']),
+         ]
+        ],
         ['Project Life Cycle Costs',
-         ['Item', 'Dollars'],
+         ['Construction', 'P & D', 'O & M', 'Replacement', 'Total'],
          [
-             ['Construction', int(project_life_cycle_costs['total']['construction']), formats['output_col_money_big']],
-             ['Planning and Design', int(project_life_cycle_costs['total']['planning_and_design']),
-              formats['output_col_money_big']],
-             ['O & M', int(project_life_cycle_costs['total']['o_and_m']), formats['output_col_money_big']],
-             ['Replacement', int(project_life_cycle_costs['total']['replacement']), formats['output_col_money_big']],
-             ['Total', int(project_life_cycle_costs['total']['sum']), formats['output_col_money_big']],
+             int(project_life_cycle_costs['total']['construction']),
+             int(project_life_cycle_costs['total']['planning_and_design']),
+             int(project_life_cycle_costs['total']['o_and_m']),
+             int(project_life_cycle_costs['total']['replacement']),
+             int(project_life_cycle_costs['total']['sum']),
          ]
-         ],
-        ['Project Construction Costs',
-         ['Structure Class', 'Construction', 'P & D'],
-         [
-             ['Non-Conventional (GSI)',
-              int(project_life_cycle_costs['nonconventional']['costs']['construction']),
-              int(project_life_cycle_costs['nonconventional']['costs']['planning_and_design']),
-              formats['output_col_money_big']],
-             ['Conventional',
-              int(project_life_cycle_costs['conventional']['costs']['construction']),
-              int(project_life_cycle_costs['conventional']['costs']['planning_and_design']),
-              formats['output_col_money_big']],
-             ['Total',
-              int(project_life_cycle_costs['total']['construction']),
-              int(project_life_cycle_costs['total']['planning_and_design']), formats['output_col_money_big']],
-         ]
-         ],
-        ['O&M and Replacement Costs',
-         ['Structure Class', 'O & M', 'Replacement'],
-         [
-             ['Non-Conventional (GSI)',
-              int(structure_life_cycle_costs['nonconventional']['costs']['o_and_m_sum']),
-              int(structure_life_cycle_costs['nonconventional']['costs']['replacement_sum']),
-              formats['output_col_money_big']],
-             ['Conventional',
-              int(structure_life_cycle_costs['conventional']['costs']['o_and_m_sum']),
-              int(structure_life_cycle_costs['conventional']['costs']['replacement_sum']),
-              formats['output_col_money_big']],
-             ['Total',
-              int(structure_life_cycle_costs['nonconventional']['costs']['o_and_m_sum'])
-              + int(structure_life_cycle_costs['conventional']['costs']['o_and_m_sum']),
-              int(structure_life_cycle_costs['nonconventional']['costs']['replacement_sum']
-                  + int(structure_life_cycle_costs['conventional']['costs']['replacement_sum'])),
-              formats['output_col_money_big']],
-         ]
-         ],
-        ['Life Cycle Costs',
-         ['Structure', 'Life Cycle Total'],
-         [
-             ['Non-Conventional (GSI)', int(project_life_cycle_costs['nonconventional']['costs']['sum']),
-              formats['output_col_money_big']],
-             ['Conventional', int(project_life_cycle_costs['conventional']['costs']['sum']),
-              formats['output_col_money_big']],
-             ['Total', int(project_life_cycle_costs['total']['sum']), formats['int_big_output']],
-         ]],
+        ],
     )
 
-    for header, titles, values in (cost_blocks):
-        worksheet.merge_range(row, col, row + 1, col + 2, header, formats['merge_format'])
-        row += 2
-        if len(titles) == 2:
-            worksheet.write(row, col, titles[0], formats['table_title'])
-            worksheet.write(row, col + 1, titles[1], formats['table_title'])
-            row += 1
-            for label, value, format in values:
-                worksheet.write(row, col, label, formats['label_col'])
-                if format == 'text':
-                    worksheet.write(row, col + 1, value)
-                else:
-                    worksheet.write(row, col + 1, value, format)
-                row += 1
-        else:  # there are 2 values per-line
-            worksheet.write(row, col, titles[0], formats['table_title'])
-            worksheet.write(row, col + 1, titles[1], formats['table_title'])
-            worksheet.write(row, col + 2, titles[2], formats['table_title'])
-            row += 1
-            for label, value1, value2, format in values:
-                worksheet.write(row, col, label, formats['label_col'])
-                if format == 'text':
-                    worksheet.write(row, col + 1, value1)
-                    worksheet.write(row, col + 2, value2)
-                else:
-                    worksheet.write(row, col + 1, value1, format)
-                    worksheet.write(row, col + 2, value2, format)
-                row += 1
+
+    format = formats['output_col_money_big']
+    for header_1, header_2, values in (cost_blocks):
+        if insert_header is True:
+            col_count = len(header_2)
+            worksheet.merge_range(0, col, 0 , col + col_count - 1, header_1, formats['merge_format'])
+            hold_col = col
+            for label in header_2:
+                worksheet.write(1, col, label, formats['bold'])
+                col += 1
+            col = hold_col
+
+        # Iterate over the data and write it out row by row.
+        for value in (values):
+            worksheet.write(row, col, value, format)
+            col += 1
 
         # endregion
 
-
-"""
-    scenario as function based views using ajax to feed in data
-    
-    http://127.0.0.1:92/projects/scenarios/
-"""
+    return
 
 
 @login_required
 def scenario_list(request, pk=None):
-    # scenarios = Scenario.objects.all()
-    # projects = Project.objects.all()
+    """
+        scenario as function based views using ajax to feed in data
+
+        http://127.0.0.1:92/projects/scenarios/
+    """
     project = None
     #
     if not pk == None:
-        #     scenarios = Scenario.objects.filter(project__id=pk)
         project = get_object_or_404(Project, id=pk)  # Project.objects.filter(id=pk)
-    # elif not (request.user.is_superuser or request.user.is_staff):
-    #     scenarios = Scenario.objects.filter(project__user=request.user, project__id=projects[0].id)
-    #     projects = Project.objects.filter(user=request.user)
-    #
-    # if request.method == 'POST':
-    #     # filter scenarios by project
-    #     scenarios = Scenario.objects.filter(project__id=request.POST.get('project_id'))
 
     context_data = {
         # 'scenarios': scenarios,
@@ -2349,24 +2331,19 @@ def scenario_list(request, pk=None):
 #     data['html_form'] = render_to_string(template_name, context, request=request)
 #     return JsonResponse(data)
 
-'''
-this has to have the pk of the project you are adding the scenario to
 
-'''
 
 
 def scenario_create(request, project_id=None):
+    '''
+
+    If requested using GET This loads a partial that is shown in a modal
+
+    this has to have the pk of the project you are adding the scenario to
+
+    '''
     project = get_object_or_404(Project, id=project_id)
-    # structures = Structures.objects.all().order_by("sort_nu")
-    #
-    #
-    # cost_item_default_costs = CostItemDefaultCosts.objects.all()
-    # context = {'scenario': Scenario.templateScenario,
-    #            'structures': structures,
-    #            'project': project,
-    #            'cost_item_default_costs': cost_item_default_costs,
-    #            }
-    # return render(request, 'scenario/costtool/index.html', context)
+
     data = dict()
     if request.method == 'POST':
         form_variable_scenario_title = request.POST.get("scenario_title", None)
@@ -2420,17 +2397,18 @@ def scenario_create(request, project_id=None):
     return JsonResponse(data)
 
 
-"""
-###########################################################################
 
-    This loads a partial that is shown in a modal
-
-    
-###########################################################################
-"""
 
 
 def scenario_duplicate(request, pk):
+    """
+    ###########################################################################
+
+        If requested using GET This loads a partial that is shown in a modal
+        If requested using POST make a copy of the scenario
+
+    ###########################################################################
+    """
     scenario = get_object_or_404(Scenario, pk=pk)
     data = dict()
     if request.method == 'POST':
@@ -2492,25 +2470,20 @@ def scenario_duplicate(request, pk):
     return JsonResponse(data)
 
 
-"""
-###########################################################################
-
-    This is the function that displays the Cost Tool.
-    It loads everything known about the scenario into the template
-    and then javascript stuff does a bunch of work
-    
-    available via /scenario/{id}/update
-
-###########################################################################
-"""
-
-
 @login_required
 def scenario_update(request, pk):
-    scenario = get_object_or_404(Scenario, pk=pk)
+    """
+    ###########################################################################
 
-    # this is available at scenario.project
-    # project = get_object_or_404(Project, id=scenario.project_id)
+        This is the function that displays the Cost Tool.
+        It loads everything known about the scenario into the template
+        and then javascript stuff does a bunch of work
+
+        available via /scenario/{id}/update
+
+    ###########################################################################
+    """
+    scenario = get_object_or_404(Scenario, pk=pk)
 
     # get a serialized copy of the scenario and in the users browser it will be loaded into the UI
     serializer_class = ScenarioSerializer
@@ -2558,12 +2531,10 @@ def scenario_update(request, pk):
     return render(request, 'scenario/costtool/index.html', context)
 
 
-"""
-    this is the content of the Confirm scenario deletion pop-up
-"""
-
-
 def scenario_delete(request, pk):
+    """
+        this is the content of the Confirm scenario deletion pop-up
+    """
     scenario = get_object_or_404(Scenario, pk=pk)
     data = dict()
     if request.method == 'POST':
@@ -2575,11 +2546,13 @@ def scenario_delete(request, pk):
     return JsonResponse(data)
 
 
-#
-# this returns a JSON template stored in the Scenario model
-#  it is used to toggle disable/enable and look through fields
-#
 class TemplateScenario(APIView):
+    """
+
+    this returns a JSON template stored in the Scenario model
+    it is used to toggle disable/enable and look through fields
+
+    """
     template_version = Scenario.templateScenario
 
     # this part doesn't work.  it returns nothing except 'sort_nu': null
@@ -2597,14 +2570,12 @@ class DefaultScenario(APIView):
         return Response(Scenario.defaultScenario)
 
 
-"""
-
-    Scenario
-    
-"""
-
-
 class ScenarioList(ExportMixin, SingleTableView):  # TODO , FilterView
+    """
+
+        Scenario
+
+    """
     model = Scenario
     table_class = tables.ScenarioTable
     template_name = 'scenarioOLD/generic_list.html'

@@ -1,8 +1,8 @@
 from django.contrib import admin
-
+from django import forms
 from .models import Project, Scenario, Structures, \
     CostItem, CostItemDefaultFactors, CostItemDefaultCosts, CostItemDefaultEquations, \
-    CostItemUserCosts
+    CostItemUserCosts, CostItemUserAssumptions
 
 
 class ObjectAdmin(admin.ModelAdmin):
@@ -50,6 +50,8 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display_links = ('project_title',)
     list_filter = (('user__profile__user_type', custom_titled_filter("User Type")),)
 
+    readonly_fields = ['create_date', 'modified_date']
+
     @admin.display(description='User Name')
     def user_fullname(self, obj):
         return "%s" % obj.user.get_full_name()
@@ -73,6 +75,10 @@ class ScenarioAdmin(admin.ModelAdmin):
     list_display = (user_fullname, user_affilitation, 'user_type', project_title, 'scenario_title')
     list_display_links = ('scenario_title',)
     list_filter = (('project__user__profile__user_type', custom_titled_filter("User Type")),)
+
+    exclude = ('areal_features', 'conventional_structures', 'nonconventional_structures', 'counter', 'scenario_date')
+
+    readonly_fields = ['create_date', 'modified_date']
 
     def user_type(self, obj):
         return "%s" % obj.project.user.profile.user_type
@@ -103,7 +109,12 @@ class StructuresAdmin(admin.ModelAdmin):
 class CostItemAdmin(StructuresAdmin):
     list_display = ('sort_nu', 'name', 'units', 'help_text')
     list_display_links = ('name',)
-    pass
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        field = super(CostItemAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        if db_field.name == 'help_text':
+            field.widget = forms.Textarea(attrs={'cols': 80, 'rows': 4})
+        return field
 
 
 def costitem_sort_nu(obj):
@@ -263,6 +274,32 @@ class CostItemUserCostsAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+def structure_name(obj):
+    return "%s" % obj.structure.name
+
+
+structure_name.short_description = 'Structure Name'
+
+class CostItemUserAssumptionsAdmin(admin.ModelAdmin):
+    list_display = (user_name, user_type, scenario_project_title, scenario_title,
+                    structure_name, costitem_name,
+                    # cost_source, user_input_cost, 'base_year',
+                    # replacement_life, o_and_m_pct, first_year_maintenance
+                    )
+    list_display_links = (costitem_name,)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 admin.site.register(Structures, StructuresAdmin)
 admin.site.register(CostItem, CostItemAdmin)
@@ -271,3 +308,4 @@ admin.site.register(CostItemDefaultCosts, CostItemDefaultCostsAdmin)
 admin.site.register(CostItemDefaultEquations, CostItemDefaultEquationsAdmin)
 
 admin.site.register(CostItemUserCosts, CostItemUserCostsAdmin)
+admin.site.register(CostItemUserAssumptions, CostItemUserAssumptionsAdmin)

@@ -11,6 +11,11 @@
 
 
                 <form name="calculator" onsubmit="return false;" id="calculator" method="get">
+                <button id='recalculate_costs' type="button"
+                        style="float: right; margin-bottom: 7px; margin-right: 20px;"
+                        class="btn btn-primary" onclick="event.stopPropagation();recalculateCosts(this)">
+                    <span class="glyphicon glyphicon-copy"></span> Recalculate
+                </button>
                     <div id="nonconventional_structure_header">
                         <h3 class="bmplabel" onclick="toggleHelpText('NonConventionalStructuresHelpText');">Non-Conventional Structures</h3>
                     </div>

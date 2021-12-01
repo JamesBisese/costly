@@ -100,10 +100,7 @@ $(function () {
 
         var export_columns = [0, 1, 2, 3];
 
-        //var scenario_url = SETTINGS.URLS.project_scenario_list_api.replace('<int:pk>', project_id);
-        //scenario_url = scenario_url + "?format=datatables";
-
-        var scenario_url = SETTINGS.URLS.new_scenario_list.replace('<int:pk>', project_id);;
+        var scenario_url = SETTINGS.URLS.new_scenario_list.replace('<int:pk>', project_id);
 
         var options = {
             "serverSide": true,
@@ -167,16 +164,6 @@ $(function () {
             "order": [[ 1, 'asc' ]]
         };
 
-        // hide the user column if the user is not a super user - the values should all be that particular user
-        // if (is_superuser == false)
-        // {
-        //     options['columnDefs'].push({
-        //             "targets": 1,
-        //             "visible": false
-        //         }
-        //     )
-        // }
-
         var table = $('#scenario-table').DataTable(options);
 
         table.on( 'order.dt search.dt', function () {
@@ -189,16 +176,10 @@ $(function () {
 
     /* Functions */
     function showValidationErrors(error) {
-        // var group = $("#input-group");
-        // group.addClass('has-error');
-        // group.find('.help-block').text(error);
         $("#help-block").text(error)
     }
 
     function clearValidationError() {
-        // var group = $("#input-group");
-        // group.removeClass('has-error');
-        // group.find('.help-block').text('');
         $("#help-block").text()
     }
 
@@ -283,17 +264,6 @@ $(function () {
         return false;
     };
 
-  // increment Counter (this is for testing of the UI
-  // $("#scenario-table").on("click", ".js-increment-scenario", incrementCounter);
-
-    //clear any validation error once the user starts typing
-    // $("#scenario_title").on('keyup', function () {
-    //     clearValidationError()
-    // });
-    // $("#scenario_title").on('change', function () {
-    //     clearValidationError();
-    // });
-
     // Create scenario
     $("#create_scenario").on("click",  loadForm);
     $("#modal-scenario").on("submit", ".js-scenario-create-form", submitForm);
@@ -307,21 +277,3 @@ $(function () {
     $("#modal-scenario").on("submit", ".js-project-delete-form", submitForm);
 
 });
-
-
-// not used
-// var incrementCounter = function () {
-//     var btn = $(this);
-//     $.ajax({
-//       url: btn.attr("data-url"),
-//
-//       type: 'GET',
-//       dataType: 'json',
-//       success: function (data) {
-//         if (data.form_is_valid) {
-//           $('#scenario-table').DataTable().ajax.reload();
-//         }
-//       }
-//     });
-//     return false;
-// };

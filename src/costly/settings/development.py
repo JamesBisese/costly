@@ -161,3 +161,8 @@ try:
     IS_TESTING_INSTANCE = env.str('IS_TESTING_INSTANCE')
 except:
     pass
+
+try:
+    COPYRIGHT_DISCLAIMER = env.str('COPYRIGHT_DISCLAIMER')
+except:
+    pass

@@ -166,7 +166,6 @@ TEMPLATE_SCENARIO = {
 # when a user CREATES a new scenario, this is loaded
 DEFAULT_SCENARIO = {
     # there is another key 'scenario_id' not included in the default
-    'zany_thing': "called right about now",
     "siteData": {
         "version": "1.1",
         "location": {
@@ -197,8 +196,8 @@ DEFAULT_SCENARIO = {
             "scenario_title": "Test Load Scenario Title",
             "project_type": "parcel",
             "project_ownership": "public",
-            "project_area": "12008",
-            "land_unit_cost": "108",
+            "project_area": "",
+            "land_unit_cost": "",
 
             'project_location': '10123 W Cherokee Dr.',
             'project_purchase_information': 'to_be_purchased',
@@ -229,53 +228,53 @@ DEFAULT_SCENARIO = {
             },
             "parking_island": {
                 "checkbox": True,
-                "area": 1003
+                "area": 0
             },
             "building": {
                 "checkbox": True,
-                "area": 1004
+                "area": 0
             },
             "drive_thru_facility": {
                 "checkbox": True,
-                "area": 1005
+                "area": 0
             },
             "landscape": {
                 "checkbox": True,
-                "area": 1006
+                "area": 0
             },
             "sidewalk": {
                 "checkbox": True,
-                "area": 1007
+                "area": 0
             },
             "street": {
                 "checkbox": True,
-                "area": 1008
+                "area": 0
             },
             "median": {
                 "checkbox": True,
-                "area": 1009
+                "area": 0
             },
             "parking_lot": {
                 "checkbox": True,
-                "area": 1010
+                "area": 0
             },
             "driveway_and_alley": {
                 "checkbox": True,
-                "area": 1011
+                "area": 0
             }
         },
         "conventional_structures": {
             "stormwater_wetland": {
                 "checkbox": True,
-                "area": 2000
+                "area": 0
             },
             "pond": {
                 "checkbox": True,
-                "area": 2001
+                "area": 0
             },
             "rooftop": {
                 "checkbox": True,
-                "area": 2002
+                "area": 0
             },
             # "piping": {
             #     "checkbox": True,
@@ -284,57 +283,57 @@ DEFAULT_SCENARIO = {
             # },
             "curb_and_gutter": {
                 "checkbox": False,
-                "area": 2003
+                "area": 0
             },
             "asphalt": {
                 "checkbox": False,
-                "area": 2003
+                "area": 0
             },
             "concrete": {
                 "checkbox": True,
-                "area": 2004
+                "area": 0
             },
             "lawn": {
                 "checkbox": False,
-                "area": ""
+                "area": 0
             },
             "landscaping": {
                 "checkbox": True,
-                "area": 2005
+                "area": 0
             },
             "trench": {
                 "checkbox": True,
-                "area": 2006
+                "area": 0
             }
         },
         "nonconventional_structures": {
             "swale": {
                 "checkbox": True,
-                "area": 3000
+                "area": 0
             },
             "rain_harvesting_device": {
                 "checkbox": True,
-                "area": 3001
+                "area": 0
             },
             "bioretention_cell": {
                 "checkbox": True,
-                "area": 3002
+                "area": 0
             },
             "filter_strip": {
                 "checkbox": True,
-                "area": 3003
+                "area": 0
             },
             "green_roof": {
                 "checkbox": False,
-                "area": 3004
+                "area": 0
             },
             "planter_box": {
                 "checkbox": True,
-                "area": 3005
+                "area": 0
             },
             "porous_pavement": {
                 "checkbox": True,
-                "area": 3006
+                "area": 0
             }
         }
     }

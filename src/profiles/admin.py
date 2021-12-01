@@ -11,7 +11,7 @@ User = get_user_model()
 
 class UserProfileInline(admin.StackedInline):
     model = Profile
-
+    exclude = ('favoriteDate', 'picture',)
 
 class NewUserAdmin(NamedUserAdmin):
     """
@@ -24,8 +24,11 @@ class NewUserAdmin(NamedUserAdmin):
         return "%s" % obj.profile.user_type or 'N/A'
     user_type.short_description = 'User Type'
 
-    list_display = ('is_active', 'email', 'name', 'organization_tx', 'user_type', 'permalink',
-                    'is_superuser', 'is_staff', 'last_login')
+    list_display = ('name', 'organization_tx', 'job_title', 'user_type', 'email', 'permalink',
+                    'is_active', 'is_superuser', 'is_staff', 'last_login')
+    list_display_links = ('name',)
+    # hint: search related fields using double-underscore '__'
+    search_fields = ('email', 'name', 'organization_tx','job_title', 'profile__user_type')
 
     # 'View on site' didn't work since the original User model needs to
     # have get_absolute_url defined. So showing on the list display

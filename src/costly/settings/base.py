@@ -33,8 +33,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # costly is not an included app, so it needs to be specified directly
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'costly', 'static'),
-    # os.path.join(BASE_DIR, 'users', 'static'),
-    # os.path.join(BASE_DIR, 'scenario', 'static'), # this is automatically included
 ]
 
 # this is where collectstatic will put all the documents it collects
@@ -256,7 +254,7 @@ REST_FRAMEWORK = {
 CURRENCIES = ('USD',)
 CURRENCY_CHOICES = [('USD', 'USD $'), ]
 
-# this can get overridden in local.development.env or local.production.env
+# these variables can(should) be overridden using local.development.env or local.production.env
 EMAIL_CONTACT='base@tetratech.com'
 
 HEADER_LOGO_URI='costly/img/tetratech-icon-1024.png'
@@ -265,9 +263,13 @@ IS_TESTING_INSTANCE='true'
 
 VERSION_INFORMATION='Version 1.018 Updated November 29, 2021'
 
+COPYRIGHT_DISCLAIMER='&copy; City of Raleigh, NC 2021'
+
 SETTINGS_EXPORT = [
     'VERSION_INFORMATION',
     'EMAIL_CONTACT',
     'HEADER_LOGO_URI',
     'IS_TESTING_INSTANCE',
+    'COPYRIGHT_DISCLAIMER',
 ]
+

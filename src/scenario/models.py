@@ -357,7 +357,7 @@ class Project(models.Model):
 
     project_area = models.CharField('Total Project Area (square feet)', max_length=15, default=None, blank=False,
                                     null=False)
-    land_unit_cost = MoneyField('Cost per ft2 of Project site',
+    land_unit_cost = MoneyField('Cost per square foot of Project site',
                                 decimal_places=2, max_digits=11, default=1,
                                 default_currency='USD', blank=False, null=False)
 
@@ -1354,11 +1354,11 @@ class CostItemUserCosts(models.Model):
     #
     user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
                                  default_currency='USD', blank=True, null=True)
-    base_year = models.PositiveIntegerField(default=1990, validators=[MinValueValidator(1990),
+    base_year = models.PositiveIntegerField(default=20180, validators=[MinValueValidator(2018),
                                                                       MaxValueValidator(2090)
                                                                       ], blank=True, null=True)
     replacement_life = models.PositiveIntegerField("Replacement Life ('R')",
-                                                   default=40, validators=[MinValueValidator(5),
+                                                   default=40, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)
                                                                            ], blank=True, null=True)
 
@@ -1377,23 +1377,23 @@ class CostItemUserCosts(models.Model):
         return self.scenario.scenario_title + " -- " + self.costitem.code + " -- " + self.cost_source
 
     class Meta:
-        verbose_name_plural = "Cost Item User Costs"
+        verbose_name_plural = "Scenario Cost Item User Costs"
         unique_together = ("scenario", "costitem")
 
 
-'''
 
-    This is connected to the Structure Costs page
-    and stores data by scenario/structure/costitem
-    
-    the 'user' cost assumptions are stored in CostItemUserAssumptions 
-
-NOTE: this name is terrible.  It should be StructureCostItemUserFactors
-
-'''
 
 
 class CostItemUserAssumptions(models.Model):
+    """
+        This is connected to the Structure Costs page
+        and stores data by (project/)scenario/structure/costitem
+
+        the 'user' cost assumptions are stored in CostItemUserAssumptions
+
+    NOTE: this name is terrible.  It should be StructureCostItemUserFactors
+
+    """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
                                  default=None, blank=False, null=False)
     structure = models.ForeignKey(Structures, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
@@ -1408,7 +1408,7 @@ class CostItemUserAssumptions(models.Model):
     n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
 
     def __str__(self):
-        return str(self.scenario.id) + " -- " + self.structure.code + " -- " + self.costitem.code
+        return str(self.scenario.scenario_title) + " -- " + self.structure.name + " -- " + self.costitem.name
 
     class Meta:
         verbose_name_plural = "Structure Cost Item User Assumptions"

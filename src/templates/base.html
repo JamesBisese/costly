@@ -135,7 +135,7 @@
             <div class="footer">
                 <div class="row">
 
-                      <p>&copy; City of Raleigh, NC {% now 'Y' %}. {{ settings.VERSION_INFORMATION }}<br>
+                      <p>{{ settings.COPYRIGHT_DISCLAIMER | safe }} {{ settings.VERSION_INFORMATION }}<br>
                           Send comments and questions to <a href="mailto:{{ settings.EMAIL_CONTACT }}">
                             {{ settings.EMAIL_CONTACT }}</a></p>
 

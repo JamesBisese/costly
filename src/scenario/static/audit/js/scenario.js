@@ -21,7 +21,7 @@ $(document).ready(function() {
                     action: function ( e, dt, node, config ) {
 
                         //TODO: figure out how to get the loader to display while the export is happening
-$(".spinner").show();
+                        $(".spinner").show();
                         // set the url for exporting all the scenarios in the table
                         $("#scenario-audit-table_processing").css("display","inline");
 
@@ -33,7 +33,7 @@ $(".spinner").show();
                         e.click();
                         document.body.removeChild(e);
                         $("#scenario-audit-table_processing").css("display","none");
-$(".spinner").hide();
+                        $(".spinner").hide();
                     }
                 }
             ],
@@ -58,12 +58,17 @@ $(".spinner").hide();
             "order": [[ 1, 'asc' ]]
 
           });
-});
+    });
 
+    $('#scenario-audit-table tbody').on( 'click', 'tr', function () {
+        //jab changed this to allow selecting more than 2 so the export will work
+        //
+        $(this).toggleClass('selected');
+    });
 
-table.on( 'order.dt search.dt', function () {
-    table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-    cell.innerHTML = i+1;
-    t.cell(cell).invalidate('dom');
-} );
+    table.on( 'order.dt search.dt', function () {
+        table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+        cell.innerHTML = i+1;
+        t.cell(cell).invalidate('dom');
+    } );
 } ).draw();

@@ -10,6 +10,20 @@ from django.utils.translation import ugettext_lazy as _
 from .models import User
 from .forms import UserCreationForm, AdminUserChangeForm
 
+def custom_titled_filter(title):
+    """
+    this allows overriding the name shown in the right-side FILTER panel
+
+    :param title:
+    :return:
+    """
+    class Wrapper(admin.FieldListFilter):
+        def __new__(cls, *args, **kwargs):
+            instance = admin.FieldListFilter.create(*args, **kwargs)
+            instance.title = title
+            return instance
+    return Wrapper
+
 USERNAME_FIELD = get_user_model().USERNAME_FIELD
 
 REQUIRED_FIELDS = (USERNAME_FIELD,) + tuple(get_user_model().REQUIRED_FIELDS)
@@ -23,7 +37,7 @@ SIMPLE_PERMISSION_FIELDS = (_('Permissions'), {
 })
 
 ADVANCED_PERMISSION_FIELDS = copy.deepcopy(SIMPLE_PERMISSION_FIELDS)
-ADVANCED_PERMISSION_FIELDS[1]['fields'] += ('groups', 'user_permissions',)
+ADVANCED_PERMISSION_FIELDS[1]['fields'] += ('user_permissions',)
 
 DATE_FIELDS = (_('Important dates'), {
     'fields': ('last_login', 'date_joined',),
@@ -41,7 +55,12 @@ class StrippedUserAdmin(DjangoUserAdmin):
     # that reference specific fields on auth.User.
     list_display = ('is_active', USERNAME_FIELD, 'is_superuser', 'is_staff',)
     list_display_links = (USERNAME_FIELD,)
-    list_filter = ('is_superuser', 'is_staff', 'is_active',)
+    list_filter = (
+        'profile__user_type',
+        ('is_active', custom_titled_filter('Active/Not Active')),
+        ('is_superuser', custom_titled_filter('Is SuperUser (Yes/No)')),
+        ('is_staff', custom_titled_filter('Is Staff (Yes/No)')),
+    )
     fieldsets = (
         BASE_FIELDS,
         SIMPLE_PERMISSION_FIELDS,
@@ -61,9 +80,13 @@ class StrippedUserAdmin(DjangoUserAdmin):
 
 
 class StrippedNamedUserAdmin(StrippedUserAdmin):
-    list_display = ('is_active', 'organization_tx', 'email', 'name', 'is_superuser', 'is_staff', 'last_login','')
-    list_display_links = ('email', 'name',)
-    search_fields = ('email', 'name', 'organization_tx',)
+    """
+    this class gets overridden in the profiles/admin.py file
+
+    """
+    pass
+
+
 
 
 class UserAdmin(StrippedUserAdmin):
