@@ -17,15 +17,9 @@ if os.path.exists(env_file):
     environ.Env.read_env(env_file)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
-# this is used to map the URLS when app is installed on IIS using an alias
-# IIS_APP_ALIAS = r''
-
-# this is used to map the URLS when app is installed on IIS using an alias
-## IIS_APP_ALIAS = r''
-
-##region changed to allow DEV and PROD on insdev1 for testing of these systems
+# region -- toggle to allow DEV and PROD on insdev1 for testing of these systems
 # if running in pycharm or with runserver, you need to clear this
 IIS_APP_ALIAS = env('IIS_APP_ALIAS')
 
@@ -37,14 +31,12 @@ if len(IIS_APP_ALIAS) > 0:
 MEDIA_URL = '/' + iis_app_alias + 'media/'
 STATIC_URL = '/' + iis_app_alias + 'static/'
 
-##end region
+# end region
 
-
-#TODO figure what this does. it looks wrong, like it should use DEBUG, not false
+# TODO figure what this does. it looks wrong, like it should use DEBUG, not false
 TEMPLATES[0]['OPTIONS'].update({'debug': True})
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
@@ -57,15 +49,6 @@ if "celery" in sys.argv[0]:
 
 # unsetting this variable allows the testing account passwords to pass, although they are refused for 'production'
 AUTH_PASSWORD_VALIDATORS = []
-
-# Django Debug Toolbar
-# INSTALLED_APPS += (
-#     'debug_toolbar',)
-
-# Additional middleware introduced by debug toolbar
-# MIDDLEWARE += [
-#     'debug_toolbar.middleware.DebugToolbarMiddleware',
-# ]
 
 # Show emails to console in DEBUG mode
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -121,7 +104,7 @@ LOGGING = {
         'proj_log_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGFILE_ROOT,'project.log'),
+            'filename': os.path.join(LOGFILE_ROOT, 'project.log'),
             'formatter': 'verbose'
         },
         'console': {

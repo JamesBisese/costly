@@ -19,7 +19,7 @@ if os.path.exists(env_file):
     environ.Env.read_env(env_file)
 
 # For security and performance reasons, DEBUG is turned off
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DEBUG', default=False)
 
 # this is used to map the URLS when app is installed on IIS using an alias
 

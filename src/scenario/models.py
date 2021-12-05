@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
@@ -355,6 +356,7 @@ class Project(models.Model):
     priority_watershed = models.CharField('Priority Watershed', choices=WATERSHED_CHOICES, max_length=15, default=None,
                                           blank=True, null=True)
 
+    #note: I don't know why I chose CharField for this.  It should be IntegerField
     project_area = models.CharField('Total Project Area (square feet)', max_length=15, default=None, blank=False,
                                     null=False)
     land_unit_cost = MoneyField('Cost per square foot of Project site',
@@ -383,6 +385,7 @@ def get_TEMPLATE_SCENARIO():
     fields = []
     labels = {}
     inputs = {}
+
 
     for structure in structures:
         if structure['classification'] == 'conventional':
@@ -422,7 +425,12 @@ class Scenario(models.Model):
     """
     # this is a template used in Javascript to figure out how to manage the UI
     # it is stored in a module 'scenario_frameworks' just because it is big and ugly
-    templateScenario = get_TEMPLATE_SCENARIO()
+    templateScenario = None # get_TEMPLATE_SCENARIO()
+
+    try:
+        templateScenario = get_TEMPLATE_SCENARIO()
+    except:
+        pass
 
     # this is an object used as the default scenario when a user creates a new scenario
     # again, it is stored in a module 'scenario_frameworks' just because it is big and ugly

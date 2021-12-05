@@ -218,6 +218,9 @@ def save_project_form(request, form, template_name):
             if form.cleaned_data['project_area'] is not None:
                 form.cleaned_data['project_area'] = form.cleaned_data['project_area'].replace(",", "")
                 form.instance.project_area = form.cleaned_data['project_area'].replace(",", "")
+                # this is to take off any decimal part.  assuming no one really owns land to the part of a square foot.
+                form.instance.project_area = str(int(float(form.instance.project_area)))
+                form.cleaned_data['project_area'] = form.instance.project_area
             form.save()
             data['form_is_valid'] = True
             projects = Project.objects.all()
@@ -1580,7 +1583,7 @@ def scenario_table_html(scenario):
             if cost_item_user_cost_dict[code]['cost_source'] == 'user':
                 cost_source_tx = 'User'
                 if cost_item_user_cost_dict[code]['user_input_cost'] is None:
-                    unit_cost = 0
+                    unit_cost = Money(0.00, 'USD')
                 else:
                     unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
                 base_year = cost_item_user_cost_dict[code]['base_year']
@@ -1621,7 +1624,7 @@ def scenario_table_html(scenario):
             if cost_item_user_cost_dict[code]['cost_source'] == 'user':
                 cost_item_obj['cost_source'] = 'User'
                 # change the value to a Money
-                cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD').amount
+                cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'] or '0.00', 'USD').amount
                 cost_item_obj['base_year'] = cost_item_user_cost_dict[code]['base_year']
 
     #
@@ -2138,7 +2141,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
     worksheet.set_column(start_col + 12, start_col + 12, 21)
 
     for col_index in range(13, 13 + 15 + 7):
-        worksheet.set_column(col_index, col_index, 12)
+        worksheet.set_column(col_index, col_index, 15)
 
     # remove the blue or green background from some formats
     formats['input_col'].set_bg_color('white')
@@ -2175,7 +2178,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
             ['project_type', scenario.project.get_project_type_display(), formats['input_col_text']],
             ['project_purchase_information', scenario.project.get_project_purchase_information_display(),
              formats['input_col_text']],
-            ['project_area', int(scenario.project.project_area), formats['int_big']],
+            ['project_area', int(float(scenario.project.project_area)), formats['int_big']],
             ['land_unit_cost', scenario.project.land_unit_cost.amount, formats['money_small']],
             ['land_value', float(scenario.project.project_area) * float(scenario.project.land_unit_cost.amount),
              formats['output_col_money_big']],
@@ -2191,7 +2194,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
             col += 1
 
         #TODO: fix this.  it is causing an Excel error, and I can't figure out what.
-        worksheet.merge_range(0, 11, 0, 12, 'Scenario', formats['merge_format'])
+        # worksheet.merge_range(0, 11, 0, 12, 'Scenario', formats['merge_format'])
 
         worksheet.write(col_title_row, col , 'scenario_title', formats['bold'])
         worksheet.write(row, col , scenario.scenario_title)

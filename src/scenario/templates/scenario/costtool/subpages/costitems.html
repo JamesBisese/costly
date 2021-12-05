@@ -78,7 +78,13 @@
                <form name="calculator" onsubmit="return false;" id="calculator" method="get">
 
                     <!-- jab-start -->
+               <button id='recalculate_costs' type="button"
+                    style="float: right; margin-bottom: 7px; margin-right: 20px;"
+                    class="btn btn-primary" onclick="event.stopPropagation();recalculateCosts(this)">
+                    <span class="glyphicon glyphicon-copy"></span> Recalculate
+                </button>
                <h3 class="bmplabel" onclick="toggleHelpText('CostItemUnitCostsHelpText');">Cost Item Unit Costs</h3>
+
             <table border="1" cellpadding="0" cellspacing="0" class="costItemTable" >
                 <thead>
                     <tr style="text-align: center;">
