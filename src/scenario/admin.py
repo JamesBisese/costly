@@ -46,7 +46,7 @@ user_affilitation.short_description = 'Affiliation'
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('user_fullname', 'user_affilitation', 'user_type', 'project_title')
+    list_display = ('user_fullname', 'user_affilitation', 'user_type', 'project_title', 'create_date', 'modified_date')
     list_display_links = ('project_title',)
     list_filter = (('user__profile__user_type', custom_titled_filter("User Type")),)
 
@@ -72,7 +72,7 @@ admin.site.register(Project, ProjectAdmin)
 
 
 class ScenarioAdmin(admin.ModelAdmin):
-    list_display = (user_fullname, user_affilitation, 'user_type', project_title, 'scenario_title')
+    list_display = (user_fullname, user_affilitation, 'user_type', project_title, 'scenario_title', 'create_date', 'modified_date')
     list_display_links = ('scenario_title',)
     list_filter = (('project__user__profile__user_type', custom_titled_filter("User Type")),)
 
@@ -95,6 +95,12 @@ admin.site.register(Scenario, ScenarioAdmin)
 class StructuresAdmin(admin.ModelAdmin):
     list_display = ('sort_nu', 'classification', 'name')
     list_display_links = ('name',)
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        field = super(StructuresAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        if db_field.name == 'help_text':
+            field.widget = forms.Textarea(attrs={'cols': 80, 'rows': 4})
+        return field
 
     def get_actions(self, request):
         actions = super().get_actions(request)

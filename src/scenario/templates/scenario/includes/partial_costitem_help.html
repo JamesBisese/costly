@@ -10,7 +10,7 @@
         List of available structure codes<br>
         <ol>
         {%  for structure in costitem_meta %}
-            <li><button type="button" onclick="close_ci_help(this);" class="closebutton">
+            <li><button type="button" onclick="close_cost_item_help(this);" class="closebutton">
                 <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
             </button>
             <h4>{{ structure.name }} -- {{ structure.code }}</h4>
@@ -18,10 +18,10 @@
         {% endfor %}
         </ol>
     {%  else %}
-    <button type="button" onclick="close_ci_help(this);" class="closebutton">
-        <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
-    </button>
-    <h4>{{ costitem_meta.name }}</h4>
-    {{ costitem_meta.help_text }}
+        <button type="button" onclick="close_cost_item_help(this);" class="closebutton">
+            <img src="{% static 'scenario/images/close2.gif' %}" style="border:0;">
+        </button>
+        <h4>{{ costitem_meta.name }}</h4>
+        {{ costitem_meta.help_text }}
     {%  endif %}
 </div>

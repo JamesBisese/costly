@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
@@ -504,7 +503,7 @@ class Scenario(models.Model):
         verbose_name_plural = "Scenarios"
         unique_together = ("project", "scenario_title")
 
-    def process_related_data(self, form_data):
+    def process_related_data(self, form_data, active_tab='FOOBAR'):
         """
 
             process all the scenario related data (structures, costs, assumptions, etc.)
@@ -512,118 +511,117 @@ class Scenario(models.Model):
         """
         scenarioTemplate = Scenario.templateScenario['siteData']
 
-        # TODO: need to change this to split out project and scenario fields
-        list_of_attributes = scenarioTemplate['embedded_scenario']['fields']
-        list_of_values = form_data['embedded_scenario']
+        """ process the elements on the Project-Scenario Description tab """
 
+        if active_tab == 'project_information':
+            list_of_attributes = scenarioTemplate['embedded_scenario']['fields']
+            list_of_values = form_data['embedded_scenario']
+
+            for field in list_of_attributes:
+                if hasattr(self, field):
+                    val = list_of_values[field]
+
+                    val = None if val == '' else val
+                    setattr(self, field, val)
+
+            areal_features = self.areal_features
+
+            if areal_features is None:
+                areal_features = ArealFeatures()
+
+            list_of_attributes = scenarioTemplate['areal_features']['inputs']
+            list_of_values = form_data['areal_features']
+            for feature_name in list_of_attributes:
+                for field in list_of_attributes[feature_name]:
+                    if hasattr(areal_features, feature_name + '_' + field):
+                        field_value = list_of_values[feature_name][field]
+                        if field == 'area' and field_value == '':
+                            field_value = None
+                        setattr(areal_features, feature_name + '_' + field, field_value)
+
+            areal_features.save()
+            self.areal_features_id = areal_features.id
+
+        """ process the elements on the Structures tab """
+        if active_tab == 'structures':
+            conventional_structures = self.conventional_structures
+
+            if conventional_structures is None:
+                conventional_structures = ConventionalStructures()
+
+            list_of_attributes = scenarioTemplate['conventional_structures']['inputs']
+            list_of_values = form_data['conventional_structures']
+            for feature_name in list_of_attributes:
+                for field in list_of_attributes[feature_name]:
+                    if hasattr(conventional_structures, feature_name + '_' + field):
+                        field_value = list_of_values[feature_name][field]
+                        if field == 'area' and field_value == '':
+                            field_value = None
+                        setattr(conventional_structures, feature_name + '_' + field, field_value)
+
+            try:
+                conventional_structures.save()
+            except Exception:
+                test = {'Type': type(Exception).__name__,
+                        'message': "1. Unexpected error:" + Exception.args[0],
+                        }
+
+            self.conventional_structures_id = conventional_structures.id
+
+            nonconventional_structures = self.nonconventional_structures
+
+            if nonconventional_structures is None:
+                nonconventional_structures = NonConventionalStructures()
+
+            list_of_attributes = scenarioTemplate['nonconventional_structures']['inputs']
+            list_of_values = form_data['nonconventional_structures']
+            for feature_name in list_of_attributes:
+                for field in list_of_attributes[feature_name]:
+                    if hasattr(nonconventional_structures, feature_name + '_' + field):
+                        field_value = list_of_values[feature_name][field]
+                        if field == 'area' and field_value == '':
+                            field_value = None
+                        setattr(nonconventional_structures, feature_name + '_' + field, field_value)
+
+            nonconventional_structures.save()
+            self.nonconventional_structures_id = nonconventional_structures.id
+
+        if active_tab == 'structure_costs':
+            self.process_strucure_costs(form_data['cost_items']['user_assumptions'], scenarioTemplate['cost_items']['fields'])
+
+        # only process the costitems if the user is on that page, else there can't be any change
+        if active_tab == 'costitems':
+            self.process_cost_item_unit_costs(form_data['cost_items']['unit_costs'])
+
+        return
+
+
+    def process_strucure_costs(self, user_assumptions, cost_items):
         """
-            removed edits of project from Cost Tool.  Now only editable in projects
-        """
-        # for field in list_of_attributes:
-        #     if hasattr(self.project, field):
-        #         val = list_of_values[field]
-        #         # print("field='{}', value='{}'".format(field, val))
-        #         setattr(self.project, field, list_of_values[field])
-
-        for field in list_of_attributes:
-            if hasattr(self, field):
-                val = list_of_values[field]
-
-                val = None if val == '' else val
-                setattr(self, field, val)
-
-        areal_features = self.areal_features
-
-        if areal_features is None:
-            areal_features = ArealFeatures()
-
-        list_of_attributes = scenarioTemplate['areal_features']['inputs']
-        list_of_values = form_data['areal_features']
-        for feature_name in list_of_attributes:
-            for field in list_of_attributes[feature_name]:
-                if hasattr(areal_features, feature_name + '_' + field):
-                    field_value = list_of_values[feature_name][field]
-                    if field == 'area' and field_value == '':
-                        field_value = None
-                    setattr(areal_features, feature_name + '_' + field, field_value)
-
-        areal_features.save()
-        self.areal_features_id = areal_features.id
-
-        ''' now structures '''
-        conventional_structures = self.conventional_structures
-
-        if conventional_structures is None:
-            conventional_structures = ConventionalStructures()
-
-        list_of_attributes = scenarioTemplate['conventional_structures']['inputs']
-        list_of_values = form_data['conventional_structures']
-        for feature_name in list_of_attributes:
-            for field in list_of_attributes[feature_name]:
-                if hasattr(conventional_structures, feature_name + '_' + field):
-                    field_value = list_of_values[feature_name][field]
-                    if field == 'area' and field_value == '':
-                        field_value = None
-                    setattr(conventional_structures, feature_name + '_' + field, field_value)
-
-        try:
-            conventional_structures.save()
-        except Exception:
-            test = {'Type': type(Exception).__name__,
-                    'message': "1. Unexpected error:" + Exception.args[0],
-                    }
-
-        self.conventional_structures_id = conventional_structures.id
-
-        nonconventional_structures = self.nonconventional_structures
-
-        if nonconventional_structures is None:
-            nonconventional_structures = NonConventionalStructures()
-
-        list_of_attributes = scenarioTemplate['nonconventional_structures']['inputs']
-        list_of_values = form_data['nonconventional_structures']
-        for feature_name in list_of_attributes:
-            for field in list_of_attributes[feature_name]:
-                if hasattr(nonconventional_structures, feature_name + '_' + field):
-                    field_value = list_of_values[feature_name][field]
-                    if field == 'area' and field_value == '':
-                        field_value = None
-                    setattr(nonconventional_structures, feature_name + '_' + field, field_value)
-
-        nonconventional_structures.save()
-        self.nonconventional_structures_id = nonconventional_structures.id
-
-        """
-            new code dealing with content on the 'Structure Cost Item User Assumptions' tab 
+            process the content of the 'Structure Cost Item User Assumptions' tab
               - combination of Structure (single) and Cost Items
-            
-            form_data should have a single 'structure' - the structure selected
+
+            user_assumptions should have a single 'structure' - the structure selected
             by the user in the drop-down list
 
         """
-        list_of_cost_items = []
-
         # if the user has not selected anything from the Structure Costs drop-down then there is none of this data
         structure_code = None
-        if 'user_assumptions' in form_data['cost_items']:
-            list_of_cost_items = scenarioTemplate['cost_items']['fields']
+        list_of_values = None
+        if user_assumptions is not None:
+            structure_code = user_assumptions['structure']
 
-            structure_code = form_data['cost_items']['user_assumptions']['structure']
-
-            list_of_values = form_data['cost_items']['user_assumptions']['data']
+            list_of_values = user_assumptions['data']
 
         # have to run through all the cost_items to delete any that are not found
         structure_obj = None
-        for cost_item in list_of_cost_items:
-
-            form_values = None
-
+        for cost_item in cost_items:
             cost_item_assumptions_obj = CostItemUserAssumptions.objects.filter(scenario__id=self.id,
                                                                                structure__code=structure_code,
                                                                                costitem__code=cost_item).first()
-
             # remove the values if they are all ''
             input_empty = False
+            form_values = None
             if cost_item in list_of_values:
                 form_values = list_of_values[cost_item]
                 # set empty string to null
@@ -707,23 +705,18 @@ class Scenario(models.Model):
                 form_values['construction_cost_factor_equation'] = '=mc2'
                 form_values['cost_V1'] = '$99.99'
 
+
+    def process_cost_item_unit_costs(self, cost_items):
         """
         
-            this manages the section of Cost Item Unit Costs
+            this manages the tab 'Scenario Cost Item Unit Costs'
             
         """
-        cost_items = form_data['cost_items']['unit_costs']
-
-        # cost_items = list_of_values['user_costs']
         for cost_item, form_costs in cost_items.items():
-
-            list_of_attributes = ['cost_source', 'replacement_life', 'o_and_m_pct']
 
             if form_costs['replacement_life'] == 'None':
                 form_costs['replacement_life'] = None
 
-            # if len(form_costs['o_and_m_pct']) > 0:
-            #     form_costs['o_and_m_pct'] = Decimal(form_costs['o_and_m_pct'])
             if form_costs['cost_source'] != 'user':
                 form_costs['user_input_cost'] = None
                 form_costs['base_year'] = None
@@ -740,13 +733,26 @@ class Scenario(models.Model):
             if user_costs_obj is not None:
                 db_record_exists = True
 
+            list_of_attributes = [
+                'cost_source',
+                'replacement_life',
+                'o_and_m_pct'
+            ]
+
             # process checking for user changing 'cost_source'
             cost_source = form_costs['cost_source']
             if cost_source == 'user':
-                list_of_attributes.extend(['user_input_cost', 'base_year'])
-                # if str(user_costs_obj.user_input_cost) != str(form_costs['user_input_cost']   )
+                is_default -= 1 # there is a user cost_source, so it is not 'default' (unless the user_input_cost and year are blank, and the rep_likfe and o+m are defaults
+                list_of_attributes.extend([
+                    'base_year',
+                    'user_input_cost',
+                ])
 
             """
+            
+            NOTE: 2021-12-06 something in here is missing saving the user defined cost and deleting that value.
+            
+            
             Note: yes, this is terrible.  I can't tell if it is bad and complex, or 
             the system is really this complex
             
@@ -765,21 +771,21 @@ class Scenario(models.Model):
                     create
             
             """
-            for field in list_of_attributes:
+            for attribute in list_of_attributes:
 
                 db_field_value = -1
                 default_field_value = -1
 
                 # submitted form value
-                form_value = form_costs[field]
+                form_value = form_costs[attribute]
 
                 # existing db user value
-                if hasattr(user_costs_obj, field):
-                    db_field_value = getattr(user_costs_obj, field, None)
+                if hasattr(user_costs_obj, attribute):
+                    db_field_value = getattr(user_costs_obj, attribute, None)
                     # special test for Money fields to compare just the amount
                     if isinstance(db_field_value, Money):
                         db_field_value = str(db_field_value.amount)
-                    elif field == 'cost_source':
+                    elif attribute == 'cost_source':
                         if db_record_exists is True and form_value != 'rsmeans' and form_value != db_field_value:
                             is_default -= 1
                             change_count += 1
@@ -787,17 +793,19 @@ class Scenario(models.Model):
                                 don't do any more processing on cost_source
                             """
                             continue
-                elif field == 'cost_source':
+                        else:
+                            pass
+                elif attribute == 'cost_source':
                     continue
 
                 # default value
-                if cost_source != 'user' and hasattr(default_costs_obj, field):
-                    default_field_value = getattr(default_costs_obj, field, None)
-                elif cost_source == 'user' and field != 'cost_source':
-                    if field == 'user_input_cost' or field == 'base_year':
+                if cost_source != 'user' and hasattr(default_costs_obj, attribute):
+                    default_field_value = getattr(default_costs_obj, attribute, None)
+                elif cost_source == 'user' and attribute != 'cost_source':
+                    if attribute == 'user_input_cost' or attribute == 'base_year':
                         default_field_value = -1
                     else:
-                        default_field_value = getattr(default_costs_obj, field, None)
+                        default_field_value = getattr(default_costs_obj, attribute, None)
 
                 if db_field_value != -1 and default_field_value != -1 \
                         and str(db_field_value) != str(default_field_value):
@@ -807,7 +815,7 @@ class Scenario(models.Model):
                     # the user changed the value from what they set earlier
                     change_count += 1
                     if default_field_value != -1 and str(form_value) == str(default_field_value):
-                        pass  # is_default = True
+                        is_default += 1  # the user reset a value to the default
                     else:
                         is_default -= 1
 
@@ -817,7 +825,7 @@ class Scenario(models.Model):
                     is_default -= 1
                     change_count += 1
                 elif db_field_value == -1 and default_field_value == -1 \
-                        and str(form_value) != '':
+                        and str(form_value) is not None:
                     # there is a value (this is for user_input_cost and base_year)
                     is_default -= 1
                     change_count += 1
@@ -825,10 +833,10 @@ class Scenario(models.Model):
                 print_str = "cost_item: {}; field: {}; form_value: {}, " + \
                             "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
 
-                if change_count > 0 and True is False:
+                if change_count > 0 and True is True:
                     print(print_str.format(
                         cost_item,
-                        field,
+                        attribute,
                         form_value,
                         db_field_value,
                         default_field_value,

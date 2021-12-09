@@ -1,5 +1,5 @@
 """
-Django settings for costly project.
+Django settings for GSI Cost Tool project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/

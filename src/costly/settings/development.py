@@ -17,7 +17,7 @@ if os.path.exists(env_file):
     environ.Env.read_env(env_file)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=True)
+DEBUG = True # env.bool('DEBUG', default=True)
 
 # region -- toggle to allow DEV and PROD on insdev1 for testing of these systems
 # if running in pycharm or with runserver, you need to clear this
@@ -147,5 +147,10 @@ except:
 
 try:
     COPYRIGHT_DISCLAIMER = env.str('COPYRIGHT_DISCLAIMER')
+except:
+    pass
+
+try:
+    VERSION_INFORMATION = env.str('VERSION_INFORMATION')
 except:
     pass

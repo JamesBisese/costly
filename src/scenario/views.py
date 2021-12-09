@@ -444,7 +444,7 @@ def scenario_save(request):
 
         try:
             # send it off to be processed
-            scenario.process_related_data(form_data['siteData'])
+            scenario.process_related_data(form_data['siteData'], form_data['active_tab'])
 
             scenario.save()
 

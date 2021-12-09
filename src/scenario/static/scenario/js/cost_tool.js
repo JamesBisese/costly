@@ -1,8 +1,14 @@
+/*jshint esversion: 6 */
+/*jshint strict:false */
+/*globals $:false */
+
 //TODO - what does this mean????
 // this is populated one time via an ajax call
 // it has triggering logic for various elements
-var _scenario_template = null;
 
+var _scenario_template = null;
+var URLS = null; // this gets set via another javascript file sourced before this file
+var csrftoken = null;
 /********************************
 *
 * Initialize document
@@ -13,20 +19,14 @@ var _scenario_template = null;
 *
  */
 
-/* for Mozilla */
-// if (document.addEventListener) {
-//     document.addEventListener("DOMContentLoaded", init, null);
-// }
-
-// window.onload = init;
-var a = "hello";
-    // on-ready function
-    $(document).ready(function() {
-        a = "here first";
-    });
 
 $(document).ready(function()
 {
+    URLS = SETTINGS.URLS;
+
+    csrftoken = getCookie('csrftoken');
+
+    // store a cookie to return to the active tab when users open/reopen the web application
     $("#tab_box").tabs({
         "activate": function (event, ui) {
             let id = ui.newPanel[0].id;
@@ -40,12 +40,12 @@ $(document).ready(function()
     *
      */
     let id = getCookie('tab');
-    if (id != '')
+    if (id !== '')
     {
         var index = $('#tab_box a[href="#' + id + '"]').parent().index();
         $("#tab_box").tabs("option", "active", index );
 
-        if (id == "input-result")
+        if (id === "input-result")
         {
             populateResultsTab();
         }
@@ -57,32 +57,31 @@ $(document).ready(function()
 
     // this got lost in an edit and stopped everything from working
     //start
-    var inputDom = document.getElementById('ui_' + 'scenario_id');
+    let inputDom = document.getElementById('ui_' + 'scenario_id');
 
     if (inputDom){
         scenario_id = inputDom.value;
     }
     //end
 
-    var url = '';
+    var url = null;
 
     // if there is a scenario_id (this is opened as an update) use the API url
-    if (scenario_id !== null && scenario_id != '')
+    if (scenario_id !== null && scenario_id !== '')
     {
-        url = SETTINGS.URLS.scenario_api.replace('<int:pk>', scenario_id);
+        url = URLS.scenario_api.replace('<int:pk>', scenario_id);
     }
     else // create a new scenario and load with the default data
     {
-        url = SETTINGS.URLS.scenario_default;
+        url = URLS.scenario_default;
     }
 
 
-    //var testTarget = document.getElementsByClassName("input-result")[0];
+    // populate the Results when the user clicks that tab
     var testTarget = document.getElementById("input_result_tab");
-    if(testTarget != undefined){
+    if(testTarget !== undefined){
         testTarget.addEventListener("click", populateResultsTab, false);
     }
-
 
 
     $.ajax(url, {
@@ -103,9 +102,7 @@ $(document).ready(function()
             showError(data);
         }
     });
-
-    //document.getElementById("uploadFile").addEventListener("change", loadJSON, false);
-})
+});
 
 
 /**********************************************************
@@ -116,19 +113,21 @@ $(document).ready(function()
 */
 function populateUI(siteData) {
 
-    if (! siteData) return;
-
-
+    if (! siteData) {
+        return;
+    }
 
     function updateField(field_dict)
     {
-        //TODO: make it safe if the field isn't found
-        for (key in field_dict){
-            value = field_dict[key];
-
-            var update_field = document.getElementById('ui_' + key);
-            if (update_field) {
-                update_field.value = value;
+        // make it safe if the field isn't found
+        for (var key in field_dict) {
+            if (field_dict.hasOwnProperty(key))
+            {
+                let value = field_dict[key];
+                var update_field = document.getElementById('ui_' + key);
+                if (update_field) {
+                    update_field.value = value;
+                }
             }
         }
     }
@@ -137,129 +136,130 @@ function populateUI(siteData) {
     {
         var checkbox_value;
 
-        //TODO:
         for (var field_name in field_dict){
-            var field_object = field_dict[field_name];
+            if (field_dict.hasOwnProperty(field_name))
+            {
+                var field_object = field_dict[field_name];
 
-            if ('checkbox' in field_object){
-                checkbox_value = field_object['checkbox'];
-            }
-
-            // each one has a checkbox_, and one or more _area, _length, _diameter)
-            for (var propt in field_object){
-                var subfield_name = propt;
-                var value_name = field_object[propt];
-
-                if (subfield_name == 'checkbox'){
-                    var buttonDom = document.getElementById('checkbox_' + field_name);
-                    if (buttonDom){
-                        buttonDom.checked = value_name;
-                    }
+                if ('checkbox' in field_object){
+                    checkbox_value = field_object.checkbox;
                 }
-                else {
-                    var inputDom = document.getElementById('ui_' + field_name + '_' + subfield_name);
-                    if (inputDom){
-                        inputDom.value = value_name;
-                        if (checkbox_value !== true)
-                        {
-                            inputDom.disabled = true;
-                            inputDom.style.textDecoration = 'line-through';
-                        }
-                        else
-                        {
-                            inputDom.disabled = false;
-                            inputDom.style.textDecoration = 'none';
+
+                // each Structure has a checkbox_, and one or more _area, _length, _diameter)
+                for (var propt in field_object){
+                    if (field_object.hasOwnProperty(propt)) {
+                        var subfield_name = propt;
+                        var value_name = field_object[propt];
+
+                        if (subfield_name === 'checkbox') {
+                            var buttonDom = document.getElementById('checkbox_' + field_name);
+                            if (buttonDom) {
+                                buttonDom.checked = value_name;
+                            }
+                        } else {
+                            let inputDom = document.getElementById('ui_' + field_name + '_' + subfield_name);
+                            if (inputDom) {
+                                inputDom.value = value_name;
+                                if (checkbox_value !== true) {
+                                    inputDom.disabled = true;
+                                    inputDom.style.textDecoration = 'line-through';
+                                } else {
+                                    inputDom.disabled = false;
+                                    inputDom.style.textDecoration = 'none';
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     }
-    /*
-    *
-    * this populates fields in the Cost Item / Unit Costs tab
-    *
-    *
-     */
+
     function populateCosts(field_dict)
     {
+        /*
+            add in all the data in the Cost Item Unit Costs tab
+
+         */
         for (var i in field_dict){
-            var field_object = field_dict[i];
+            if (field_dict.hasOwnProperty(i)) {
+                let field_object = field_dict[i];
 
-            // each one has one or more 'area', 'unit_cost', 'replacement_life', 'first_year'
-            cost_item_code = field_object['costitem_code'];
-            field_list = ['user_input_cost',
-                            'base_year',
-                            'replacement_life',
-                            'o_and_m_pct'];
-            var inputDom = document.getElementById('ui_' + cost_item_code + '_' + 'cost_source');
-            if (inputDom){
-                inputDom.value = field_object['cost_source'];
-            }
-
-            for (var j in field_list){
-                var subfield_name = field_list[j];
-                var value_name = field_object[subfield_name];
-
-                var inputDom = document.getElementById('ui_' + cost_item_code + '_' + subfield_name);
-                if (inputDom){
-                    inputDom.value = value_name;
+                // each one has one or more 'area', 'unit_cost', 'replacement_life', 'first_year'
+                var cost_item_code = field_object.costitem_code;
+                let field_list = [
+                    'user_input_cost',
+                    'base_year',
+                    'replacement_life',
+                    'o_and_m_pct'
+                ];
+                let inputDom = document.getElementById('ui_' + cost_item_code + '_' + 'cost_source');
+                if (inputDom) {
+                    inputDom.value = field_object.cost_source;
                 }
-            }
-            var inputs = ['user_input_cost', 'base_year'];
 
-            inputs.forEach(function(input_name) {
-                var elementObj = document.getElementById('ui_' + cost_item_code + '_' + input_name);
-                if (elementObj){
-                    if (field_object['cost_source'] != 'user') {
+                for (var j in field_list) {
+                    if (field_list.hasOwnProperty(j)) {
+                        var subfield_name = field_list[j];
+                        var value_name = field_object[subfield_name];
+
+                        let inputDom2 = document.getElementById('ui_' + cost_item_code + '_' + subfield_name);
+                        if (inputDom2) {
+                            inputDom2.value = value_name;
+                        }
+                    }
+                }
+                var inputs = ['user_input_cost', 'base_year'];
+
+                inputs.forEach(function (input_name) {
+                    var elementObj = document.getElementById('ui_' + cost_item_code + '_' + input_name);
+                    if (elementObj) {
+                        if (field_object.cost_source !== 'user') {
                             elementObj.disabled = true;
                             elementObj.style.textDecoration = 'line-through';
+                        } else {
+                            elementObj.disabled = false;
+                            elementObj.style.textDecoration = 'none';
+                        }
                     }
-                    else {
-                        elementObj.disabled = false;
-                        elementObj.style.textDecoration = 'none';
-                    }
-                }
-            })
+                });
+            }
         }
-
     }
 
 
-
-    //okay - this is crazy - but CREATE and UPDATE have different versions of siteData
+    //Note: yes - this is crazy bad - but CREATE and UPDATE have different versions of siteData
     // CREATE uses the siteTemplate and UPDATE uses the API correctly
 
     if ('siteData' in siteData) {
-        siteData = siteData['siteData'];
+        siteData = siteData.siteData;
     }
 
     if ('location' in siteData)
     {
-        updateField(siteData['location']);
+        updateField(siteData.location);
     }
     else if ('embedded_scenario' in siteData)
     {
-        updateField(siteData['embedded_scenario']);
+        updateField(siteData.embedded_scenario);
     }
 
-    var inputDom = document.getElementById('scenario_name');
+    let inputDom = document.getElementById('scenario_name');
     if (inputDom){
         updateProjectTitle(siteData);
     }
 
-    updateStructures(siteData['areal_features']);
+    updateStructures(siteData.areal_features);
 
-    updateStructures(siteData['conventional_structures']);
+    updateStructures(siteData.conventional_structures);
 
-    updateStructures(siteData['nonconventional_structures']);
+    updateStructures(siteData.nonconventional_structures);
 
     //NOTE: Structure Costs are loaded as an partial HTML document
     //TODO: replace that function with normal loading
 
-    populateCosts(siteData['cost_item_user_costs'])
+    populateCosts(siteData.cost_item_user_costs);
 
-    //TODO - the rest
 }
 
 /*
@@ -270,11 +270,11 @@ function populateUI(siteData) {
 function populateStructureEquations(data){
 
     //TODO
-    var structure_name = data.structure.name;
-    if (data.structure.area == null){
+    // var structure_name = data.structure.name;
+    if (data.structure.area === null){
         data.structure.area = 0;
     }
-    var area = data.structure.area;
+    // var area = data.structure.area;
 
     //list of all cost items for this structure
     var cost_items = data.data;
@@ -301,7 +301,7 @@ function populateStructureEquations(data){
                         'equation',
                         'cost_V1'
 
-        ]
+        ];
 
     var factor_field_list = [
                         'a_area',
@@ -317,7 +317,7 @@ function populateStructureEquations(data){
         ];
 
     // set the field that shows what is selected and the area of
-    var inputDom = document.getElementById('ui_structure_name_2');
+    let inputDom = document.getElementById('ui_structure_name_2');
     if (inputDom){
          inputDom.textContent = data.structure.name;
     }
@@ -332,123 +332,122 @@ function populateStructureEquations(data){
 
     // clear out the old input
     for (let cost_item in cost_items) {
-        var inputDom = document.getElementById('checkbox_' + cost_item);
-        if (inputDom){
-             inputDom.checked = false;
-        }
-        for (let i in ui_field_list) {
-            var ui_field_name = ui_field_list[i];
+        if (cost_items.hasOwnProperty(cost_item)) {
+            var inputDom3 = document.getElementById('checkbox_' + cost_item);
+            if (inputDom3) {
+                inputDom3.checked = false;
+            }
+            for (let i in ui_field_list) {
+                if (ui_field_list.hasOwnProperty(i)) {
+                    var ui_field_name = ui_field_list[i];
 
-            var inputDom = document.getElementById('ui_' + cost_item + '_' + ui_field_name);
-            if (inputDom){
-                inputDom.value = '';
+                    var inputDom4 = document.getElementById('ui_' + cost_item + '_' + ui_field_name);
+                    if (inputDom4) {
+                        inputDom4.value = '';
+                    }
+                }
             }
         }
     }
 
     // load in the new values
     for (let cost_item in cost_items){
-        var cost_item_data = cost_items[cost_item];
-        // get the boolean for if it is checked or not
-        var cost_item_checked = cost_item_data['checked'];
-        // first set the checkbox
-        var inputDom = document.getElementById('checkbox_' + cost_item);
-        if (inputDom){
-             inputDom.checked = cost_item_checked;
-        }
-
-        //hide the factor field if that factor is not in the equation
-        var equation = cost_item_data['equation'];
-        for (var f in factor_field_list)
-        {
-            var field_name = factor_field_list[f];
-            var equation_factor_tx = factor_equation_list[f];
-            var inputDom = document.getElementById('ui_' + cost_item + '_' + field_name);
-
-            // hide or show depending on if the field is in the equation
+        if (cost_items.hasOwnProperty(cost_item)) {
+            var cost_item_data = cost_items[cost_item];
+            // get the boolean for if it is checked or not
+            var cost_item_checked = cost_item_data.checked;
+            // first set the checkbox
+            let inputDom = document.getElementById('checkbox_' + cost_item);
             if (inputDom) {
-                //boolean
-                var show_input = equation.indexOf(equation_factor_tx) > 0;
-
-                inputDom.style.display = show_input ? '' : 'none';
-                inputDom.disabled = cost_item_checked ? false : true;
-                inputDom.style.textDecoration = cost_item_checked ? '' : 'line-through';
+                inputDom.checked = cost_item_checked;
             }
 
+            //hide the factor field if that factor is not in the equation
+            var equation = cost_item_data.equation;
+            for (let f in factor_field_list) {
+                if (factor_field_list.hasOwnProperty(f)) {
+                    var field_name = factor_field_list[f];
+                    var equation_factor_tx = factor_equation_list[f];
+                    let inputDom6 = document.getElementById('ui_' + cost_item + '_' + field_name);
+
+                    // hide or show depending on if the field is in the equation
+                    if (inputDom6) {
+                        //boolean
+                        var show_input = equation.indexOf(equation_factor_tx) > 0;
+
+                        inputDom6.style.display = show_input ? '' : 'none';
+                        inputDom6.disabled = cost_item_checked ? false : true;
+                        inputDom6.style.textDecoration = cost_item_checked ? '' : 'line-through';
+                    }
+                }
+            }
+
+            // now the 4 factor fields
+            for (var i in field_list) {
+                if (field_list.hasOwnProperty(i)) {
+                    let field_name = field_list[i];
+
+                    var field_value = '';
+                    if (field_name in cost_item_data) {
+                        // this is the value put into the UI
+                        field_value = cost_item_data[field_name];
+                    }
+
+                    let ui_field_name = ui_field_list[i];
+
+                    let inputDom = document.getElementById('ui_' + cost_item + '_' + ui_field_name);
+                    if (inputDom) {
+                        inputDom.value = field_value;
+
+                        if (field_name === 'equation') {
+                            var title = cost_item_data.equation_calc;
+                            if (title === undefined) {
+                                title = cost_item_data.equation;
+                            } else {
+                                title = '=' + title;
+                            }
+                            var text = document.createTextNode(field_value);
+
+                            while (inputDom.firstChild) {
+                                inputDom.removeChild(inputDom.firstChild);
+                            }
+                            // text.title = title;
+                            inputDom.title = title;
+                            inputDom.appendChild(text);
+                        } else if (field_name === 'equation_value') {
+
+                            let dollar_div = document.createElement('div');
+                            dollar_div.className = 'dollar';
+                            dollar_div.style.paddingLeft = '3px';
+
+                            dollar_div.innerText = '$';
+
+                            let text = document.createTextNode(field_value);
+                            while (inputDom.firstChild) {
+                                inputDom.removeChild(inputDom.firstChild);
+                            }
+                            inputDom.appendChild(dollar_div);
+                            inputDom.appendChild(text);
+
+                        } else if (field_name === 'unit_cost') {
+
+                            let dollar_div = document.createElement('div');
+                            dollar_div.className = 'dollar';
+                            dollar_div.innerText = '$';
+                            dollar_div.style.paddingLeft = '3px';
+                            dollar_div.style.display = 'inline';
+                            let text = document.createTextNode(Number(cost_item_data.unit_cost).toFixed(2));
+                            while (inputDom.firstChild) {
+                                inputDom.removeChild(inputDom.firstChild);
+                            }
+                            inputDom.appendChild(dollar_div);
+                            inputDom.appendChild(text);
+                        }
+                    }
+                }
+            }
         }
-
-        // now the 4 factor fields
-        for (var i in field_list)
-        {
-            var field_name = field_list[i];
-
-            var field_value = '';
-            if (field_name in cost_item_data)
-            {
-                // this is the value put into the UI
-                field_value = cost_item_data[field_name];
-            }
-
-            var ui_field_name = ui_field_list[i];
-
-            var inputDom = document.getElementById('ui_' + cost_item + '_' + ui_field_name);
-            if (inputDom){
-                inputDom.value = field_value;
-
-                if (field_name == 'equation'){
-                    var title =  cost_item_data['equation_calc'];
-                    if (title == undefined){
-                        title = cost_item_data['equation'];
-                    }
-                    else {
-                        title = '=' + title;
-                    }
-                    var text = document.createTextNode(field_value);
-
-                    while (inputDom.firstChild) {
-                      inputDom.removeChild(inputDom.firstChild);
-                    }
-                    // text.title = title;
-                    inputDom.title = title;
-                    inputDom.appendChild(text);
-                }
-                else if (field_name == 'equation_value'){
-
-                    var dollar_div = document.createElement('div');
-                    dollar_div.className = 'dollar';
-                    dollar_div.style.paddingLeft = '3px';
-
-                    dollar_div.innerText = '$';
-
-                    var text = document.createTextNode(field_value);
-                    while (inputDom.firstChild) {
-                      inputDom.removeChild(inputDom.firstChild);
-                    }
-                    inputDom.appendChild(dollar_div);
-                    inputDom.appendChild(text);
-
-                }
-                else if (field_name == 'unit_cost'){
-
-                    var dollar_div = document.createElement('div');
-                    dollar_div.className = 'dollar';
-                    dollar_div.innerText = '$';
-                    dollar_div.style.paddingLeft = '3px';
-                    dollar_div.style.display = 'inline';
-                    var text = document.createTextNode(Number(cost_item_data['unit_cost']).toFixed(2));
-                    while (inputDom.firstChild) {
-                      inputDom.removeChild(inputDom.firstChild);
-                    }
-                    inputDom.appendChild(dollar_div);
-                    inputDom.appendChild(text);
-
-                }
-            }
-        }
-
     }
-
-    return;
 }
 
 
@@ -463,12 +462,10 @@ function initializeForm()
         structure_select.selectedIndex = 1;
         loadStructureCosts();
     }
-
-
 }
 
 function populateResultsTab(){
-    // alert("ready to populate the results tab")
+
     var DivElement = document.getElementById('result-box');
     DivElement.innerHTML = ""; //  "Loading ...<div style='width: 100%; display: flex;'><progress style='margin-left:auto;margin-right:auto;'></progress></div>";
 
@@ -478,7 +475,7 @@ function populateResultsTab(){
         scenario_id = inputDom.value;
     }
 
-    var url = SETTINGS.URLS.scenario_result.replace('<int:pk>', scenario_id);
+    var url = URLS.scenario_result.replace('<int:pk>', scenario_id);
     $.ajax(url, {
         contentType : 'application/json; charset=utf-8',
         type : 'GET',
@@ -513,7 +510,7 @@ function updateResultsPane(data){
 
     if(data.hasOwnProperty('html_result')) // first loaded
     {
-        contentTX = data['html_result'];
+        contentTX = data.html_result;
     }
     else if(data.hasOwnProperty('error'))
     {
@@ -528,7 +525,9 @@ function updateResultsPane(data){
     setTimeout(function() { div.innerHTML = contentTX;}, 0);
 
 }
+
 function updateProjectTitle(siteData){
+    /* load the project - scenario title that is shown above the tabs */
     var inputDom = document.getElementById('scenario_name');
 
     if (inputDom){
@@ -536,57 +535,65 @@ function updateProjectTitle(siteData){
         let scenario_title = 'SCENARIO TITLE';
         if(siteData.hasOwnProperty('project')) // first loaded
         {
-            if (siteData['project'] !== undefined) {
-                if (siteData['project']['project_title'] !== undefined) {
-                    project_title = siteData['project']['project_title'];
+            if (siteData.project !== undefined) {
+                if (siteData.project.project_title !== undefined) {
+                    project_title = siteData.project.project_title;
                 }
             }
-            if (siteData['embedded_scenario'] !== undefined) {
-                if (siteData['embedded_scenario']['scenario_title'] !== undefined) {
-                    scenario_title = siteData['embedded_scenario']['scenario_title'];
+            if (siteData.hasOwnProperty('embedded_scenario') !== undefined) {
+                if (siteData.embedded_scenario.scenario_title !== undefined) {
+                    scenario_title = siteData.embedded_scenario.scenario_title;
                 }
             }
             inputDom.innerHTML = project_title + ' -- ' + scenario_title;
         }
     }
 }
-function updateStructureCostDropDown(siteData){
 
+
+function updateStructureCostDropDown(siteData){
+    /*
+    this populates the drop-down on the Structure/Cost Item Users Assumptions
+
+
+     */
     function compileStructureList(structures, prefix) {
         //
-        var labels = structures['labels'];
+        var labels = structures.labels;
 
         for (var structure in structures){
-
-            if (structure == 'labels'){
-                continue;
-            }
-
-            var structure_obj = structures[structure];
-
-            if(structure == 'curb_and_gutter'){ // this one doesn't need an area
-                structure_obj['area'] = undefined;
-            }
-
-            if (structure_obj['checkbox'] === true &&
-                structure_obj['area'] !== '' &&
-                structure_obj['area'] !== 0)
+            if (structures.hasOwnProperty(structure))
             {
-                structure_list.push({ value: structure,
-                                        text: prefix + ' - ' + labels[structure]});
+                if (structure === 'labels'){
+                    continue;
+                }
+
+                var structure_obj = structures[structure];
+
+                if(structure === 'curb_and_gutter'){ // this one doesn't need an area
+                    structure_obj.area = undefined;
+                }
+
+                if (structure_obj.checkbox === true &&
+                    structure_obj.area !== '' &&
+                    structure_obj.area !== 0)
+                {
+                    structure_list.push({ value: structure, text: prefix + ' - ' + labels[structure]});
+                }
             }
+
         }
     }
 
     let structure_select = document.getElementById('ui_structure_select');
-    selected_value = structure_select.value;
+    let selected_value = structure_select.value;
     //zed
-    structure_list = [];
+    let structure_list = [];
 
-    compileStructureList(siteData['nonconventional_structures'], 'Non-Conventional');
-    compileStructureList(siteData['conventional_structures'], 'Conventional');
+    compileStructureList(siteData.nonconventional_structures, 'Non-Conventional');
+    compileStructureList(siteData.conventional_structures, 'Conventional');
 
-    //TODO: add them to the drop-down list
+    //
     structure_select.options.length = 0;
     for (let i = 0; i < structure_list.length; i++) {
         const o = document.createElement("option");
@@ -616,21 +623,22 @@ function validateProjectAreaAndArealFeatures() {
     let sum_pervious_impervious_area = 0.0;
 
     const scenario_template = scenarioTemplateJSON();
-    var areal_features_fields = scenario_template['siteData']['areal_features']['fields'];
+    let areal_features_fields = scenario_template.siteData.areal_features.fields;
 
-    for (var i in areal_features_fields){
-        var areal_feature_name = areal_features_fields[i];
-        var areal_feature_areaDom = document.getElementById('ui_' + areal_feature_name + '_area');
-        var areal_feature_checkboxDom = document.getElementById('checkbox_' + areal_feature_name);
+    for (let i in areal_features_fields){
+        if (areal_features_fields.hasOwnProperty(i)) {
+            let areal_feature_name = areal_features_fields[i];
+            let areal_feature_areaDom = document.getElementById('ui_' + areal_feature_name + '_area');
+            let areal_feature_checkboxDom = document.getElementById('checkbox_' + areal_feature_name);
 
-        var areal_feature_area = areal_feature_areaDom.value;
-        var areal_feature_checked_bol = areal_feature_checkboxDom.checked;
-        if (areal_feature_areaDom.disabled == false
-            && areal_feature_checked_bol == true
-            && areal_feature_area
-            && parseFloat(areal_feature_area) !== NaN)
-        {
-            sum_areal_features += parseFloat(areal_feature_area);
+            let areal_feature_area = areal_feature_areaDom.value;
+            let areal_feature_checked_bol = areal_feature_checkboxDom.checked;
+            if (areal_feature_areaDom.disabled === false &&
+                areal_feature_checked_bol === true &&
+                areal_feature_area &&
+                !isNaN(parseFloat(areal_feature_area))) {
+                sum_areal_features += parseFloat(areal_feature_area);
+            }
         }
     }
     /*
@@ -678,11 +686,11 @@ function validateProjectAreaAndArealFeatures() {
     }
 
     sumAreaDom = document.getElementById('ui_sum_pervious_area');
-    sumAreaPercentDom = document.getElementById('ui_sum_pervious_area_percent');
+    let sumAreaPercentDom = document.getElementById('ui_sum_pervious_area_percent');
 
     if(sum_pervious_impervious_area) {
         sumAreaDom.value = sum_pervious_impervious_area;
-        if(sum_area && parseFloat(sum_area) !== NaN)
+        if(sum_area && !isNaN(parseFloat(sum_area)))
         {
             sumAreaPercentDom.value = parseFloat(100 * sum_pervious_impervious_area / sum_area).toFixed(2) ;
         }
@@ -693,14 +701,14 @@ function validateProjectAreaAndArealFeatures() {
     }
 
     var errors2 = null;
-    if ( sum_area && parseFloat(sum_area) !== NaN && sum_pervious_impervious_area > sum_area) {
-        errors2 = {'message':'The sum of the pervious and impervious areas is '
-            + sum_pervious_impervious_area.toString() + ' which is greater than the size of the project area.'
-            + ' Calculations are disabled until this error is corrected.'};
+    if ( sum_area && !isNaN(parseFloat(sum_area)) && sum_pervious_impervious_area > sum_area) {
+        errors2 = {'message':'The sum of the pervious and impervious areas is ' +
+            sum_pervious_impervious_area.toString() + ' which is greater than the size of the project area.' +
+            ' Calculations are disabled until this error is corrected.'};
     }
     showErrorsById('pervious_validation_error', errors2);
 
-    return (errors == null && errors2 == null);
+    return (errors === null && errors2 === null);
 }
 
 
@@ -716,7 +724,7 @@ function validateProjectAreaAndArealFeatures() {
 function getHTTPObject() {
     var xmlhttp;
 
-    if (!xmlhttp && typeof XMLHttpRequest != 'undefined') {
+    if (!xmlhttp && typeof XMLHttpRequest !== 'undefined') {
         try {
             xmlhttp = new XMLHttpRequest();
         } catch (e) {
@@ -741,9 +749,9 @@ function csrfSafeMethod(method) {
  */
 function scenarioTemplateJSON() {
 
-    if (_scenario_template == null)
+    if (_scenario_template === null)
     {
-        var url = SETTINGS.URLS.scenario_template;
+        var url = URLS.scenario_template;
         // var scenario_template;
         $.ajax(url, {
             contentType : 'application/json; charset=utf-8',
@@ -783,67 +791,67 @@ function validateForm(formField) {
         return;
     }
 
-    var scenario_template = scenarioTemplateJSON();
+    let scenario_template = scenarioTemplateJSON();
 
-    var valid_bol = true;
+    let valid_bol = true;
 
-    field_id = formField.id;
-    field_nm = field_id.replace('ui_','');
-
-
+    let field_id = formField.id;
+    let field_nm = field_id.replace('ui_','');
 
     // test that all the areal feature areas don't sum up to more than project area
-    if (field_nm == 'project_area' ){
+    if (field_nm === 'project_area' ){
         valid_bol = validateProjectAreaAndArealFeatures();
-        if (valid_bol === false) { return false }
+        if (valid_bol === false) { return false; }
     }
-    var areal_features_fields = scenario_template['siteData']['areal_features']['fields'];
+    let areal_features_fields = scenario_template.siteData.areal_features.fields;
 
     for (i in areal_features_fields){
-        var areal_feature_name = areal_features_fields[i];
+        if (areal_features_fields.hasOwnProperty(i)) {
+            let areal_feature_name = areal_features_fields[i];
 
-        if (field_nm == areal_feature_name + '_area'){
-            valid_bol = validateProjectAreaAndArealFeatures();
-            if (valid_bol === false) { return false }
+            if (field_nm === areal_feature_name + '_area') {
+                valid_bol = validateProjectAreaAndArealFeatures();
+                if (valid_bol === false) {
+                    return false;
+                }
+            }
         }
     }
 
     // the project type setting affects which of the areal features are disabled
-    if (field_nm == 'project_type') {
-
+    if (field_nm === 'project_type') {
         valid_bol = validateProjectAreaAndArealFeatures(); // toggle disabled inputs, that are then not used in calculation
-        if (valid_bol === false) { return false }
+        if (valid_bol === false) { return false; }
     }
 
-
     // the project type setting affects which of the areal features are disabled
-    if (field_nm == 'impervious_area' || field_nm == 'pervious_area') {
+    if (field_nm === 'impervious_area' || field_nm === 'pervious_area') {
         valid_bol = validateProjectAreaAndArealFeatures();
-        if (valid_bol === false) { return false }
+        if (valid_bol === false) { return false; }
     }
 
     // this is the drop-down on the Structure Costs page
-    if (field_nm == 'structure_select') {
-        var fields = scenario_template['siteData']['cost_items']['fields'];
+    if (field_nm === 'structure_select') {
+        let fields = scenario_template.siteData.cost_items.fields;
         fields.forEach(function(field_nm) {
 
-            var inputFieldDom = document.getElementById('checkbox_' + field_nm);
-            var inputFieldChecked = inputFieldDom.checked;
+            let inputFieldDom = document.getElementById('checkbox_' + field_nm);
+            let inputFieldChecked = inputFieldDom.checked;
 
             //TODO: this is some extra logic to always show any row that has
             // non-blank data.  questionable functionality
             var inputs = ['conversion_factor','factor_assumption_tx','sizing_factor_k','sizing_factor_n','construction_cost_factor_equation'];
             inputs.forEach(function(input_name) {
-                var elementObj = document.getElementById('ui_' + field_nm + '_' + input_name);
+                let elementObj = document.getElementById('ui_' + field_nm + '_' + input_name);
                 if (elementObj && elementObj.value){
                     inputFieldChecked = true;
                 }
-            })
+            });
             // end questionable functionality
 
-            var trDom = document.getElementById('tr_' + field_nm);
+            let trDom = document.getElementById('tr_' + field_nm);
 
-            if (inputFieldDom != null && trDom != null) {
+            if (inputFieldDom !== null && trDom !== null) {
 
                 if (inputFieldChecked !== true) {
 
@@ -854,50 +862,48 @@ function validateForm(formField) {
                 }
             }
             else {
-                alert("unable to find input field dom for 'checkbox_" + field_nm)
+                window.alert("unable to find input field dom for 'checkbox_" + field_nm);
             }
 
         });
 
     }
-    if (field_nm == 'toggle_structure_cost_items') {
-        var toggleDom = document.getElementById(field_nm);
-        var checked = toggleDom.checked;
+    if (field_nm === 'toggle_structure_cost_items') {
+        let toggleDom = document.getElementById(field_nm);
+        let checked = toggleDom.checked;
 
-        var fields = scenario_template['siteData']['cost_items']['fields'];
+        let fields = scenario_template.siteData.cost_items.fields;
         fields.forEach(function(field_nm) {
 
-            var inputFieldDom = document.getElementById('checkbox_' + field_nm);
-            var inputFieldChecked = inputFieldDom.checked;
+            let inputFieldDom = document.getElementById('checkbox_' + field_nm);
+            let inputFieldChecked = inputFieldDom.checked;
 
             //TODO: this is some extra logic to always show any row that has
             // non-blank data.  questionable functionality
-            var inputs = ['factor_assumption_tx',
+            let inputs = ['factor_assumption_tx',
                             'sizing_factor_k',
                             'sizing_factor_n'];
             inputs.forEach(function(input_name) {
-                var elementObj = document.getElementById('ui_' + field_nm + '_' + input_name);
+                let elementObj = document.getElementById('ui_' + field_nm + '_' + input_name);
                 if (elementObj && elementObj.value){
                     inputFieldChecked = true;
                 }
-            })
+            });
             // end questionable functionality
 
-            var trDom = document.getElementById('tr_' + field_nm);
+            let trDom = document.getElementById('tr_' + field_nm);
 
-            if (inputFieldDom != null && trDom != null && toggleDom != null) {
-                if (checked == true) {
-
+            if (inputFieldDom !== null && trDom !== null && toggleDom !== null) {
+                if (checked === true) {
                     trDom.style.display = '';
                 }
-                else if (checked == false && inputFieldChecked == false){
+                else if (checked === false && inputFieldChecked === false){
                     trDom.style.display = 'none';
                 }
-                else if (inputFieldChecked == true) {
+                else if (inputFieldChecked === true) {
                     trDom.style.display =  '';
                 }
             }
-
         });
     }
 
@@ -906,16 +912,19 @@ function validateForm(formField) {
         If they select a different item, then clear both those fields.
 
      */
-    if (field_id.replace('_cost_source', '') != field_id) {
-        var field_nm = field_id.replace('_cost_source', '').replace('ui_', '');
-        var inputFieldDom = document.getElementById(field_id);
-        var inputFieldValue = inputFieldDom.value;
-        var inputs = ['user_input_cost', 'base_year'];
+    if (field_id.replace('_cost_source', '') !== field_id) {
+        let field_nm = field_id.replace('_cost_source', '').replace('ui_', '');
+        let inputFieldDom = document.getElementById(field_id);
+        let inputFieldValue = inputFieldDom.value;
+        let inputs = [
+            'user_input_cost',
+            'base_year'
+        ];
 
         inputs.forEach(function(input_name) {
             var elementObj = document.getElementById('ui_' + field_nm + '_' + input_name);
             if (elementObj){
-                if (inputFieldValue != 'user') {
+                if (inputFieldValue !== 'user') {
                         elementObj.disabled = true;
                         elementObj.style.textDecoration = 'line-through';
                 }
@@ -924,27 +933,27 @@ function validateForm(formField) {
                     elementObj.style.textDecoration = 'none';
                 }
             }
-        })
+        });
     }
 
 
     var suffix = ['area'];
 
     // this is a checkbox field - they are attached to area, length, and diameter fields TBD documentation
-    if (field_nm == field_id && field_id.replace('checkbox_', '') != field_id) {
+    if (field_nm === field_id && field_id.replace('checkbox_', '') !== field_id) {
         field_nm = field_id.replace('checkbox_','') ;
 
-        var cost_items_fields = scenario_template['siteData']['cost_items']['fields'];
+        var cost_items_fields = scenario_template.siteData.cost_items.fields;
         // if (cost_items_fields.includes(field_nm)) {
         if ($.inArray(field_nm, cost_items_fields)) {
-            var suffix = ['a_area', 'z_depth', 'd_density', 'n_number'];
+            // let suffix = ['a_area', 'z_depth', 'd_density', 'n_number'];
 
-            var inputFieldDom = document.getElementById('checkbox_' + field_nm);
+            let inputFieldDom = document.getElementById('checkbox_' + field_nm);
             var inputFieldChecked = inputFieldDom.checked;
 
             //TODO: this is some extra logic to always show any row that has
             // non-blank data.  questionable functionality
-            var inputs = ['conversion_factor',
+            let inputs = ['conversion_factor',
                             'factor_assumption_tx',
                             'sizing_factor_k',
                             'sizing_factor_n',
@@ -954,15 +963,14 @@ function validateForm(formField) {
                 if (elementObj && elementObj.value){
                     inputFieldChecked = true;
                 }
-            })
+            });
             // end questionable functionality
             var showAllCostItemsDom = document.getElementById('toggle_structure_cost_items');
             var showAllChecked = showAllCostItemsDom.checked;
 
             var trDom = document.getElementById('tr_' + field_nm);
-            if (inputFieldDom != null && trDom != null) {
-                if (showAllChecked == false && inputFieldChecked !== true) {
-
+            if (inputFieldDom !== null && trDom !== null) {
+                if (showAllChecked === false && inputFieldChecked !== true) {
                     trDom.style.display = 'none';
                 }
                 else {
@@ -974,22 +982,23 @@ function validateForm(formField) {
         // this toggles the Areal Input (area) input boxes
         suffix = ['area', 'a_area', 'z_depth', 'd_density', 'n_number'];
         for (i in suffix) {
-            var inputFieldDom = document.getElementById('ui_' + field_nm + '_' + suffix[i]);
-            if (inputFieldDom != null) {
-                if (formField.checked !== true) {
-                    inputFieldDom.disabled = true;
-                    inputFieldDom.style.textDecoration = 'line-through';
-                }
-                else {
-                    inputFieldDom.disabled = false;
-                    inputFieldDom.style.textDecoration = 'none';
+            if (suffix.hasOwnProperty(i)) {
+                let inputFieldDom = document.getElementById('ui_' + field_nm + '_' + suffix[i]);
+                if (inputFieldDom !== null) {
+                    if (formField.checked !== true) {
+                        inputFieldDom.disabled = true;
+                        inputFieldDom.style.textDecoration = 'line-through';
+                    } else {
+                        inputFieldDom.disabled = false;
+                        inputFieldDom.style.textDecoration = 'none';
+                    }
                 }
             }
         }
 
 
         valid_bol = validateProjectAreaAndArealFeatures();
-        if (valid_bol === false) { return false }
+        if (valid_bol === false) { return false; }
     }
 
     /*
@@ -1001,22 +1010,26 @@ function validateForm(formField) {
         return !str||!str.trim();
     }
 
-    var partial_field_nms = ['a_area', 'z_depth', 'd_density', 'n_number'];
+    var partial_field_nms = [
+        'a_area',
+        'z_depth',
+        'd_density',
+        'n_number'
+    ];
     for (i in partial_field_nms){
-        var partial_field_nm = partial_field_nms[i];
-        if (field_id.indexOf(partial_field_nm) > 0)
-        {
-            var inputFieldDom = document.getElementById(field_id);
-            if (inputFieldDom != null){
-                var inputFieldValue = inputFieldDom.value;
-                if (isNullOrEmpty(inputFieldValue))
-                {
-                    // set the field value to 1
-                    inputFieldDom.value = (partial_field_nm == 'n_number') ? 0 : 1;
+        if (partial_field_nms.hasOwnProperty(i)) {
+            var partial_field_nm = partial_field_nms[i];
+            if (field_id.indexOf(partial_field_nm) > 0) {
+                let inputFieldDom = document.getElementById(field_id);
+                if (inputFieldDom !== null) {
+                    let inputFieldValue = inputFieldDom.value;
+                    if (isNullOrEmpty(inputFieldValue)) {
+                        // set the field value to 1
+                        inputFieldDom.value = (partial_field_nm === 'n_number') ? 0 : 1;
+                    }
                 }
             }
         }
-
     }
     return true;
 
@@ -1024,10 +1037,10 @@ function validateForm(formField) {
 
 function showErrorsById(domID, error)
 {
-    var errorDom = document.getElementById(domID);
+    let errorDom = document.getElementById(domID);
 
     if (errorDom) {
-        if (error == null) {
+        if (! error || error === null) {
             errorDom.style.display = 'none';
         }
         else {
@@ -1043,7 +1056,7 @@ function showError(data) {
 }
 
 function isArray(obj) {
-    return obj.constructor == Array;
+    return obj.constructor === Array;
 }
 
 
@@ -1059,7 +1072,7 @@ function returnCalc(formField) {
     //     return false;
     // }
 
-    if (window.event && window.event.keyCode == 13) {
+    if (window.event && window.event.keyCode === 13) {
         runCalculate(formField);
         return false;
     }
@@ -1088,7 +1101,7 @@ function runCalculate(formField) {
 function loadStructureCosts(formFeature) {
 
     var scenario_id;
-    var structureCode;
+    let structureCode = '';
 
     var inputDom = document.getElementById('ui_' + 'scenario_id');
 
@@ -1100,29 +1113,29 @@ function loadStructureCosts(formFeature) {
     var field_nm = field_id.replace('ui_','');
 
     // the project type setting affects which of the areal features are disabled
-    if (field_nm == 'structure_select') {
+    if (field_nm === 'structure_select') {
         // get what the value was and store it for saving the thing
         // get what the new selected value is
-        var inputDom = document.getElementById('ui_' + field_nm);
-        var structureCode = inputDom.value;
+        let inputDom = document.getElementById('ui_' + field_nm);
+        structureCode = inputDom.value;
     }
 
-    if (structureCode == '')
+    if (structureCode === '')
     {
         return;
     }
 
-    var structureCostTableDom = document.getElementById('structure_costs_table');
+    // var structureCostTableDom = document.getElementById('structure_costs_table');
 
-    if (! (scenario_id && structureCode)) {
-        if (structureCode == '')
-        {
-            //structureCostTableDom.innerHTML = 'Select from drop-down list 22Z';
-        }
-        // return;
-    }
+    // if (! (scenario_id && structureCode)) {
+    //     // if (structureCode === '')
+    //     // {
+    //     //     //structureCostTableDom.innerHTML = 'Select from drop-down list 22Z';
+    //     // }
+    //     // return;
+    // }
 
-    var url = SETTINGS.URLS.scenario_structure_cost.replace('<int:pk>', scenario_id);
+    var url = URLS.scenario_structure_cost.replace('<int:pk>', scenario_id);
     url = url.replace('<str:structure_code>', structureCode);
     //TODO fix this
     url = url.replace('format=html', 'format=json');
@@ -1136,13 +1149,13 @@ function loadStructureCosts(formFeature) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
             // set the field that shows what is selected and the area of
-            var inputDom = document.getElementById('ui_structure_name_2');
+            let inputDom = document.getElementById('ui_structure_name_2');
             if (inputDom){
                  inputDom.textContent = 'Fetching ...';
             }
-            var inputDom = document.getElementById('ui_structure_area_2');
+            inputDom = document.getElementById('ui_structure_area_2');
             if (inputDom){ inputDom.value = ''; }
-            var inputDom = document.getElementById('ui_structure_units_2');
+            inputDom = document.getElementById('ui_structure_units_2');
             if (inputDom){ inputDom.innerHTML = ''; }
         },
         success: function (data) {
@@ -1152,7 +1165,7 @@ function loadStructureCosts(formFeature) {
 
             validateForm(formFeature);
 
-            validateForm({id: 'ui_toggle_structure_cost_items'})
+            validateForm({id: 'ui_toggle_structure_cost_items'});
         },
         error: function(data) {
             showError(data);
@@ -1161,7 +1174,7 @@ function loadStructureCosts(formFeature) {
 }
 
 function structureCostItemHelp(cost_item_code){
-    var base_url = SETTINGS.URLS.scenario_structure_help;
+    var base_url = URLS.scenario_structure_help;
     var url = base_url + '/' + cost_item_code + '/?format=html';
 
    $.ajax(url, {
@@ -1196,7 +1209,7 @@ function compileScenarioData() {
     var scenario_template = scenarioTemplateJSON();
 
     function compile(field_dict){
-        field_array = field_dict['fields'];
+        let field_array = field_dict.fields;
 
         field_array.forEach(function(element){
             var elementObj = document.getElementById('ui_' + element);
@@ -1210,7 +1223,7 @@ function compileScenarioData() {
             }
 
         });
-        delete field_dict['fields'];
+        delete field_dict.fields;
     }
 
     function compileStructureCosts(structure, field_dict) {
@@ -1219,36 +1232,30 @@ function compileScenarioData() {
         var structure_name = document.getElementById('ui_structure_select').value;
 
         // if they haven't selected a structure from the list, return
-        if (structure_name == ''){
+        if (structure_name === ''){
             return;
         }
 
-        field_array = field_dict['fields'];
+        let field_array = field_dict.fields;
 
-        delete field_dict['fields'];
+        delete field_dict.fields;
 
         // rebuild field_dict
         // field_dict['structure'] = structure;
 
         //store data in 'user_assumptions'
-        field_dict['user_assumptions'] = {
+        field_dict.user_assumptions = {
                         'structure': structure,
                         'data': {}
                         };
 
-
-        //what structure are they showing in the dropdown list
-        var structure_name = document.getElementById('ui_structure_select').value;
-
         field_array.forEach(function(cost_item){
 
             var inputs = [
-
                 'a_area',
                 'z_depth',
                 'd_density',
                 'n_number',
-
             ];
 
             // don't return data if the checkbox is not checked
@@ -1256,9 +1263,9 @@ function compileScenarioData() {
 
             if (elementObj)
             {
-                if (! field_dict['user_assumptions']['data'][cost_item])
+                if (! field_dict.user_assumptions.data[cost_item])
                 {
-                    field_dict['user_assumptions']['data'][cost_item] = {'checked': elementObj.checked};
+                    field_dict.user_assumptions.data[cost_item] = {'checked': elementObj.checked};
                 }
                 var non_null_count = 0;
                 inputs.forEach(function(input_name) {
@@ -1267,25 +1274,25 @@ function compileScenarioData() {
 
                     if (! elementObj)
                     {
-                        field_dict['user_assumptions']['data'][cost_item][input_name] = 'NOT FOUND ui_' + cost_item + '_' + input_name;
+                        field_dict.user_assumptions.data[cost_item][input_name] = 'NOT FOUND ui_' + cost_item + '_' + input_name;
                     }
                     else
                     {
                         var form_value = elementObj.value;
-                        if (form_value == '') {
-                            form_value = null
+                        if (form_value === '') {
+                            form_value = null;
                         }
-                        else{
+                        else {
                             non_null_count += 1;
                         }
-                        field_dict['user_assumptions']['data'][cost_item][input_name] = form_value;
+                        field_dict.user_assumptions.data[cost_item][input_name] = form_value;
                     }
 
-                })
-                if (field_dict['user_assumptions']['data'][cost_item] == false
-                    && non_null_count == 0)
+                });
+
+                if (field_dict.user_assumptions.data[cost_item] === false && non_null_count === 0)
                 {
-                    delete(field_dict['user_assumptions']['data'][cost_item]);
+                    delete(field_dict.user_assumptions.data[cost_item]);
                 }
             }
 
@@ -1303,59 +1310,61 @@ function compileScenarioData() {
             //     delete field_dict['user_assumptions'][cost_item];
             // }
 
-        })
+        });
     }
 
     function compileCosts(cost_item_list, field_dict) {
-        field_array = cost_item_list;
+        let field_array = cost_item_list;
 
         //delete field_dict['fields'];
 
         // rebuild field_dict
         //field_dict['structure'] = structure;
-        field_dict['unit_costs'] = {};
+        field_dict.unit_costs = {};
 
         field_array.forEach(function(element_name){
-            var inputs = ['cost_source',
+            var inputs = [
+                'cost_source',
                 'user_input_cost',
                 'base_year',
                 'replacement_life',
-                'o_and_m_pct'];
+                'o_and_m_pct'
+            ];
 
-            if (! field_dict['unit_costs'][element_name])
+            if (! field_dict.unit_costs[element_name])
             {
-                field_dict['unit_costs'][element_name] = {};
+                field_dict.unit_costs[element_name] = {};
             }
             inputs.forEach(function(input_name) {
                 //this triggers using 2 other fields
-                if (input_name == 'unit_costZZZZ') {
-                    var elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
+                if (input_name === 'unit_costZZZZ') {
+                    let elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
                     if (!elementObj) {
-                        field_dict['unit_costs'][element_name]['checkbox'] = 'NOT FOUND 2 for element ' + element_name + '_' + input_name;
+                        field_dict.unit_costs[element_name].checkbox = 'NOT FOUND 2 for element ' + element_name + '_' + input_name;
                     } else {
-                        field_dict['unit_costs'][element_name]['checkbox'] = elementObj.checked;
+                        field_dict.unit_costs[element_name].checkbox = elementObj.checked;
                     }
                 }
                 else {
-                    var elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
+                    let elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
                     if (! elementObj)
                     {
-                        field_dict['unit_costs'][element_name][input_name] = 'NOT FOUND 2 for element ' + element_name;
+                        field_dict.unit_costs[element_name][input_name] = 'NOT FOUND 2 for element ' + element_name;
                     }
                     else
                     {
                         var form_value = elementObj.value;
-                        if (form_value == '') { form_value = null }
-                        field_dict['unit_costs'][element_name][input_name] = form_value;
+                        if (form_value === '') { form_value = null; }
+                        field_dict.unit_costs[element_name][input_name] = form_value;
                     }
                 }
-            })
-        })
+            });
+        });
     }
 
     function compileStructure(field_dict){
-        field_array = field_dict['fields'];
-        input_dict = field_dict['inputs'];
+        let field_array = field_dict.fields;
+        let input_dict = field_dict.inputs;
 
         field_array.forEach(function(element_name){
             var inputs = input_dict[element_name];
@@ -1365,19 +1374,19 @@ function compileScenarioData() {
             }
             inputs.forEach(function(input_name){
 
-                if (input_name == 'checkbox'){
-                    var elementObj = document.getElementById('checkbox_' + element_name);
+                if (input_name === 'checkbox'){
+                    let elementObj = document.getElementById('checkbox_' + element_name);
                     if (! elementObj)
                     {
-                        field_dict[element_name]['checkbox'] = 'NOT FOUND for element ' + element_name;
+                        field_dict[element_name].checkbox = 'NOT FOUND for element ' + element_name;
                     }
                     else
                     {
-                        field_dict[element_name]['checkbox'] = elementObj.checked;
+                        field_dict[element_name].checkbox = elementObj.checked;
                     }
                 }
                 else {
-                    var elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
+                    let elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
                     if (! elementObj)
                     {
                         field_dict[element_name][input_name] = 'NOT FOUND for element ' + element_name;
@@ -1389,13 +1398,13 @@ function compileScenarioData() {
                 }
             });
         });
-        delete field_dict['fields'];
-        delete field_dict['inputs'];
+        delete field_dict.fields;
+        delete field_dict.inputs;
     }
 
     function compileID(field_dict, element_name)
     {
-        var elementObj = document.getElementById('ui_' + element_name);
+        let elementObj = document.getElementById('ui_' + element_name);
         if (! elementObj)
         {
             field_dict[element_name] = 'NOT FOUND for element ' + element_name;
@@ -1412,46 +1421,30 @@ function compileScenarioData() {
     compileID(scenario_template, 'project_id');
 
     //TODO: rename this scenario_info or similar
-    compile(scenario_template['siteData']['embedded_scenario']);
+    compile(scenario_template.siteData.embedded_scenario);
 
-    compileStructure(scenario_template['siteData']['areal_features']);
+    compileStructure(scenario_template.siteData.areal_features);
 
-    delete scenario_template['siteData']['areal_features']['toggles'];
+    delete scenario_template.siteData.areal_features.toggles;
 
+    compileStructure(scenario_template.siteData.conventional_structures);
 
-    compileStructure(scenario_template['siteData']['conventional_structures']);
-
-    compileStructure(scenario_template['siteData']['nonconventional_structures']);
+    compileStructure(scenario_template.siteData.nonconventional_structures);
 
     // this is the drop-down on the Structure Costs page
     var selectedStructureObj = document.getElementById('ui_structure_select');
     var selectedStructure = selectedStructureObj.value;
 
-    var cost_item_list = scenario_template['siteData']['cost_items']['fields'];
+    var cost_item_list = scenario_template.siteData.cost_items.fields;
     // change this to compileStructureCosts
-    compileStructureCosts(selectedStructure, scenario_template['siteData']['cost_items']);
+    compileStructureCosts(selectedStructure, scenario_template.siteData.cost_items);
 
-    compileCosts(cost_item_list, scenario_template['siteData']['cost_items']);
+    compileCosts(cost_item_list, scenario_template.siteData.cost_items);
 
     return scenario_template;
 }
 
-// using jQuery
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+
 
 
 /*
@@ -1467,11 +1460,14 @@ function saveDB(action) {
 
     var scenarioData = compileScenarioData();
 
-    var csrftoken = getCookie('csrftoken');
+    let tab_id = getCookie('tab');
+
+    // trying to make the save less picky.  only work on sections that are on the active_tab
+    scenarioData.active_tab = tab_id;
 
     var json = JSON.stringify(scenarioData);
 
-    var url = SETTINGS.URLS.scenario_save;
+    var url = URLS.scenario_save;
     $.ajax(url, {
         data : JSON.stringify(json),
         contentType : 'application/json; charset=utf-8',
@@ -1484,35 +1480,35 @@ function saveDB(action) {
         success: function (data) {
             //alert(JSON.stringify(data));
 
-            if ('uiMessage' in data)
-            {
-                //This was used when CREATE sucked
-                // if ('redirect_required' in data['uiMessage'])
-                // {
-                //     //replaced with just plugging in the value into the DOM
-                //     var url = data['uiMessage']['redirect_required']['redirect_to'];
-                //     window.location.replace(url);
-                //     // var inputDom = document.getElementById('ui_' + 'scenario_id');
-                //     //
-                //     // if (inputDom){
-                //     //     inputDom.value = data['uiMessage']['redirect_required']['scenario_id'];
-                //     // }
-                //
-                // }
-            }
+            // if ('uiMessage' in data)
+            // {
+            //     //This was used when CREATE sucked
+            //     // if ('redirect_required' in data['uiMessage'])
+            //     // {
+            //     //     //replaced with just plugging in the value into the DOM
+            //     //     var url = data['uiMessage']['redirect_required']['redirect_to'];
+            //     //     window.location.replace(url);
+            //     //     // var inputDom = document.getElementById('ui_' + 'scenario_id');
+            //     //     //
+            //     //     // if (inputDom){
+            //     //     //     inputDom.value = data['uiMessage']['redirect_required']['scenario_id'];
+            //     //     // }
+            //     //
+            //     // }
+            // }
 
             // this is really weak error handling
             var errors;
             var scenario_title_errors;
             if ('Error' in data)
             {
-                if ('error_dom_id' in data['Error'] && data['Error']['error_dom_id'] == 'scenario_title_validation_error')
+                if ('error_dom_id' in data.Error && data.Error.error_dom_id === 'scenario_title_validation_error')
                 {
-                    scenario_title_errors = data['Error'];
+                    scenario_title_errors = data.Error;
                 }
-                else if ('message' in data['Error'])
+                else if ('message' in data.Error)
                 {
-                    errors = data['Error'];
+                    errors = data.Error;
                 }
             }
 
@@ -1521,9 +1517,9 @@ function saveDB(action) {
             showErrorsById('scenario_title_validation_error', scenario_title_errors);
 
             //updateResultsPane(data); // loads a snippet of HTML delivered in the data array
-            updateProjectTitle(data['siteData']);
+            updateProjectTitle(data.siteData);
 
-            updateStructureCostDropDown(data['siteData']);
+            updateStructureCostDropDown(data.siteData);
         },
         error: function(data) {
             showError(data);
@@ -1531,27 +1527,27 @@ function saveDB(action) {
     });
 }
 
-/*
-* Save a copy of all the data in a JSON file on disc via the 'Save JSON' button in the cost tool
-*
-*
-*
- */
-function saveJSON(action) {
-
-    var scenarioData = compileScenarioData();
-
-    process_sid = 'raleighCostTool'; // document.getElementById('s').value;
-
-    var json = JSON.stringify(scenarioData, null, 4);
-    var jsonFileText = new Blob([json],
-    {
-        type: "application/json;charset=utf-8;"
-    });
-
-    saveAs(jsonFileText, process_sid + ".json");
-
-}
+// /*
+// * Save a copy of all the data in a JSON file on disc via the 'Save JSON' button in the cost tool
+// *
+// *
+// *
+//  */
+// function saveJSON(action) {
+//
+//     var scenarioData = compileScenarioData();
+//
+//     let process_sid = 'raleighCostTool'; // document.getElementById('s').value;
+//
+//     var json = JSON.stringify(scenarioData, null, 4);
+//     var jsonFileText = new Blob([json],
+//     {
+//         type: "application/json;charset=utf-8;"
+//     });
+//
+//     saveAs(jsonFileText, process_sid + ".json");
+//
+// }
 
 /*
 * Read a JSON file from disc via the 'Load JSON' button in the cost tool
@@ -1564,25 +1560,25 @@ function loadJSON(e) {
     var reader = new FileReader();
 
     reader.onload = function () {
-        var parsed;
+        // var parsed;
         var loaded_data;
         try {
             loaded_data = JSON.parse(this.result);
             // remove the scenario_id since it is from the uploaded JSON, and not the scenario being edited
             if ('scenario_id' in loaded_data) {
-                delete loaded_data['scenario_id'];
+                delete loaded_data.scenario_id;
             }
             // add something to remind the user that this is entirely loaded from JSON
-            if ('scenario_title' in loaded_data['siteData']['embedded_scenario']) {
-                loaded_data['siteData']['scenario_title']['embedded_scenario'] += ' (LOADED)';
+            if ('scenario_title' in loaded_data.siteData.embedded_scenario) {
+                loaded_data.siteData.scenario_title.embedded_scenario += ' (LOADED)';
             }
 
-            populateUI(loaded_data['siteData']);
+            populateUI(loaded_data.siteData);
 
         } catch (ex) {
-            alert('ex when trying to load JSON file = ' + ex);
+            window.alert('ex when trying to load JSON file = ' + ex);
         }
-    }
+    };
 
     reader.readAsText(files[0]);
 }
@@ -1638,8 +1634,8 @@ function setAllFieldInputFilters()
         switch (field) {
           case (field.match(/(_pct|_factor)$/) || {}).input:
             setInputFilter(document.getElementById('ui_' + field), function (value) {
-                if (/^\d{0,2}\.\d{0,2}$/.test(value)) { return true }
-                if (/^(100|\d{0,2})$/.test(value)) { return true }
+                if (/^\d{0,2}\.\d{0,2}$/.test(value)) { return true; }
+                if (/^(100|\d{0,2})$/.test(value)) { return true; }
                 return false;
             });
             break;
@@ -1681,7 +1677,7 @@ function setAllFieldInputFilters()
             break;
           case (field.match(/(_qty|_count)$/) || {}).input:
             setInputFilter(document.getElementById('ui_' + field), function (value) {
-                if (/^\d{0,5}$/.test(value)) { return true }
+                if (/^\d{0,5}$/.test(value)) { return true; }
                 return false;
             });
             break;
@@ -1717,25 +1713,24 @@ function setAllFieldInputFilters()
     }
 
     function set_structures_input_filter(structures){
-        for (var structure in structures) {
-            // each Areal Feature has a button
-            var domElement = document.getElementById('checkbox_' + structure);
-            if (! domElement){
-                alert("There is no Structure button: 'checkbox_" + structure + "'");
-            }
-            else {
-                // Adds 'Check this to enable input for this areal feature'
-               domElement.title = open_structure_checkbox_title(structure);
-            }
-
-            var fields = structures[structure];
-            fields.forEach(function(field) {
-                if (field != 'checkbox'){
-                    setFieldInputFilter(structure + '_' + field);
+        for (let structure in structures) {
+            if (structures.hasOwnProperty(structure)) {
+                // each Areal Feature has a button
+                let domElement = document.getElementById('checkbox_' + structure);
+                if (!domElement) {
+                    window.alert("There is no Structure button: 'checkbox_" + structure + "'");
+                } else {
+                    // Adds 'Check this to enable input for this areal feature'
+                    domElement.title = open_structure_checkbox_title(structure);
                 }
 
-
-            });
+                var fields = structures[structure];
+                fields.forEach(function (field) {
+                    if (field !== 'checkbox') {
+                        setFieldInputFilter(structure + '_' + field);
+                    }
+                });
+            }
         }
     }
 
@@ -1768,53 +1763,158 @@ function setAllFieldInputFilters()
 
     var scenario_template = scenarioTemplateJSON();
 
-    var scenario_fields = scenario_template['siteData']['embedded_scenario']['fields'];
+    var scenario_fields = scenario_template.siteData.embedded_scenario.fields;
 
     scenario_fields.forEach(function(field) {
         setFieldInputFilter(field);
     });
 
     // Set up the button and input text-box popup help text and input filter for each Areal Features
-    var areal_features_fields = scenario_template['siteData']['areal_features']['fields'];
+    var areal_features_fields = scenario_template.siteData.areal_features.fields;
 
     for (var i in areal_features_fields) {
-        var name = areal_features_fields[i];
+        if (areal_features_fields.hasOwnProperty(i)) {
+            let name = areal_features_fields[i];
 
-        // each Areal Feature has a button
-        var domElement = document.getElementById('checkbox_' + name);
-        if (! domElement){
-            alert("There is no Areal Feature button: 'checkbox_" + name + "'");
-        }
-        else {
-            // Adds 'Check this to enable input for this areal feature'
-           domElement.title = open_af_button_title(name);
-        }
+            // each Areal Feature has a button
+            let domElement = document.getElementById('checkbox_' + name);
+            if (!domElement) {
+                window.alert("There is no Areal Feature button: 'checkbox_" + name + "'");
+            } else {
+                // Adds 'Check this to enable input for this areal feature'
+                domElement.title = open_af_button_title(name);
+            }
 
-        // and a text-box called 'ui_' name
-        domElement = document.getElementById('ui_' + name + '_area'); //TODO
-        if (! domElement){
-            alert("There is no Areal Feature text-box: 'ui_" + name + "'");
-        }
-        else {
-           // 2019-09-11 removed since this is just boilerplate
-            // domElement.title = open_af_input_title(name);
-           // set the input filter to a float
-            setInputFilter(domElement, function (value) {
-                return (/^\d{0,5}\.?\d{0,2}$/.test(value));
-            });
+            // and a text-box called 'ui_' name
+            domElement = document.getElementById('ui_' + name + '_area'); //TODO
+            if (!domElement) {
+                window.alert("There is no Areal Feature text-box: 'ui_" + name + "'");
+            } else {
+                // set the input filter to a float
+                setInputFilter(domElement, function (value) {
+                    return (/^\d{0,5}\.?\d{0,2}$/.test(value));
+                });
+            }
         }
     }
 
-    set_structures_input_filter(scenario_template['siteData']['conventional_structures']['inputs']);
+    set_structures_input_filter(scenario_template.siteData.conventional_structures.inputs);
 
-    set_structures_input_filter(scenario_template['siteData']['nonconventional_structures']['inputs']);
+    set_structures_input_filter(scenario_template.siteData.nonconventional_structures.inputs);
 
     //structure costs
-    set_structure_costs_input_filter(scenario_template['siteData']['cost_items']['fields']);
+    set_structure_costs_input_filter(scenario_template.siteData.cost_items.fields);
 
     // cost item unit costs
-    set_costitem_unit_costs_input_filter(scenario_template['siteData']['cost_items']['fields']);
-
+    set_costitem_unit_costs_input_filter(scenario_template.siteData.cost_items.fields);
 
 }
 
+/*
+
+    This section has functionality that controls the display(sic/?).  It was in a separate file displaycontrols.js but
+    I think the only reason was that this file seems too large.
+
+ */
+
+function setCookie(cname, cvalue, exdays) {
+  let d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+// using jQuery
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = $.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+// function getCookie(cname) {
+//   var name = cname + "=";
+//   let cookies = document.cookie.split(';');
+//   for(var i = 0; i < cookies.length; i++) {
+//     let cookie = cookies[i];
+//     while (cookie.charAt(0) === ' ') {
+//       cookie = cookie.substring(1);
+//     }
+//     if (cookie.indexOf(name) === 0) {
+//       return cookie.substring(name.length, cookie.length);
+//     }
+//   }
+//   return "";
+// }
+
+function open_structure_checkbox_title(structure){
+    /* this seems random, like not functioning code */
+     return "Check this to enable input for this structure";
+}
+
+// mouse-over text attached to each Areal Feature button
+function open_af_button_title(button_context) {
+    //TODO: implement logic to go get text for display
+    return "Check this to enable input for this areal feature";
+}
+
+function open_costitem_help(button_context) {
+    // get the id of the input that this label is connected too. i.e. ui_stormwater_wetland
+
+    var id;
+    var helpDom;
+    if (typeof(button_context) === 'string')
+    {
+        id = button_context;
+        helpDom = document.getElementById('CostItemItemUnitCostsHelpText');
+    }
+    else
+    {
+        id = button_context.id;
+        id = id.replace('structure_costitem_', '');
+        helpDom = document.getElementById('StructureCostItemHelpText');
+    }
+
+    if (helpDom.style.display === 'block')
+    {
+        // now see if they are toggling off an existing help section
+        var helpSelectedDom = helpDom.querySelector('[id="' + id + '"]');
+
+        if (helpSelectedDom !== undefined)
+        {
+            helpDom.innerHTML = '';
+            helpDom.style.display = "none";
+            return;
+        }
+    }
+
+    var base_url = URLS.costitem_help;
+    var url = base_url + '/' + id + '/?format=html';
+
+   $.ajax(url, {
+        //data : JSON.stringify(json),
+        contentType : 'application/json; charset=utf-8',
+        type : 'GET',
+        async: false, // wait for the response
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        },
+        success: function (data) {
+            helpDom.style.display = 'block';
+            helpDom.innerHTML = helpDom.innerHTML + data;
+        },
+        error: function(data) {
+            window.alert( "unable to get structure cost item help for " + id);
+        }
+    });
+}
