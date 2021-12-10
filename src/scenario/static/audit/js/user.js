@@ -1,5 +1,5 @@
 
-// users_audit.js is loaded in to C:\inetpub\wwwdjango\gsicosttool\src\costly\templates\audit\users.html
+// users_audit.js is loaded in to C:\inetpub\wwwdjango\gsicosttool\src\gsicosttool\templates\audit\users.html
 
 $(function () {
 

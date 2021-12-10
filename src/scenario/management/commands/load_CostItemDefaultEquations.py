@@ -9,7 +9,7 @@ from scenario.models import CostItem, CostItemDefaultEquations
 # data is loaded from csv file
 #
 #
-# (venv) C:\inetpub\wwwdjango\costly\src> \
+# (venv) C:\inetpub\wwwdjango\gsicosttool\src> \
 #               python manage.py load_CostItems \
 #                   --csvfile "C:\Data_and_Tools\raleigh_cost_tool\working\data\CostItemDefaultAssumptions_costs.csv"
 #

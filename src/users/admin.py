@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
 """
-    NOTE: This is not used. The edit form for Costly Administration is in 
+    NOTE: This is not used. The edit form for GSI Cost Tool Administration is in 
     C:\inetpub\wwwdjango\gsicosttool\src\authtools\admin.py
     
 """

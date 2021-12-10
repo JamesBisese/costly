@@ -10,7 +10,7 @@ from scenario.models import Structures
 # data is loaded from csv file
 #
 #
-# (venv) C:\inetpub\wwwdjango\costly\src>python manage.py load_Structures \
+# (venv) C:\inetpub\wwwdjango\gsicosttool\src>python manage.py load_Structures \
 #                   --csvfile "C:\Data_and_Tools\raleigh_cost_tool\working\data\Stuctures_load.csv"
 #
 class Command(BaseCommand):

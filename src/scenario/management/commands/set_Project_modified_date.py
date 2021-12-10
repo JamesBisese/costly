@@ -11,7 +11,7 @@ from scenario.models import Project
 # accidentally set the value to the same as the default create_date
 #
 #
-# (venv) C:\inetpub\wwwdjango\costly\src>c
+# (venv) C:\inetpub\wwwdjango\gsicosttool\src>c
 #
 class Command(BaseCommand):
     help = 'snippet used to update Project.modified_date to null only.'

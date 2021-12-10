@@ -12,7 +12,7 @@ from scenario.models import CostItem, Structures, CostItemDefaultFactors
 #  should be Structure-CostItem Default Factors
 #
 #
-# (venv) C:\inetpub\wwwdjango\costly\src>python manage.py load_CostItemDefaultAssumptions \
+# (venv) C:\inetpub\wwwdjango\gsicosttool\src>python manage.py load_CostItemDefaultAssumptions \
 #                   --csvfile ".\scenario\static\scenario\data\CostItemDefaultFactors.csv"
 #
 class Command(BaseCommand):

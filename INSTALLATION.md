@@ -116,7 +116,7 @@ user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 ...
 d-----        4/26/2021   8:07 AM                accounts
 d-----        4/26/2021   8:07 AM                authtools
-d-----        4/26/2021   8:07 AM                costly
+d-----        4/26/2021   8:07 AM                gsicosttool
 d-----        4/26/2021   8:07 AM                media
 d-----        4/26/2021   8:07 AM                profiles
 d-----        4/26/2021   8:07 AM                scenario
@@ -358,8 +358,8 @@ lookup data needs to be loaded from CSV text files into the database.
 it will vary a bit depending on the ODBMS used.*
 
 The connection to the database is defined in two places -
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.development.env` and
-    `C:\inetpub\wwwdjango\costly\costly\settings\local.production.env`    
+    `C:\inetpub\wwwdjango\gsicosttool\gsicosttool\settings\local.development.env` and
+    `C:\inetpub\wwwdjango\gsicosttool\gsicosttool\settings\local.production.env`    
 
 ~~~~
 # Sample Django database settings for PostgreSQL (requires package psycopg2)
@@ -560,11 +560,11 @@ The data from that site has been exported using `dumpdata`
 This command is run on the REMOTE computer (not the one where the app is being installed)
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
-# python manage.py dumpdata --indent 4 > costly.json
+# python manage.py dumpdata --indent 4 > gsicosttool.json
 
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
-# ls -l costly.json
--rw-rw-rw-  1 user.name 0 531553 2019-10-28 10:48 costly.json
+# ls -l gsicosttool.json
+-rw-rw-rw-  1 user.name 0 531553 2019-10-28 10:48 gsicosttool.json
 ~~~~
 
 That file is then copied to the new machine and loaded using `loaddata`
@@ -616,7 +616,7 @@ Performing system checks...
 
 System check identified no issues (0 silenced).
 October 30, 2019 - 09:32:20
-Django version 2.1, using settings 'costly.settings.development'
+Django version 2.1, using settings 'gsicosttool.settings.development'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 ~~~~
@@ -681,7 +681,7 @@ Name: `WSGI_HANDLER`
 Value: `django.core.wsgi.get_wsgi_application()`
 
 Name: `DJANGO_SETTINGS_MODULE`  
-Value: `costly.settings.production`
+Value: `gsicosttool.settings.production`
 
 Now make sure the `static` folder is configured correctly
 

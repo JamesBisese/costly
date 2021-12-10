@@ -11,7 +11,7 @@ from decimal import *
 # data is loaded from csv file
 #
 #
-# (venv) C:\inetpub\wwwdjango\costly\src>python manage.py create_CostItemDefaultCosts \
+# (venv) C:\inetpub\wwwdjango\gsicosttool\src>python manage.py create_CostItemDefaultCosts \
 #                   --csvfile "C:\Data_and_Tools\raleigh_cost_tool\working\data\CostItemDefaultAssumptions_costs.csv"
 #
 class Command(BaseCommand):
