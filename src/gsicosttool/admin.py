@@ -5,9 +5,9 @@ ADMIN_ORDERING = [
 	('scenario', [
 		'Structures',
 		'CostItem',
-		'CostItemDefaultFactors',
 		'CostItemDefaultCosts',
 		'CostItemDefaultEquations',
+		'CostItemDefaultFactors',
 		'Project',
 		'Scenario',
 		'CostItemUserCosts',

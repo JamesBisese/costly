@@ -15,7 +15,7 @@
         </a>
         <ul class="dropdown-menu" role="menu">
             {% if user.is_superuser %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin Page</a></li>
+                <li class="nav-item"><a class="nav-link" target="gsicosttool_admin" href="{% url 'admin:index' %}">Admin Page</a></li>
             {% endif %}
             <li class="nav-item"><a class="nav-link" href="{% url 'profiles:show_self' %}">Account</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></li>

@@ -1,30 +1,43 @@
+/*jshint esversion: 6 */
+/*jshint strict:false */
+/*globals $:false */
 
 // project_index.js
 
 $(function () {
 
-    var is_superuser = false;
+    let is_superuser = false;
+    let is_staff = false;
 
     /* Binding */
     $(document).ready(function() {
 
-        var inputDom = document.getElementById('is_superuser');
+        let inputDom = document.getElementById('is_superuser');
 
         is_superuser = (inputDom) ? true : false;
+
+        inputDom = document.getElementById('is_staff');
+
+        is_staff = (inputDom) ? true : false;
 
         loadTable();
     });
 
   var loadTable = function() {
 
-      var export_columns = [0, 1, 2, 3, 4, 5, 6];
+      let export_columns = [0, 1, 2, 3, 4, 5, 6];
 
-      var options = {
+      let options = {
           "serverSide": true,
           "ajax": SETTINGS.URLS.audit_project_data + '?format=datatables',
           "paging": false,
           "info": false,
           "dom": 'Bfrtip',
+          "processing": true,
+            'language': {
+                'loadingRecords': '&nbsp;',
+                'processing': '<div class="spinner"></div>'
+            },
           "buttons": [
               'copy',
               {
@@ -64,15 +77,15 @@ $(function () {
           "order": [[ 1, 'asc' ]]
       };
       // hide the user column if the user is not a super user - the values should all be that particular user
-      if (is_superuser == false) {
-          options['columnDefs'].push({
+      if (is_superuser === false && is_staff === false) {
+          options.columnDefs.push({
                   "targets": 1,
                   "visible": false
               }
-          )
+          );
       }
 
-      var table = $('#project-table').DataTable(options);
+      let table = $('#project-table').DataTable(options);
 
         table.on( 'order.dt search.dt', function () {
             table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {

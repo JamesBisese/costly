@@ -28,6 +28,16 @@
     <table class="caption_table">
         <col style="width: 40%">
         <col style="width: 60%">
+        {% if user.is_superuser or 1 == 1%}
+          <tr>
+            <td>User:</td>
+            <td> {{ scenario.project.user.name }}</td>
+          </tr>
+          <tr>
+            <td>User Type:</td>
+            <td> {{ scenario.project.user.user_type }}</td>
+          </tr>
+        {% endif %}
         <tr>
             <td>Project Title:</td>
             <td>{{ scenario.project.project_title }}</td>

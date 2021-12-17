@@ -1287,20 +1287,22 @@ class CostItemHelp(APIView):
         if len(costitem_meta) == 0:
             costitem_meta = CostItem.objects.all()
         else:
+            cost_item_default_cost = CostItemDefaultCosts.objects.filter(costitem__code=costitem_code).first()
             costitem_meta = costitem_meta[0]
 
         # return the scenario as an HTML table
-        return HttpResponse(costitem_help_html(costitem_meta, costitem_code))
+        return HttpResponse(costitem_help_html(costitem_meta, costitem_code, cost_item_default_cost))
 
 
 #
 # this is the also scenario data in a single html partial table
 #
-def costitem_help_html(costitem_meta, costitem_code):
+def costitem_help_html(costitem_meta, costitem_code, cost_item_default_cost):
     template_name = "scenario/includes/partial_costitem_help.html"
     context = {
         'costitem_code': costitem_code,
         'costitem_meta': costitem_meta,
+        'cost_item_default_cost': cost_item_default_cost,
     }
     return render_to_string(template_name, context)
 
@@ -1886,7 +1888,7 @@ def create_formats(workbook):
 def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     # region --get data--
     #
-    # generate the data used in the export
+    # generate the data used in the tall-thin export
     #
     scenario = get_object_or_404(Scenario, pk=scenario_id)
 
@@ -1903,10 +1905,14 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     worksheet.set_column(start_col + 2, start_col + 2, 25)
 
     # Write some data headers.
-    worksheet.write(0, start_col, 'Project Title', formats['bold'])
-    worksheet.write(0, start_col + 1, scenario.project.project_title, formats['bold'])
-    worksheet.write(1, start_col, 'Scenario Title', formats['bold'])
-    worksheet.write(1, start_col + 1, scenario.scenario_title, formats['bold'])
+    worksheet.write(0, start_col, 'User', formats['bold'])
+    worksheet.write(0, start_col + 1, scenario.project.user.name, formats['bold'])
+    worksheet.write(1, start_col, 'User Type', formats['bold'])
+    worksheet.write(1, start_col + 1, scenario.project.user.profile.get_user_type_display(), formats['bold'])
+    worksheet.write(2, start_col, 'Project Title', formats['bold'])
+    worksheet.write(2, start_col + 1, scenario.project.project_title, formats['bold'])
+    worksheet.write(3, start_col, 'Scenario Title', formats['bold'])
+    worksheet.write(3, start_col + 1, scenario.scenario_title, formats['bold'])
 
     # Some data we want to write to the worksheet.
     project_description = (
@@ -1922,7 +1928,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     )
 
     # Start from the first cell below the headers.
-    row = 3
+    row = 5
     col = start_col
 
     # Iterate over the data and write it out row by row.
@@ -2140,7 +2146,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
     worksheet.set_column(start_col + 11, start_col + 11, 35)
     worksheet.set_column(start_col + 12, start_col + 12, 21)
 
-    for col_index in range(13, 13 + 15 + 7):
+    for col_index in range(13, 13 + 15 + 7 + 12):
         worksheet.set_column(col_index, col_index, 15)
 
     # remove the blue or green background from some formats
@@ -2292,6 +2298,25 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
             col += 1
 
         # endregion
+
+    """ areal features.  this is the last of the insertable groups """
+    format = formats['input_col']
+    prop_names = [field_nm.replace("_area", '') for field_nm in vars(scenario.areal_features) if field_nm.endswith("_area")]
+    if insert_header is True:
+        col_count = len(prop_names)
+        worksheet.merge_range(0, col, 0, col + col_count - 1, 'Areal Features (square feet)', formats['merge_format'])
+        hold_col = col
+        for label in prop_names:
+            worksheet.write(1, col, label, formats['bold'])
+            col += 1
+        col = hold_col
+
+    for label in prop_names:
+        value = None
+        if getattr(scenario.areal_features, label + '_checkbox') == True:
+            value = getattr(scenario.areal_features, label + '_area')
+        worksheet.write(row, col, value, format)
+        col += 1
 
     return
 

@@ -46,6 +46,12 @@ DATABASES = {
      'default': env.db(),
 }
 
+# if the installation is using SQL Server then it needs to add the 'driver' in the OPTIONS
+try:
+    DATABASES['default']['OPTIONS'] = {'driver': env.str('DATABASE_default_OPTIONS_driver')}
+except:
+    pass
+
 TIME_ZONE = env('TIME_ZONE')
 
 # Cache the templates in memory for speed-up
@@ -125,5 +131,10 @@ except:
 
 try:
     COPYRIGHT_DISCLAIMER = env.str('COPYRIGHT_DISCLAIMER')
+except:
+    pass
+
+try:
+    VERSION_INFORMATION = env.str('VERSION_INFORMATION')
 except:
     pass

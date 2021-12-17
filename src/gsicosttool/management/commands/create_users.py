@@ -13,11 +13,11 @@ class Command(BaseCommand):
         CustomUser = get_user_model()
 
         user_list = {
-            'admin': {'email': 'admin@tetratech.com', 'password': 'cost2018', 'is_superuser': True, 'is_staff': True},
-            'manager': {'email': 'manager@tetratech.com', 'password': 'cost2018', 'is_staff': True},
-            'user1': {'email': 'user1@tetratech.com', 'password': 'user1018'},
-            'user2': {'email': 'user2@tetratech.com', 'password': 'user2018'},
-            'user3': {'email': 'user3@tetratech.com', 'password': 'user3018'},
+            'admin': {'email': 'admin@tetratech.com', 'password': 'cost2021', 'is_superuser': True, 'is_staff': True},
+            'manager': {'email': 'manager@tetratech.com', 'password': 'cost2021', 'is_staff': True},
+            'user1': {'email': 'user1@tetratech.com', 'password': 'user1021'},
+            'user2': {'email': 'user2@tetratech.com', 'password': 'user2021'},
+            'user3': {'email': 'user3@tetratech.com', 'password': 'user3021'},
         }
 
         is_staff_permissions = [

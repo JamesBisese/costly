@@ -148,7 +148,11 @@ class EmbeddedProjectFields(serializers.Field):
     def to_representation(self, value):
         ret = {
             'project_id': value.id,
-            'user': {'email': value.user.email},
+            'user': {
+                'email': value.user.email,
+                'name': value.user.name,
+                'user_type': value.user.profile.get_user_type_display()
+            },
             'project_title': value.project_title,
             # 'scenario_title': value.scenario_title,
             'land_unit_cost': value.land_unit_cost.amount,

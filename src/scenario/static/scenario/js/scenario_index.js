@@ -109,6 +109,11 @@ $(function () {
             "paging": false,
             "info" : false,
             "dom": 'frtipB',
+          "processing": true,
+            'language': {
+                'loadingRecords': '&nbsp;',
+                'processing': "<span class='fa-stack fa-lg'><i class='fa fa-spinner fa-spin fa-stack-2x fa-fw'></i></span>&emsp;Processing ..."
+            },
             // "buttons": [
             //     { 'extend': 'copy',  'exportOptions': {'columns': export_columns}},
             //     { 'extend': 'csv',   'exportOptions': {'columns': export_columns}},

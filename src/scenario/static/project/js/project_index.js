@@ -1,9 +1,15 @@
+/*jshint esversion: 6 */
+/*jshint strict:false */
+/*globals $:false */
 
 // project_index.js
+var URLS = null; // this gets set via another javascript file sourced before this file
 
 $(function () {
 
     var is_superuser = false;
+    let is_staff = false;
+    URLS = SETTINGS.URLS;
 
     /* Binding */
     $(document).ready(function() {
@@ -11,7 +17,9 @@ $(function () {
         var inputDom = document.getElementById('is_superuser');
 
         is_superuser = (inputDom) ? true : false;
+        inputDom = document.getElementById('is_staff');
 
+        is_staff = (inputDom) ? true : false;
         loadTable();
     });
 
@@ -21,10 +29,15 @@ $(function () {
 
       var options = {
           "serverSide": true,
-          "ajax": SETTINGS.URLS.project_list,
+          "ajax": URLS.project_list,
           "paging": false,
           "info": false,
           "dom": 'frtipB',
+          "processing": true,
+            'language': {
+                'loadingRecords': '&nbsp;',
+                'processing': '<div class="spinner"></div>'
+            },
           "buttons": [
               'copy',
               {
@@ -65,38 +78,38 @@ $(function () {
                   "targets": 13,
                   "sWidth": "260px",
                   "render": function (data, type, row) {
-                        var scenario_url = SETTINGS.URLS.project_scenario_list.replace('<int:pk>', data);
-                        var update_url = SETTINGS.URLS.project_update.replace('<int:pk>', data);
-                        var delete_url = SETTINGS.URLS.project_delete.replace('<int:pk>', data);
-
-                        return '<a class="btn btn-warning btn-sm " '+
+                        var scenario_url = URLS.project_scenario_list.replace('<int:pk>', data);
+                        let scenario_button = '<a class="btn btn-warning btn-sm " '+
                             'href="' + scenario_url + '">' +
                             '<span class="glyphicon glyphicon-pencil"></span> Scenarios' +
-                            '</a>' + '&nbsp;' +
-
-                      '<button type="button"' +
+                            '</a>' + '&nbsp;';
+                        var update_url = URLS.project_update.replace('<int:pk>', data);
+                        let update_button = is_staff === false ? '<button type="button"' +
                             ' class="btn btn-warning btn-sm js-update-project" '+
                             'data-url="' + update_url + '">' +
                             '<span class="glyphicon glyphicon-pencil"></span> Edit' +
-                            '</button>' + '&nbsp;' +
-
-                            '<button type="button" ' +
+                            '</button>' + '&nbsp;' : '';
+                        var delete_url = URLS.project_delete.replace('<int:pk>', data);
+                        let delete_button = is_staff === false ? '<button type="button" ' +
                             'class="btn btn-danger btn-sm js-delete-project" '+
                             'data-url="' + delete_url + '">'+
                            '<span class="glyphicon glyphicon-trash"></span> Delete'+
-                           '</button>'
+                           '</button>' : '';
+
+                        return scenario_button + update_button + delete_button;
+
                   }
               },
           ],
           "order": [[ 1, 'asc' ]]
       };
       // hide the user column if the user is not a super user - the values should all be that particular user
-      if (is_superuser == false) {
-          options['columnDefs'].push({
+      if (is_superuser === false && is_staff === false) {
+          options.columnDefs.push({
                   "targets": 1,
                   "visible": false
               }
-          )
+          );
       }
 
       var table = $('#project-table').DataTable(options);

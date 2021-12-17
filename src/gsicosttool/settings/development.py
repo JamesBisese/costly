@@ -68,6 +68,13 @@ DATABASES = {
      'default': env.db(),
 }
 
+# if the installation is using SQL Server then it needs to add the 'driver' in the OPTIONS
+try:
+    DATABASES['default']['OPTIONS'] = {'driver': env.str('DATABASE_default_OPTIONS_driver')}
+except:
+    pass
+
+
 # Log everything to the logs directory at the top
 # LOGFILE_ROOT = BASE_DIR.parent / 'logs'
 LOGFILE_ROOT = os.path.join(BASE_DIR.parent, 'logs', 'development')
@@ -154,3 +161,12 @@ try:
     VERSION_INFORMATION = env.str('VERSION_INFORMATION')
 except:
     pass
+
+# email related stuff
+
+EMAIL_BACKEND = env.str('EMAIL_BACKEND')
+EMAIL_HOST = env.str('EMAIL_HOST')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_PORT = env.str('EMAIL_PORT')
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')

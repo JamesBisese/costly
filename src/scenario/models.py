@@ -752,6 +752,8 @@ class Scenario(models.Model):
             
             NOTE: 2021-12-06 something in here is missing saving the user defined cost and deleting that value.
             
+            NOTE: 2021-12-13 this is an example of generalizing something to the point where it is not useful.
+            I can't read it and I am the only one who ever would try.
             
             Note: yes, this is terrible.  I can't tell if it is bad and complex, or 
             the system is really this complex
@@ -816,6 +818,9 @@ class Scenario(models.Model):
                     change_count += 1
                     if default_field_value != -1 and str(form_value) == str(default_field_value):
                         is_default += 1  # the user reset a value to the default
+                    # this is the place where I am having a problem.  inserted this elif just to test things
+                    elif attribute == 'cost_source':
+                        pass
                     else:
                         is_default -= 1
 
@@ -833,16 +838,16 @@ class Scenario(models.Model):
                 print_str = "cost_item: {}; field: {}; form_value: {}, " + \
                             "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
 
-                if change_count > 0 and True is True:
+                if change_count > 0 and True is False:
                     print(print_str.format(
-                        cost_item,
-                        attribute,
-                        form_value,
-                        db_field_value,
-                        default_field_value,
-                        is_default,
-                        change_count,
-                    )
+                                            cost_item,
+                                            attribute,
+                                            form_value,
+                                            db_field_value,
+                                            default_field_value,
+                                            is_default,
+                                            change_count,
+                                        )
                     )
                 # if is_default != 1 and change_count > 0:
                 #     break
@@ -1407,7 +1412,7 @@ class CostItemUserAssumptions(models.Model):
 
         the 'user' cost assumptions are stored in CostItemUserAssumptions
 
-    NOTE: this name is terrible.  It should be StructureCostItemUserFactors
+    NOTE: this name is wrong.  It should be StructureCostItemUserFactors or even ScenarioStructureCostItemUserFactors
 
     """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
@@ -1427,5 +1432,6 @@ class CostItemUserAssumptions(models.Model):
         return str(self.scenario.scenario_title) + " -- " + self.structure.name + " -- " + self.costitem.name
 
     class Meta:
-        verbose_name_plural = "Structure Cost Item User Assumptions"
+        verbose_name = "Scenario Structure Cost Item User Assumption"
+        verbose_name_plural = "Scenario Structure Cost Item User Assumptions"
         unique_together = ("scenario", 'structure', "costitem")

@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth import get_user_model
@@ -37,17 +38,44 @@ class SignUpView(bracesviews.AnonymousRequiredMixin,
     form_class = forms.SignupForm
     model = User
     template_name = 'accounts/signup.html'
-    success_url = reverse_lazy('home')
-    form_valid_message = "You're signed up!"
+    success_url = reverse_lazy('accounts:administrator-will-respond')
+    form_valid_message = "You're registered!"
+
+    # found: https://stackoverflow.com/questions/50893917/django-allauth-signup-prevent-login
+    # def form_valid(self, form):
+    #     # By assigning the User to a property on the view, we allow subclasses
+    #     # of SignupView to access the newly created User instance
+    #     self.user = form.save(self.request)
+    #     try:
+    #         signals.user_signed_up.send(
+    #             sender=self.user.__class__,
+    #             request=self.request,
+    #             user=self.user,
+    #             **{}
+    #         )
+    #         return HttpResponseRedirect(self.get_success_url())
+    #     except ImmediateHttpResponse as e:
+    #         return e.response
 
     def form_valid(self, form):
         r = super().form_valid(form)
-        username = form.cleaned_data["email"]
-        password = form.cleaned_data["password1"]
-        user = auth.authenticate(email=username, password=password)
-        auth.login(self.request, user)
+        # username = form.cleaned_data["email"]
+        # password = form.cleaned_data["password1"]
+        # # user = auth.authenticate(email=username, password=password)
+        # # auth.login(self.request, user)
+        # send_mail(
+        #     'User Registered: ' + username,
+        #     'Please check the website and validate the new user account for ' + username,
+        #     'gsicosttool@gmail.com',
+        #     ['james.bisese@tetratech.com'],
+        #     fail_silently=False,
+        #     auth_user=getattr(settings, "EMAIL_HOST_USER", None),
+        #     auth_password=getattr(settings, "EMAIL_HOST_PASSWORD", None),
+        # )
         return r
 
+class AdministratorWillRespondView(authviews.PasswordResetDoneView):
+    template_name = 'accounts/administrator_will_respond.html'
 
 class PasswordChangeView(authviews.PasswordChangeView):
     form_class = forms.PasswordChangeForm
