@@ -7,9 +7,7 @@ on a Windows 2016 Data Center server running an IIS webserver.
 
 The gsicosttool is written using the python Django framework.
 
-The instance described in these notes uses a Microsoft SQL Server database, and 
-there is a dependency on using a python package 'pyodbc' that only runs
-on Django 2.1.  
+The instance described in these notes uses a Microsoft SQL Server database.  
 
 ## Folder Structure
 
@@ -67,7 +65,7 @@ Show version of pip
 ~~~~
 user.name@MACHINENAME C:\software\Python\Python39
 $ pip --version
-pip 21.1 from c:\software\python\python38\lib\site-packages\pip (python 3.8)
+pip 21.1 from c:\software\python\python39\lib\site-packages\pip (python 3.9)
 ~~~~
 Install python package virtualenv
 ~~~~
@@ -137,11 +135,11 @@ $ chdir C:\software\Python\virtualenvs
 
 user.name@MACHINENAME C:\software\Python\virtualenvs                      
 # virtualenv gsicosttool                                                        
-Using base prefix 'c:\\software\\python\\python38'                              
-New python executable in  
-C:\software\Python\virtualenvs\gsicosttool\Scripts\python.exe                                                                          
-Installing setuptools, pip, wheel...                                            
-done.                                                                           
+created virtual environment CPython3.9.4.final.0-64 in 965ms
+  creator CPython3Windows(dest=C:\software\Python\virtualenvs\gsidoc, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=C:\Users\james.bisese\AppData\Local\pypa\virtualenv)
+    added seed packages: pip==21.3.1, setuptools==59.2.0, wheel==0.37.0
+  activators BashActivator,BatchActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator                                                                     
 ~~~~
 Go into that folder and 'activate' the virtual environment.
   Note that the prompt changes to indicate that the virtual env is active
@@ -181,47 +179,13 @@ user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src\scenario\management\c
 Using the virtual environment, all the packages will be installed on the virtual environment 
 folder `C:\software\Python\virtualenvs\gsicosttool` and will not affect the system-wide python installation.
 
-The application 'requirements' file contains a list of all the external python packages needed  to run the django app
+The application 'requirements.txt' file contains a list of all the external python packages needed  to run the django app
 
 The GSI Cost Tool requirements file is in  
     `C:\inetpub\wwwdjango\gsicosttool\src\requirements.txt` 
 
-
-From experience, I know that there are several python packages that 
-failed to install during the first attempt, so I suggest using
-pre-compiled versions of these packages.
-
-Pre-compiled version for windows are available from  
-    `https://www.lfd.uci.edu/~gohlke/pythonlibs/`
-
-On that page download these 3 packages to your `download` folder 
-(you can download the most recent version of these packages if there are updates)
-1. `C:\downloads\pyodbc-4.0.27-cp38-cp38-win32.whl`
-
-Install pre-compiled python packages
-~~~~
-
-(gsicosttool) user.name@MACHINENAME C:\software\Python\virtualenvs\gsicosttool\Scripts
-# pip install C:\downloads\pyodbc-4.0.27-cp38-cp38-win32.whl
-Processing c:\downloads\pyodbc-4.0.27-cp38-cp38-win32.whl
-Installing collected packages: pyodbc
-Successfully installed pyodbc-4.0.27
-~~~~
-
-Note: if you want to use PostgreSQL instead of Microsoft SQL Server, you need to install one other pre-compiled package
-
-From  `https://www.lfd.uci.edu/~gohlke/pythonlibs/` download the package to your `download` folder 
-(you can download the most recent version of these packages if there are updates)
-1. `C:\downloads\psycopg2-2.8.4-cp38-cp38-win32.whl`
-
-Install pre-compiled python packages
-~~~~
-
-(gsicosttool) C:\inetpub\wwwdjango\gsicosttool\src>pip install C:\downloads\psycopg2-2.8.4-cp38-cp38-win32.whl
-Processing c:\downloads\psycopg2-2.8.4-cp38-cp38-win32.whl
-Installing collected packages: psycopg2
-Successfully installed psycopg2-2.8.4
-~~~~
+NOTE: there are some issues around the packages used to connect to the database.  As of the latest version 
+they seem to work fine as found in the requirements.txt file. 
 
 ___
 
@@ -231,85 +195,145 @@ NOTE: the output will vary a bit from this, since I repeated these commands duri
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 # pip install -r requirements.txt
-Collecting beautifulsoup4==4.8.1
-  Using cached https://files.pythonhosted.org/packages/3b/c8/a55eb6ea11cd7e5ac4bacdf92bac4693b90d3ba79268be16527555e186f0/beautifulsoup4-4.8.1-py3-none-any.whl
-Collecting defusedxml==0.6.0
-  Using cached https://files.pythonhosted.org/packages/06/74/9b387472866358ebc08732de3da6dc48e44b0aacd2ddaa5cb85ab7e986a2/defusedxml-0.6.0-py2.py3-none-any.whl
-Collecting Django==2.1
-  Using cached https://files.pythonhosted.org/packages/51/1a/e0ac7886c7123a03814178d7517dc822af0fe51a72e1a6bff26153103322/Django-2.1-py3-none-any.whl
-Collecting django-appconf==1.0.3
-  Using cached https://files.pythonhosted.org/packages/f6/b3/fcec63afcf323581c4919f21e90ef8c8200034108a6a0ab47a6bf6a9327b/django_appconf-1.0.3-py2.py3-none-any.whl
+Collecting asgiref==3.4.1
+  Using cached asgiref-3.4.1-py3-none-any.whl (25 kB)
+Collecting Babel==2.9.1
+  Using cached Babel-2.9.1-py2.py3-none-any.whl (8.8 MB)
+Collecting beautifulsoup4==4.10.0
+  Using cached beautifulsoup4-4.10.0-py3-none-any.whl (97 kB)
+Collecting defusedxml==0.7.1
+  Using cached defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+Collecting Django==3.2.9
+  Using cached Django-3.2.9-py3-none-any.whl (7.9 MB)
+Collecting django-admin-sortable==2.2.4
+  Using cached django_admin_sortable-2.2.4-py3-none-any.whl (115 kB)
+Collecting django-appconf==1.0.5
+  Using cached django_appconf-1.0.5-py3-none-any.whl (6.4 kB)
 Collecting django-bootstrap-datepicker-plus==3.0.5
-  Using cached https://files.pythonhosted.org/packages/2a/82/7ee6834d67a9d5b6d46a620f8995dc2680e00e4cb75c438803bb0f9f3863/django_bootstrap_datepicker_plus-3.0.5-py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\e8\e4\9f\9c0ba98d8724f34974a392838bc53c2cf1d7d4bff62e9c09ae\django_bootstrap4-1.0.1-cp38-none-any.whl
-Collecting django-braces==1.13.0
-  Using cached https://files.pythonhosted.org/packages/84/3c/fa2cca1411b456a84714efea8a2c805924eba6147e6b68e326caca9c7383/django_braces-1.13.0-py2.py3-none-any.whl
-Collecting django-crispy-forms==1.8.0
-  Using cached https://files.pythonhosted.org/packages/26/b0/71e60d4da12f2f6544a94bc50873956db99d02e130336d6150f6e25fd1e8/django_crispy_forms-1.8.0-py2.py3-none-any.whl
-Collecting django-debug-toolbar==2.0
-  Using cached https://files.pythonhosted.org/packages/67/ed/587fd4fd954717fb4cd6b87fa3345ff793ecb995d91c604fcaf26510eeff/django_debug_toolbar-2.0-py3-none-any.whl
-Collecting django-environ==0.4.5
-  Using cached https://files.pythonhosted.org/packages/9f/32/76295a1a5d00bf556c495216581c6997e7fa5f533b2229e0a9d6cbaa95ae/django_environ-0.4.5-py2.py3-none-any.whl
+  Using cached django_bootstrap_datepicker_plus-3.0.5-py3-none-any.whl (12 kB)
+Collecting django-bootstrap4==21.1
+  Using cached django_bootstrap4-21.1-py3-none-any.whl (24 kB)
+Collecting django-braces==1.15.0
+  Using cached django_braces-1.15.0-py2.py3-none-any.whl (14 kB)
+Collecting django-crispy-forms==1.13.0
+  Using cached django_crispy_forms-1.13.0-py3-none-any.whl (122 kB)
+Collecting django-debug-toolbar==3.2.2
+  Using cached django_debug_toolbar-3.2.2-py3-none-any.whl (200 kB)
+Collecting django-environ==0.8.1
+  Using cached django_environ-0.8.1-py2.py3-none-any.whl (17 kB)
+Collecting django-filter
+  Using cached django_filter-21.1-py3-none-any.whl (81 kB)
+Collecting django-intl-tel-input==0.3.1
+  Using cached django_intl_tel_input-0.3.1-py2.py3-none-any.whl (15 kB)
+Collecting django-intl-tel-input2==0.2.0
+  Using cached django_intl_tel_input2-0.2.0-py3-none-any.whl
 Collecting django-jquery==3.1.0
-  Using cached https://files.pythonhosted.org/packages/ea/89/3c3ebe3190ee00222a34588ac0383702f0d91ebb2983408cf906c0236671/django_jquery-3.1.0-py2.py3-none-any.whl
+  Using cached django_jquery-3.1.0-py2.py3-none-any.whl (33 kB)
 Collecting django-location-field==2.1.0
-  Using cached https://files.pythonhosted.org/packages/03/d2/cf97ca76c810892212e541cb81214cf4497ff55e641fef1bcf2b6c0ac321/django_location_field-2.1.0-py2.py3-none-any.whl
-Collecting django-mathfilters==0.4.0
-  Using cached https://files.pythonhosted.org/packages/c6/fb/fa2fe3d531dc018d486b03c91461063e1005e31bb00b7f2ebc6dfa09701f/django_mathfilters-0.4.0-py2.py3-none-any.whl
-Collecting django-money==0.15.1
-  Using cached https://files.pythonhosted.org/packages/53/10/01dd0577650fe28ed5bf529b248eef6becd4fe7c23b6d011bb95d76d3160/django_money-0.15.1-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\32\70\44\c0ced5d9d9570455c3d4caa2838858eedcb9ed9345c7c432d0\django_moneyfield-0.2.1-cp38-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\7d\24\a7\e35067e3500c49fa24c46ac0feacdec63ab14ac982652703bf\django_multiselectfield-0.1.9-cp38-none-any.whl
-Collecting django-pyodbc-azure==2.1.0.0
-  Using cached https://files.pythonhosted.org/packages/18/ab/133c68bbea94839d8f3b8b4aea4f70e1c6b8ac929aba4adbadc458566a76/django_pyodbc_azure-2.1.0.0-py3-none-any.whl
-Collecting django-select2==7.1.1
-  Using cached https://files.pythonhosted.org/packages/33/12/06b41f5cc5afa172c44cc7b8d95c2a0d5e69b64b9ef4fb7b9528e39a0ba1/django_select2-7.1.1-py2.py3-none-any.whl
-Collecting django-tables2==2.1.1
-  Using cached https://files.pythonhosted.org/packages/10/15/614b4945666806817fb6ad4c9470c0fd1c029135ef01814159de7ced451e/django_tables2-2.1.1-py2.py3-none-any.whl
-Collecting django-widget-tweaks==1.4.5
-  Using cached https://files.pythonhosted.org/packages/1c/11/a8d3a4d73a09973d62ce381fb73a926707cb1485aa29599f2afc04dee7b4/django_widget_tweaks-1.4.5-py2.py3-none-any.whl
-Collecting djangorestframework==3.10.3
-  Using cached https://files.pythonhosted.org/packages/33/8e/87a4e0025e3c4736c1dc728905b1b06a94968ce08de15304417acb40e374/djangorestframework-3.10.3-py3-none-any.whl
-Collecting djangorestframework-datatables==0.5.0
-  Using cached https://files.pythonhosted.org/packages/7f/3d/515911b8975bcc47ce52bf0c60185adc0b2ed828dee660273de8390bea4d/djangorestframework_datatables-0.5.0-py2.py3-none-any.whl
-Collecting djangorestframework-filters==0.11.1
-  Using cached https://files.pythonhosted.org/packages/c0/20/3506c608b3ec79a67c24b70702322ac46bc73e6217a0d9239dfef83e20c6/djangorestframework_filters-0.11.1-py2.py3-none-any.whl
-Collecting django-filter==1.1.0
-  Using cached https://files.pythonhosted.org/packages/ee/99/eb6f20b0ca4e2800279963599971e70c71767b9d151f44fcbcd1caa19f32/django_filter-1.1.0-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\01\c6\20\9239cdf26057e0462a634e00827d083ca1fbfa113f327c1178\easy_thumbnails-2.6-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\2a\77\35\0da0965a057698121fc7d8c5a7a9955cdbfb3cc4e2423cad39\et_xmlfile-1.0.1-cp38-none-any.whl
+  Using cached django_location_field-2.1.0-py2.py3-none-any.whl (71 kB)
+Collecting django-mathfilters==1.0.0
+  Using cached django_mathfilters-1.0.0-py3-none-any.whl (5.9 kB)
+Collecting django-money==2.1
+  Using cached django_money-2.1-py3-none-any.whl (33 kB)
+Collecting django-moneyfield==0.2.1
+  Using cached django_moneyfield-0.2.1-py3-none-any.whl
+Collecting django-multiselectfield==0.1.12
+  Using cached django_multiselectfield-0.1.12-py3-none-any.whl (15 kB)
+Collecting django-mssql-backend
+  Using cached django_mssql_backend-2.8.1-py3-none-any.whl (52 kB)
+Collecting django-select2==7.9.0
+  Using cached django_select2-7.9.0-py2.py3-none-any.whl (14 kB)
+Collecting django_settings_export==1.2.1
+  Using cached django_settings_export-1.2.1-py3-none-any.whl
+Collecting django-tables2==2.4.1
+  Using cached django_tables2-2.4.1-py2.py3-none-any.whl (93 kB)
+Collecting django-utils-six==2.0
+  Using cached django_utils_six-2.0-py3-none-any.whl (10 kB)
+Collecting django-widget-tweaks==1.4.9
+  Using cached django_widget_tweaks-1.4.9-py2.py3-none-any.whl (8.7 kB)
+Collecting djangorestframework==3.12.4
+  Using cached djangorestframework-3.12.4-py3-none-any.whl (957 kB)
+Collecting djangorestframework-datatables==0.6.0
+  Using cached djangorestframework_datatables-0.6.0-py2.py3-none-any.whl (14 kB)
+Collecting djangorestframework-filters
+  Using cached djangorestframework_filters-0.11.1-py2.py3-none-any.whl (12 kB)
+Collecting easy-thumbnails==2.8
+  Using cached easy_thumbnails-2.8-py3-none-any.whl (74 kB)
+Collecting et-xmlfile==1.1.0
+  Using cached et_xmlfile-1.1.0-py3-none-any.whl (4.7 kB)
+Collecting importlib-metadata==4.8.2
+  Using cached importlib_metadata-4.8.2-py3-none-any.whl (17 kB)
 Collecting jdcal==1.4.1
-  Using cached https://files.pythonhosted.org/packages/f0/da/572cbc0bc582390480bbd7c4e93d14dc46079778ed915b505dc494b37c57/jdcal-1.4.1-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\6f\a3\6f\430d3dacf1a1c44f904338b4474409e8087d9f0858c3d28faf\markuppy-1.14-cp38-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\06\2d\19\f5a4eed468fecff295ff8ac49e5dd5fb22d7ffc7ff072deabf\odfpy-1.4.0-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\34\ee\6c\1279f7b70ea72432c2cef15dd3d915477cb3771d1618f6b8ef\openpyxl-3.0.0-py2.py3-none-any.whl
-Collecting Pillow==6.2.1
-  Using cached https://files.pythonhosted.org/packages/dc/f3/c4244b8bb4175889a12e483d9d9ab51137dc9d7f1cbdfcf37939d14ba7f9/Pillow-6.2.1-cp38-cp38-win32.whl
-Collecting py-moneyed==0.8.0
-  Using cached https://files.pythonhosted.org/packages/fc/84/2efdf86de54c2601a66caa4504f6978432f15f79b593772e9b0cc9cceddc/py_moneyed-0.8.0-py2.py3-none-any.whl
-Requirement already satisfied: pyodbc==4.0.27 in c:\software\python\virtualenvs\gsicosttool\lib\site-packages (from -r requirements.txt (line 33)) (4.0.27)
-Collecting pytz==2019.3
-  Using cached https://files.pythonhosted.org/packages/e7/f9/f0b53f88060247251bf481fa6ea62cd0d25bf1b11a87888e53ce5b7c8ad2/pytz-2019.3-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\d9\45\dd\65f0b38450c47cf7e5312883deb97d065e030c5cca0a365030\pyyaml-5.1.2-cp38-cp38-win32.whl
-Collecting six==1.12.0
-  Using cached https://files.pythonhosted.org/packages/73/fb/00a976f728d0d1fecfe898238ce23f502a721c0ac0ecfedb80e0d88c64e9/six-1.12.0-py2.py3-none-any.whl
-Collecting soupsieve==1.9.4
-  Using cached https://files.pythonhosted.org/packages/5d/42/d821581cf568e9b7dfc5b415aa61952b0f5e3dede4f3cbd650e3a1082992/soupsieve-1.9.4-py2.py3-none-any.whl
-Collecting sqlparse==0.3.0
-  Using cached https://files.pythonhosted.org/packages/ef/53/900f7d2a54557c6a37886585a91336520e5539e3ae2423ff1102daf4f3a7/sqlparse-0.3.0-py2.py3-none-any.whl
-Collecting tablib==0.14.0
-  Using cached https://files.pythonhosted.org/packages/7f/8d/665f895e4355f1ee95665e003b994512c8b670148a921aa9acec9d1607fb/tablib-0.14.0-py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\a6\09\e9\e800279c98a0a8c94543f3de6c8a562f60e51363ed26e71283\unicodecsv-0.14.1-cp38-none-any.whl
-Collecting Werkzeug==0.16.0
-  Using cached https://files.pythonhosted.org/packages/ce/42/3aeda98f96e85fd26180534d36570e4d18108d62ae36f87694b476b83d6f/Werkzeug-0.16.0-py2.py3-none-any.whl
-Processing c:\users\user.name\appdata\local\pip\cache\wheels\41\08\4c\ca04f4a87b91080dc6a631bbd82390e4412dfefb7a236d5f94\wfastcgi-3.0.0-py2.py3-none-any.whl
-Collecting xlrd==1.2.0
-  Using cached https://files.pythonhosted.org/packages/b0/16/63576a1a001752e34bf8ea62e367997530dc553b689356b9879339cf45a4/xlrd-1.2.0-py2.py3-none-any.whl
+  Using cached jdcal-1.4.1-py2.py3-none-any.whl (9.5 kB)
+Collecting MarkupPy==1.14
+  Using cached MarkupPy-1.14-py3-none-any.whl
+Collecting odfpy==1.4.1
+  Using cached odfpy-1.4.1-py2.py3-none-any.whl
+Collecting openpyxl==3.0.9
+  Using cached openpyxl-3.0.9-py2.py3-none-any.whl (242 kB)
+Collecting packaging
+  Using cached packaging-21.3-py3-none-any.whl (40 kB)
+Collecting Pillow==8.4.0
+  Using cached Pillow-8.4.0-cp39-cp39-win_amd64.whl (3.2 MB)
+Collecting pip-review==1.1.0
+  Using cached pip_review-1.1.0-py3-none-any.whl (7.2 kB)
+Collecting psycopg2==2.9.2
+  Using cached psycopg2-2.9.2-cp39-cp39-win_amd64.whl (1.2 MB)
+Collecting py-moneyed==1.2
+  Using cached py_moneyed-1.2-py2.py3-none-any.whl (17 kB)
+Collecting pyodbc==4.0.32
+  Using cached pyodbc-4.0.32-cp39-cp39-win_amd64.whl (72 kB)
+Collecting pyparsing
+  Using cached pyparsing-3.0.6-py3-none-any.whl (97 kB)
+Collecting pytz==2021.3
+  Using cached pytz-2021.3-py2.py3-none-any.whl (503 kB)
+Collecting PyYAML==6.0
+  Using cached PyYAML-6.0-cp39-cp39-win_amd64.whl (151 kB)
+Collecting six==1.16.0
+  Using cached six-1.16.0-py2.py3-none-any.whl (11 kB)
+Collecting soupsieve==2.3.1
+  Using cached soupsieve-2.3.1-py3-none-any.whl (37 kB)
+Collecting sqlparse==0.4.2
+  Using cached sqlparse-0.4.2-py3-none-any.whl (42 kB)
+Collecting tablib==3.1.0
+  Using cached tablib-3.1.0-py3-none-any.whl (48 kB)
+Collecting typing-extensions==4.0.0
+  Using cached typing_extensions-4.0.0-py3-none-any.whl (22 kB)
+Collecting unicodecsv==0.14.1
+  Using cached unicodecsv-0.14.1-py3-none-any.whl
+Collecting Werkzeug==2.0.2
+  Using cached Werkzeug-2.0.2-py3-none-any.whl (288 kB)
+Collecting wfastcgi==3.0.0
+  Using cached wfastcgi-3.0.0-py2.py3-none-any.whl
+Collecting xlrd==2.0.1
+  Using cached xlrd-2.0.1-py2.py3-none-any.whl (96 kB)
+Collecting XlsxWriter==3.0.2
+  Using cached XlsxWriter-3.0.2-py3-none-any.whl (149 kB)
 Collecting xlwt==1.3.0
-  Using cached https://files.pythonhosted.org/packages/44/48/def306413b25c3d01753603b1a222a011b8621aed27cd7f89cbc27e6b0f4/xlwt-1.3.0-py2.py3-none-any.whl
-Requirement already satisfied: setuptools in c:\software\python\virtualenvs\gsicosttool\lib\site-packages (from django-money==0.15.1->-r requirements.txt (line 14)) (41.5.1)
-Installing collected packages: soupsieve, beautifulsoup4, defusedxml, pytz, Django, six, django-appconf, django-bootstrap-datepicker-plus, django-bootstrap4, django-braces, django-crispy-forms, sqlparse, django-debug-toolbar, django-environ, django-jquery, django-location-field, django-mathfilters, py-moneyed, django-money, django-moneyfield, django-multiselectfield, django-pyodbc-azure, django-select2, django-tables2, django-widget-tweaks, djangorestframework, djangorestframework-datatables, django-filter, djangorestframework-filters, Pillow, easy-thumbnails, et-xmlfile, jdcal, MarkupPy, odfpy, openpyxl, PyYAML, xlrd, xlwt, tablib, unicodecsv, Werkzeug, wfastcgi
-Successfully installed Django-2.1 MarkupPy-1.14 Pillow-6.2.1 PyYAML-5.1.2 Werkzeug-0.16.0 beautifulsoup4-4.8.1 defusedxml-0.6.0 django-appconf-1.0.3 django-bootstrap-datepicker-plus-3.0.5 django-bootstrap4-1.0.1 django-braces-1.13.0 django-crispy-forms-1.8.0 django-debug-toolbar-2.0 django-environ-0.4.5 django-filter-1.1.0 django-jquery-3.1.0 django-location-field-2.1.0 django-mathfilters-0.4.0 django-money-0.15.1 django-moneyfield-0.2.1 django-multiselectfield-0.1.9 django-pyodbc-azure-2.1.0.0 django-select2-7.1.1 django-tables2-2.1.1 django-widget-tweaks-1.4.5 djangorestframework-3.10.3 djangorestframework-datatables-0.5.0 djangorestframework-filters-0.11.1 easy-thumbnails-2.6 et-xmlfile-1.0.1 jdcal-1.4.1 odfpy-1.4.0 openpyxl-3.0.0 py-moneyed-0.8.0 pytz-2019.3 six-1.12.0 soupsieve-1.9.4 sqlparse-0.3.0 tablib-0.14.0 unicodecsv-0.14.1 wfastcgi-3.0.0 xlrd-1.2.0 xlwt-1.3.0
+  Using cached xlwt-1.3.0-py2.py3-none-any.whl (99 kB)
+Collecting xmlrunner==1.7.7
+  Using cached xmlrunner-1.7.7-py3-none-any.whl
+Collecting zipp==3.6.0
+  Using cached zipp-3.6.0-py3-none-any.whl (5.3 kB)
+Requirement already satisfied: setuptools in c:\software\python\virtualenvs\gsidoc\lib\site-packages (from django-money==2.1->-r requirements.txt (line 20)) (59.2.0)
+Collecting svglib
+  Using cached svglib-1.1.0-py3-none-any.whl
+Collecting reportlab
+  Using cached reportlab-3.6.3-cp39-cp39-win_amd64.whl (2.3 MB)
+Requirement already satisfied: pip in c:\software\python\virtualenvs\gsidoc\lib\site-packages (from pip-review==1.1.0->-r requirements.txt (line 42)) (21.3.1)
+Collecting django-filter
+  Using cached django_filter-1.1.0-py2.py3-none-any.whl (45 kB)
+Collecting lxml
+  Downloading lxml-4.7.1-cp39-cp39-win_amd64.whl (3.7 MB)
+     |████████████████████████████████| 3.7 MB 364 kB/s
+Collecting cssselect2>=0.2.0
+  Using cached cssselect2-0.4.1-py3-none-any.whl (13 kB)
+Collecting tinycss2>=0.6.0
+  Downloading tinycss2-1.1.1-py3-none-any.whl (21 kB)
+Collecting webencodings
+  Using cached webencodings-0.5.1-py2.py3-none-any.whl (11 kB)
+Installing collected packages: webencodings, tinycss2, sqlparse, pytz, Pillow, asgiref, soupsieve, reportlab, pyparsing, lxml, Django, cssselect2, Babel, zipp, svglib, six, pyodbc, py-moneyed, packaging, et-xmlfile, djangorestframework, django-filter, django-appconf, defusedxml, beautifulsoup4, xmlrunner, xlwt, XlsxWriter, xlrd, wfastcgi, Werkzeug, unicodecsv, typing-extensions, tablib, PyYAML, psycopg2, pip-review, openpyxl, odfpy, MarkupPy, jdcal, importlib-metadata, easy-thumbnails, djangorestframework-filters, djangorestframework-datatables, django-widget-tweaks, django-utils-six, django-tables2, django-settings-export, django-select2, django-multiselectfield, django-mssql-backend, django-moneyfield, django-money, django-mathfilters, django-location-field, django-jquery, django-intl-tel-input2, django-intl-tel-input, django-environ, django-debug-toolbar, django-crispy-forms, django-braces, django-bootstrap4, django-bootstrap-datepicker-plus, django-admin-sortable
+Successfully installed Babel-2.9.1 Django-3.2.9 MarkupPy-1.14 Pillow-8.4.0 PyYAML-6.0 Werkzeug-2.0.2 XlsxWriter-3.0.2 asgiref-3.4.1 beautifulsoup4-4.10.0 cssselect2-0.4.1 defusedxml-0.7.1 django-admin-sortable-2.2.4 django-appconf-1.0.5 django-bootstrap-datepicker-plus-3.0.5 django-bootstrap4-21.1 django-braces-1.15.0 django-crispy-forms-1.13.0 django-debug-toolbar-3.2.2 django-environ-0.8.1 django-filter-1.1.0 django-intl-tel-input-0.3.1 django-intl-tel-input2-0.2.0 django-jquery-3.1.0 django-location-field-2.1.0 django-mathfilters-1.0.0 django-money-2.1 django-moneyfield-0.2.1 django-mssql-backend-2.8.1 django-multiselectfield-0.1.12 django-select2-7.9.0 django-settings-export-1.2.1 django-tables2-2.4.1 django-utils-six-2.0 django-widget-tweaks-1.4.9 djangorestframework-3.12.4 djangorestframework-datatables-0.6.0 djangorestframework-filters-0.11.1 easy-thumbnails-2.8 et-xmlfile-1.1.0 importlib-metadata-4.8.2 jdcal-1.4.1 lxml-4.7.1 odfpy-1.4.1 openpyxl-3.0.9 packaging-21.3 pip-review-1.1.0 psycopg2-2.9.2 py-moneyed-1.2 pyodbc-4.0.32 pyparsing-3.0.6 pytz-2021.3 reportlab-3.6.3 six-1.16.0 soupsieve-2.3.1 sqlparse-0.4.2 svglib-1.1.0 tablib-3.1.0 tinycss2-1.1.1 typing-extensions-4.0.0 unicodecsv-0.14.1 webencodings-0.5.1 wfastcgi-3.0.0 xlrd-2.0.1 xlwt-1.3.0 xmlrunner-1.7.7 zipp-3.6.0
                                                                    
                                                                                
 ~~~~
