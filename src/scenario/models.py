@@ -58,15 +58,16 @@ def get_unit_conversion(structure_units, cost_item_units):
     this starts with all the 1-1 and 1-many models that are included in the scenario
 """
 
-"""
 
-    this is a set of tuples - each tuple has a checkbox and an area
-    TODO: label the fields as necessary.
-    
-"""
 
 
 class ArealFeatures(models.Model):
+    """
+
+        this is a set of tuples - each tuple has a checkbox and an area
+        TODO: label the fields as necessary.
+
+    """
     stormwater_management_feature_area = models.IntegerField("Stormwater Management Feature Area", default=0,
                                                              blank=True, null=True)
     stormwater_management_feature_checkbox = models.BooleanField("Stormwater Management Feature Checked", default=False,
@@ -132,6 +133,8 @@ class ConventionalStructures(models.Model):
 
         this is a data table of ConventionalStructures
 
+        note: the id for each row in this table is the scenario.id
+
     """
     stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True,
                                                       null=True)
@@ -161,7 +164,9 @@ class ConventionalStructures(models.Model):
 class NonConventionalStructures(models.Model):
     """
 
-        this is a OneToOne data table of senario.NonConventionalStructures
+        this is a OneToOne data table of scenario.NonConventionalStructures
+
+        note: the id for each row in this table is the scenario.id
 
     """
     swale_area = models.IntegerField("Swale Area", default=0, blank=True, null=True)
@@ -205,16 +210,17 @@ class CostItem(models.Model):
 #
 #
 #
-"""
 
-    this is a look-up table of the 'default' costs associated with each Cost Items
-    
-    the 'user' costs are stored in CostItemUserCosts which is defined after Scenario model
-    
-"""
 
 
 class CostItemDefaultCosts(models.Model):
+    """
+
+        this is a look-up table of the 'default' costs associated with each Cost Items
+
+        the 'user' costs are stored in CostItemUserCosts which is defined after Scenario model
+
+    """
     costitem = models.OneToOneField(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     # TODO: this is 'Engineering Estimate' and should be named 'eng_estimate' or similar
@@ -259,6 +265,8 @@ class CostItemDefaultFactors(models.Model):
 
         the 'user' cost assumptions are stored in CostItemUserAssumptions which is defined after Scenario model
 
+        Note: this should be called StructureCostItemDefaultFactors
+
     """
     structure = models.ForeignKey(Structures, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
     costitem = models.ForeignKey(CostItem, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
@@ -290,11 +298,15 @@ class CostItemDefaultEquations(models.Model):
                                     null=False)
 
     equation_tx = models.CharField("Equation", max_length=150, default=None, blank=True, null=True)
+
     a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
     z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
     d_density = models.CharField("Density (d)", max_length=10, default=None, blank=True, null=True)
-    r_ratio = models.CharField("Ratio (r)", max_length=10, default=None, blank=True, null=True)
+    # TODO - remove this field.  it is unused
+    # r_ratio = models.CharField("Ratio (r)", max_length=10, default=None, blank=True, null=True)
     n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
+
+    # this is not used.  always ste as 'The cost of ' + cost_item.name + ' is computed using ...'
     help_text = models.CharField(unique=False, max_length=1000, default="Help Text", blank=False, null=False)
 
     def __str__(self):
@@ -419,7 +431,7 @@ def get_TEMPLATE_SCENARIO():
 class Scenario(models.Model):
     """
 
-    a Scenario is attached to 1 Project attached.
+    a Scenario is attached to a single Project attached.
 
     """
     # this is a template used in Javascript to figure out how to manage the UI
@@ -632,8 +644,6 @@ class Scenario(models.Model):
                     form_values['z_depth'] = None
                 if form_values['d_density'] == '':
                     form_values['d_density'] = None
-                # if form_values['r_ratio'] is '':
-                #     form_values['r_ratio'] = None
                 if form_values['n_number'] == '':
                     form_values['n_number'] = None
 
@@ -1410,9 +1420,9 @@ class CostItemUserAssumptions(models.Model):
         This is connected to the Structure Costs page
         and stores data by (project/)scenario/structure/costitem
 
-        the 'user' cost assumptions are stored in CostItemUserAssumptions
+        the 'user' cost assumptions are stored here
 
-    NOTE: this name is wrong.  It should be StructureCostItemUserFactors or even ScenarioStructureCostItemUserFactors
+    NOTE: this name is poorly chosen.  It should be StructureCostItemUserFactors or even ScenarioStructureCostItemUserFactors
 
     """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
@@ -1425,7 +1435,9 @@ class CostItemUserAssumptions(models.Model):
     a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
     z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
     d_density = models.CharField("Density (d)", max_length=10, default=None, blank=True, null=True)
-    r_ratio = models.CharField("Ratio (r)", max_length=10, default=None, blank=True, null=True)
+    # TODO remove this unused field.  not included in front-end or calculations
+    # r_ratio = models.CharField("Ratio (r)", max_length=10, default=None, blank=True, null=True)
+
     n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
 
     def __str__(self):

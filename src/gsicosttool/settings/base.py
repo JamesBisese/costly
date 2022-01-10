@@ -258,6 +258,8 @@ CURRENCY_CHOICES = [('USD', 'USD $'), ]
 # these variables can(should) be overridden using local.development.env or local.production.env
 EMAIL_CONTACT='base@tetratech.com'
 
+HEADER_BANNER_IMAGE_URI='gsicosttool/img/Tetra_Tech_skyline.jpg'
+
 HEADER_LOGO_URI='gsicosttool/img/tetratech-icon-1024.png'
 
 IS_TESTING_INSTANCE='true'
@@ -269,6 +271,7 @@ COPYRIGHT_DISCLAIMER='&copy; City of Raleigh, NC 2021'
 SETTINGS_EXPORT = [
     'VERSION_INFORMATION',
     'EMAIL_CONTACT',
+    'HEADER_BANNER_IMAGE_URI',
     'HEADER_LOGO_URI',
     'IS_TESTING_INSTANCE',
     'COPYRIGHT_DISCLAIMER',

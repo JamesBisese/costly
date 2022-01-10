@@ -52,7 +52,6 @@ class Command(BaseCommand):
                                                  a_area=row['a_area'],
                                                  z_depth=row['z_depth'],
                                                  d_density = row['d_density'],
-                                                 r_ratio = row['r_ratio'],
                                                  n_number = row['n_number'],
                                                  help_text=row['help_text']
                                                 )
@@ -65,7 +64,6 @@ class Command(BaseCommand):
                                      'a_area',
                                      'z_depth',
                                      'd_density',
-                                     'r_ratio',
                                      'n_number',
                                      'help_text'):
                         if getattr(c, field_nm) != row[field_nm]:

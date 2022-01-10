@@ -143,18 +143,26 @@ function close_cost_item_help(button_context) {
 
     // this is confusing. there are 2 ids used  CostItemItemUnitCostsHelpText and StructureCostItemHelpText
     // this moves up the stack and finds the correct id to use to find the dom that holds the help text
+
+    // updated - now just remove the individual help, not the whole thing
     let helpDom = document.getElementById(button_context.parentElement.parentElement.id);
+    //let helpDom = document.getElementById(button_context.parentElement.id);
 
     //TODO: figure out how to allow multiple help things to show and only close if there are none left
     if (helpDom.style.display === 'block')
     {
         // now see if they are toggling off an existing help section
-        var helpSelectedDom = helpDom.querySelector('[id="' + id + '"]');
+        let item_id = button_context.parentElement.id;
 
-        if (helpSelectedDom !== undefined)
+        var helpSelectedDom = helpDom.querySelector('[id="' + item_id + '"]');
+
+        if (helpSelectedDom !== null)
         {
-            helpDom.innerHTML = '';
-            helpDom.style.display = "none";
+            helpSelectedDom.remove();
+            if (helpDom.childElementCount === 1)
+            {
+                helpDom.style.display = 'none';
+            }
             return;
         }
     }
@@ -175,7 +183,7 @@ function close_ci_help(button_context) {
         // now see if they are toggling off an existing help section
         var helpSelectedDom = helpDom.querySelector('[id="' + id + '"]');
 
-        if (helpSelectedDom !== undefined)
+        if (helpSelectedDom !== null)
         {
             helpDom.innerHTML = '';
             helpDom.style.display = "none";

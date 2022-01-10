@@ -64,7 +64,6 @@ $(function () {
                 {"data": "a_area", "searchable": true},
                 {"data": "z_depth", "searchable": true},
                 {"data": "d_density", "searchable": true},
-                {"data": "r_ratio", "searchable": true},
                 {"data": "n_number", "searchable": true},
 
 

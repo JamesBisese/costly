@@ -349,8 +349,12 @@ a.bmplabel:hover {
 }
 .closebutton img {
 	border-radius: 10px;
+	margin-top: 7px;
 }
-
+.cost_item_help_FOOBAR {
+	border-top-color: darkgreen;
+	border-top-style: solid;
+}
 
 #pageoptions {
 	position: absolute;
@@ -977,3 +981,5 @@ a.ui-button:active, .ui-button:active,
 #structure_costs_table .input-group-text input[type=checkbox], .input-group-text input[type=radio] {
     margin-right: 5px;
 }
+
+

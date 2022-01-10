@@ -143,6 +143,11 @@ except:
     pass
 
 try:
+    HEADER_BANNER_IMAGE_URI = env.str('HEADER_BANNER_IMAGE_URI')
+except:
+    pass
+
+try:
     HEADER_LOGO_URI = env.str('HEADER_LOGO_URI')
 except:
     pass

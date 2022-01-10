@@ -1888,10 +1888,15 @@ function open_costitem_help(button_context) {
         // now see if they are toggling off an existing help section
         var helpSelectedDom = helpDom.querySelector('[id="' + id + '"]');
 
-        if (helpSelectedDom !== undefined)
+        if (helpSelectedDom !== null)
         {
-            helpDom.innerHTML = '';
-            helpDom.style.display = "none";
+            //helpSelectedDom.innerHTML = '';
+            //helpSelectedDom.style.display = "none";
+            helpSelectedDom.remove();
+            if (helpDom.childElementCount === 1)
+            {
+                helpDom.style.display = 'none';
+            }
             return;
         }
     }

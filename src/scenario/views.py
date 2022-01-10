@@ -287,7 +287,6 @@ this is what populates the Scenario table
 
     provided via /api/projects
 
-but it does something strange and the search doesn't work
 '''
 
 
@@ -380,15 +379,13 @@ def costitem_defaultcosts_update(request, pk):
     return render(request, 'scenario/costtool/index.html', context_data)
 
 
-"""
-
-    this gets called by 'SaveDB' AND BY EACH AND EVERY EDIT ON THE UI!!!!
-    this is URL scenario_save_url
-
-"""
-
-
 def scenario_save(request):
+    """
+
+        this gets called by 'SaveDB' AND BY EACH AND EVERY EDIT ON THE UI!!!!
+        this is URL scenario_save_url
+
+    """
     if request.method != 'POST':
         return JsonResponse({'Error': 'Only POST is accepted by scenario_save()'})
 
@@ -421,8 +418,7 @@ def scenario_save(request):
                                   }
 
             # DB_SPECIFIC
-            if (error.args[
-                0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
+            if (error.args[0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
                 form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
                                                 + "scenario with the the same Project Title and Scenario Title"
                 form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
@@ -641,13 +637,6 @@ def get_unit_conversion(structure_units, cost_item_units):
     return conversion_factor
 
 
-"""
-
-    this one gets the result costs (as opposed to the other version used to populate the UI
-
-"""
-
-
 def structure_cost_item_result_json(structure,
                                     scenario_data,
                                     cost_item_default_costs,
@@ -656,6 +645,11 @@ def structure_cost_item_result_json(structure,
                                     # cost_item_user_assumptions,  # this knows which items the user checked
 
                                     ):
+    """
+
+        this one gets the result costs (as opposed to the other version used to populate the UI
+
+    """
     if structure.classification == 'conventional':
         structure.area = scenario_data['conventional_structures'].value[structure.code]['area']
     else:
@@ -776,7 +770,6 @@ def structure_cost_item_result_json(structure,
                 'a_area': None,
                 'z_depth': None,
                 'd_density': None,
-                # 'r_ratio': None,
                 'n_number': None,
             }
 
@@ -825,7 +818,6 @@ def structure_cost_item_result_json(structure,
             equation = equation.replace('area', factors['a_area'])
             equation = equation.replace('depth', factors['z_depth'])
             equation = equation.replace('density', factors['d_density'])
-            # equation = equation.replace('ratio', factors['r_ratio'])
             equation = equation.replace('number', factors['n_number'])
 
             equation = equation.replace('$', str(cost_item_data['unit_cost']))
@@ -957,7 +949,6 @@ def structure_cost_item_json(structure,
     #                      'a_area',
     #                      'z_depth',
     #                      'd_density',
-    #                      'r_ratio',
     #                      'n_number',
     #                      'help_text'):
     #         if getattr(obj, field_nm):
@@ -1043,7 +1034,6 @@ def structure_cost_item_json(structure,
                 'a_area': 1,
                 'z_depth': 1,
                 'd_density': 1,
-                # 'r_ratio': 1,
                 'n_number': 1,
             }
 
@@ -1074,7 +1064,6 @@ def structure_cost_item_json(structure,
             equation = equation.replace('area', str(factors['a_area']))
             equation = equation.replace('depth', str(factors['z_depth']))
             equation = equation.replace('density', str(factors['d_density']))
-            # equation = equation.replace('ratio', str(factors['r_ratio']))
             equation = equation.replace('number', str(factors['n_number']))
 
             equation = equation.replace('$', str(cost_item_data['unit_cost']))
@@ -1828,6 +1817,10 @@ def create_formats(workbook):
     # Add a bold format to use to highlight cells.
     formats['bold'] = workbook.add_format({'bold': True})
 
+    formats['header_bold'] = copy_format(workbook, formats['bold'])
+    formats['header_bold'].set_align('center')
+    formats['header_bold'].set_border(1)
+
     formats['label_col'] = workbook.add_format()
     formats['label_col'].set_border(1)
 
@@ -2163,22 +2156,17 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
         # Write some data headers.
         if insert_header is True:
             worksheet.merge_range(0, col, 0, 2, 'User', formats['merge_format'])
-            worksheet.write(col_title_row, col, 'user_name', formats['bold'])
-            worksheet.write(col_title_row, col + 1, 'organization', formats['bold'])
-            worksheet.write(col_title_row, col + 2, 'user_type', formats['bold'])
-
             worksheet.merge_range(0, 3, 0, 10, 'Project', formats['merge_format'])
-            worksheet.write(col_title_row, col + 3, 'project_title', formats['bold'])
 
-
-        worksheet.write(row, col, scenario.project.user.name)
-        worksheet.write(row, col + 1, scenario.project.user.organization_tx)
-        worksheet.write(row, col + 2, scenario.project.user.profile.user_type)
-        worksheet.write(row, col + 3, scenario.project.project_title)
-
+            ## Note: this is out of place because there is a mistake somewhere below causing an excel error. it works when done here.
+            worksheet.merge_range(0, 11, 0, 19, 'Scenario', formats['merge_format'])
 
         # Some data we want to write to the worksheet.
         project_description = (
+            ['user_name', scenario.project.user.name, formats['input_col_text']],
+            ['organization', scenario.project.user.organization_tx, formats['input_col_text']],
+            ['user_type', scenario.project.user.profile.user_type, formats['input_col_text']],
+            ['project_title', scenario.project.project_title, formats['input_col_text']],
             ['project_ownership', scenario.project.get_project_ownership_display(), formats['input_col_text']],
             ['project_location', scenario.project.project_location, formats['input_col_text']],
             ['project_type', scenario.project.get_project_type_display(), formats['input_col_text']],
@@ -2190,57 +2178,59 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
              formats['output_col_money_big']],
         )
 
-        col = 4
+        col = 0
 
         # Iterate over the data and write it out row by row.
         for label, value, format in (project_description):
             if insert_header is True:
-                worksheet.write(col_title_row, col, label, formats['bold'])
+                worksheet.write(col_title_row, col, label, formats['header_bold'])
             worksheet.write(row, col, value, format)
             col += 1
 
         #TODO: fix this.  it is causing an Excel error, and I can't figure out what.
-        # worksheet.merge_range(0, 11, 0, 12, 'Scenario', formats['merge_format'])
+        # worksheet.merge_range(0, 11, 0, 19, 'Scenario', formats['merge_format'])
 
-        worksheet.write(col_title_row, col , 'scenario_title', formats['bold'])
-        worksheet.write(row, col , scenario.scenario_title)
+        # write in the scenario stuff
+        worksheet.write(col_title_row, col , 'scenario_title', formats['header_bold'])
 
+        worksheet.write(row, col , scenario.scenario_title, formats['input_col_text'])
+        col += 1
 
-        project_description = (
+        scenario_description = (
             ['nutrient_req_met', scenario.get_nutrient_req_met_display(), formats['input_col_text']],
             ['captures_90pct_storm', scenario.get_captures_90pct_storm_display(), formats['input_col_text']],
             ['meets_peakflow_req', scenario.get_meets_peakflow_req_display(), formats['input_col_text']],
         )
 
         # Iterate over the data and write it out row by row.
-        for label, value, format in (project_description):
+        for label, value, format in (scenario_description):
             if insert_header is True:
-                worksheet.write(col_title_row, col, label, formats['bold'])
+                worksheet.write(col_title_row, col, label, formats['header_bold'])
             worksheet.write(row, col, value, format)
             col += 1
 
-        project_description = (
+        scenario_description = (
             ['pervious_area', scenario.pervious_area, formats['int_big']],
             ['impervious_area', scenario.impervious_area, formats['int_big']],
         )
 
         # Iterate over the data and write it out row by row.
-        for label, value, format in (project_description):
+        for label, value, format in (scenario_description):
             if insert_header is True:
-                worksheet.write(col_title_row, col, label, formats['bold'])
+                worksheet.write(col_title_row, col, label, formats['header_bold'])
             worksheet.write(row, col, value, format)
             col += 1
 
-        project_description = (
+        scenario_description = (
             ['planning_and_design_factor', '{} %'.format(scenario.planning_and_design_factor), formats['input_col']],
             ['study_life', '{} years'.format(scenario.study_life), formats['input_col']],
             ['discount_rate', '{} %'.format(scenario.discount_rate), formats['input_col']],
         )
 
         # Iterate over the data and write it out row by row.
-        for label, value, format in (project_description):
+        for label, value, format in (scenario_description):
             if insert_header is True:
-                worksheet.write(col_title_row, col, label, formats['bold'])
+                worksheet.write(col_title_row, col, label, formats['header_bold'])
             worksheet.write(row, col, value, format)
             col += 1
 
@@ -2288,7 +2278,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
             worksheet.merge_range(0, col, 0 , col + col_count - 1, header_1, formats['merge_format'])
             hold_col = col
             for label in header_2:
-                worksheet.write(1, col, label, formats['bold'])
+                worksheet.write(1, col, label, formats['header_bold'])
                 col += 1
             col = hold_col
 
@@ -2301,6 +2291,13 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 
     """ areal features.  this is the last of the insertable groups """
     format = formats['input_col']
+
+    if scenario.areal_features is None:
+        return
+
+    #property_alpha = [field_nm for field_nm in vars(scenario.areal_features) if field_nm.endswith("_area")]
+    #prop_names = [field_nm.replace("_area", '') for field_nm in property_alpha]
+
     prop_names = [field_nm.replace("_area", '') for field_nm in vars(scenario.areal_features) if field_nm.endswith("_area")]
     if insert_header is True:
         col_count = len(prop_names)

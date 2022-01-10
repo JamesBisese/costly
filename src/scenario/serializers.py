@@ -579,23 +579,13 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
             'scenario_id',
             'project_title',
             'scenario_title',
-            # 'structure',
             'structure',
-            # 'structure_name',
-            # 'structure_units',
-            # 'structure_classification',
             'costitem',
-            # 'costitem_code',
-            # 'costitem_name',
-            # 'costitem_units',
-
             'checked',
             'a_area',
             'z_depth',
             'd_density',
-            'r_ratio',
             'n_number',
-            # 'construction_cost_factor_equation',
         )
         read_only_fields = [f.name for f in CostItemUserAssumptions._meta.get_fields()]
 
