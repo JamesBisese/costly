@@ -7,15 +7,16 @@ from django.urls import reverse
 ADMIN_ORDERING = [
 
 	('scenario', [
+        'ArealFeatureLookup',
 		'Structures',
 		'CostItem',
 		'CostItemDefaultCosts',
 		'CostItemDefaultEquations',
-		'CostItemDefaultFactors',
+		'StructureCostItemDefaultFactors',
 		'Project',
 		'Scenario',
-		'CostItemUserCosts',
-		'CostItemUserAssumptions',
+		'ScenarioCostItemUserCosts',
+		'StructureCostItemUserFactors',
 	]),
 
 	('authtools', [

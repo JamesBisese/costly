@@ -8,9 +8,9 @@ class HomePage(generic.TemplateView):
     template_name = "gsicosttool/home.html"
 
 
-'''
+"""
     these are the pages accessed from the right-side menu items
-'''
+"""
 
 
 class HelpPage(generic.TemplateView):

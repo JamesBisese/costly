@@ -77,8 +77,14 @@ $(document).ready(function()
     }
 
 
+    // reset the drop-down of Strucures when the user clicks the Structure/Cost Item User Factors tab
+    let testTarget = document.getElementById("structure_costs_tab");
+    if(testTarget !== undefined){
+        testTarget.addEventListener("click", loadStructureCosts, false);
+    }
+
     // populate the Results when the user clicks that tab
-    var testTarget = document.getElementById("input_result_tab");
+    testTarget = document.getElementById("input_result_tab");
     if(testTarget !== undefined){
         testTarget.addEventListener("click", populateResultsTab, false);
     }
@@ -104,6 +110,49 @@ $(document).ready(function()
     });
 });
 
+
+function populateStructureAreaTable() {
+    let scenarioData = compileScenarioData();
+    let data = {};
+    let structureCode = '';
+
+    var field_id = 'ui_structure_select'; // formFeature.id;
+    var field_nm = field_id.replace('ui_','');
+
+    // the project type setting affects which of the areal features are disabled
+    if (field_nm === 'structure_select') {
+        // get what the value was and store it for saving the thing
+        // get what the new selected value is
+        let inputDom = document.getElementById('ui_' + field_nm);
+        structureCode = inputDom.value;
+        if (structureCode in scenarioData.siteData.nonconventional_structures){
+            data = scenarioData.siteData.nonconventional_structures[structureCode];
+            data.area = Number(data.area);
+            data.name = scenarioData.siteData.nonconventional_structures.labels[structureCode];
+            data.units = 'SF';
+        }
+        else if (structureCode in scenarioData.siteData.conventional_structures){
+            data = scenarioData.siteData.conventional_structures[structureCode];
+            data.area = Number(data.area);
+            data.name = scenarioData.siteData.conventional_structures.labels[structureCode];
+            data.units = 'SF';
+        }
+    }
+
+    // set the field that shows what is selected and the area of
+    let inputDom = document.getElementById('ui_structure_name_2');
+    if (inputDom){
+         inputDom.textContent = data.name;
+    }
+    inputDom = document.getElementById('ui_structure_area_2');
+    if (inputDom){
+         inputDom.value = data.area.toLocaleString();
+    }
+    inputDom = document.getElementById('ui_structure_units_2');
+    if (inputDom){
+         inputDom.innerHTML = data.units;
+    }
+}
 
 /**********************************************************
 *
@@ -132,50 +181,49 @@ function populateUI(siteData) {
         }
     }
 
-    function updateStructures(field_dict)
+    function updateArealFeatures(features)
     {
-        var checkbox_value;
-
-        for (var field_name in field_dict){
-            if (field_dict.hasOwnProperty(field_name))
-            {
-                var field_object = field_dict[field_name];
-
-                if ('checkbox' in field_object){
-                    checkbox_value = field_object.checkbox;
-                }
-
-                // each Structure has a checkbox_, and one or more _area, _length, _diameter)
-                for (var propt in field_object){
-                    if (field_object.hasOwnProperty(propt)) {
-                        var subfield_name = propt;
-                        var value_name = field_object[propt];
-
-                        if (subfield_name === 'checkbox') {
-                            var buttonDom = document.getElementById('checkbox_' + field_name);
-                            if (buttonDom) {
-                                buttonDom.checked = value_name;
-                            }
-                        } else {
-                            let inputDom = document.getElementById('ui_' + field_name + '_' + subfield_name);
-                            if (inputDom) {
-                                inputDom.value = value_name;
-                                if (checkbox_value !== true) {
-                                    inputDom.disabled = true;
-                                    inputDom.style.textDecoration = 'line-through';
-                                } else {
-                                    inputDom.disabled = false;
-                                    inputDom.style.textDecoration = 'none';
-                                }
-                            }
-                        }
-                    }
+        features.forEach((data) => {
+            let checkboxDom = document.getElementById('checkbox_' + data.areal_feature_code);
+            if (checkboxDom) {
+                checkboxDom.checked = data.is_checked;
+            }
+            let areaInputDom = document.getElementById('ui_' + data.areal_feature_code + '_area');
+            if (areaInputDom) {
+                areaInputDom.value = data.area;
+                if (data.is_checked !== true) {
+                    areaInputDom.disabled = true;
+                    areaInputDom.style.textDecoration = 'line-through';
+                } else {
+                    areaInputDom.disabled = false;
+                    areaInputDom.style.textDecoration = 'none';
                 }
             }
-        }
+        });
     }
 
-    function populateCosts(field_dict)
+    function updateStructures(structures)
+    {
+        structures.forEach((data) => {
+            let checkboxDom = document.getElementById('checkbox_' + data.structure_code);
+            if (checkboxDom) {
+                checkboxDom.checked = data.is_checked;
+            }
+            let areaInputDom = document.getElementById('ui_' + data.structure_code + '_area');
+            if (areaInputDom) {
+                areaInputDom.value = data.area;
+                if (data.is_checked !== true) {
+                    areaInputDom.disabled = true;
+                    areaInputDom.style.textDecoration = 'line-through';
+                } else {
+                    areaInputDom.disabled = false;
+                    areaInputDom.style.textDecoration = 'none';
+                }
+            }
+        });
+    }
+
+    function populateCostItemUnitCosts(field_dict)
     {
         /*
             add in all the data in the Cost Item Unit Costs tab
@@ -212,7 +260,7 @@ function populateUI(siteData) {
                 var inputs = ['user_input_cost', 'base_year'];
 
                 inputs.forEach(function (input_name) {
-                    var elementObj = document.getElementById('ui_' + cost_item_code + '_' + input_name);
+                    let elementObj = document.getElementById('ui_' + cost_item_code + '_' + input_name);
                     if (elementObj) {
                         if (field_object.cost_source !== 'user') {
                             elementObj.disabled = true;
@@ -249,17 +297,23 @@ function populateUI(siteData) {
         updateProjectTitle(siteData);
     }
 
-    updateStructures(siteData.areal_features);
+    // updateArealFeatures(siteData.areal_features);
 
-    updateStructures(siteData.conventional_structures);
+    // this is the new version to go with 2 tables ConventionalStructures and NonConventionalStructures
+    // updateArealFeatures(siteData.conventional_structures);
+    // updateArealFeatures(siteData.nonconventional_structures);
 
-    updateStructures(siteData.nonconventional_structures);
+    // this is the new version to go with ScenarioStructure
+
+    updateArealFeatures(siteData.a_features);
+
+    updateStructures(siteData.nc_structures);
+    updateStructures(siteData.c_structures);
+
+    populateCostItemUnitCosts(siteData.cost_item_user_costs);
 
     //NOTE: Structure Costs are loaded as an partial HTML document
     //TODO: replace that function with normal loading
-
-    populateCosts(siteData.cost_item_user_costs);
-
 }
 
 /*
@@ -280,13 +334,10 @@ function populateStructureEquations(data){
     var cost_items = data.data;
 
     var field_list = ['unit_cost',
-
-
                         'a_area',
                         'z_depth',
                         'd_density',
                         'n_number',
-
                         'equation',
                         'equation_value',
         ];
@@ -553,7 +604,7 @@ function updateProjectTitle(siteData){
 
 function updateStructureCostDropDown(siteData){
     /*
-    this populates the drop-down on the Structure/Cost Item Users Assumptions
+    this populates the drop-down on the Structure/Cost Item Users Factors
 
 
      */
@@ -649,13 +700,14 @@ function validateProjectAreaAndArealFeatures() {
     var errorDom = document.getElementById('areal_features_validation_error');
 
     var sumAreaDom = document.getElementById('ui_sum_areal_features_area');
-    // var sumAreaPercentDom = document.getElementById('ui_sum_areal_features_area_percent');
+
     if(sum_areal_features) {
+        let sumAreaPercentDom = document.getElementById('ui_sum_areal_features_area_percent');
         sumAreaDom.value = sum_areal_features;
-        // if(sum_area && parseFloat(sum_area) !== NaN)
-        // {
-        //     sumAreaPercentDom.value = parseFloat(100 * sum_areal_features / sum_area).toFixed(2) ;
-        // }
+        if(sum_area && !isNaN(parseFloat(sum_area)))
+        {
+            sumAreaPercentDom.value = parseFloat(100 * sum_areal_features / sum_area).toFixed(2) ;
+        }
     }
 
     var errors = null;
@@ -780,6 +832,7 @@ function scenarioTemplateJSON() {
 // Note: you can force this using validateForm({id: 'ui_FIELD_TO_TRIGGER'});
 
 function recalculateCosts(formField){
+    runCalculate(formField);
     loadStructureCosts(formField);
     return true;
 }
@@ -788,6 +841,10 @@ function validateForm(formField) {
 
     let i;
     if (! formField) {
+        return;
+    }
+
+    if (! ('id' in formField)) {
         return;
     }
 
@@ -1125,23 +1182,41 @@ function loadStructureCosts(formFeature) {
         return;
     }
 
-    // var structureCostTableDom = document.getElementById('structure_costs_table');
+    // this is trying to get the costitem.code to use to update only that specific data
+    let costitem_code = '';
+    let form_feature_id = '';
+    if (formFeature !== undefined && 'id' in formFeature)
+    {
+        form_feature_id = formFeature.id;
 
-    // if (! (scenario_id && structureCode)) {
-    //     // if (structureCode === '')
-    //     // {
-    //     //     //structureCostTableDom.innerHTML = 'Select from drop-down list 22Z';
-    //     // }
-    //     // return;
-    // }
+        let input_field_list = ['a_area', 'z_depth', 'd_density', 'n_number'];
+        for (let i in input_field_list) {
+            if (input_field_list.hasOwnProperty(i)) {
+                let field_suffix = input_field_list[i];
+                if (form_feature_id.endsWith('_' + field_suffix)) {
+                    costitem_code = form_feature_id.replace('ui_', '').replace('_' + field_suffix, '');
+                    break;
+                }
+            }
+        }
+        if (costitem_code === '')
+        {
+            if (form_feature_id.startsWith('checkbox_'))
+            {
+                costitem_code = form_feature_id.replace('checkbox_', '');
+            }
+        }
+    }
 
     var url = URLS.scenario_structure_cost.replace('<int:pk>', scenario_id);
     url = url.replace('<str:structure_code>', structureCode);
-    //TODO fix this
-    url = url.replace('format=html', 'format=json');
 
-   $.ajax(url, {
-        //data : JSON.stringify(json),
+    if (costitem_code !== '')
+    {
+        url = url + costitem_code + '/';
+    }
+
+    $.ajax(url, {
         contentType : 'application/json; charset=utf-8',
         type : 'GET',
         beforeSend: function(xhr, settings) {
@@ -1159,8 +1234,6 @@ function loadStructureCosts(formFeature) {
             if (inputDom){ inputDom.innerHTML = ''; }
         },
         success: function (data) {
-
-            //TADA - replaced loading using HTML with loading via JSON
             populateStructureEquations(data);
 
             validateForm(formFeature);
@@ -1227,12 +1300,11 @@ function compileScenarioData() {
     }
 
     function compileStructureCosts(structure, field_dict) {
-
         //what structure are they showing in the dropdown list
         var structure_name = document.getElementById('ui_structure_select').value;
 
         // if they haven't selected a structure from the list, return
-        if (structure_name === ''){
+        if (structure_name === '') {
             return;
         }
 
@@ -1240,17 +1312,14 @@ function compileScenarioData() {
 
         delete field_dict.fields;
 
-        // rebuild field_dict
-        // field_dict['structure'] = structure;
 
         //store data in 'user_assumptions'
         field_dict.user_assumptions = {
-                        'structure': structure,
-                        'data': {}
-                        };
+            'structure': structure,
+            'data': {}
+        };
 
-        field_array.forEach(function(cost_item){
-
+        field_array.forEach(function (cost_item) {
             var inputs = [
                 'a_area',
                 'z_depth',
@@ -1261,28 +1330,22 @@ function compileScenarioData() {
             // don't return data if the checkbox is not checked
             var elementObj = document.getElementById('checkbox_' + cost_item);
 
-            if (elementObj)
-            {
-                if (! field_dict.user_assumptions.data[cost_item])
-                {
+            if (elementObj) {
+                if (!field_dict.user_assumptions.data[cost_item]) {
                     field_dict.user_assumptions.data[cost_item] = {'checked': elementObj.checked};
                 }
                 var non_null_count = 0;
-                inputs.forEach(function(input_name) {
+                inputs.forEach(function (input_name) {
 
                     var elementObj = document.getElementById('ui_' + cost_item + '_' + input_name);
 
-                    if (! elementObj)
-                    {
+                    if (!elementObj) {
                         field_dict.user_assumptions.data[cost_item][input_name] = 'NOT FOUND ui_' + cost_item + '_' + input_name;
-                    }
-                    else
-                    {
+                    } else {
                         var form_value = elementObj.value;
                         if (form_value === '') {
                             form_value = null;
-                        }
-                        else {
+                        } else {
                             non_null_count += 1;
                         }
                         field_dict.user_assumptions.data[cost_item][input_name] = form_value;
@@ -1290,12 +1353,10 @@ function compileScenarioData() {
 
                 });
 
-                if (field_dict.user_assumptions.data[cost_item] === false && non_null_count === 0)
-                {
-                    delete(field_dict.user_assumptions.data[cost_item]);
+                if (field_dict.user_assumptions.data[cost_item] === false && non_null_count === 0) {
+                    delete (field_dict.user_assumptions.data[cost_item]);
                 }
             }
-
 
 
             //TODO figure out exactly what to do here.  if a user removes all data
@@ -1316,13 +1377,8 @@ function compileScenarioData() {
     function compileCosts(cost_item_list, field_dict) {
         let field_array = cost_item_list;
 
-        //delete field_dict['fields'];
-
-        // rebuild field_dict
-        //field_dict['structure'] = structure;
         field_dict.unit_costs = {};
-
-        field_array.forEach(function(element_name){
+        field_array.forEach(function (element_name) {
             var inputs = [
                 'cost_source',
                 'user_input_cost',
@@ -1331,11 +1387,10 @@ function compileScenarioData() {
                 'o_and_m_pct'
             ];
 
-            if (! field_dict.unit_costs[element_name])
-            {
+            if (!field_dict.unit_costs[element_name]) {
                 field_dict.unit_costs[element_name] = {};
             }
-            inputs.forEach(function(input_name) {
+            inputs.forEach(function (input_name) {
                 //this triggers using 2 other fields
                 if (input_name === 'unit_costZZZZ') {
                     let elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
@@ -1344,17 +1399,15 @@ function compileScenarioData() {
                     } else {
                         field_dict.unit_costs[element_name].checkbox = elementObj.checked;
                     }
-                }
-                else {
+                } else {
                     let elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
-                    if (! elementObj)
-                    {
+                    if (!elementObj) {
                         field_dict.unit_costs[element_name][input_name] = 'NOT FOUND 2 for element ' + element_name;
-                    }
-                    else
-                    {
-                        var form_value = elementObj.value;
-                        if (form_value === '') { form_value = null; }
+                    } else {
+                        let form_value = elementObj.value;
+                        if (form_value === '') {
+                            form_value = null;
+                        }
                         field_dict.unit_costs[element_name][input_name] = form_value;
                     }
                 }
@@ -1362,37 +1415,29 @@ function compileScenarioData() {
         });
     }
 
-    function compileStructure(field_dict){
+    function compileStructure(field_dict) {
         let field_array = field_dict.fields;
         let input_dict = field_dict.inputs;
 
-        field_array.forEach(function(element_name){
+        field_array.forEach(function (element_name) {
             var inputs = input_dict[element_name];
-            if (! field_dict[element_name])
-            {
+            if (!field_dict[element_name]) {
                 field_dict[element_name] = {};
             }
-            inputs.forEach(function(input_name){
+            inputs.forEach(function (input_name) {
 
-                if (input_name === 'checkbox'){
+                if (input_name === 'checkbox') {
                     let elementObj = document.getElementById('checkbox_' + element_name);
-                    if (! elementObj)
-                    {
+                    if (!elementObj) {
                         field_dict[element_name].checkbox = 'NOT FOUND for element ' + element_name;
-                    }
-                    else
-                    {
+                    } else {
                         field_dict[element_name].checkbox = elementObj.checked;
                     }
-                }
-                else {
+                } else {
                     let elementObj = document.getElementById('ui_' + element_name + '_' + input_name);
-                    if (! elementObj)
-                    {
+                    if (!elementObj) {
                         field_dict[element_name][input_name] = 'NOT FOUND for element ' + element_name;
-                    }
-                    else
-                    {
+                    } else {
                         field_dict[element_name][input_name] = elementObj.value;
                     }
                 }
@@ -1402,15 +1447,11 @@ function compileScenarioData() {
         delete field_dict.inputs;
     }
 
-    function compileID(field_dict, element_name)
-    {
+    function compileID(field_dict, element_name) {
         let elementObj = document.getElementById('ui_' + element_name);
-        if (! elementObj)
-        {
+        if (!elementObj) {
             field_dict[element_name] = 'NOT FOUND for element ' + element_name;
-        }
-        else
-        {
+        } else {
             field_dict[element_name] = elementObj.value;
         }
     }
@@ -1427,6 +1468,7 @@ function compileScenarioData() {
 
     delete scenario_template.siteData.areal_features.toggles;
 
+    // get the data from the 'Structures' tab.  They are split into 2 bits for Conventional and Non-Conventional
     compileStructure(scenario_template.siteData.conventional_structures);
 
     compileStructure(scenario_template.siteData.nonconventional_structures);
@@ -1457,22 +1499,20 @@ function compileScenarioData() {
 
 //jab - this saves a JSON copy of all the values in the HTML document
 function saveDB(action) {
-
     var scenarioData = compileScenarioData();
-
     let tab_id = getCookie('tab');
 
-    // trying to make the save less picky.  only work on sections that are on the active_tab
+    // only work on sections that are on the active_tab
     scenarioData.active_tab = tab_id;
 
     var json = JSON.stringify(scenarioData);
 
     var url = URLS.scenario_save;
     $.ajax(url, {
-        data : JSON.stringify(json),
-        contentType : 'application/json; charset=utf-8',
-        type : 'POST',
-        beforeSend: function(xhr, settings) {
+        data: JSON.stringify(json),
+        contentType: 'application/json; charset=utf-8',
+        type: 'POST',
+        beforeSend: function (xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
@@ -1500,14 +1540,10 @@ function saveDB(action) {
             // this is really weak error handling
             var errors;
             var scenario_title_errors;
-            if ('Error' in data)
-            {
-                if ('error_dom_id' in data.Error && data.Error.error_dom_id === 'scenario_title_validation_error')
-                {
+            if ('Error' in data) {
+                if ('error_dom_id' in data.Error && data.Error.error_dom_id === 'scenario_title_validation_error') {
                     scenario_title_errors = data.Error;
-                }
-                else if ('message' in data.Error)
-                {
+                } else if ('message' in data.Error) {
                     errors = data.Error;
                 }
             }
@@ -1516,71 +1552,13 @@ function saveDB(action) {
             showErrorsById('general_validation_error', errors);
             showErrorsById('scenario_title_validation_error', scenario_title_errors);
 
-            //updateResultsPane(data); // loads a snippet of HTML delivered in the data array
             updateProjectTitle(data.siteData);
-
             updateStructureCostDropDown(data.siteData);
         },
-        error: function(data) {
+        error: function (data) {
             showError(data);
         }
     });
-}
-
-// /*
-// * Save a copy of all the data in a JSON file on disc via the 'Save JSON' button in the cost tool
-// *
-// *
-// *
-//  */
-// function saveJSON(action) {
-//
-//     var scenarioData = compileScenarioData();
-//
-//     let process_sid = 'raleighCostTool'; // document.getElementById('s').value;
-//
-//     var json = JSON.stringify(scenarioData, null, 4);
-//     var jsonFileText = new Blob([json],
-//     {
-//         type: "application/json;charset=utf-8;"
-//     });
-//
-//     saveAs(jsonFileText, process_sid + ".json");
-//
-// }
-
-/*
-* Read a JSON file from disc via the 'Load JSON' button in the cost tool
-*
-*
-*
- */
-function loadJSON(e) {
-    var files = e.target.files;
-    var reader = new FileReader();
-
-    reader.onload = function () {
-        // var parsed;
-        var loaded_data;
-        try {
-            loaded_data = JSON.parse(this.result);
-            // remove the scenario_id since it is from the uploaded JSON, and not the scenario being edited
-            if ('scenario_id' in loaded_data) {
-                delete loaded_data.scenario_id;
-            }
-            // add something to remind the user that this is entirely loaded from JSON
-            if ('scenario_title' in loaded_data.siteData.embedded_scenario) {
-                loaded_data.siteData.scenario_title.embedded_scenario += ' (LOADED)';
-            }
-
-            populateUI(loaded_data.siteData);
-
-        } catch (ex) {
-            window.alert('ex when trying to load JSON file = ' + ex);
-        }
-    };
-
-    reader.readAsText(files[0]);
 }
 
 
@@ -1612,19 +1590,15 @@ function setInputFilter(textbox, inputFilter) {
 }
 
 // Implements input filtering for the given textbox.
-function filterInput(textbox)
-{
-  if (!textbox.hasOwnProperty("oldValue") || textbox.inputFilter(textbox.value))
-  {
-    textbox.oldValue = textbox.value;
-    textbox.oldSelectionStart = textbox.selectionStart;
-    textbox.oldSelectionEnd = textbox.selectionEnd;
-  }
-  else
-  {
-    textbox.value = textbox.oldValue;
-    textbox.setSelectionRange(textbox.oldSelectionStart, textbox.oldSelectionEnd);
-  }
+function filterInput(textbox) {
+    if (!textbox.hasOwnProperty("oldValue") || textbox.inputFilter(textbox.value)) {
+        textbox.oldValue = textbox.value;
+        textbox.oldSelectionStart = textbox.selectionStart;
+        textbox.oldSelectionEnd = textbox.selectionEnd;
+    } else {
+        textbox.value = textbox.oldValue;
+        textbox.setSelectionRange(textbox.oldSelectionStart, textbox.oldSelectionEnd);
+    }
 }
 
 function setAllFieldInputFilters()
@@ -1756,7 +1730,7 @@ function setAllFieldInputFilters()
 
     /*
     *
-    *  this uses the scenario template just to set input filters
+    *  this uses the scenario template to set input filters
     *
     *
      */
@@ -1807,7 +1781,6 @@ function setAllFieldInputFilters()
 
     // cost item unit costs
     set_costitem_unit_costs_input_filter(scenario_template.siteData.cost_items.fields);
-
 }
 
 /*
@@ -1840,20 +1813,7 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-// function getCookie(cname) {
-//   var name = cname + "=";
-//   let cookies = document.cookie.split(';');
-//   for(var i = 0; i < cookies.length; i++) {
-//     let cookie = cookies[i];
-//     while (cookie.charAt(0) === ' ') {
-//       cookie = cookie.substring(1);
-//     }
-//     if (cookie.indexOf(name) === 0) {
-//       return cookie.substring(name.length, cookie.length);
-//     }
-//   }
-//   return "";
-// }
+
 
 function open_structure_checkbox_title(structure){
     /* this seems random, like not functioning code */
@@ -1871,30 +1831,24 @@ function open_costitem_help(button_context) {
 
     var id;
     var helpDom;
-    if (typeof(button_context) === 'string')
-    {
+    if (typeof (button_context) === 'string') {
         id = button_context;
         helpDom = document.getElementById('CostItemItemUnitCostsHelpText');
-    }
-    else
-    {
+    } else {
         id = button_context.id;
         id = id.replace('structure_costitem_', '');
         helpDom = document.getElementById('StructureCostItemHelpText');
     }
 
-    if (helpDom.style.display === 'block')
-    {
+    if (helpDom.style.display === 'block') {
         // now see if they are toggling off an existing help section
         var helpSelectedDom = helpDom.querySelector('[id="' + id + '"]');
 
-        if (helpSelectedDom !== null)
-        {
+        if (helpSelectedDom !== null) {
             //helpSelectedDom.innerHTML = '';
             //helpSelectedDom.style.display = "none";
             helpSelectedDom.remove();
-            if (helpDom.childElementCount === 1)
-            {
+            if (helpDom.childElementCount === 1) {
                 helpDom.style.display = 'none';
             }
             return;
@@ -1904,12 +1858,11 @@ function open_costitem_help(button_context) {
     var base_url = URLS.costitem_help;
     var url = base_url + '/' + id + '/?format=html';
 
-   $.ajax(url, {
-        //data : JSON.stringify(json),
-        contentType : 'application/json; charset=utf-8',
-        type : 'GET',
+    $.ajax(url, {
+        contentType: 'application/json; charset=utf-8',
+        type: 'GET',
         async: false, // wait for the response
-        beforeSend: function(xhr, settings) {
+        beforeSend: function (xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
@@ -1918,8 +1871,8 @@ function open_costitem_help(button_context) {
             helpDom.style.display = 'block';
             helpDom.innerHTML = helpDom.innerHTML + data;
         },
-        error: function(data) {
-            window.alert( "unable to get structure cost item help for " + id);
+        error: function (data) {
+            window.alert("unable to get structure cost item help for " + id);
         }
     });
 }

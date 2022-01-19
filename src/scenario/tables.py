@@ -51,11 +51,12 @@ class CostItemDefaultCostsTable(tables.Table):
         attrs = {"class": "paleblue"}
 
 
-#
-#  this is somehow related to /api/costitem_user_costs/?format=datatables
-#
-#
 class CostItemUserCostsTable(tables.Table):
+    """
+
+    this might is somehow be related to /api/costitem_user_costs/?format=datatables
+
+    """
     export_formats = ['csv', 'xls']
 
     def __init__(self, *args, **kwargs):
@@ -75,7 +76,7 @@ class CostItemUserCostsTable(tables.Table):
         return "%s" % "FOOBAR"  # record.scenario.project.user.profile.user_type.capitalize()
 
     class Meta:
-        model = models.CostItemUserCosts
+        model = models.ScenarioCostItemUserCosts
         template_name = 'django_tables2/bootstrap.html'
         order_by = 'costitem'
 
@@ -100,7 +101,7 @@ class CostItemDefaultFactorsTable(tables.Table):
         super().__init__(*args, **kwargs)
 
     class Meta:
-        model = models.CostItemDefaultFactors
+        model = models.StructureCostItemDefaultFactors
         template_name = 'django_tables2/bootstrap.html'
         order_by = 'id'
         attrs = {"class": "paleblue"}

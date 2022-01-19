@@ -3,9 +3,7 @@
     .sc {
         width: 650px;
     }
-
     .structure_table_col {
-        {#margin-left: 37px;#}
         min-width: 65%;
         padding: 0px;
     }
@@ -16,6 +14,7 @@
         margin-left: -20px;
     }
 </style>
+
 <div id="structure_costs">
     <div class="container">
         <div class="row">
@@ -26,7 +25,7 @@
 
                     <!-- jab-start -->
 
-                    <h3 class="bmplabel structureCostLabel" onclick="toggleHelpText('StructureCostsHelpText');">Structure Cost Item User Assumptions</h3>
+                    <h3 class="bmplabel structureCostLabel" onclick="toggleHelpText('StructureCostsHelpText');">Structure Cost Item User Factors</h3>
 
                     <table border="0" cellpadding="0" cellspacing="0" class="ft">
                        <tr>
@@ -35,15 +34,15 @@
 
                                     onchange="loadStructureCosts(this);" >
                                     <option value=""> --- Select --- </option>
-                                    {% for r,obj in scenario.nonconventional_structures.items %}
-                                      {% if obj.checkbox == True %}
-                                        <option value="{{ obj.code }}">Non-Conventional - {{ obj.label }}</option>
+                                    {% for obj in scenario.nc_structures %}
+                                      {% if obj.is_checked == True %}
+                                        <option value="{{ obj.structure_code }}">Non-Conventional - {{ obj.structure_name }}</option>
                                       {% endif %}
                                     {% endfor %}
 
-                                    {% for r,obj in scenario.conventional_structures.items %}
-                                      {% if obj.checkbox == True %}
-                                    <option value="{{ obj.code }}">Conventional - {{ obj.label }}</option>
+                                    {% for obj in scenario.c_structures %}
+                                      {% if obj.is_checked == True %}
+                                    <option value="{{ obj.structure_code }}">Conventional - {{ obj.structure_name }}</option>
                                       {% endif %}
                                     {% endfor %}
 
@@ -55,8 +54,6 @@
                     </table><br>
 
                     <!-- the table gets loaded into this div when the drop-down list is selected -->
-{#                    <div id="structure_costs_table"></div>#}
-
                     <div id="structure_costs_table" style="margin-right: 25px;">
                         {% include "scenario/includes/partial_structure_costs.html" %}
                     </div>

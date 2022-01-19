@@ -1,12 +1,16 @@
 from rest_framework import serializers
 
 from .models import Project, Scenario, Structures, \
+    ConventionalStructures, \
+    NonConventionalStructures, \
     CostItem, \
     CostItemDefaultCosts, \
-    CostItemUserCosts, \
+    ScenarioCostItemUserCosts, \
     CostItemDefaultEquations, \
-    CostItemDefaultFactors, \
-    CostItemUserAssumptions
+    StructureCostItemDefaultFactors, \
+    StructureCostItemUserFactors, \
+    ScenarioArealFeature, \
+    ScenarioStructure
 from authtools.models import User
 from profiles.models import Profile
 
@@ -32,7 +36,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     # end
 
-    profile = ProfileSerializer()
+    # profile = ProfileSerializer()
+    profile = serializers.SerializerMethodField()
+
+    def get_profile(self, user):
+        fields = {
+            'user_type': user.profile.user_type
+        }
+        return fields
 
     date_joined = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
     last_login = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
@@ -94,7 +105,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         return obj.get_project_purchase_information_display()
 
     def get_scenario_count(self, obj):
-        return Scenario.objects.filter(project__id=obj.id).count()
+        # return Scenario.objects.filter(project__id=obj.id).count()
+        return obj.num_scenarios
 
     class Meta:
         model = Project
@@ -110,7 +122,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             'land_unit_cost',
             'project_location',
             'project_purchase_information',
-            'priority_watershed',
             'scenario_count',
             'create_date',
             'modified_date',
@@ -230,95 +241,6 @@ class EmbeddedScenarioFields(serializers.Field):
         return ret
 
 
-"""
-
-"""
-
-
-class EmbeddedArealFeatures(serializers.Field):
-
-    def to_representation(self, value):
-        ret = {
-            "stormwater_management_feature": {
-                "label": 'Stormwater Management Feature',
-                "checkbox": value.stormwater_management_feature_checkbox,
-                "area": value.stormwater_management_feature_area
-            },
-            "amenity_plaza": {
-                "label": 'Amenity Plaza',
-                "checkbox": value.amenity_plaza_checkbox,
-                "area": value.amenity_plaza_area
-            },
-            "protective_yard": {
-                "label": 'Protective Yard',
-                "checkbox": value.protective_yard_checkbox,
-                "area": value.protective_yard_area
-            },
-            "parking_island": {
-                "label": 'Parking Island',
-                "checkbox": value.parking_island_checkbox,
-                "area": value.parking_island_area
-            },
-            "building": {
-                "label": 'Building',
-                "checkbox": value.building_checkbox,
-                "area": value.building_area
-            },
-            "drive_thru_facility": {
-                "label": 'Drive-Thru Facility',
-                "checkbox": value.drive_thru_facility_checkbox,
-                "area": value.drive_thru_facility_area
-            },
-            "landscape": {
-                "label": 'Miscellaneous Landscaping/Open Space',
-                "checkbox": value.landscape_checkbox,
-                "area": value.landscape_area
-            },
-            "sidewalk": {
-                "label": 'Sidewalk',
-                "checkbox": value.sidewalk_checkbox,
-                "area": value.sidewalk_area
-            },
-            "street": {
-                "label": 'Street',
-                "checkbox": value.street_checkbox,
-                "area": value.street_area
-            },
-            "median": {
-                "label": 'Median',
-                "checkbox": value.median_checkbox,
-                "area": value.median_area
-            },
-            "parking_lot": {
-                "label": 'Parking Lot',
-                "checkbox": value.parking_lot_checkbox,
-                "area": value.parking_lot_area
-            },
-            "driveway_and_alley": {
-                "label": 'Driveway and Alley',
-                "checkbox": value.driveway_and_alley_checkbox,
-                "area": value.driveway_and_alley_area
-            }
-        }
-        return ret
-
-    def to_internal_value(self, data):
-        ret = {
-            'project_title': data['project_title'],
-            'scenario_title': data['scenario_title'],
-            'land_unit_cost': data['land_unit_cost'],
-            'project_type': data['project_type'],
-            'project_ownership': data['project_ownership'],
-            'project_area': data['project_area']
-        }
-        return ret
-
-
-"""
-
-"""
-
-
 class StructureSerializer(serializers.ModelSerializer):
     classification_display = serializers.SerializerMethodField()
 
@@ -341,115 +263,44 @@ class StructureSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Structures._meta.get_fields()]
 
 
-"""
+class EmbeddedScenarioArealFeatureSerializer(serializers.ModelSerializer):
 
-"""
+    areal_feature_code = serializers.CharField(read_only=True, source="areal_feature.code")
+    areal_feature_name = serializers.CharField(read_only=True, source="areal_feature.name")
 
-
-class EmbeddedConventionalStructures(serializers.Field):
-    def to_representation(self, value):
-        ret = {
-            "stormwater_wetland": {
-                "checkbox": value.stormwater_wetland_checkbox,
-                "area": value.stormwater_wetland_area
-            },
-            "pond": {
-                "checkbox": value.pond_checkbox,
-                "area": value.pond_area
-            },
-            "rooftop": {
-                "checkbox": value.rooftop_checkbox,
-                "area": value.rooftop_area
-            },
-            "concrete": {
-                "checkbox": value.concrete_checkbox,
-                "area": value.concrete_area
-            },
-            "asphalt": {
-                "checkbox": value.asphalt_checkbox,
-                "area": value.asphalt_area
-            },
-            "lawn": {
-                "checkbox": value.lawn_checkbox,
-                "area": value.lawn_area
-            },
-            "landscaping": {
-                "checkbox": value.landscaping_checkbox,
-                "area": value.landscaping_area
-            },
-            "trench": {
-                "checkbox": value.trench_checkbox,
-                "area": value.trench_area
-            },
-            "curb_and_gutter": {
-                "checkbox": value.curb_and_gutter_checkbox,
-                "area": value.curb_and_gutter_area
-            },
-        }
-        return ret
-
-    def to_internal_value(self, data):
-        ret = {
-            'project_title': data['project_title'],
-            'scenario_title': data['scenario_title'],
-            'land_unit_cost': data['land_unit_cost'],
-            'project_type': data['project_type'],
-            'project_ownership': data['project_ownership'],
-            'project_area': data['project_area']
-        }
-        return ret
+    class Meta:
+        model = ScenarioArealFeature
+        fields = (
+            'id',
+            'areal_feature_code',
+            'areal_feature_name',
+            'area',
+            'is_checked',
+        )
+        read_only_fields = [f.name for f in ScenarioArealFeature._meta.get_fields()]
 
 
-"""
+class EmbeddedScenarioStructureSerializer(serializers.ModelSerializer):
 
-"""
+    structure_code = serializers.CharField(read_only=True, source="structure.code")
+    structure_name = serializers.CharField(read_only=True, source="structure.name")
 
-
-class EmbeddedNonConventionalStructures(serializers.Field):
-    def to_representation(self, value):
-        ret = {
-            "swale": {
-                "checkbox": value.swale_checkbox,
-                "area": value.swale_area
-            },
-            "rain_harvesting_device": {
-                "checkbox": value.rain_harvesting_device_checkbox,
-                "area": value.rain_harvesting_device_area
-            },
-            "bioretention_cell": {
-                "checkbox": value.bioretention_cell_checkbox,
-                "area": value.bioretention_cell_area
-            },
-            "filter_strip": {
-                "checkbox": value.filter_strip_checkbox,
-                "area": value.filter_strip_area
-            },
-            "green_roof": {
-                "checkbox": value.green_roof_checkbox,
-                "area": value.green_roof_area
-            },
-            "planter_box": {
-                "checkbox": value.planter_box_checkbox,
-                "area": value.planter_box_area
-            },
-            "porous_pavement": {
-                "checkbox": value.porous_pavement_checkbox,
-                "area": value.porous_pavement_area
-            },
-        }
-        return ret
-
-    def to_internal_value(self, data):
-        ret = {
-            'project_title': data['project_title'],
-            'scenario_title': data['scenario_title'],
-            'land_unit_cost': data['land_unit_cost'],
-            'project_type': data['project_type'],
-            'project_ownership': data['project_ownership'],
-            'project_area': data['project_area']
-        }
-        return ret
-
+    class Meta:
+        model = ScenarioStructure
+        fields = (
+            'id',
+            'structure_code',
+            'structure_name',
+            'area',
+            'is_checked',
+            # 'classification',
+            # 'classification_display',
+            # 'sort_nu',
+            # 'units',
+            # 'units_html',
+            # 'help_text',
+        )
+        read_only_fields = [f.name for f in ScenarioStructure._meta.get_fields()]
 
 """
 
@@ -473,15 +324,13 @@ class CostItemSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in CostItem._meta.get_fields()]
 
 
-"""
-
-    default values
-    /api/costitemdefaultcosts
-
-"""
-
-
 class CostItemDefaultCostSerializer(serializers.ModelSerializer):
+    """
+
+        default values
+        /api/costitemdefaultcosts
+
+    """
     # each default cost is applied to a single costitem
     costitem = CostItemSerializer(many=False, read_only=True)
 
@@ -500,15 +349,10 @@ class CostItemDefaultCostSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in CostItemDefaultCosts._meta.get_fields()]
 
 
-"""
-
-"""
-
-
 class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
     """
         the logic of the many=False is that in this case,
-        there is one structure and one costitem for each 'CostItemDefaultAssumptions'
+        there is one structure and one costitem for each 'CostItemDefaultEquations'
 
     """
     # structure = StructureSerializer(many=False, read_only=True)
@@ -529,7 +373,7 @@ class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in CostItemDefaultEquations._meta.get_fields()]
 
 
-class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
+class StructureCostItemDefaultFactorsSerializer(serializers.ModelSerializer):
     """
         the logic of the many=False is that in this case,
         there is one structure and one costitem for each 'CostItemDefaultAssumptions'
@@ -538,7 +382,7 @@ class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
     costitem = CostItemSerializer(many=False, read_only=True)
 
     class Meta:
-        model = CostItemDefaultFactors
+        model = StructureCostItemDefaultFactors
         fields = (
             'structure',
             'costitem',
@@ -548,16 +392,13 @@ class CostItemDefaultFactorsSerializer(serializers.ModelSerializer):
             'd_density',
             'n_number',
         )
-        read_only_fields = [f.name for f in CostItemDefaultFactors._meta.get_fields()]
+        read_only_fields = [f.name for f in StructureCostItemDefaultFactors._meta.get_fields()]
 
 
-class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
+class StructureCostItemUserFactorsSerializer(serializers.ModelSerializer):
     """
 
     via /api/cost_item_user_factors
-
-    NOTE: this is really driving me crazy. The naming is confusing. It is called Structure/Cost Item User Factors
-    but also Assumptions. I am not able to get this to work using DataTables, but the API looks fine.
 
     """
     user = serializers.SerializerMethodField()
@@ -573,7 +414,7 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
     scenario_title = serializers.CharField(read_only=True, source="scenario.scenario_title")
 
     class Meta:
-        model = CostItemUserAssumptions
+        model = StructureCostItemUserFactors
         fields = (
             'user',
             'scenario_id',
@@ -587,7 +428,7 @@ class CostItemUserAssumptionsSerializer(serializers.ModelSerializer):
             'd_density',
             'n_number',
         )
-        read_only_fields = [f.name for f in CostItemUserAssumptions._meta.get_fields()]
+        read_only_fields = [f.name for f in StructureCostItemUserFactors._meta.get_fields()]
 
 
 class ScenarioListSerializer(serializers.ModelSerializer):
@@ -655,36 +496,33 @@ class ScenarioListSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Scenario._meta.get_fields()]
 
 
-# used for Audit page
 
-#
 class ScenarioAuditSerializer(serializers.ModelSerializer):
-    # user = UserSerializer()
+    """
+    data source for Audit Scenarios
 
-    # project = EmbeddedProjectFields()
-    #
-    # embedded_scenario = EmbeddedScenarioFields(source='*')
-    user = UserSerializer(many=False, read_only=True)
-    project = ProjectSerializer()
+    """
+    user = serializers.SerializerMethodField()
+    def get_user(self, scenario):
+        return {
+            'name': scenario.project.user.name,
+            'organization_tx': scenario.project.user.organization_tx,
+            'user_type': scenario.project.user.profile.user_type
+        }
+    # user2 = UserSerializer(many=False, read_only=True, source='project.user')
+    project2 = serializers.SerializerMethodField()
+
+    def get_project2(self, scenario):
+        return {
+            'project_title': scenario.project.project_title
+        }
 
     create_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
     modified_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
 
-    # nutrient_req_met = serializers.SerializerMethodField()
-    # captures_90pct_storm = serializers.SerializerMethodField()
-    # meets_peakflow_req = serializers.SerializerMethodField()
-
-    # def get_nutrient_req_met(self, obj):
-    #     return obj.get_nutrient_req_met_display()
-    # def get_captures_90pct_storm(self, obj):
-    #     return obj.get_captures_90pct_storm_display()
-    # def get_meets_peakflow_req(self, obj):
-    #     return obj.get_meets_peakflow_req_display()
-
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
 
-    #
     def get_DT_RowId(self, scenario):
         return 'row_%d' % scenario.pk
 
@@ -698,17 +536,9 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
 
             'id',
             'user',
-            'project',
-            # 'project_title',
+            'project2',
 
             'scenario_title',
-
-            'nutrient_req_met',
-            'captures_90pct_storm',
-            'meets_peakflow_req',
-
-            'pervious_area',
-            'impervious_area',
 
             'create_date',
             'modified_date',
@@ -717,10 +547,7 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
         read_only_fields = [f.name for f in Scenario._meta.get_fields()]
 
 
-
-
-
-class CostItemUserCostSerializer(serializers.ModelSerializer):
+class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
     """
 
         CostItem User Cost - users values
@@ -732,11 +559,19 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     costitem_code = serializers.CharField(read_only=True, source="costitem.code")
     costitem_name = serializers.CharField(read_only=True, source="costitem.name")
     # each default cost is applied to a single costitem
-    scenario = ScenarioListSerializer(many=False, read_only=True)
 
-    # the uncommented 'project' controls what fields are included
-    project = EmbeddedProjectFields(source='scenario.project')
-    # project = ProjectSerializer(source='scenario.project', many=False, read_only=True)
+    scenario2 = serializers.SerializerMethodField()
+    def get_scenario2(self, obj):
+        return {
+            'id': obj.scenario.id,
+            'scenario_title': obj.scenario.scenario_title
+        }
+
+    project = serializers.SerializerMethodField()
+    def get_project(self, obj):
+        return {'project_title': obj.scenario.project.project_title}
+
+    # ProjectSerializer(source='scenario.project', many=False, read_only=True)
 
     # costitem = CostItemSerializer(many=False, read_only=True)
 
@@ -746,18 +581,22 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
     #
     # def get_cost_item_user_costs(self, instance):
     #     user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
-    #     return CostItemUserCostSerializer(user_cost_items, many=True).data
+    #     return StructureCostItemUserCostSerializer(user_cost_items, many=True).data
 
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         user1 = obj.scenario.project.user
         return UserSerializer(user1, many=False).data
+    # scenario = ScenarioListSerializer(many=False, read_only=True)
+    #
+    # # the uncommented 'project' controls what fields are included
+    # project = EmbeddedProjectFields(source='scenario.project')
 
-    scenario_id = serializers.SerializerMethodField()
-
-    def get_scenario_id(self, obj):
-        return obj.scenario.id
+    # scenario_id = serializers.SerializerMethodField()
+    #
+    # def get_scenario_id(self, obj):
+    #     return obj.scenario.id
 
     costitem_code = serializers.SerializerMethodField()
 
@@ -780,13 +619,13 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
         return str(obj.o_and_m_pct)
 
     class Meta:
-        model = CostItemUserCosts
+        model = ScenarioCostItemUserCosts
         fields = (
             'id',
             'user',
-            'scenario',
+            'scenario2',
             'project',
-            'scenario_id',
+            # 'scenario_id',
             'costitem',
             'costitem_code',
             'costitem_name',
@@ -797,35 +636,55 @@ class CostItemUserCostSerializer(serializers.ModelSerializer):
             'replacement_life',
             'o_and_m_pct'
         )
-        read_only_fields = [f.name for f in CostItemUserCosts._meta.get_fields()]
-
-    # def to_representation(self, data):
-    #     res = super(CostItemUserCostSerializer, self).to_representation(data)
-    #     return {res['costitem_code']: res}
-
-
-"""
-
-    this contains all the data for the scenario
-
-    /api/scenarios/1/
-
- this is returned into results in /scenario/{pk}/update is first loaded
-
-
-"""
+        read_only_fields = [f.name for f in ScenarioCostItemUserCosts._meta.get_fields()]
 
 
 class ScenarioSerializer(serializers.ModelSerializer):
-    # user = UserSerializer()
+    """
 
+        serialize all the data for the scenario
+
+        /api/scenarios/1/
+
+     this is returned into results in /scenario/{pk}/update is first loaded
+
+
+    """
     project = EmbeddedProjectFields()
 
     embedded_scenario = EmbeddedScenarioFields(source='*')
 
-    areal_features = EmbeddedArealFeatures()
-    conventional_structures = EmbeddedConventionalStructures()
-    nonconventional_structures = EmbeddedNonConventionalStructures()
+    # areal_features = EmbeddedArealFeatures()
+    # conventional_structures = EmbeddedConventionalStructures()
+    # nonconventional_structures = EmbeddedNonConventionalStructures()
+
+    a_features = serializers.SerializerMethodField()
+
+    def get_a_features(self, obj):
+        a_features = ScenarioArealFeature.objects\
+            .select_related('areal_feature')\
+            .filter(scenario=obj)\
+            .order_by('areal_feature__sort_nu')
+        return EmbeddedScenarioArealFeatureSerializer(a_features, many=True).data
+
+    # 2022-01-12 work on proposed new datamodel for user Structure data
+    c_structures = serializers.SerializerMethodField()
+
+    def get_c_structures(self, obj):
+        structures = ScenarioStructure.objects \
+            .select_related('structure') \
+            .filter(scenario=obj, structure__classification='conventional')\
+            .order_by('structure__sort_nu')
+        return EmbeddedScenarioStructureSerializer(structures, many=True).data
+
+    nc_structures = serializers.SerializerMethodField()
+
+    def get_nc_structures(self, obj):
+        structures = ScenarioStructure.objects\
+            .select_related('structure')\
+            .filter(scenario=obj, structure__classification='nonconventional')\
+            .order_by('structure__sort_nu')
+        return EmbeddedScenarioStructureSerializer(structures, many=True).data
 
     # add in other related models that have 1-to-many relationships
     # this works, but only shows the string representation of the user costs
@@ -839,47 +698,10 @@ class ScenarioSerializer(serializers.ModelSerializer):
     cost_item_user_costs = serializers.SerializerMethodField()
 
     def get_cost_item_user_costs(self, instance):
-        user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
-        return CostItemUserCostSerializer(user_cost_items, many=True).data
-
-    # cost_item_user_costs = CostItemUserCostSerializer(read_only=True, many=True)
-
-    # cost_item_user_assumptions = CostItemUserAssumptionsSerializer(read_only=True, many=True)
-    #
-    # structure_cost_item_costs = serializers.SerializerMethodField()
-    #
-    # """
-    #     this duplicates code in the function views.structure_cost_item_json
-    #     ZIP
-    # """
-    # def get_structure_cost_item_costs(self, instance):
-    #
-    #     #TODO
-    #     structure = Structures.objects.get(code='pond')
-    #
-    #     cost_item_default_costs = CostItemDefaultCosts.objects.all()
-    #
-    #     cost_item_default_assumptions = CostItemDefaultAssumptions.objects.filter(structure=structure)
-    #
-    #     cost_item_user_costs = CostItemUserCosts.objects.filter(scenario=instance)
-    #
-    #     cost_item_user_assumptions = CostItemUserAssumptions.objects.filter(scenario=instance, structure=structure)
-    #
-    #
-    #     json_data = scenario.views.structure_cost_item_json(structure,
-    #                                                   instance,
-    #                                                   cost_item_default_costs,
-    #                                                   cost_item_default_assumptions,
-    #                                                   cost_item_user_costs,
-    #                                                   cost_item_user_assumptions,
-    #                                                   )
-    #
-    #     #end TODO
-    #
-    #
-    #     user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
-    #
-    #     return CostItemUserCostSerializer(user_cost_items, many=True).data
+        user_cost_items = instance.cost_item_user_costs\
+            .select_related('costitem')\
+            .all().order_by('costitem__sort_nu')
+        return ScenarioCostItemUserCostsSerializer(user_cost_items, many=True).data
 
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()
@@ -896,17 +718,25 @@ class ScenarioSerializer(serializers.ModelSerializer):
             'DT_RowId', 'DT_RowAttr',
             # 'user',
             'id',
-            'cost_item_user_assumptions',
+
+
             'scenario_title',
             'project',  # debug - trying to figure out where Cannon resolve keywork project into fields
             'embedded_scenario',
 
-            'areal_features',
-            'nonconventional_structures',
-            'conventional_structures',
+            # 'areal_features',
+
+            # new version of ScenarioArealFeature(s)
+            'a_features',
+
+            # 'nonconventional_structures',
+            # 'conventional_structures',
+
+            'c_structures',
+            'nc_structures',
 
             'cost_item_user_costs',
-
+            'cost_item_user_assumptions',
             # 'structure_cost_item_costs',
 
             'create_date',

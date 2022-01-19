@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load filters %}
 {% load static %}
 {% block title %}{{ block.super }}Scenarios{% endblock %}
 
@@ -42,27 +43,16 @@
 <span style="display: block;">
     {% include "scenario/project.html"  %}
 </span>
-
-    {%  if can_add and project is not none %}
-    <!--This was the ajax (modal) version-->
-    <!--<button type="button" class="btn btn-primary js-create-scenario" style="font-size: 16px; float:right; "data-url="{% url 'scenario:scenario_create' %}">-->
-      <!--<span class="glyphicon glyphicon-plus"></span>-->
-      <!--New scenario-->
-    <!--</button>-->
+    {% var_exists 'can_add' as can_add_exists %}
+    {% var_exists 'project' as project_exists %}
+    {% if can_add_exists and project_exists %}
         <div style="float: right; display: inline-block;">
-        <!-- the data-url gets set by scenario.js when a single scenario is selected -->
-{#            <button id='duplicate_scenario' type="button"#}
-{#                    style="display: none;"#}
-{#                    class="btn btn-primary js-duplicate-scenario">#}
-{#                <span class="glyphicon glyphicon-copy"></span> Duplicate scenario#}
-{#            </button>#}
             <!-- this loads a modal to enter the new scenario title only -->
             <button id='create_scenario' type="button"
                     data-url="{% url 'scenario:project_scenario_create' project.id %}"
                     class="btn btn-primary js-create-scenario">
                 <span class="glyphicon glyphicon-plus"></span>New Scenario
             </button>
-
         </div>
     {% endif %}
 

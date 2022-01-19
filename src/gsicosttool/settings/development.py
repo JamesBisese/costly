@@ -124,10 +124,18 @@ LOGGING = {
         'django': {
             'handlers': ['django_log_file'],
             'propagate': True,
-            'level': 'DEBUG',
+            'level': 'WARNING',
         },
         'project': {
             'handlers': ['proj_log_file'],
+            'level': 'DEBUG',
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        'developer': {
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
     }

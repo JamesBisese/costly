@@ -23,7 +23,7 @@ SETTINGS.URLS = {
     'scenario_delete': '/scenario/<int:pk>/delete/',
     'scenario_result': '/scenario/<int:pk>/results/',
 
-    'scenario_structure_cost': '/scenario/<int:pk>/structure_costs/<str:structure_code>/?format=html',
+    'scenario_structure_cost': '/scenario/<int:pk>/structure_costs/<str:structure_code>/',
 
     'scenario_save':     '/scenario/save/',
     'scenario_template': '/scenario/template/',

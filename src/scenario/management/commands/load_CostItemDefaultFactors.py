@@ -5,10 +5,10 @@ from django.core.management.base import BaseCommand
 import csv
 import argparse
 
-from scenario.models import CostItem, Structures, CostItemDefaultFactors
+from scenario.models import CostItem, Structures, StructureCostItemDefaultFactors
 
 #
-# Load data from CSV file into table CostItemDefaultFactors
+# Load data from CSV file into table StructureCostItemDefaultFactors
 #  should be Structure-CostItem Default Factors
 #
 #
@@ -54,9 +54,9 @@ class Command(BaseCommand):
                     if row[field] == '':
                         row[field] = None
 
-                if not CostItemDefaultFactors.objects.filter(costitem=cost_item, structure=structure).exists():
+                if not StructureCostItemDefaultFactors.objects.filter(costitem=cost_item, structure=structure).exists():
 
-                    c = CostItemDefaultFactors.objects.create(costitem=cost_item, structure=structure)
+                    c = StructureCostItemDefaultFactors.objects.create(costitem=cost_item, structure=structure)
 
                     for field_nm in (field_list):
                         setattr(c, field_nm, row[field_nm])
@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
                     print('created "{}-{}"'.format(row['structure'],row['cost_item']))
                 else:
-                    c = CostItemDefaultFactors.objects.get(costitem=cost_item, structure=structure)
+                    c = StructureCostItemDefaultFactors.objects.get(costitem=cost_item, structure=structure)
                     changed_fields = set()
 
                     for field_nm in (field_list):
@@ -78,5 +78,5 @@ class Command(BaseCommand):
                     else:
                         print('no updates for "{}-{}"'.format(row['structure'],row['cost_item']))
 
-        count_nu = CostItemDefaultFactors.objects.count()
-        self.stdout.write('CostItemDefaultFactors.objects.count()== {}'.format(count_nu))
+        count_nu = StructureCostItemDefaultFactors.objects.count()
+        self.stdout.write('StructureCostItemDefaultFactors.objects.count()== {}'.format(count_nu))

@@ -446,9 +446,9 @@ Migrations for 'scenario':
     - Create model Scenario
     - Create model CostItemDefaultEquations
     - Create model CostItemDefaultCosts
-    - Create model CostItemUserCosts
+    - Create model StructureCostItemUserCosts
     - Create model CostItemUserAssumptions
-    - Create model CostItemDefaultFactors
+    - Create model StructureCostItemDefaultFactors
 
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 # python manage.py makemigrations authtools

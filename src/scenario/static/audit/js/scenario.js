@@ -3,7 +3,7 @@ var table;
 $(document).ready(function() {
 
   table = $('#scenario-audit-table').DataTable({
-            'serverSide': true,
+            'serverSide': false,
             'ajax': SETTINGS.URLS.audit_scenario_data + '?format=datatables',
             'pageLength': 200,
             "dom": 'Bfrtip',
@@ -40,10 +40,10 @@ $(document).ready(function() {
             'columns': [
               // Use dot notation to reference nested serializers.
                 {"data": "id", "searchable": false},
-                {"data": "project.user.name", "searchable": true},
-                {"data": "project.user.organization_tx", "searchable": true},
-                {"data": "project.user.profile.user_type", "searchable": true},
-                {"data": "project.project_title", "searchable": true},
+                {"data": "user.name", "searchable": true},
+                {"data": "user.organization_tx", "searchable": true},
+                {"data": "user.user_type", "searchable": true},
+                {"data": "project2.project_title", "searchable": true},
                 {"data": "scenario_title", "searchable": true},
                 {"data": "create_date", "searchable": true},
                 {"data": "modified_date", "searchable": true},

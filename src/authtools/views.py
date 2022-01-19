@@ -13,15 +13,9 @@ from django.contrib.auth.forms import (SetPasswordForm,
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import auth
 from django.http import HttpResponseRedirect
-
+from django.urls import reverse_lazy
 from django.contrib.sites.shortcuts import get_current_site
 
-try:
-    # django >= 1.10
-    from django.urls import reverse_lazy
-except ImportError:
-    # django < 1.10
-    from django.core.urlresolvers import reverse_lazy
 
 try:
     from django.contrib.auth.views import INTERNAL_RESET_URL_TOKEN, INTERNAL_RESET_SESSION_TOKEN

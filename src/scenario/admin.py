@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django import forms
-from .models import Project, Scenario, Structures, \
-    CostItem, CostItemDefaultFactors, CostItemDefaultCosts, CostItemDefaultEquations, \
-    CostItemUserCosts, CostItemUserAssumptions
+from .models import Project, Scenario, Structures, ArealFeatureLookup, \
+    CostItem, StructureCostItemDefaultFactors, CostItemDefaultCosts, CostItemDefaultEquations, \
+    ScenarioCostItemUserCosts, StructureCostItemUserFactors, ScenarioArealFeature
 
 
 class ObjectAdmin(admin.ModelAdmin):
@@ -98,6 +98,20 @@ class ScenarioAdmin(admin.ModelAdmin):
 admin.site.register(Scenario, ScenarioAdmin)
 
 
+class ArealFeatureLookupAdmin(admin.ModelAdmin):
+    list_display = ('sort_nu', 'code', 'name')
+    list_display_links = ('name',)
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        field = super(ArealFeatureLookupAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        if db_field.name == 'help_text':
+            field.widget = forms.Textarea(attrs={'cols': 80, 'rows': 4})
+        return field
+
+    # you can delete the ArealFeatureLookup - but it will delete all the associated data
+    def has_delete_permission(self, request, obj=None):
+        return True
+
 class StructuresAdmin(admin.ModelAdmin):
     list_display = ('sort_nu', 'classification', 'name')
     list_display_links = ('name',)
@@ -108,14 +122,15 @@ class StructuresAdmin(admin.ModelAdmin):
             field.widget = forms.Textarea(attrs={'cols': 80, 'rows': 4})
         return field
 
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
+    # I enabled deleting Structures to support ad-hoc changing of what is available
+    # def get_actions(self, request):
+    #     actions = super().get_actions(request)
+    #     if 'delete_selected' in actions:
+    #         del actions['delete_selected']
+    #     return actions
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return True
 
 
 class CostItemAdmin(StructuresAdmin):
@@ -247,11 +262,16 @@ def first_year_maintenance(obj):
     return "%s" % obj.first_year_maintenance
 
 
-class CostItemUserCostsAdmin(admin.ModelAdmin):
+class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, costitem_name,
                     cost_source, user_input_cost, 'base_year',
                     replacement_life, o_and_m_pct, first_year_maintenance)
     list_display_links = (costitem_name,)
+    list_filter = (
+        ('scenario__project__user__profile__user_type', custom_titled_filter("User Type")),
+        ('scenario__project__user__name', custom_titled_filter("User Name")),
+        ('costitem__name', custom_titled_filter('Cost Item Name'))
+    )
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -271,7 +291,7 @@ def structure_name(obj):
     return "%s" % obj.structure.name
 
 
-class CostItemUserAssumptionsAdmin(admin.ModelAdmin):
+class StructureCostItemUserFactorsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title,
                     structure_name, costitem_name,
                     # cost_source, user_input_cost, 'base_year',
@@ -292,13 +312,14 @@ class CostItemUserAssumptionsAdmin(admin.ModelAdmin):
         return False
 
 
+admin.site.register(ArealFeatureLookup, ArealFeatureLookupAdmin)
 admin.site.register(Structures, StructuresAdmin)
 admin.site.register(CostItem, CostItemAdmin)
 admin.site.register(CostItemDefaultCosts, CostItemDefaultCostsAdmin)
 admin.site.register(CostItemDefaultEquations, CostItemDefaultEquationsAdmin)
-admin.site.register(CostItemDefaultFactors, StructureCostItemDefaultFactorsAdmin)
+admin.site.register(StructureCostItemDefaultFactors, StructureCostItemDefaultFactorsAdmin)
 
 
 
-admin.site.register(CostItemUserCosts, CostItemUserCostsAdmin)
-admin.site.register(CostItemUserAssumptions, CostItemUserAssumptionsAdmin)
+admin.site.register(ScenarioCostItemUserCosts, ScenarioCostItemUserCostsAdmin)
+admin.site.register(StructureCostItemUserFactors, StructureCostItemUserFactorsAdmin)

@@ -7,7 +7,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
-router.register(r'projects', views.ProjectViewSet)
+router.register(r'projects', views.ProjectViewSet, 'projects')
 router.register(r'scenarios', views.ScenarioViewSet)
 router.register(r'scenario_list', views.ScenarioListViewSet)
 router.register(r'scenario_audit', views.ScenarioAuditViewSet)
@@ -19,7 +19,7 @@ router.register(r'cost_item_user_costs', views.CostItemUserCostViewSet)
 
 router.register(r'cost_item_default_equations_and_factors', views.CostItemDefaultEquationsAndFactors)
 router.register(r'structure_cost_item_default_factors', views.CostItemDefaultFactorsViewSet)
-router.register(r'structure_user_cost_item_factors', views.CostItemUserAssumptionsViewSet)
+router.register(r'structure_user_cost_item_factors', views.StructureCostItemUserFactorsViewSet)
 
 iis_app_alias = ''
 if len(settings.IIS_APP_ALIAS) > 0:
@@ -58,16 +58,16 @@ urlpatterns = [
 
     # Scenario - StructureCosts Read - returns partial HTML
     path(r'scenario/<int:pk>/structure_costs/<slug:structure_code>/', views.StructureCosts.as_view(), name='structure_costs'),
-    # path(r'scenario/<int:pk>/structure_costsNEW/', views.StructureCostsNEW.as_view(), name='structure_costs_all'),
+    path(r'scenario/<int:pk>/structure_costs/<slug:structure_code>/<slug:costitem_code>/', views.StructureCosts.as_view()),
 
     # Scenario - CostItem Update
-    path(r'scenario/costitem/<int:pk>/update/', views.costitem_defaultcosts_update, name='costitem_defaultcosts_update'),
+    # path(r'scenario/costitem/<int:pk>/update/', views.costitem_defaultcosts_update, name='costitem_defaultcosts_update'),
 
     # Scenario - Results Read
     path(r'scenario/<int:pk>/results/', views.ScenarioResults.as_view(), name='scenario_results_with_class'),
     path(r'scenario/results/', views.CompareScenarioResults.as_view(), name='scenario_compare_results'),
     path(r'scenario/results/column/', views.CompareScenarioColumn.as_view(), name='scenario_compare_column'),
-    path(r'scenario/<string>1-8/results/', views.ScenarioResults.as_view(), name='scenario_results_multiple2_with_class'),
+    # path(r'scenario/<string>1-8/results/', views.ScenarioResults.as_view(), name='scenario_results_multiple2_with_class'),
 
     # Scenario - Results in Excel Format
     path(r'scenario/<int:pk>/excel/', views.ScenarioExcelResults.as_view(), name='scenario_results_excel'),
@@ -75,7 +75,6 @@ urlpatterns = [
     # new wide version of export
     path(r'scenario/export/extended_excel_report/', views.ScenarioExtendedExcelReport.as_view(), name='scenario_export_extended_excel_report'),
 
-    path(r'scenario/default/', views.DefaultScenario.as_view(), name='scenario_json_default'),
     path(r'scenario/template/', views.TemplateScenario.as_view(), name='scenario_json_template'),
 
     # StructureHelp - Read - not used. using slug 'all' returns a list of all values

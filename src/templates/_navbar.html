@@ -1,3 +1,4 @@
+{%  load filters %}
 <!-- this is the menu bar at the top of all the pages -->
 
 <li class="nav-item{% if active_link == 'home' %} active{% endif %}">
@@ -29,7 +30,8 @@
     <li class="nav-item{% if active_link == 'project' %} active{% endif %}">
         <a class="nav-link" href="{% url 'scenario:project_index' %}">PROJECTS</a>
     </li>
-    {%  if project is not None  %}
+    {%  var_exists 'project' as project_exists %}
+    {%  if project_exists  %}
         <li class="nav-item{% if active_link == 'scenario' %} active{% endif %}">
             <a class="nav-link" href="{% url 'scenario:project_scenario_index' project.id %}">SCENARIOS</a>
         </li>

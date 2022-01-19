@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from djmoney.models.fields import MoneyField
 from djmoney.money import Money
 
-from .scenario_frameworks import TEMPLATE_SCENARIO, DEFAULT_SCENARIO
+from .scenario_frameworks import TEMPLATE_SCENARIO
 
 User = get_user_model()
 
@@ -57,15 +57,38 @@ def get_unit_conversion(structure_units, cost_item_units):
 """
     this starts with all the 1-1 and 1-many models that are included in the scenario
 """
+class ArealFeatureLookup(models.Model):
+    """
 
+        this is a look-up/meta-data table of Areal Features. (which are handled exactly like Structures and ScenarioStructures)
 
+    """
+    code = models.CharField(unique=True, max_length=100, default=None, blank=False, null=False)
+    name = models.CharField(unique=True, max_length=100, default=None, blank=False, null=False)
+    sort_nu = models.PositiveIntegerField("Sort Number", default=0, blank=True, null=True)
+    units = models.CharField(unique=False, max_length=12, default=None, blank=False, null=False)
+    units_html = models.CharField(unique=False, max_length=25, default=None, blank=False, null=False)
+    help_text = models.CharField(unique=False, max_length=1000, default="TBD", blank=False, null=False)
+
+    def __str__(self):
+        return self.code + ' - ' + self.name
+
+    class Meta:
+        verbose_name_plural = "Areal Features"
+        ordering = ['sort_nu', ]
 
 
 class ArealFeatures(models.Model):
     """
 
         this is a set of tuples - each tuple has a checkbox and an area
+
+        Note: the id field is scenario.id
+
         TODO: label the fields as necessary.
+
+        TODO: refactor the name from ArealFeatures to ScenarioArealFeatures
+        TODO: make a new model ArealFeatures or ArealFeaturesLookup to store the list of areal features
 
     """
     stormwater_management_feature_area = models.IntegerField("Stormwater Management Feature Area", default=0,
@@ -104,7 +127,7 @@ class ArealFeatures(models.Model):
 class Structures(models.Model):
     """
 
-        this is a look-up table of Structures. Meta data table
+        this is a look-up/meta-data table of Structures.
 
     """
     CLASSIFICATION_VALUES = ('conventional', 'nonconventional')
@@ -134,6 +157,8 @@ class ConventionalStructures(models.Model):
         this is a data table of ConventionalStructures
 
         note: the id for each row in this table is the scenario.id
+
+        note: this is being DEPRECIATED to be replaced by ScenarioStructures
 
     """
     stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True,
@@ -168,6 +193,8 @@ class NonConventionalStructures(models.Model):
 
         note: the id for each row in this table is the scenario.id
 
+        note: this is being DEPRECIATED to be replaced by ScenarioStructures
+
     """
     swale_area = models.IntegerField("Swale Area", default=0, blank=True, null=True)
     swale_checkbox = models.BooleanField("Swale Checked", default=False, blank=True, null=True)
@@ -188,7 +215,7 @@ class NonConventionalStructures(models.Model):
 class CostItem(models.Model):
     """
 
-        this is Meta Data table for Cost Items -
+        this is a look-up/meta-data table of Cost Item (CostItem, CostItems)
 
     """
     code = models.CharField(unique=True, max_length=50, default=None, blank=False, null=False)
@@ -201,16 +228,8 @@ class CostItem(models.Model):
         return self.name
 
     class Meta:
+        verbose_name_plural = "Cost Items"
         ordering = ['sort_nu', ]
-
-
-#
-# this stores the 'default' values for the costitem costs.
-# each row is attached to one CostItem for one Scenario
-#
-#
-#
-
 
 
 class CostItemDefaultCosts(models.Model):
@@ -218,7 +237,7 @@ class CostItemDefaultCosts(models.Model):
 
         this is a look-up table of the 'default' costs associated with each Cost Items
 
-        the 'user' costs are stored in CostItemUserCosts which is defined after Scenario model
+        the 'user' costs are stored in StructureCostItemUserCosts which is defined after Scenario model
 
     """
     costitem = models.OneToOneField(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
@@ -234,7 +253,6 @@ class CostItemDefaultCosts(models.Model):
     db_75pct_va = MoneyField('DB 75-percentile unit cost', decimal_places=2, max_digits=11,
                              default_currency='USD', blank=True, null=True)
 
-    # TODO these 2 might be in the wrong model!!!
     replacement_life = models.PositiveIntegerField(default=40,
                                                    validators=[MinValueValidator(0),
                                                                MaxValueValidator(100)
@@ -257,19 +275,48 @@ class CostItemDefaultCosts(models.Model):
         ordering = ['costitem__sort_nu', ]
 
 
-class CostItemDefaultFactors(models.Model):
+class CostItemDefaultEquations(models.Model):
+    """
+        2019-08-15 Cost Item Default Equations
+
+        this is a look-up table of the 'default' costs equations and factors for each Cost Items
+        AND NOT connected to a specific structure
+
+        Loaded from CSV file CostItemDefaultEquations
+    """
+    costitem = models.OneToOneField(CostItem, unique=True, on_delete=models.CASCADE, default=None, blank=False,
+                                    null=False)
+
+    equation_tx = models.CharField("Equation", max_length=150, default=None, blank=True, null=True)
+
+    a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
+    z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
+    d_density = models.CharField("Density (d)", max_length=10, default=None, blank=True, null=True)
+    n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
+
+    # this is not used.  always ste as 'The cost of ' + cost_item.name + ' is computed using ...'
+    help_text = models.CharField(unique=False, max_length=1000, default="Help Text", blank=False, null=False)
+
+    def __str__(self):
+        return self.costitem.code + " -- " + self.equation_tx
+
+    class Meta:
+        verbose_name_plural = "Cost Item Default Equations"
+        ordering = ['costitem__sort_nu', ]
+
+
+class StructureCostItemDefaultFactors(models.Model):
     """
 
-        this is a look-up table of the 'default' costs assumptions with each Cost Items
-        each one is connected to a specific structure
+        this is a look-up table of the 'default' costs factors with each Structure/Cost Items tuple
 
-        the 'user' cost assumptions are stored in CostItemUserAssumptions which is defined after Scenario model
+        the 'user' cost assumptions are stored in StructureCostItemUserFactors which is defined after Scenario model
 
-        Note: this should be called StructureCostItemDefaultFactors
+        Note: refactored name from CostItemDefaultFactors to StructureCostItemDefaultFactors
 
     """
-    structure = models.ForeignKey(Structures, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
-    costitem = models.ForeignKey(CostItem, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
+    structure = models.ForeignKey(Structures, on_delete=models.CASCADE, default=None, blank=False, null=False)
+    costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
     z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
@@ -285,42 +332,10 @@ class CostItemDefaultFactors(models.Model):
         ordering = ['costitem__sort_nu', ]
 
 
-class CostItemDefaultEquations(models.Model):
-    """
-        2019-08-15 Cost Item Default Equations
-
-        this is a look-up table of the 'default' costs equations and factors for each Cost Items
-        AND NOT connected to a specific structure
-
-        Loaded from CSV file CostItemDefaultEquations
-    """
-    costitem = models.OneToOneField(CostItem, unique=True, on_delete=models.DO_NOTHING, default=None, blank=False,
-                                    null=False)
-
-    equation_tx = models.CharField("Equation", max_length=150, default=None, blank=True, null=True)
-
-    a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
-    z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
-    d_density = models.CharField("Density (d)", max_length=10, default=None, blank=True, null=True)
-    # TODO - remove this field.  it is unused
-    # r_ratio = models.CharField("Ratio (r)", max_length=10, default=None, blank=True, null=True)
-    n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
-
-    # this is not used.  always ste as 'The cost of ' + cost_item.name + ' is computed using ...'
-    help_text = models.CharField(unique=False, max_length=1000, default="Help Text", blank=False, null=False)
-
-    def __str__(self):
-        return self.costitem.code + " -- " + self.equation_tx
-
-    class Meta:
-        verbose_name_plural = "Cost Item Default Equations"
-        ordering = ['costitem__sort_nu', ]
-
-
 class Project(models.Model):
     """
 
-    a Project is owned by a User.  It may have 0 or many Scenario(s) attached.
+    User owns 0 or more Project(s).  Project has 0 or more Scenario(s).
 
     """
     OWNERSHIP_TYPE_VALUES = ('private', 'public')
@@ -367,7 +382,7 @@ class Project(models.Model):
     priority_watershed = models.CharField('Priority Watershed', choices=WATERSHED_CHOICES, max_length=15, default=None,
                                           blank=True, null=True)
 
-    #note: I don't know why I chose CharField for this.  It should be IntegerField
+    # note: I don't know why I chose CharField for this.  It should be IntegerField
     project_area = models.CharField('Total Project Area (square feet)', max_length=15, default=None, blank=False,
                                     null=False)
     land_unit_cost = MoneyField('Cost per square foot of Project site',
@@ -392,17 +407,30 @@ def get_TEMPLATE_SCENARIO():
 
     """
     raw_ts = TEMPLATE_SCENARIO
+
+    # region new loading from ArealFeatureLookup
+    areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu').values()
+    fields = []
+    inputs = {}
+    for areal_feature in areal_features:
+        fields.append(areal_feature['code'])
+        inputs[areal_feature['code']] = ['checkbox', 'area']
+    raw_ts['siteData']['areal_features'] = {}
+    raw_ts['siteData']['areal_features']['fields'] = fields
+    raw_ts['siteData']['areal_features']['inputs'] = inputs
+    # endregion new loading from ArealFeatureLookup
+
     structures = Structures.objects.all().order_by('sort_nu').values()
     fields = []
     labels = {}
     inputs = {}
-
 
     for structure in structures:
         if structure['classification'] == 'conventional':
             fields.append(structure['code'])
             labels[structure['code']] = structure['name']
             inputs[structure['code']] = ['checkbox', 'area']
+    raw_ts['siteData']['conventional_structures'] = {}
     raw_ts['siteData']['conventional_structures']['fields'] = fields
     raw_ts['siteData']['conventional_structures']['labels'] = labels
     raw_ts['siteData']['conventional_structures']['inputs'] = inputs
@@ -414,7 +442,7 @@ def get_TEMPLATE_SCENARIO():
             fields.append(structure['code'])
             labels[structure['code']] = structure['name']
             inputs[structure['code']] = ['checkbox', 'area']
-
+    raw_ts['siteData']['nonconventional_structures'] = {}
     raw_ts['siteData']['nonconventional_structures']['fields'] = fields
     raw_ts['siteData']['nonconventional_structures']['labels'] = labels
     raw_ts['siteData']['nonconventional_structures']['inputs'] = inputs
@@ -423,6 +451,7 @@ def get_TEMPLATE_SCENARIO():
     fields = []
     for cost_item in cost_items:
         fields.append(cost_item['code'])
+    raw_ts['siteData']['cost_items'] = {}
     raw_ts['siteData']['cost_items']['fields'] = fields
 
     return raw_ts
@@ -436,16 +465,12 @@ class Scenario(models.Model):
     """
     # this is a template used in Javascript to figure out how to manage the UI
     # it is stored in a module 'scenario_frameworks' just because it is big and ugly
-    templateScenario = None # get_TEMPLATE_SCENARIO()
+    templateScenario = None
 
     try:
         templateScenario = get_TEMPLATE_SCENARIO()
     except:
         pass
-
-    # this is an object used as the default scenario when a user creates a new scenario
-    # again, it is stored in a module 'scenario_frameworks' just because it is big and ugly
-    defaultScenario = DEFAULT_SCENARIO
 
     NUTRIENT_REQ_VALUES = ('with_buy_down', 'without_buy_down', 'unknown')
     NUTRIENT_REQ_TEXTS = ('With Nutrient Buy Down', 'Without Nutrient Buy Down', 'Unknown')
@@ -486,22 +511,22 @@ class Scenario(models.Model):
         blank=True,
         null=True
     )
-    conventional_structures = models.OneToOneField(
-        ConventionalStructures,
-        on_delete=models.CASCADE,
-        primary_key=False,
-        default=None,
-        blank=True,
-        null=True
-    )
-    nonconventional_structures = models.OneToOneField(
-        NonConventionalStructures,
-        on_delete=models.CASCADE,
-        primary_key=False,
-        default=None,
-        blank=True,
-        null=True
-    )
+    # conventional_structures = models.OneToOneField(
+    #     ConventionalStructures,
+    #     on_delete=models.CASCADE,
+    #     primary_key=False,
+    #     default=None,
+    #     blank=True,
+    #     null=True
+    # )
+    # nonconventional_structures = models.OneToOneField(
+    #     NonConventionalStructures,
+    #     on_delete=models.CASCADE,
+    #     primary_key=False,
+    #     default=None,
+    #     blank=True,
+    #     null=True
+    # )
 
     counter = models.IntegerField('Integer Counter', default=0, blank=False, null=False)
 
@@ -524,7 +549,6 @@ class Scenario(models.Model):
         scenarioTemplate = Scenario.templateScenario['siteData']
 
         """ process the elements on the Project-Scenario Description tab """
-
         if active_tab == 'project_information':
             list_of_attributes = scenarioTemplate['embedded_scenario']['fields']
             list_of_values = form_data['embedded_scenario']
@@ -536,6 +560,7 @@ class Scenario(models.Model):
                     val = None if val == '' else val
                     setattr(self, field, val)
 
+            # region old storage
             areal_features = self.areal_features
 
             if areal_features is None:
@@ -553,53 +578,44 @@ class Scenario(models.Model):
 
             areal_features.save()
             self.areal_features_id = areal_features.id
+            # endregion old storage
+
+            # region new storage
+            list_of_values = form_data['areal_features']
+            areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu')
+
+            for areal_feature in areal_features:
+                if areal_feature.code in list_of_values:
+                    area_value = list_of_values[areal_feature.code]['area'] or None
+                    is_checked = list_of_values[areal_feature.code]['checkbox'] or False
+
+                    self.process_areal_feature(areal_feature, area_value, is_checked)
+            # endregion new storage
 
         """ process the elements on the Structures tab """
         if active_tab == 'structures':
-            conventional_structures = self.conventional_structures
+            classification_values = ('conventional', 'nonconventional')
 
-            if conventional_structures is None:
-                conventional_structures = ConventionalStructures()
+            for classification in classification_values:
+                list_of_values = form_data[classification + '_structures']
+                structures = Structures.objects\
+                    .only('id', 'code', 'name', 'classification')\
+                    .filter(classification=classification).order_by('sort_nu')
 
-            list_of_attributes = scenarioTemplate['conventional_structures']['inputs']
-            list_of_values = form_data['conventional_structures']
-            for feature_name in list_of_attributes:
-                for field in list_of_attributes[feature_name]:
-                    if hasattr(conventional_structures, feature_name + '_' + field):
-                        field_value = list_of_values[feature_name][field]
-                        if field == 'area' and field_value == '':
-                            field_value = None
-                        setattr(conventional_structures, feature_name + '_' + field, field_value)
+                scenario_structures = ScenarioStructure.objects\
+                    .select_related('structure')\
+                    .filter(scenario=self, structure__classification=classification)
 
-            try:
-                conventional_structures.save()
-            except Exception:
-                test = {'Type': type(Exception).__name__,
-                        'message': "1. Unexpected error:" + Exception.args[0],
-                        }
+                for structure in structures:
+                    if structure.code in list_of_values:
+                        area_value = list_of_values[structure.code]['area'] or None
+                        is_checked = list_of_values[structure.code]['checkbox'] or False
 
-            self.conventional_structures_id = conventional_structures.id
-
-            nonconventional_structures = self.nonconventional_structures
-
-            if nonconventional_structures is None:
-                nonconventional_structures = NonConventionalStructures()
-
-            list_of_attributes = scenarioTemplate['nonconventional_structures']['inputs']
-            list_of_values = form_data['nonconventional_structures']
-            for feature_name in list_of_attributes:
-                for field in list_of_attributes[feature_name]:
-                    if hasattr(nonconventional_structures, feature_name + '_' + field):
-                        field_value = list_of_values[feature_name][field]
-                        if field == 'area' and field_value == '':
-                            field_value = None
-                        setattr(nonconventional_structures, feature_name + '_' + field, field_value)
-
-            nonconventional_structures.save()
-            self.nonconventional_structures_id = nonconventional_structures.id
+                        self.process_scenario_structure(structure, scenario_structures, area_value, is_checked)
 
         if active_tab == 'structure_costs':
-            self.process_strucure_costs(form_data['cost_items']['user_assumptions'], scenarioTemplate['cost_items']['fields'])
+            self.process_strucure_costs(form_data['cost_items']['user_assumptions'],
+                                        scenarioTemplate['cost_items']['fields'])
 
         # only process the costitems if the user is on that page, else there can't be any change
         if active_tab == 'costitems':
@@ -608,9 +624,93 @@ class Scenario(models.Model):
         return
 
 
+    def process_areal_feature(self, areal_feature, area_value, is_checked):
+        """
+        This is the 'new' storage for ScenarioArealFeature data - which is per-scenario data.
+        It stores non-empty (value is not blank OR checkbox is checked)
+
+        :param areal_feature:
+        :param area_value:
+        :param is_checked:
+        :return:
+        """
+        if area_value == None and is_checked is False:
+            # DELETE
+            if ScenarioArealFeature.objects.filter(scenario=self, areal_feature=areal_feature).exists():
+                c = ScenarioArealFeature.objects.get(scenario=self, areal_feature=areal_feature)
+                c.delete()
+
+        elif area_value is not None or is_checked is True:
+            # CREATE
+            if not ScenarioArealFeature.objects.filter(scenario=self, areal_feature=areal_feature).exists():
+                c = ScenarioArealFeature.objects.create(scenario=self, areal_feature=areal_feature,
+                                                     area=area_value, is_checked=is_checked)
+                c.save()
+            else:
+                # UPDATE
+                c = ScenarioArealFeature.objects.get(scenario=self, areal_feature=areal_feature)
+                changed_fields = set()
+
+                if c.area != area_value:
+                    setattr(c, 'area', area_value)
+                    changed_fields.add('area')
+
+                if c.is_checked != is_checked:
+                    setattr(c, 'is_checked', is_checked)
+                    changed_fields.add('is_checked')
+
+                if len(changed_fields) > 0:
+                    c.save()
+
+    def process_scenario_structure(self, structure, scenario_structures, area_value, is_checked):
+        """
+        This is the 'new' storage for ScenarioStructure data - which is per-scenario data.
+        It stores non-empty (value is not blank AND checkbox is checked)
+
+        :param structure:
+        :param area_value:
+        :param is_checked:
+        :return:
+        """
+
+        scenario_structures_objs = [x for x in scenario_structures if x.structure.code == structure.code]
+
+        if scenario_structures_objs is not None and len(scenario_structures_objs) > 0:
+            scenario_structures_obj = scenario_structures_objs[0]
+        else:
+            scenario_structures_obj = None
+
+        if area_value is None and is_checked is False:
+            # DELETE
+            if scenario_structures_obj is not None:
+                scenario_structures_obj.delete()
+
+        elif area_value is not None or is_checked is True:
+            # CREATE
+            if scenario_structures_obj is None:
+                c = ScenarioStructure.objects.create(scenario=self, structure=structure,
+                                                     area=area_value, is_checked=is_checked)
+                c.save()
+            else:
+                # UPDATE
+                c = scenario_structures_obj
+                changed_fields = set()
+
+                if c.area != int(area_value):
+                    setattr(c, 'area', area_value)
+                    changed_fields.add('area')
+
+                if c.is_checked != is_checked:
+                    setattr(c, 'is_checked', is_checked)
+                    changed_fields.add('is_checked')
+
+                if len(changed_fields) > 0:
+                    c.save()
+
+
     def process_strucure_costs(self, user_assumptions, cost_items):
         """
-            process the content of the 'Structure Cost Item User Assumptions' tab
+            process the content of the 'Structure Cost Item User Function' tab
               - combination of Structure (single) and Cost Items
 
             user_assumptions should have a single 'structure' - the structure selected
@@ -622,15 +722,21 @@ class Scenario(models.Model):
         list_of_values = None
         if user_assumptions is not None:
             structure_code = user_assumptions['structure']
-
             list_of_values = user_assumptions['data']
 
         # have to run through all the cost_items to delete any that are not found
         structure_obj = None
+        structure_cost_item_user_factors = StructureCostItemUserFactors.objects\
+            .select_related('costitem', 'structure')\
+            .filter(scenario__id=self.id, structure__code=structure_code)
+
         for cost_item in cost_items:
-            cost_item_assumptions_obj = CostItemUserAssumptions.objects.filter(scenario__id=self.id,
-                                                                               structure__code=structure_code,
-                                                                               costitem__code=cost_item).first()
+            cost_item_assumptions_objs = [x for x in structure_cost_item_user_factors if x.costitem.code == cost_item]
+            if cost_item_assumptions_objs is not None and len(cost_item_assumptions_objs) > 0:
+                cost_item_assumptions_obj = cost_item_assumptions_objs[0]
+            else:
+                cost_item_assumptions_obj = None
+
             # remove the values if they are all ''
             input_empty = False
             form_values = None
@@ -655,13 +761,13 @@ class Scenario(models.Model):
                     input_empty = True
 
                 # 2019-09-10 delete if they uncheck and discard any input
-                if form_values['checked'] is False:
-                    input_empty = True
+                # if form_values['checked'] is False:
+                #     input_empty = True
 
             if cost_item_assumptions_obj is not None:
                 if cost_item not in list_of_values or input_empty is True:
-                    # print("delete structure: {} cost_item: {}".format(structure_code, cost_item))
-                    cost_item_assumptions_obj.delete()
+                    # DELETE
+                    # cost_item_assumptions_obj.delete()
 
                     continue
                 elif cost_item_assumptions_obj.checked != form_values['checked'] or \
@@ -670,7 +776,7 @@ class Scenario(models.Model):
                         cost_item_assumptions_obj.d_density != form_values['d_density'] or \
                         cost_item_assumptions_obj.n_number != form_values['n_number']:
 
-                    # print("update structure: {} cost_item: {}".format(structure_code, cost_item))
+                    # UPDATE
                     cost_item_assumptions_obj.checked = form_values['checked']
 
                     cost_item_assumptions_obj.a_area = form_values['a_area']
@@ -680,9 +786,9 @@ class Scenario(models.Model):
 
                     cost_item_assumptions_obj.save()
 
-                    '''
+                    """
                         TODO: add calculation here
-                    '''
+                    """
                     form_values['construction_cost_factor_equation'] = '=mc2'
                     form_values['cost_V1'] = '$99.99'
 
@@ -694,8 +800,8 @@ class Scenario(models.Model):
                     structure_obj = Structures.objects.get(code=structure_code)
 
                 cost_item_obj = CostItem.objects.get(code=cost_item)
-                # print("create structure: {} cost_item: {}".format(structure_code, cost_item))
-                c = CostItemUserAssumptions(
+                # CREATE
+                c = StructureCostItemUserFactors(
                     scenario=self,
                     structure=structure_obj,
                     costitem=cost_item_obj,
@@ -709,9 +815,9 @@ class Scenario(models.Model):
                 )
                 c.save()
 
-                '''
+                """
                     TODO: add calculation here
-                '''
+                """
                 form_values['construction_cost_factor_equation'] = '=mc2'
                 form_values['cost_V1'] = '$99.99'
 
@@ -731,10 +837,13 @@ class Scenario(models.Model):
                 form_costs['user_input_cost'] = None
                 form_costs['base_year'] = None
 
-            user_costs_obj = CostItemUserCosts.objects.filter(scenario__id=self.id,
-                                                              costitem__code=cost_item).first()
+            user_costs_obj = ScenarioCostItemUserCosts.objects\
+                .select_related('scenario', 'costitem')\
+                .filter(scenario__id=self.id,costitem__code=cost_item).first()
 
-            default_costs_obj = CostItemDefaultCosts.objects.filter(costitem__code=cost_item).first()
+            default_costs_obj = CostItemDefaultCosts.objects \
+                .select_related('costitem') \
+                .filter(costitem__code=cost_item).first()
 
             is_default = 1
             change_count = 0
@@ -752,7 +861,7 @@ class Scenario(models.Model):
             # process checking for user changing 'cost_source'
             cost_source = form_costs['cost_source']
             if cost_source == 'user':
-                is_default -= 1 # there is a user cost_source, so it is not 'default' (unless the user_input_cost and year are blank, and the rep_likfe and o+m are defaults
+                is_default -= 1  # there is a user cost_source, so it is not 'default' (unless the user_input_cost and year are blank, and the rep_likfe and o+m are defaults
                 list_of_attributes.extend([
                     'base_year',
                     'user_input_cost',
@@ -858,7 +967,7 @@ class Scenario(models.Model):
                                             is_default,
                                             change_count,
                                         )
-                    )
+                            )
                 # if is_default != 1 and change_count > 0:
                 #     break
 
@@ -885,7 +994,7 @@ class Scenario(models.Model):
                     costitem = CostItem.objects.filter(code=cost_item).first()
 
                     # print("create cost_item {}".format(cost_item))
-                    c = CostItemUserCosts(
+                    c = ScenarioCostItemUserCosts(
                         scenario=self,
                         costitem=costitem,
                         cost_source=form_costs['cost_source'],
@@ -911,7 +1020,9 @@ class Scenario(models.Model):
                                                'name': cost_item.name,
                                                'units': cost_item.units}
 
-        cost_item_default_equations = CostItemDefaultEquations.objects.all().order_by('costitem__sort_nu')
+        cost_item_default_equations = CostItemDefaultEquations.objects\
+            .select_related('costitem')\
+            .all().order_by('costitem__sort_nu')
         for obj in cost_item_default_equations:
             costitem_code = obj.costitem.code
             cost_items_dict[costitem_code]['equation'] = obj.equation_tx
@@ -920,9 +1031,18 @@ class Scenario(models.Model):
 
         structures = Structures.objects.all().order_by('sort_nu')
 
-        cost_item_default_costs = CostItemDefaultCosts.objects.all().order_by('costitem__sort_nu')
+        # these are the scenario structures
+        scenario_structures = ScenarioStructure.objects\
+            .select_related('scenario', 'structure')\
+            .filter(scenario=self, is_checked=True)
 
-        cost_item_user_costs = CostItemUserCosts.objects.filter(scenario=self).order_by('costitem__sort_nu')
+        default_cost_item_costs = CostItemDefaultCosts.objects \
+            .select_related('costitem') \
+            .all().order_by('costitem__sort_nu')
+
+        scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
+            .select_related('costitem') \
+            .filter(scenario=self).order_by('costitem__sort_nu')
 
         # testing using RelatedManager .all()
         # cost_item_user_costs = self.cost_item_user_costs.all()
@@ -932,25 +1052,25 @@ class Scenario(models.Model):
 
         costs = {}
 
-        for cost_item_user_costs_obj in cost_item_user_costs:
-            costitem_code = cost_item_user_costs_obj.costitem.code
+        for scenario_cost_item_costs_obj in scenario_cost_item_costs:
+            costitem_code = scenario_cost_item_costs_obj.costitem.code
             unit_cost = None
-            if cost_item_user_costs_obj.user_input_cost is not None:
+            if scenario_cost_item_costs_obj.user_input_cost is not None:
                 # note: this is a Money field
-                unit_cost = cost_item_user_costs_obj.user_input_cost.amount
+                unit_cost = scenario_cost_item_costs_obj.user_input_cost.amount
 
-            cost_source = cost_item_user_costs_obj.cost_source
+            cost_source = scenario_cost_item_costs_obj.cost_source
             if cost_source == 'user':
-                if cost_item_user_costs_obj.user_input_cost is not None:
+                if scenario_cost_item_costs_obj.user_input_cost is not None:
                     # note: this is a Money field
-                    unit_cost = cost_item_user_costs_obj.user_input_cost.amount
+                    unit_cost = scenario_cost_item_costs_obj.user_input_cost.amount
 
             if costitem_code not in costs:
                 costs[costitem_code] = {'cost_source': cost_source,
                                         'unit_cost': unit_cost,
                                         'units': cost_items_dict[costitem_code]['units'],
-                                        'replacement_life': cost_item_user_costs_obj.replacement_life,
-                                        'o_and_m_pct': cost_item_user_costs_obj.o_and_m_pct,
+                                        'replacement_life': scenario_cost_item_costs_obj.replacement_life,
+                                        'o_and_m_pct': scenario_cost_item_costs_obj.o_and_m_pct,
                                         }
             else:
                 if cost_source == 'user':
@@ -960,8 +1080,8 @@ class Scenario(models.Model):
                 costs[costitem_code]['cost_source'] = cost_source
 
         # then add in the default costs to update the non 'user' (cost_source) costs
-        for cost_item_default_costs_obj in cost_item_default_costs:
-            costitem_code = cost_item_default_costs_obj.costitem.code
+        for default_cost_item_costs_obj in default_cost_item_costs:
+            costitem_code = default_cost_item_costs_obj.costitem.code
             if costitem_code in costs:
                 if costs[costitem_code]['cost_source'] != 'user':
                     cost_source = costs[costitem_code]['cost_source']
@@ -972,51 +1092,55 @@ class Scenario(models.Model):
 
                     unit_cost = None
                     if cost_source == 'rsmeans':
-                        unit_cost = cost_item_default_costs_obj.rsmeans_va.amount
+                        unit_cost = default_cost_item_costs_obj.rsmeans_va.amount
                     elif cost_source == 'db_25_pct':
-                        unit_cost = cost_item_default_costs_obj.db_25pct_va.amount
+                        unit_cost = default_cost_item_costs_obj.db_25pct_va.amount
                     elif cost_source == 'db_50_pct':
-                        unit_cost = cost_item_default_costs_obj.db_50pct_va.amount
+                        unit_cost = default_cost_item_costs_obj.db_50pct_va.amount
                     elif cost_source == 'db_75_pct':
-                        unit_cost = cost_item_default_costs_obj.db_75pct_va.amount
+                        unit_cost = default_cost_item_costs_obj.db_75pct_va.amount
 
                     costs[costitem_code]['unit_cost'] = unit_cost
                     costs[costitem_code]['units'] = cost_items_dict[costitem_code]['units']
             else:
                 costs[costitem_code] = {'cost_source': 'rsmeans',
-                                        'unit_cost': cost_item_default_costs_obj.rsmeans_va.amount,
+                                        'unit_cost': default_cost_item_costs_obj.rsmeans_va.amount,
                                         'units': cost_items_dict[costitem_code]['units'],
-                                        'o_and_m_pct': cost_item_default_costs_obj.o_and_m_pct,
-                                        'replacement_life': cost_item_default_costs_obj.replacement_life,
+                                        'o_and_m_pct': default_cost_item_costs_obj.o_and_m_pct,
+                                        'replacement_life': default_cost_item_costs_obj.replacement_life,
                                         }
 
-        conventional_structures = self.conventional_structures
-        nonconventional_structures = self.nonconventional_structures
+        # conventional_structures = self.conventional_structures
+        # nonconventional_structures = self.nonconventional_structures
 
         # prepare the cost item user assumptions - which are per structure per cost item
-        cost_item_user_assumptions = self.cost_item_user_assumptions.all().order_by('costitem__sort_nu')
+        cost_item_user_factors = self.cost_item_user_assumptions\
+            .select_related('costitem', 'structure')\
+            .all().order_by('costitem__sort_nu')
 
         user_assumptions = {}
-        for user_assumption in cost_item_user_assumptions:
-            if user_assumption.structure.code not in user_assumptions:
-                user_assumptions[user_assumption.structure.code] = {}
-            user_assumptions[user_assumption.structure.code][user_assumption.costitem.code] = user_assumption
+        for user_factor in cost_item_user_factors:
+            if user_factor.structure.code not in user_assumptions:
+                user_assumptions[user_factor.structure.code] = {}
+            user_assumptions[user_factor.structure.code][user_factor.costitem.code] = user_factor
 
         # if the user has not made any edits to the default user assumptions, you need to get the
         # assumptions from that model
-        cost_item_default_assumptions = CostItemDefaultFactors.objects.all()
-        for default_assumption in cost_item_default_assumptions:
-            if default_assumption.structure.code not in user_assumptions:
+        cost_item_default_factors = StructureCostItemDefaultFactors.objects \
+            .select_related('costitem', 'structure') \
+            .all()
+        for default_factor in cost_item_default_factors:
+            if default_factor.structure.code not in user_assumptions:
                 # the defaults are by definition checked
-                default_assumption.checked = True
-                user_assumptions[default_assumption.structure.code] = {}
-                user_assumptions[default_assumption.structure.code][
-                    default_assumption.costitem.code] = default_assumption
+                default_factor.checked = True
+                user_assumptions[default_factor.structure.code] = {}
+                user_assumptions[default_factor.structure.code][
+                    default_factor.costitem.code] = default_factor
             # added to try and fix single only cost item on all but first result structure
-            elif default_assumption.costitem.code not in user_assumptions[default_assumption.structure.code]:
-                default_assumption.checked = True
-                user_assumptions[default_assumption.structure.code][
-                    default_assumption.costitem.code] = default_assumption
+            elif default_factor.costitem.code not in user_assumptions[default_factor.structure.code]:
+                default_factor.checked = True
+                user_assumptions[default_factor.structure.code][
+                    default_factor.costitem.code] = default_factor
         result['nonconventional'] = {'sum_value': 0, 'structures': {}}
         result['conventional'] = {'sum_value': 0, 'structures': {}}
 
@@ -1032,28 +1156,46 @@ class Scenario(models.Model):
         study_life = int(self.study_life) if self.study_life else 0
         discount_rate = float(self.discount_rate) if self.discount_rate else 0
 
-        for structure in structures:
+        # region new storage
+        for scenario_structure in scenario_structures:
+            structure = None
+            # is_checked = scenario_structure.is_checked
+            area_value = scenario_structure.area
+
+
+            for s in structures:
+                if s == scenario_structure.structure:
+                    structure = s
+                    continue
+
+            structure.area = area_value
+
+        # endregion new storage
+
+        # for structure in structures:
 
             structure_code = structure.code
-            is_checked = False
+            # is_checked = False
             sum_value = 0
 
             # if conventional_structures is None and nonconventional_structures is None:
             #     continue
 
-            if structure.classification == 'conventional':
-                if hasattr(conventional_structures, structure_code + '_checkbox'):
-                    is_checked = getattr(conventional_structures, structure_code + '_checkbox')
-                if hasattr(conventional_structures, structure_code + '_area'):
-                    structure.area = getattr(conventional_structures, structure_code + '_area')
-            else:
-                if hasattr(nonconventional_structures, structure_code + '_checkbox'):
-                    is_checked = getattr(nonconventional_structures, structure_code + '_checkbox')
-                if hasattr(nonconventional_structures, structure_code + '_area'):
-                    structure.area = getattr(nonconventional_structures, structure_code + '_area')
+            # region old storage
+            # if structure.classification == 'conventional':
+            #     if hasattr(conventional_structures, structure_code + '_checkbox'):
+            #         is_checked = getattr(conventional_structures, structure_code + '_checkbox')
+            #     if hasattr(conventional_structures, structure_code + '_area'):
+            #         structure.area = getattr(conventional_structures, structure_code + '_area')
+            # else:
+            #     if hasattr(nonconventional_structures, structure_code + '_checkbox'):
+            #         is_checked = getattr(nonconventional_structures, structure_code + '_checkbox')
+            #     if hasattr(nonconventional_structures, structure_code + '_area'):
+            #         structure.area = getattr(nonconventional_structures, structure_code + '_area')
+            # # endregion old storage
 
-            if not is_checked:
-                continue
+            # if not is_checked:
+            #     continue
 
             if structure_code not in user_assumptions:
                 continue
@@ -1219,12 +1361,13 @@ class Scenario(models.Model):
                     'planning_and_design': 0,
                     'o_and_m_sum': 0,
                     'replacement_sum': 0,
-                }
+                },
+                'structures': {}
             }
 
             for structure_code in result[classification]['structures']:
-                if 'structures' not in structure_life_cycle_costs[classification]:
-                    structure_life_cycle_costs[classification]['structures'] = {}
+                # if 'structures' not in structure_life_cycle_costs[classification]:
+                #     structure_life_cycle_costs[classification]['structures'] = {}
 
                 # this has useful labels and size of structures
                 structure_data = result[classification]['structures'][structure_code]
@@ -1364,15 +1507,24 @@ class Scenario(models.Model):
         return result
 
 
-#
-# this stores the 'scenario' values for the costitem costs.
-# each row is attached to one CostItem for one Scenario
-#
-#
-class CostItemUserCosts(models.Model):
-    scenario = models.ForeignKey(Scenario, related_name="cost_item_user_costs", on_delete=models.CASCADE, default=None,
-                                 blank=False, null=False)
-    costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
+class ScenarioCostItemUserCosts(models.Model):
+    """
+
+     this stores the 'scenario' values for the costitem costs.
+     each row is attached to one CostItem for one Scenario
+
+     Note: refactored name from CostItemUserCosts to StructureCostItemUserCosts
+
+     TODO: fix the error in renaming.  This does not relate to Structure at all - which is confusing enough.
+     This should have been renamed ScenarioCostItemUserCosts
+
+     TODO: refactor name from StructureCostItemUserCosts to ScenarioCostItemUserCosts
+
+    """
+    scenario = models.ForeignKey(Scenario, related_name="cost_item_user_costs",
+                                 on_delete=models.CASCADE, default=None, blank=False, null=False)
+    costitem = models.ForeignKey(CostItem,
+                                 on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     COST_SOURCE_VALUES = ('rsmeans', 'db_25_pct', 'db_50_pct', 'db_75_pct')
     COST_SOURCE_TEXTS = ('Eng. Est.', 'DB - 25%', 'DB - 50%', 'DB - 75%')
@@ -1412,38 +1564,95 @@ class CostItemUserCosts(models.Model):
         unique_together = ("scenario", "costitem")
 
 
+class ScenarioArealFeature(models.Model):
+    """
+        2022-01-13 - this is a proposed storage mechanism for the users Areal Feature information
+           that is currently stored in  ArealFeature
+           This is being considered because the 1 existing tables have hardwired contents
+           and there is no way anyone could easily expand or alter what are considered Areal Features
+           in the future.
+
+           If this works, then the 1 tables ArealFeature will be removed.
+
+        this is a User Data Table of what Areal Feature Area and on/off values are selected for
+        each Scenario
+
+    """
+    scenario = models.ForeignKey(Scenario, related_name="scenario_areal_feature", on_delete=models.CASCADE,
+                                 default=None, blank=False, null=False)
+    areal_feature = models.ForeignKey(ArealFeatureLookup, on_delete=models.CASCADE,
+                                  default=None, blank=False, null=False)
+
+    area = models.IntegerField("Area", default=0, blank=True, null=True)
+    is_checked = models.BooleanField("Is Checked", default=False, blank=True, null=True)
+
+    def __str__(self):
+        return self.scenario.scenario_title + ' - ' + self.areal_feature.name
+
+    class Meta:
+        verbose_name_plural = "Scenario Areal Features"
+        unique_together = ("scenario", 'areal_feature',)
 
 
+class ScenarioStructure(models.Model):
+    """
+        2022-01-11 - this is a proposed storage mechanism for the users structure information
+           that is currently stored in  ConventionalStructures and NonConventionalStructures
+           This is being considered because the 2 existing tables have hardwired contents
+           and there is no way anyone could easily expand or alter what are considered Structures
+           in the future.
 
-class CostItemUserAssumptions(models.Model):
+           If this works, then the 2 tables ConventionalStructures and NonConventionalStructures will
+           be removed.
+
+        this is a User Data Table of what Structure Area and on/off values are selected for
+        each Scenario
+
+    """
+    scenario = models.ForeignKey(Scenario, related_name="scenario_structure", on_delete=models.CASCADE,
+                                 default=None, blank=False, null=False)
+    structure = models.ForeignKey(Structures, on_delete=models.CASCADE,
+                                  default=None, blank=False, null=False)
+
+    area = models.IntegerField("Area", default=0, blank=True, null=True)
+    is_checked = models.BooleanField("Is Checked", default=False, blank=True, null=True)
+
+    def __str__(self):
+        return self.scenario.scenario_title + ' - ' + self.structure.name
+
+    class Meta:
+        verbose_name_plural = "ScenarioStructures"
+        unique_together = ("scenario", 'structure',)
+
+
+class StructureCostItemUserFactors(models.Model):
     """
         This is connected to the Structure Costs page
         and stores data by (project/)scenario/structure/costitem
 
         the 'user' cost assumptions are stored here
 
-    NOTE: this name is poorly chosen.  It should be StructureCostItemUserFactors or even ScenarioStructureCostItemUserFactors
+     Note: refactored name from CostItemUserAssumptions to StructureCostItemUserFactors
 
     """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
                                  default=None, blank=False, null=False)
-    structure = models.ForeignKey(Structures, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
-    costitem = models.ForeignKey(CostItem, on_delete=models.DO_NOTHING, default=None, blank=False, null=False)
+    structure = models.ForeignKey(Structures, on_delete=models.CASCADE, default=None, blank=False, null=False)
+    costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     checked = models.BooleanField("Checked in UI", default=None, null=True)
 
     a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
     z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
     d_density = models.CharField("Density (d)", max_length=10, default=None, blank=True, null=True)
-    # TODO remove this unused field.  not included in front-end or calculations
-    # r_ratio = models.CharField("Ratio (r)", max_length=10, default=None, blank=True, null=True)
-
     n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
 
     def __str__(self):
         return str(self.scenario.scenario_title) + " -- " + self.structure.name + " -- " + self.costitem.name
 
     class Meta:
-        verbose_name = "Scenario Structure Cost Item User Assumption"
-        verbose_name_plural = "Scenario Structure Cost Item User Assumptions"
+        verbose_name = "Scenario Structure Cost Item User Factors"
+        verbose_name_plural = "Scenario Structure Cost Item User Factors"
         unique_together = ("scenario", 'structure', "costitem")
+
+        # ordering = ['sort_nu', ]

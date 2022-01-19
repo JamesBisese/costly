@@ -103,7 +103,7 @@ $(function () {
         var scenario_url = SETTINGS.URLS.new_scenario_list.replace('<int:pk>', project_id);
 
         var options = {
-            "serverSide": true,
+            "serverSide": false,
             "responsive": true,
             "ajax": scenario_url,
             "paging": false,
@@ -114,13 +114,6 @@ $(function () {
                 'loadingRecords': '&nbsp;',
                 'processing': "<span class='fa-stack fa-lg'><i class='fa fa-spinner fa-spin fa-stack-2x fa-fw'></i></span>&emsp;Processing ..."
             },
-            // "buttons": [
-            //     { 'extend': 'copy',  'exportOptions': {'columns': export_columns}},
-            //     { 'extend': 'csv',   'exportOptions': {'columns': export_columns}},
-            //     { 'extend': 'excel', 'exportOptions': {'columns': export_columns}},
-            //     { 'extend': 'pdf',   'exportOptions': {'columns': export_columns}},
-            //     { 'extend': 'print', 'exportOptions': {'columns': export_columns}},
-            // ],
             "columns": [
                 {"data": "id", "searchable": false},
                 {"data": "scenario_title", "searchable": true},

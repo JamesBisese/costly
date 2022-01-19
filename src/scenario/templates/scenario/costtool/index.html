@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load filters %}
+
 {% block title %}{{ block.super }}Update Scenario{% endblock %}
 
 {% block navbar-left %}
@@ -9,7 +11,6 @@
 {% load static %}
 
 {% block extra_css %}
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.9.0/css/bootstrap-slider.min.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -38,18 +39,13 @@
 {% endblock extra_js %}
 
 {% block content %}
-{#<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>#}
-    <script type="text/javascript" src="{% static 'scenario/js/cost_tool.js' %}"></script>
+<script type="text/javascript" src="{% static 'scenario/js/cost_tool.js' %}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
-
     // on-ready function
     $(document).ready(function(){
 
     });
-
-
-
 </script>
 
 <style>
@@ -59,42 +55,23 @@
 <div id="calculate">
 
     <div id="pageoptions">
-
         <span class="note"></span>
-
-        <!--<button type="button" class="btn btn-primary" onclick="saveDB()" class="pageoption save">-->
-            <!--<span class="glyphicon glyphicon-download"></span>Save DB-->
-        <!--</button>-->
-{#        <button type="button" class="btn btn-primary" onclick="saveJSON()" class="pageoption save">#}
-{#            <span class="glyphicon glyphicon-download"></span>Save JSON#}
-{#        </button>#}
-{#        <input type="file" accept='application/json' id="file1" onchange='openFile(event)' style="display:none">#}
-{#        <button type="button" class="btn btn-primary" onclick="openFileOption()" class="pageoption save">#}
-{#            <span class="glyphicon glyphicon-upload"></span>Load JSON#}
-{#        </button>#}
-        <!--<button type="button" class="btn btn-primary" onclick="togglePrintable()" class="pageoption save">-->
-            <!--<span class="glyphicon glyphicon-print"></span>Display Printable Format-->
-        <!--</button>-->
-
     </div>
 
     <div id="tab_box">
-
         <h2><div id="scenario_name"></div></h2>
 
         <ul id="tab_options" class="nav nav-tabs nav-justified">
             <li><a href="#project_information">Project-Scenario<br>Description</a></li>
             <li><a href="#structures">Structures</a></li>
             <li><a href="#costitems">Cost Item<br>Unit Costs</a></li>
-            <li><a href="#structure_costs">Structure/Cost Item<br>User Assumptions</a></li>
+            <li><a href="#structure_costs" id="structure_costs_tab">Structure/Cost Item<br>User Factors</a></li>
             <li><a href="#input-result" id="input_result_tab" style="background-color:#228EA9; color:white;" class="input-result">Results</a></li>
         </ul>
 
         <div class="tab-content" id="inputs">
             <div class="content">
-
                 <!-- the content of these pages are stored separately  -->
-
                 {% include "scenario/costtool/subpages/project_information.html" %}
                 {% include "scenario/costtool/subpages/structures.html" %}
                 {% include "scenario/costtool/subpages/costitems.html" %}
@@ -106,7 +83,6 @@
                 </form>
             </div>
         </div>
-
     </div>
 </div>
 
