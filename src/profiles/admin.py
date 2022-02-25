@@ -25,7 +25,7 @@ class NewUserAdmin(NamedUserAdmin):
     user_type.short_description = 'User Type'
 
     list_display = ('name', 'organization_tx', 'job_title', 'user_type', 'email', 'permalink',
-                    'is_active', 'is_superuser', 'is_staff', 'last_login')
+                    'is_active', 'is_superuser', 'is_staff', 'last_login', 'date_joined')
     list_display_links = ('name',)
     # hint: search related fields using double-underscore '__'
     search_fields = ('email', 'name', 'organization_tx','job_title', 'profile__user_type')

@@ -34,6 +34,9 @@ class Command(BaseCommand):
                     # we have no object!  do something
                     raise ValueError('CostItem "{}" does not exist. Error in input file'.format(row['cost_item']))
 
+                row['o_and_m_pct'] = int(row['o_and_m_pct'])
+                row['replacement_life'] = int(row['replacement_life'])
+
                 if not CostItemDefaultEquations.objects.filter(costitem=cost_item).exists():
                     i = CostItemDefaultEquations.objects.create(costitem=cost_item,
                                                  equation_tx=row['equation_tx'],

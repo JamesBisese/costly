@@ -537,6 +537,9 @@ The scripts have to be run in a particular order to deal with dependencies.
 The output from the command scripts has been removed.
 ~~~~
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
+# python manage.py load_ArealFeatureLookup
+
+(gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
 # python manage.py load_Structures
 ...
 
@@ -551,7 +554,7 @@ The output from the command scripts has been removed.
 # python manage.py load_CostItemDefaultEquations
 
 (gsicosttool) user.name@MACHINENAME C:\inetpub\wwwdjango\gsicosttool\src
-# python manage.py load_CostItemDefaultFactors
+# python manage.py load_StructureCostItemDefaultFactors
 ~~~~
 
 There is an optional command to create a handfull of user accounts
