@@ -18,7 +18,7 @@ from scenario.models import CostItem, Structures, StructureCostItemDefaultFactor
 class Command(BaseCommand):
     help = 'Tool to load CostItemDefaultFactors into table from CSV file.'
 
-    default_file_path = r".\scenario\static\scenario\data\CostItemDefaultFactors.csv"
+    default_file_path = r".\scenario\static\scenario\data\StructureCostItemDefaultFactors.csv"
 
     def add_arguments(self, parser):
         parser.add_argument('--csvfile', type=argparse.FileType('r'), default=self.default_file_path)

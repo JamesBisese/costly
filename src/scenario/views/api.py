@@ -1,11 +1,17 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, viewsets
+from django.utils.decorators import method_decorator
+
+from rest_framework import viewsets, mixins, viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
-from scenario.views.decorators import database_debug, query_debugger2
+from rest_framework import serializers
+from scenario.decorators import sql_query_debugger
 
 from authtools.models import User
 from scenario.models import Project, \
@@ -24,14 +30,17 @@ from scenario.serializers import UserSerializer, ProjectSerializer, \
     generate and return data via 'api' calls.  aka return JSON data
 """
 
-class UserViewSet(viewsets.ViewSet):
+class UserViewSet(UserPassesTestMixin, viewsets.ViewSet):
+    def test_func(self):
+        return self.request.user.is_active
+
     """
         provided via /api/users
     """
+    # .only('name', 'organization_tx', 'email', 'job_title', 'phone_tx', 'date_joined', 'last_login', 'is_staff', 'is_superuser',
+    #       'profile__user_type')\
     queryset = User.objects\
         .select_related('profile')\
-        .only('name', 'organization_tx', 'email', 'job_title', 'phone_tx', 'date_joined', 'last_login',
-              'profile__user_type')\
         .all().order_by('name')
     serializer_class = UserSerializer
 
@@ -40,21 +49,27 @@ class UserViewSet(viewsets.ViewSet):
         qs = super(UserViewSet, self).get_queryset()
 
         if not (self.request.user.is_superuser or self.request.user.is_staff):
-            qs = qs.filter(project__user=self.request.user)
+            qs = qs.filter(id=self.request.user.id)
 
         code = self.request.query_params.get('id', None)
         if code is not None:
             qs = qs.filter(id=code)
 
-    # @query_debugger2
+        return qs
+
+    # @sql_query_debugger
     def list(self, request):
+        if not (self.request.user.is_superuser or self.request.user.is_staff):
+            self.queryset = self.queryset.filter(id=self.request.user.id)
+
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
 
 
-# @query_debugger2
-class ProjectViewSet(mixins.ListModelMixin,
+class ProjectViewSet(UserPassesTestMixin, mixins.ListModelMixin,
                      viewsets.GenericViewSet):
+    def test_func(self):
+        return self.request.user.is_active
     """
     this is what populates the Scenario table
 
@@ -68,13 +83,13 @@ class ProjectViewSet(mixins.ListModelMixin,
               'project_purchase_information',
               'create_date', 'modified_date',
               'user__name', 'user__email', 'user__phone_tx', 'user__job_title', 'user__organization_tx',
-              'user__is_active', 'user__date_joined', 'user__last_login',
+              'user__is_active', 'user__is_staff', 'user__is_superuser', 'user__date_joined', 'user__last_login',
               'user__profile__user_type') \
         .annotate(num_scenarios=Count('scenario'))\
         .all().order_by('project_title')
     serializer_class = ProjectSerializer
 
-    # @query_debugger2
+    # @sql_query_debugger
     def get_queryset(self):
         qs = super(ProjectViewSet, self).get_queryset()
 
@@ -95,7 +110,7 @@ class ProjectViewSet(mixins.ListModelMixin,
 
 class ProjectScenarioViewSet(viewsets.ModelViewSet):
     """
-        TBD provided via /api/projects and /api/projects/?id=3
+        /api/project/{pk}/scenarios
     """
     pk = 1
     queryset = Scenario.objects\
@@ -106,7 +121,7 @@ class ProjectScenarioViewSet(viewsets.ModelViewSet):
               'project__user__name', 'project__user__phone', 'project__user__organization_tx',
               'project__user__profile__user_type') \
         .filter(project__id=pk)\
-        .order_by('project__project_title', 'scenario.title')
+        .order_by('project__project_title', 'scenario_title')
     serializer_class = ScenarioSerializer
 
     def get_queryset(self):
@@ -114,30 +129,52 @@ class ProjectScenarioViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class StructureViewSet(viewsets.ModelViewSet):
+class StructureViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
         provided via /api/structures and /api/structures/?code=TBD
     """
-    queryset = Structures.objects\
-        .all().order_by("sort_nu")
+    queryset = Structures.objects.all().order_by("sort_nu")
     serializer_class = StructureSerializer
+
+    @method_decorator(staff_member_required, name='dispatch')
+    def create(self, request):
+        serializer = StructureSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         qs = super(StructureViewSet, self).get_queryset()
-
         code = self.request.query_params.get('code', None)
         if code is not None:
             qs = qs.filter(code=code)
-
         return qs
 
+    @method_decorator(staff_member_required, name='dispatch')
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class CostItemViewSet(viewsets.ModelViewSet):
+
+class CostItemViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
         provided via /api/costitems and /api/costitems/?code=fill
     """
     queryset = CostItem.objects.all().order_by("sort_nu")
     serializer_class = CostItemSerializer
+
+    @method_decorator(staff_member_required, name='dispatch')
+    def create(self, request):
+        serializer = CostItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         qs = super(CostItemViewSet, self).get_queryset()
@@ -148,8 +185,17 @@ class CostItemViewSet(viewsets.ModelViewSet):
 
         return qs
 
+    @method_decorator(staff_member_required, name='dispatch')
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class CostItemDefaultCostViewSet(viewsets.ModelViewSet):
+
+class CostItemDefaultCostViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
         provided via /api/costitemdefaultcosts and /api/costitemdefaultcosts/?code=fill
     """
@@ -169,12 +215,15 @@ class CostItemDefaultCostViewSet(viewsets.ModelViewSet):
 
 
 
-class CostItemUserCostViewSet(viewsets.ModelViewSet):
+class CostItemUserCostViewSet(UserPassesTestMixin, viewsets.ModelViewSet):
     """
 
         provided via /api/cost_item_user_costs and /api/costitem_user_costs/?code=fill
     TODO: remove the extra fields for this.  there is too much going on in the serializer
     """
+    def test_func(self):
+        return self.request.user.is_active
+
     queryset = ScenarioCostItemUserCosts.objects\
         .select_related('costitem', 'scenario', 'scenario__project',
                         'scenario__project__user', 'scenario__project__user__profile')\
@@ -183,6 +232,9 @@ class CostItemUserCostViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super(CostItemUserCostViewSet, self).get_queryset()
+
+        if not (self.request.user.is_superuser or self.request.user.is_staff):
+            qs = qs.filter(scenario__project__user=self.request.user)
 
         code = self.request.query_params.get('scenario', None)
         if code is not None:
@@ -195,7 +247,7 @@ class CostItemUserCostViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
+class CostItemDefaultEquationsAndFactors(LoginRequiredMixin, viewsets.ModelViewSet):
     """
         provided via /api/costitemdefaultequations and
         /api/costitemdefaultassumptions/?structure=pond&costitem=fill
@@ -215,10 +267,14 @@ class CostItemDefaultEquationsAndFactors(viewsets.ModelViewSet):
         return qs
 
 
-class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
+class StructureCostItemDefaultFactorsViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
-        provided via /api/costitemdefaultfactors and
-        /api/costitemdefaultfactors/?structure=pond&costitem=fill
+        provided via
+        /api/costitemdefaultfactors and
+        /api/costitemdefaultfactors/?structure=pond and
+        /api/costitemdefaultfactors/?structure=pond&costitem=clearing
+
+
     """
     queryset = StructureCostItemDefaultFactors.objects \
         .select_related('costitem', 'structure') \
@@ -226,7 +282,7 @@ class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
     serializer_class = StructureCostItemDefaultFactorsSerializer
 
     def get_queryset(self):
-        qs = super(CostItemDefaultFactorsViewSet, self).get_queryset()
+        qs = super(StructureCostItemDefaultFactorsViewSet, self).get_queryset()
 
         code = self.request.query_params.get('structure', None)
         if code is not None:
@@ -239,7 +295,7 @@ class CostItemDefaultFactorsViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class ScenarioViewSet(viewsets.ModelViewSet):
+class ScenarioViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
         provided via /api/scenarios and /api/scenarios/<pk:i>/
 
@@ -248,12 +304,34 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         Detailed scenario instance(s)
 
     """
-    queryset = Scenario.objects.all().order_by('id')
+    queryset = Scenario.objects \
+        .select_related('project', 'project__user', 'project__user__profile') \
+        .only(
+            'scenario_title',
+            'captures_90pct_storm', 'meets_peakflow_req', 'nutrient_req_met',
+            'pervious_area', 'impervious_area',
+            'planning_and_design_factor', 'study_life', 'discount_rate', 'project__priority_watershed',
+            'create_date', 'modified_date',
+            'project__project_title', 'project__project_type', 'project__project_ownership',
+            'project__project_area',
+            'project__land_unit_cost', 'project__land_unit_cost_currency',
+            'project__project_location',
+            'project__project_purchase_information',
+            'project__user__profile__user_type',
+            'project__user__email',
+            'project__user__job_title',
+            'project__user__last_login', 'project__user__date_joined',
+            'project__user__is_staff', 'project__user__is_superuser',
+            'project__user__name', 'project__user__phone_tx', 'project__user__organization_tx',
+            'project__user__profile__user_type'
+        ) \
+        .all().order_by('project__project_title', 'scenario_title')
+
 
     # this serializer contains all the details
     serializer_class = ScenarioSerializer
 
-    # @query_debugger2
+    # @sql_query_debugger
     def get_queryset(self):
         qs = super(ScenarioViewSet, self).get_queryset()
 
@@ -261,9 +339,9 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             qs = qs.filter(project__user=self.request.user)
 
         # this is getting a single scenario by id
-        code = self.request.query_params.get('id', None)
-        if code is not None:
-            qs = qs.filter(id=code)
+        id = self.request.query_params.get('id', None)
+        if id is not None:
+            qs = qs.filter(id=id)
         # this is getting a list of scenarios for a project
         project = self.request.query_params.get('project', None)
         if project is not None:
@@ -272,20 +350,21 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class ScenarioListViewSet(viewsets.ModelViewSet):
+class ScenarioListViewSet(UserPassesTestMixin, viewsets.ModelViewSet):
     """
-        provided via /api/scenarios and /api/scenarios/<pk:i>/
-
-        also via /api/scenarios/?project=<int>
-
-
-        this is used in the /project/<pk>/scenario list
+        provided via /api/scenario_list and /api/scenario_list.<pk:i>/
 
     """
+    def test_func(self):
+        return self.request.user.is_active
+
     queryset = Scenario.objects\
-        .select_related('project') \
+        .select_related('project', 'project__user', 'project__user__profile') \
         .only('project__project_title',
-              'scenario_title',
+              'project__user__job_title',
+              'project__user__last_login', 'project__user__date_joined',
+              'project__user__is_staff', 'project__user__is_superuser',
+              'scenario_title', 'create_date', 'modified_date',
               'nutrient_req_met', 'captures_90pct_storm',
               'meets_peakflow_req', 'pervious_area', 'impervious_area',
               'create_date', 'modified_date',
@@ -296,7 +375,7 @@ class ScenarioListViewSet(viewsets.ModelViewSet):
     # this is the change required to use this on the list
     serializer_class = ScenarioListSerializer  # jab 2019-05-24 ScenarioSerializer
 
-    # @query_debugger2
+    # @sql_query_debugger
     def get_queryset(self):
         qs = super(ScenarioListViewSet, self).get_queryset()
 
@@ -315,11 +394,14 @@ class ScenarioListViewSet(viewsets.ModelViewSet):
         return qs
 
 
-class ScenarioAuditViewSet(viewsets.ModelViewSet):
+class ScenarioAuditViewSet(UserPassesTestMixin, viewsets.ModelViewSet):
     """
-        provided via /api/scenarios and /api/scenarios/<pk:i>/
+        provided via /api/scenario_audit and /api/scenarios/<pk:i>/ where pk is Scenario.id
 
     """
+    def test_func(self):
+        return self.request.user.is_active
+
     # .only('project__project_title',
     #       # 'project__project_type', 'project__project_ownership',
     #       # 'project__project_area', 'project__land_unit_cost', 'project__project_location',
@@ -332,7 +414,7 @@ class ScenarioAuditViewSet(viewsets.ModelViewSet):
         .select_related('project', 'project__user', 'project__user__profile') \
         .all().order_by('id')
 
-    # @query_debugger2
+    # @sql_query_debugger
     def get_queryset(self):
         qs = super(ScenarioAuditViewSet, self).get_queryset()
         return qs
@@ -341,11 +423,14 @@ class ScenarioAuditViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioAuditSerializer
 
 
-class StructureCostItemUserFactorsViewSet(viewsets.ModelViewSet):
+class StructureCostItemUserFactorsViewSet(UserPassesTestMixin, viewsets.ModelViewSet):
     """
         provided via /api/structure_user_cost_item_factors
         and /api/structure_user_cost_item_factors/?structure=pond&costitem=fill&scenario=8
     """
+    def test_func(self):
+        return self.request.user.is_active
+
     queryset = StructureCostItemUserFactors.objects\
         .select_related('scenario',
                         'scenario__project', 'scenario__project__user', 'scenario__project__user__profile',
@@ -355,6 +440,9 @@ class StructureCostItemUserFactorsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super(StructureCostItemUserFactorsViewSet, self).get_queryset()
+
+        if not (self.request.user.is_superuser or self.request.user.is_staff):
+            qs = qs.filter(scenario__project__user=self.request.user)
 
         code = self.request.query_params.get('scenario', None)
         if code is not None:
@@ -374,17 +462,52 @@ class StructureCostItemUserFactorsViewSet(viewsets.ModelViewSet):
 
 
 #
-# this is the Structure Cost data in a single html partial table or JSON
+# this is the Structure Cost data in JSON
 #
-class StructureCosts(APIView):
+class StructureCosts(UserPassesTestMixin, APIView):
+    """
+    URI/scenario/<int:pk>/structure_costs/<slug:structure_code>/
+    example: /scenario/55/structure_costs/swale/
+
+    """
+    def test_func(self):
+        return self.request.user.is_active
+
+
+        # .filter(pk=pk)
 
     def get(self, request, multiple_pks):
         pass
 
+    # def get_queryset(self):
+    #     # qs = super(StructureCosts, self).get_queryset()
+    #
+    #     qs = Scenario.objects \
+    #         .select_related('project')
+    #
+    #     if not (self.request.user.is_superuser or self.request.user.is_staff):
+    #         qs = qs.filter(scenario__project__user=self.request.user)
+    #
+    #     return qs
+
+    # @sql_query_debugger
     def get(self, request, pk, structure_code, costitem_code=None):
+
+        # pk = self.request.query_params.get('pk', None)
+        # structure_code = self.request.query_params.get('structure_code', None)
+        # costitem_code = self.request.query_params.get('costitem_code', None)
+
+
         queryset = Scenario.objects \
-            .select_related('project') \
+            .select_related('project')\
             .filter(pk=pk)
+
+        if not (self.request.user.is_superuser or self.request.user.is_staff):
+            queryset = queryset.filter(project__user_id=self.request.user.id)
+
+        # queryset = self.get_queryset()
+        # queryset = queryset.filter(pk=pk)
+
         scenario = get_object_or_404(queryset)
         serializer_class = ScenarioSerializer
         serializer = serializer_class(scenario)
@@ -395,8 +518,8 @@ class StructureCosts(APIView):
         # debugging
         # costitem_code = None
 
-        """ 
-        this explicit version is to allow filtering for just a certain costitem.  
+        """
+        this explicit version is to allow filtering for just a certain costitem.
         this is the first time I've used this syntax
         """
         q = {}
@@ -416,14 +539,14 @@ class StructureCosts(APIView):
             .select_related('structure', 'costitem')\
             .filter(**q2)
 
-        q3 = {}
-        q3.update({'scenario': scenario})
-        if costitem_code is not None:
-            q3.update({'costitem__code': costitem_code})
-
-        scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
-            .select_related('costitem', 'scenario') \
-            .filter(**q3)
+        # q3 = {}
+        # q3.update({'scenario': scenario})
+        # if costitem_code is not None:
+        #     q3.update({'costitem__code': costitem_code})
+        #
+        # scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
+        #     .select_related('costitem', 'scenario') \
+        #     .filter(**q3)
 
         q4 = {}
         q4.update({'scenario__id': pk})
@@ -444,7 +567,7 @@ class StructureCosts(APIView):
                                                      scenario_data,
                                                      default_cost_item_costs,
                                                      default_cost_item_factors,
-                                                     scenario_cost_item_costs,
+                                                     # scenario_cost_item_costs,
                                                      scenario_structure_cost_item_factors,
                                                      cost_item_default_equations
                                                      ))
@@ -454,7 +577,7 @@ def structure_cost_item_json(structure,
                              scenario_data,
                              default_cost_item_costs,
                              default_cost_item_factors,
-                             cost_item_user_costs,
+                             # cost_item_user_costs,
                              cost_item_user_assumptions,
                              cost_item_default_equations
                              ):
@@ -513,10 +636,14 @@ def structure_cost_item_json(structure,
         structure_costs['data'][costitem_code] = {'equation': obj.equation_tx,
                                                   'units': obj.costitem.units,
                                                   'checked': False,
-                                                  'a_area': obj.a_area,
-                                                  'z_depth': obj.z_depth,
-                                                  'd_density': obj.d_density,
-                                                  'n_number': obj.n_number,
+                                                  # 'a_area': obj.a_area,
+                                                  # 'z_depth': obj.z_depth,
+                                                  # 'd_density': obj.d_density,
+                                                  # 'n_number': obj.n_number,
+
+                                                  'o_and_m_pct': obj.o_and_m_pct,
+                                                  'replacement_life': obj.replacement_life,
+
                                                   'help_text': obj.help_text
                                                   }
 
@@ -548,35 +675,34 @@ def structure_cost_item_json(structure,
     """
 
     # first add in the cost_item_user_costs
-    for obj in cost_item_user_costs:
-        costitem_code = obj.costitem.code
+    # for obj in cost_item_user_costs:
+    for obj in scenario_data.data['cost_item_user_costs']:
+        costitem_code = obj['costitem_code']
 
         cost_source = None
         unit_cost = None
-        # unit_cost_formatted = ''
 
-        if obj.user_input_cost is not None:
+        if 'user_input_cost' in obj and obj['user_input_cost'] is not None:
             # note: this is a Money field
-            unit_cost = obj.user_input_cost.amount
+            unit_cost = obj['user_input_cost']
 
-        cost_source = obj.cost_source
+        cost_source = obj['cost_source']
 
         """
             the only cost data that is available here is the 'user' input costs - not
             rsmean, db25, db50, etc.
         """
         if cost_source == 'user':
-            if obj.user_input_cost is not None:
+            if 'user_input_cost' in obj and obj['user_input_cost'] is not None:
                 # note: this is a Money field and this just uses the decimal part
-                unit_cost = obj.user_input_cost.amount
-                # unit_cost_formatted = '${:,.2f}'.format(obj.user_input_cost.amount)
+                unit_cost = obj['user_input_cost']
+
 
         # add the user costs data
         structure_costs['data'][costitem_code]['cost_source'] = cost_source
         structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
-        # structure_costs['data'][costitem_code]['unit_cost_formatted'] = unit_cost_formatted
-        structure_costs['data'][costitem_code]['o_and_m_pct'] = int(obj.o_and_m_pct)
-        structure_costs['data'][costitem_code]['replacement_life'] = int(obj.replacement_life or "0")
+        structure_costs['data'][costitem_code]['o_and_m_pct'] = int(obj['o_and_m_pct'])
+        structure_costs['data'][costitem_code]['replacement_life'] = int(obj['replacement_life'] or "0")
 
     # then add in the default costs to update the non 'user' (cost_source) costs
 
@@ -679,9 +805,18 @@ def structure_cost_item_json(structure,
      """
 
     # these are 'Scenario' level values set on the 'Project-Scenario Description' page
-    planning_and_design_factor = int(scenario_data['embedded_scenario'].value['planning_and_design_factor'])
-    study_life = int(scenario_data['embedded_scenario'].value['study_life'])
-    discount_rate = float(scenario_data['embedded_scenario'].value['discount_rate'])
+    if scenario_data['embedded_scenario'].value['planning_and_design_factor'] is None:
+        planning_and_design_factor = 0
+    else:
+        planning_and_design_factor = int(scenario_data['embedded_scenario'].value['planning_and_design_factor'])
+    if scenario_data['embedded_scenario'].value['study_life'] is None:
+        study_life = 0
+    else:
+        study_life = int(scenario_data['embedded_scenario'].value['study_life'])
+    if scenario_data['embedded_scenario'].value['discount_rate'] is None:
+        discount_rate = 0
+    else:
+        discount_rate = float(scenario_data['embedded_scenario'].value['discount_rate'])
 
     """
         these are 'Structure' level values for each 'Cost Item' add the costs for each cost item

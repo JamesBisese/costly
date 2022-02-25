@@ -91,7 +91,8 @@
 {% block content %}
 
 <div style="height: 35px; margin-top: 10px;margin-left:5px;font-size:18px;text-align: center;">
-    Compare Scenario Results
+    {%  if scenario.items.count > 1 %}Compare {% endif %}
+    Scenario Results
 </div>
 
 <div style="margin-left: 5px; margin-right: 5px;">

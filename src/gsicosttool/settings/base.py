@@ -8,8 +8,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 import os
-from django.urls import reverse_lazy
 from pathlib import Path
+
+from django.contrib import messages
+from django.urls import reverse_lazy
+
 
 DEBUG = False
 
@@ -46,22 +49,17 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
 
-# Use Django templates using the new Django 1.8 TEMPLATES settings
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
-            # os.path.join(BASE_DIR, 'users', 'templates'),
             os.path.join(BASE_DIR, 'gsicosttool', 'templates'),
             os.path.join(BASE_DIR, 'scenario','templates'),
-            # insert more TEMPLATE_DIRS here
         ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                # list if you haven't customized them:
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
@@ -106,7 +104,7 @@ INSTALLED_APPS = (
 
     'django.contrib.humanize',
     'bootstrap4',
-    'bootstrap_datepicker_plus',
+    # 'bootstrap_datepicker_plus',
 
     'rest_framework',
     'rest_framework_datatables',
@@ -146,11 +144,9 @@ WSGI_APPLICATION = 'gsicosttool.wsgi.application'
 
 DATABASES = {}
 
-# added this for newer Django requirement. TWO FACTOR NOW WORKING
+# added this for newer Django requirement.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-# added this for newer Django requirement
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # DATABASES = {
 #      # Raises ImproperlyConfigured exception if DATABASE_URL not in
@@ -183,7 +179,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-USE_TZ = True
 
 # Strict password authentication and validation
 # To use this setting, install the Argon2 password hashing algorithm.
@@ -193,7 +188,7 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     'django.contrib.auth.hashers.BCryptPasswordHasher',
 ]
-#
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -213,7 +208,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # For Bootstrap 3, change error alert to 'danger'
-from django.contrib import messages
+
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
@@ -221,19 +216,15 @@ MESSAGE_TAGS = {
 # Authentication Settings
 AUTH_USER_MODEL = 'authtools.User'
 
-LOGIN_REDIRECT_URL = reverse_lazy("scenario:index")
+LOGIN_REDIRECT_URL = reverse_lazy("home")
 
 LOGIN_URL = reverse_lazy("accounts:login")
 
-THUMBNAIL_EXTENSION = 'png'     # Or any extn for your thumbnails
+LOGOUT_REDIRECT_URL = reverse_lazy("home")
 
-# Use BOOTSTRAP3 if you are using Bootstrap 3
-# BOOTSTRAP4 = {
-#     'include_jquery': True,
-#
-# }
+THUMBNAIL_EXTENSION = 'png'
 
-# DRF
+
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -247,15 +238,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
-# DJANGO_TABLES2_TEMPLATE = {
-#     "DJANGO_TABLES2_TEMPLATE": "django_tables2/table.html",
-# }
 
 # https://github.com/django-money/django-money
 CURRENCIES = ('USD',)
 CURRENCY_CHOICES = [('USD', 'USD $'), ]
 
-# these variables can(should) be overridden using local.development.env or local.production.env
+# these variables should be overridden using local.development.env or local.production.env
 EMAIL_CONTACT='base@tetratech.com'
 
 HEADER_BANNER_IMAGE_URI='gsicosttool/img/Tetra_Tech_skyline.jpg'

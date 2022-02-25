@@ -5,12 +5,48 @@ import sys
 
 from .base import *   # First import base.py and then override settings with this content
 
+class SQLFormatter(logging.Formatter):
+    def format(self, record):
+
+        # Check if Pygments is available for coloring
+        try:
+            import pygments
+            from pygments.lexers import SqlLexer
+            from pygments.formatters import TerminalTrueColorFormatter
+        except ImportError:
+            pygments = None
+
+        # Check if sqlparse is available for indentation
+        try:
+            import sqlparse
+        except ImportError:
+            sqlparse = None
+
+        # Remove leading and trailing whitespaces
+        sql = record.sql.strip()
+
+        if sqlparse:
+            # Indent the SQL query
+            sql = sqlparse.format(sql, reindent=True)
+
+        if pygments:
+            # Highlight the SQL query
+            sql = pygments.highlight(
+                sql,
+                SqlLexer(),
+                TerminalTrueColorFormatter()
+            )
+
+        # Set the records statement to the formatted query
+        record.statement = sql
+        return super(SQLFormatter, self).format(record)
+
+
 # Use 12factor inspired environment variables from a file
 
 env = environ.Env()
 
-# Create a local.env file in the settings directory
-# But ideally this env file should be outside the git repo
+# every .env file should be outside the git repo
 env_file = os.path.join(Path(__file__).resolve().parent, 'local.development.env')
 
 if os.path.exists(env_file):
@@ -63,8 +99,7 @@ INTERNAL_IPS = [
 ]
 
 DATABASES = {
-     # Raises ImproperlyConfigured exception if DATABASE_URL not in
-     # os.environ
+     # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
      'default': env.db(),
 }
 
@@ -76,7 +111,6 @@ except:
 
 
 # Log everything to the logs directory at the top
-# LOGFILE_ROOT = BASE_DIR.parent / 'logs'
 LOGFILE_ROOT = os.path.join(BASE_DIR.parent, 'logs', 'development')
 
 if not os.path.exists(LOGFILE_ROOT):
@@ -100,6 +134,10 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'sql': {
+            '()': SQLFormatter,
+            'format': '[%(duration).3f] %(statement)s',
+        },
     },
     'handlers': {
         'django_log_file': {
@@ -117,8 +155,13 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        }
+            'formatter': 'simple',
+        },
+        'sql': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'sql',
+        },
     },
     'loggers': {
         'django': {
@@ -131,12 +174,12 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'django.db.backends': {
-            'handlers': ['console'],
+            'handlers': ['sql'],  # note: toggle this between console and sql
             'level': 'WARNING',
         },
         'developer': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
         },
     }
 }

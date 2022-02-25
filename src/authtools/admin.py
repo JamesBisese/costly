@@ -5,10 +5,11 @@ import copy
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .models import User
 from .forms import UserCreationForm, AdminUserChangeForm
+
 
 def custom_titled_filter(title):
     """
@@ -24,12 +25,13 @@ def custom_titled_filter(title):
             return instance
     return Wrapper
 
+
 USERNAME_FIELD = get_user_model().USERNAME_FIELD
 
 REQUIRED_FIELDS = (USERNAME_FIELD,) + tuple(get_user_model().REQUIRED_FIELDS)
 
 BASE_FIELDS = (None, {
-    'fields': REQUIRED_FIELDS + ('password','organization_tx','phone_tx','job_title',),
+    'fields': REQUIRED_FIELDS + ('password', 'organization_tx', 'phone_tx', 'job_title',),
 })
 
 SIMPLE_PERMISSION_FIELDS = (_('Permissions'), {
@@ -85,8 +87,6 @@ class StrippedNamedUserAdmin(StrippedUserAdmin):
 
     """
     pass
-
-
 
 
 class UserAdmin(StrippedUserAdmin):

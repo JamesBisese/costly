@@ -1,13 +1,18 @@
-from django.db import models
+import logging
+
+from django.db import models, IntegrityError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
 from djmoney.models.fields import MoneyField
 from djmoney.money import Money
+from .decorators import sql_query_debugger
 
 from .scenario_frameworks import TEMPLATE_SCENARIO
 
+
 User = get_user_model()
 
+logger = logging.getLogger('developer')
 
 def get_unit_conversion(structure_units, cost_item_units):
     """
@@ -77,51 +82,51 @@ class ArealFeatureLookup(models.Model):
         verbose_name_plural = "Areal Features"
         ordering = ['sort_nu', ]
 
-
-class ArealFeatures(models.Model):
-    """
-
-        this is a set of tuples - each tuple has a checkbox and an area
-
-        Note: the id field is scenario.id
-
-        TODO: label the fields as necessary.
-
-        TODO: refactor the name from ArealFeatures to ScenarioArealFeatures
-        TODO: make a new model ArealFeatures or ArealFeaturesLookup to store the list of areal features
-
-    """
-    stormwater_management_feature_area = models.IntegerField("Stormwater Management Feature Area", default=0,
-                                                             blank=True, null=True)
-    stormwater_management_feature_checkbox = models.BooleanField("Stormwater Management Feature Checked", default=False,
-                                                                 blank=True, null=True)
-    amenity_plaza_area = models.IntegerField("Amenity Areas/Urban Plaza Area", default=0,
-                                             blank=True, null=True)
-    amenity_plaza_checkbox = models.BooleanField("Amenity Areas/Urban Plaza Checked", default=False,
-                                                 blank=True, null=True)
-    protective_yard_area = models.IntegerField("Protective Yards Area", default=0,
-                                               blank=True, null=True)
-    protective_yard_checkbox = models.BooleanField("Protective Yards Checked", default=False,
-                                                   blank=True, null=True)
-
-    parking_island_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    parking_island_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    building_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    building_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    drive_thru_facility_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    drive_thru_facility_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    landscape_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    landscape_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    sidewalk_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    sidewalk_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    street_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    street_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    median_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    median_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    parking_lot_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    parking_lot_area = models.IntegerField(" Area", default=0, blank=True, null=True)
-    driveway_and_alley_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
-    driveway_and_alley_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+# DEPRECIATED.
+# class ArealFeatures(models.Model):
+#     """
+#
+#         this is a set of tuples - each tuple has a checkbox and an area
+#
+#         Note: the id field is scenario.id
+#
+#         TODO: label the fields as necessary.
+#
+#         TODO: refactor the name from ArealFeatures to ScenarioArealFeatures
+#         TODO: make a new model ArealFeatures or ArealFeaturesLookup to store the list of areal features
+#
+#     """
+#     stormwater_management_feature_area = models.IntegerField("Stormwater Management Feature Area", default=0,
+#                                                              blank=True, null=True)
+#     stormwater_management_feature_checkbox = models.BooleanField("Stormwater Management Feature Checked", default=False,
+#                                                                  blank=True, null=True)
+#     amenity_plaza_area = models.IntegerField("Amenity Areas/Urban Plaza Area", default=0,
+#                                              blank=True, null=True)
+#     amenity_plaza_checkbox = models.BooleanField("Amenity Areas/Urban Plaza Checked", default=False,
+#                                                  blank=True, null=True)
+#     protective_yard_area = models.IntegerField("Protective Yards Area", default=0,
+#                                                blank=True, null=True)
+#     protective_yard_checkbox = models.BooleanField("Protective Yards Checked", default=False,
+#                                                    blank=True, null=True)
+#
+#     parking_island_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     parking_island_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     building_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     building_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     drive_thru_facility_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     drive_thru_facility_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     landscape_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     landscape_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     sidewalk_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     sidewalk_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     street_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     street_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     median_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     median_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     parking_lot_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     parking_lot_area = models.IntegerField(" Area", default=0, blank=True, null=True)
+#     driveway_and_alley_checkbox = models.BooleanField(" Checked", default=False, blank=True, null=True)
+#     driveway_and_alley_area = models.IntegerField(" Area", default=0, blank=True, null=True)
 
 
 class Structures(models.Model):
@@ -146,71 +151,78 @@ class Structures(models.Model):
     def __str__(self):
         return self.classification + ' - ' + self.name
 
+    def save(self, *args, **kwargs):
+        # mylist = ['up', 'down', 'strange', 'charm', ....]
+        if self.classification in self.CLASSIFICATION_VALUES:
+            super(Structures, self).save(*args, **kwargs)
+        else:
+            raise IntegrityError("Structures.classification only one of the following values: " + ', '.join(self.CLASSIFICATION_VALUES))
+
     class Meta:
         verbose_name_plural = "Structures"
         ordering = ['sort_nu', ]
 
-
-class ConventionalStructures(models.Model):
-    """
-
-        this is a data table of ConventionalStructures
-
-        note: the id for each row in this table is the scenario.id
-
-        note: this is being DEPRECIATED to be replaced by ScenarioStructures
-
-    """
-    stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True,
-                                                      null=True)
-    stormwater_wetland_area = models.IntegerField("Stormwater Wetland Area", default=0, blank=True, null=True)
-    stormwater_wetland_first_year_costs = MoneyField("1st year maintenance costs",
-                                                     decimal_places=2, max_digits=11, default=0, default_currency='USD',
-                                                     blank=True, null=True)
-
-    pond_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    pond_area = models.IntegerField(default=0, blank=True, null=True)
-    rooftop_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    rooftop_area = models.IntegerField(default=0, blank=True, null=True)
-    lawn_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    lawn_area = models.IntegerField(default=0, blank=True, null=True)
-    landscaping_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    landscaping_area = models.IntegerField(default=0, blank=True, null=True)
-    trench_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    trench_area = models.IntegerField(default=0, blank=True, null=True)
-    concrete_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    concrete_area = models.IntegerField(default=0, blank=True, null=True)
-    asphalt_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    asphalt_area = models.IntegerField(default=0, blank=True, null=True)
-    curb_and_gutter_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    curb_and_gutter_area = models.IntegerField(default=0, blank=True, null=True)
-
-
-class NonConventionalStructures(models.Model):
-    """
-
-        this is a OneToOne data table of scenario.NonConventionalStructures
-
-        note: the id for each row in this table is the scenario.id
-
-        note: this is being DEPRECIATED to be replaced by ScenarioStructures
-
-    """
-    swale_area = models.IntegerField("Swale Area", default=0, blank=True, null=True)
-    swale_checkbox = models.BooleanField("Swale Checked", default=False, blank=True, null=True)
-    rain_harvesting_device_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    rain_harvesting_device_area = models.IntegerField(default=0, blank=True, null=True)
-    bioretention_cell_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    bioretention_cell_area = models.IntegerField(default=0, blank=True, null=True)
-    filter_strip_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    filter_strip_area = models.IntegerField(default=0, blank=True, null=True)
-    green_roof_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    green_roof_area = models.IntegerField(default=0, blank=True, null=True)
-    planter_box_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    planter_box_area = models.IntegerField(default=0, blank=True, null=True)
-    porous_pavement_checkbox = models.BooleanField(default=False, blank=True, null=True)
-    porous_pavement_area = models.IntegerField(default=0, blank=True, null=True)
-
+# DEPRECIATED.
+# class ConventionalStructures(models.Model):
+#     """
+#
+#         this is a data table of ConventionalStructures
+#
+#         note: the id for each row in this table is the scenario.id
+#
+#         note: this is being DEPRECIATED to be replaced by ScenarioStructure
+#
+#     """
+#     stormwater_wetland_checkbox = models.BooleanField("Stormwater Wetland Checked", default=False, blank=True,
+#                                                       null=True)
+#     stormwater_wetland_area = models.IntegerField("Stormwater Wetland Area", default=0, blank=True, null=True)
+#     stormwater_wetland_first_year_costs = MoneyField("1st year maintenance costs",
+#                                                      decimal_places=2, max_digits=11, default=0, default_currency='USD',
+#                                                      blank=True, null=True)
+#
+#     pond_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     pond_area = models.IntegerField(default=0, blank=True, null=True)
+#     rooftop_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     rooftop_area = models.IntegerField(default=0, blank=True, null=True)
+#     lawn_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     lawn_area = models.IntegerField(default=0, blank=True, null=True)
+#     landscaping_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     landscaping_area = models.IntegerField(default=0, blank=True, null=True)
+#     trench_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     trench_area = models.IntegerField(default=0, blank=True, null=True)
+#     concrete_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     concrete_area = models.IntegerField(default=0, blank=True, null=True)
+#     asphalt_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     asphalt_area = models.IntegerField(default=0, blank=True, null=True)
+#     curb_and_gutter_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     curb_and_gutter_area = models.IntegerField(default=0, blank=True, null=True)
+#
+# # DEPRECIATED.
+# class NonConventionalStructures(models.Model):
+#     """
+#
+#         this is a OneToOne data table of scenario.NonConventionalStructures
+#
+#         note: the id for each row in this table is the scenario.id
+#
+#         note: this is being DEPRECIATED to be replaced by ScenarioStructures
+#
+#     """
+#     swale_area = models.IntegerField("Swale Area", default=0, blank=True, null=True)
+#     swale_checkbox = models.BooleanField("Swale Checked", default=False, blank=True, null=True)
+#     rain_harvesting_device_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     rain_harvesting_device_area = models.IntegerField(default=0, blank=True, null=True)
+#     bioretention_cell_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     bioretention_cell_area = models.IntegerField(default=0, blank=True, null=True)
+#     filter_strip_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     filter_strip_area = models.IntegerField(default=0, blank=True, null=True)
+#     green_roof_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     green_roof_area = models.IntegerField(default=0, blank=True, null=True)
+#     planter_box_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     planter_box_area = models.IntegerField(default=0, blank=True, null=True)
+#     porous_pavement_checkbox = models.BooleanField(default=False, blank=True, null=True)
+#     porous_pavement_area = models.IntegerField(default=0, blank=True, null=True)
+#
 
 class CostItem(models.Model):
     """
@@ -253,20 +265,6 @@ class CostItemDefaultCosts(models.Model):
     db_75pct_va = MoneyField('DB 75-percentile unit cost', decimal_places=2, max_digits=11,
                              default_currency='USD', blank=True, null=True)
 
-    replacement_life = models.PositiveIntegerField(default=40,
-                                                   validators=[MinValueValidator(0),
-                                                               MaxValueValidator(100)
-                                                               ],
-                                                   blank=True, null=True)
-    o_and_m_pct = models.PositiveIntegerField(default=0,
-                                              validators=[MinValueValidator(0),
-                                                          MaxValueValidator(100)
-                                                          ],
-                                              blank=False, null=False)
-
-    # added 2019-08-13 to help manage unit costs for all structures
-    equation = models.CharField("Construction Costs Equation ", max_length=150, default=None, blank=True, null=True)
-
     def __str__(self):
         return self.costitem.name + " -- default costs"
 
@@ -277,9 +275,9 @@ class CostItemDefaultCosts(models.Model):
 
 class CostItemDefaultEquations(models.Model):
     """
-        2019-08-15 Cost Item Default Equations
+        Cost Item Default Equations
 
-        this is a look-up table of the 'default' costs equations and factors for each Cost Items
+        look-up table of the 'default' costs equations and factors for each Cost Items
         AND NOT connected to a specific structure
 
         Loaded from CSV file CostItemDefaultEquations
@@ -289,16 +287,30 @@ class CostItemDefaultEquations(models.Model):
 
     equation_tx = models.CharField("Equation", max_length=150, default=None, blank=True, null=True)
 
-    a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
-    z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
-    d_density = models.CharField("Density (d)", max_length=10, default=None, blank=True, null=True)
-    n_number = models.CharField("Count (n)", max_length=10, default=None, blank=True, null=True)
+    replacement_life = models.PositiveIntegerField(default=40,
+                                                   validators=[MinValueValidator(0),
+                                                               MaxValueValidator(100)
+                                                               ],
+                                                   blank=False, null=False)
+
+    o_and_m_pct = models.PositiveIntegerField(default=0,
+                                              validators=[MinValueValidator(0),
+                                                          MaxValueValidator(100)
+                                                          ],
+                                              blank=False, null=False)
 
     # this is not used.  always ste as 'The cost of ' + cost_item.name + ' is computed using ...'
     help_text = models.CharField(unique=False, max_length=1000, default="Help Text", blank=False, null=False)
 
     def __str__(self):
         return self.costitem.code + " -- " + self.equation_tx
+
+    def save(self, *args, **kwargs):
+        if self.o_and_m_pct is not None:
+            if self.o_and_m_pct >= 0 and self.o_and_m_pct <= 100:
+                super(CostItemDefaultEquations, self).save(*args, **kwargs)
+        else:
+            raise IntegrityError("CostItemDefaultEquations.o_and_m_pct has to be between 0 and 100")
 
     class Meta:
         verbose_name_plural = "Cost Item Default Equations"
@@ -307,13 +319,9 @@ class CostItemDefaultEquations(models.Model):
 
 class StructureCostItemDefaultFactors(models.Model):
     """
-
-        this is a look-up table of the 'default' costs factors with each Structure/Cost Items tuple
+        look-up table of the 'default' costs factors with each Structure/Cost Items tuple
 
         the 'user' cost assumptions are stored in StructureCostItemUserFactors which is defined after Scenario model
-
-        Note: refactored name from CostItemDefaultFactors to StructureCostItemDefaultFactors
-
     """
     structure = models.ForeignKey(Structures, on_delete=models.CASCADE, default=None, blank=False, null=False)
     costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
@@ -382,14 +390,13 @@ class Project(models.Model):
     priority_watershed = models.CharField('Priority Watershed', choices=WATERSHED_CHOICES, max_length=15, default=None,
                                           blank=True, null=True)
 
-    # note: I don't know why I chose CharField for this.  It should be IntegerField
+    # todo: should be IntegerField
     project_area = models.CharField('Total Project Area (square feet)', max_length=15, default=None, blank=False,
                                     null=False)
     land_unit_cost = MoneyField('Cost per square foot of Project site',
                                 decimal_places=2, max_digits=11, default=1,
                                 default_currency='USD', blank=False, null=False)
 
-    # added 2021-11-09 to support audit
     create_date = models.DateTimeField('Create Date', auto_now_add=True)
     modified_date = models.DateTimeField('Modified Date', auto_now=True)
 
@@ -408,7 +415,6 @@ def get_TEMPLATE_SCENARIO():
     """
     raw_ts = TEMPLATE_SCENARIO
 
-    # region new loading from ArealFeatureLookup
     areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu').values()
     fields = []
     inputs = {}
@@ -418,7 +424,6 @@ def get_TEMPLATE_SCENARIO():
     raw_ts['siteData']['areal_features'] = {}
     raw_ts['siteData']['areal_features']['fields'] = fields
     raw_ts['siteData']['areal_features']['inputs'] = inputs
-    # endregion new loading from ArealFeatureLookup
 
     structures = Structures.objects.all().order_by('sort_nu').values()
     fields = []
@@ -460,7 +465,7 @@ def get_TEMPLATE_SCENARIO():
 class Scenario(models.Model):
     """
 
-    a Scenario is attached to a single Project attached.
+    a Scenario is attached to a single Project.
 
     """
     # this is a template used in Javascript to figure out how to manage the UI
@@ -498,19 +503,20 @@ class Scenario(models.Model):
                                           default='unknown', blank=True, null=True)
 
     # cost elements
-    planning_and_design_factor = models.CharField("Planning and Design Factor (Multiplier)", max_length=12, default='',
-                                                  blank=True, null=True)
-    study_life = models.IntegerField("Study Life(years)", default=0, blank=True, null=True)
-    discount_rate = models.FloatField("Discount Rate(DISC)", default=0, blank=True, null=True)
+    planning_and_design_factor = models.DecimalField("Planning and Design Factor (Multiplier)",
+                                                        max_digits=12, decimal_places=2,
+                                                        default=20.0, blank=True, null=True)
+    study_life = models.IntegerField("Study Life(years)", default=40, blank=True, null=True)
+    discount_rate = models.FloatField("Discount Rate(DISC)", default=2.875, blank=True, null=True)
 
-    areal_features = models.OneToOneField(
-        ArealFeatures,
-        on_delete=models.CASCADE,
-        primary_key=False,
-        default=None,
-        blank=True,
-        null=True
-    )
+    # areal_features = models.OneToOneField(
+    #     ArealFeatures,
+    #     on_delete=models.CASCADE,
+    #     primary_key=False,
+    #     default=None,
+    #     blank=True,
+    #     null=True
+    # )
     # conventional_structures = models.OneToOneField(
     #     ConventionalStructures,
     #     on_delete=models.CASCADE,
@@ -560,27 +566,6 @@ class Scenario(models.Model):
                     val = None if val == '' else val
                     setattr(self, field, val)
 
-            # region old storage
-            areal_features = self.areal_features
-
-            if areal_features is None:
-                areal_features = ArealFeatures()
-
-            list_of_attributes = scenarioTemplate['areal_features']['inputs']
-            list_of_values = form_data['areal_features']
-            for feature_name in list_of_attributes:
-                for field in list_of_attributes[feature_name]:
-                    if hasattr(areal_features, feature_name + '_' + field):
-                        field_value = list_of_values[feature_name][field]
-                        if field == 'area' and field_value == '':
-                            field_value = None
-                        setattr(areal_features, feature_name + '_' + field, field_value)
-
-            areal_features.save()
-            self.areal_features_id = areal_features.id
-            # endregion old storage
-
-            # region new storage
             list_of_values = form_data['areal_features']
             areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu')
 
@@ -590,7 +575,6 @@ class Scenario(models.Model):
                     is_checked = list_of_values[areal_feature.code]['checkbox'] or False
 
                     self.process_areal_feature(areal_feature, area_value, is_checked)
-            # endregion new storage
 
         """ process the elements on the Structures tab """
         if active_tab == 'structures':
@@ -617,7 +601,6 @@ class Scenario(models.Model):
             self.process_strucure_costs(form_data['cost_items']['user_assumptions'],
                                         scenarioTemplate['cost_items']['fields'])
 
-        # only process the costitems if the user is on that page, else there can't be any change
         if active_tab == 'costitems':
             self.process_cost_item_unit_costs(form_data['cost_items']['unit_costs'])
 
@@ -696,16 +679,27 @@ class Scenario(models.Model):
                 c = scenario_structures_obj
                 changed_fields = set()
 
-                if c.area != int(area_value):
-                    setattr(c, 'area', area_value)
-                    changed_fields.add('area')
+                if not (c.area is None and area_value is None):
+                    if c.area is not None and area_value is None:
+                        setattr(c, 'area', None)
+                        changed_fields.add('area')
+                    else:
+                        area_value_int = None
+                        try:
+                            area_value_int = int(area_value)
+                        except:
+                            pass
+
+                        if area_value_int is not None and c.area is None or (int(c.area) != area_value_int):
+                            setattr(c, 'area', area_value)
+                            changed_fields.add('area')
 
                 if c.is_checked != is_checked:
                     setattr(c, 'is_checked', is_checked)
                     changed_fields.add('is_checked')
 
                 if len(changed_fields) > 0:
-                    c.save()
+                    c.save(update_fields=list(changed_fields))
 
 
     def process_strucure_costs(self, user_assumptions, cost_items):
@@ -815,20 +809,31 @@ class Scenario(models.Model):
                 )
                 c.save()
 
-                """
-                    TODO: add calculation here
-                """
-                form_values['construction_cost_factor_equation'] = '=mc2'
-                form_values['cost_V1'] = '$99.99'
 
-
+    # @sql_query_debugger
     def process_cost_item_unit_costs(self, cost_items):
         """
         
             this manages the tab 'Scenario Cost Item Unit Costs'
             
         """
+        scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
+            .select_related('costitem') \
+            .defer('first_year_maintenance', 'first_year_maintenance_currency',)\
+            .filter(scenario_id=self.id)
+
+        cost_item_default_costs = CostItemDefaultCosts.objects \
+            .select_related('costitem') \
+            .all().order_by("costitem__sort_nu")
+
+        cost_item_default_equations = CostItemDefaultEquations.objects \
+            .select_related('costitem') \
+            .only('costitem__code', 'replacement_life', 'o_and_m_pct')\
+            .all().order_by("costitem__sort_nu")
+
         for cost_item, form_costs in cost_items.items():
+
+            user_costs_obj = None
 
             if form_costs['replacement_life'] == 'None':
                 form_costs['replacement_life'] = None
@@ -837,13 +842,21 @@ class Scenario(models.Model):
                 form_costs['user_input_cost'] = None
                 form_costs['base_year'] = None
 
-            user_costs_obj = ScenarioCostItemUserCosts.objects\
-                .select_related('scenario', 'costitem')\
-                .filter(scenario__id=self.id,costitem__code=cost_item).first()
+            user_costs_objs = [x for x in scenario_cost_item_costs if x.costitem.code == cost_item]
+            if user_costs_objs is not None and len(user_costs_objs) > 0:
+                user_costs_obj = user_costs_objs[0]
 
-            default_costs_obj = CostItemDefaultCosts.objects \
-                .select_related('costitem') \
-                .filter(costitem__code=cost_item).first()
+            default_costs_objs = [x for x in cost_item_default_costs if x.costitem.code == cost_item]
+            if default_costs_objs is not None and len(default_costs_objs) > 0:
+                default_costs_obj = default_costs_objs[0]
+
+            default_equations_objs = [x for x in cost_item_default_equations if x.costitem.code == cost_item]
+            if default_equations_objs is not None and len(default_equations_objs) > 0:
+                default_equations_obj = default_equations_objs[0]
+
+            if default_costs_obj and default_equations_obj:
+                default_costs_obj.replacement_life = default_equations_obj.replacement_life
+                default_costs_obj.o_and_m_pct = default_equations_obj.o_and_m_pct
 
             is_default = 1
             change_count = 0
@@ -871,7 +884,7 @@ class Scenario(models.Model):
             
             NOTE: 2021-12-06 something in here is missing saving the user defined cost and deleting that value.
             
-            NOTE: 2021-12-13 this is an example of generalizing something to the point where it is not useful.
+            NOTE: 2021-12-13 this is an example of generalizing something to the point where it is not readable.
             I can't read it and I am the only one who ever would try.
             
             Note: yes, this is terrible.  I can't tell if it is bad and complex, or 
@@ -957,8 +970,8 @@ class Scenario(models.Model):
                 print_str = "cost_item: {}; field: {}; form_value: {}, " + \
                             "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
 
-                if change_count > 0 and True is False:
-                    print(print_str.format(
+                if change_count > 0:
+                    logger.debug(print_str.format(
                                             cost_item,
                                             attribute,
                                             form_value,
@@ -973,10 +986,11 @@ class Scenario(models.Model):
 
             # dont store copies that are just the default
             if is_default == 1 and db_record_exists is True:
-                # print("delete cost_item from db {}".format(cost_item))
+                # DELETE
                 user_costs_obj.delete()
 
             if is_default != 1 and change_count > 0:
+                # UPDATE
                 if user_costs_obj is not None:
                     user_costs_obj.cost_source = form_costs['cost_source']
                     user_costs_obj.user_input_cost = form_costs['user_input_cost']
@@ -991,6 +1005,7 @@ class Scenario(models.Model):
                     user_costs_obj.save()
 
                 else:
+                    # CREATE
                     costitem = CostItem.objects.filter(code=cost_item).first()
 
                     # print("create cost_item {}".format(cost_item))
@@ -1007,6 +1022,7 @@ class Scenario(models.Model):
 
         return
 
+    # @sql_query_debugger
     def get_costs(self):
         """
 
@@ -1082,6 +1098,17 @@ class Scenario(models.Model):
         # then add in the default costs to update the non 'user' (cost_source) costs
         for default_cost_item_costs_obj in default_cost_item_costs:
             costitem_code = default_cost_item_costs_obj.costitem.code
+
+            default_equations_objs = [x for x in cost_item_default_equations if x.costitem.code == costitem_code]
+            if default_equations_objs is not None and len(default_equations_objs) > 0:
+                default_equations_obj = default_equations_objs[0]
+
+                default_cost_item_costs_obj.replacement_life = default_equations_obj.replacement_life
+                default_cost_item_costs_obj.o_and_m_pct = default_equations_obj.o_and_m_pct
+            else:
+                default_cost_item_costs_obj.replacement_life = -77
+                default_cost_item_costs_obj.o_and_m_pct = -76
+
             if costitem_code in costs:
                 if costs[costitem_code]['cost_source'] != 'user':
                     cost_source = costs[costitem_code]['cost_source']
@@ -1181,18 +1208,7 @@ class Scenario(models.Model):
             # if conventional_structures is None and nonconventional_structures is None:
             #     continue
 
-            # region old storage
-            # if structure.classification == 'conventional':
-            #     if hasattr(conventional_structures, structure_code + '_checkbox'):
-            #         is_checked = getattr(conventional_structures, structure_code + '_checkbox')
-            #     if hasattr(conventional_structures, structure_code + '_area'):
-            #         structure.area = getattr(conventional_structures, structure_code + '_area')
-            # else:
-            #     if hasattr(nonconventional_structures, structure_code + '_checkbox'):
-            #         is_checked = getattr(nonconventional_structures, structure_code + '_checkbox')
-            #     if hasattr(nonconventional_structures, structure_code + '_area'):
-            #         structure.area = getattr(nonconventional_structures, structure_code + '_area')
-            # # endregion old storage
+
 
             # if not is_checked:
             #     continue
@@ -1202,7 +1218,7 @@ class Scenario(models.Model):
 
             cost_results = {}
 
-            for costitem_code in user_assumptions[structure_code]:  # cost_item_user_assumptions:
+            for costitem_code in user_assumptions[structure_code]:
 
                 cost_item = user_assumptions[structure_code][costitem_code]
 
@@ -1217,12 +1233,10 @@ class Scenario(models.Model):
                 assumptions = {
                     'units': cost_items_dict[costitem_code]['units'],
                     'name': cost_items_dict[costitem_code]['name'],
-                    # 'factor_assumption_tx': cost_item.factor_assumption_tx,
                     'a_area': cost_item.a_area,
                     'z_depth': cost_item.z_depth,
                     'd_density': cost_item.d_density,
                     'n_number': cost_item.n_number,
-
                 }
 
                 # this is the default for these fields
@@ -1257,12 +1271,8 @@ class Scenario(models.Model):
                 equation = cost_items_dict[costitem_code]['equation']
                 results['equation'] = equation
 
-                # TODO: figure out where to put this
-                # equation = equation + '*' + 'unit_conversion'
-
                 equation = equation.replace('=', '')
                 equation = equation.replace('x', '(' + str(structure.area) + '*' + str(unit_conversion) + ')')
-                # equation = equation.replace('unit_conversion', str(unit_conversion))
                 equation = equation.replace('area', assumptions['a_area'])
                 equation = equation.replace('depth', assumptions['z_depth'])
                 equation = equation.replace('density', assumptions['d_density'])
@@ -1318,11 +1328,10 @@ class Scenario(models.Model):
             total_construction_cost += result[classification]['sum_value']
 
         """
-             NOW - this is the calculation from post-construction costs (started on this 2019-11-12)
+             make calculation from post-construction costs
 
              I think the way to do it is to find all 'data' that where checked == true
              and then replace all the components of the equation as strings and then eval it
-
         """
         total_o_and_m_cost = 0
         total_replacement_cost = 0
@@ -1401,6 +1410,9 @@ class Scenario(models.Model):
                     construction_cost = cost_item_data['results']['value_unformatted']
                     planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 0)
 
+                    # TODO - figure out why these 2 values are being added to Project Life Cycle costs twice
+                    costs_sum += construction_cost + planning_and_design_costs
+
                     replacement_life = cost_item_data['costs']['replacement_life']
                     o_and_m_pct = cost_item_data['costs']['o_and_m_pct']
 
@@ -1425,7 +1437,6 @@ class Scenario(models.Model):
                             replacement_years.append(i)
                             replacement_cost = round(construction_cost / (1 + (discount_rate / 100)) ** i, 0)
                             replacement_costs += replacement_cost
-                            # replacements.append(replacement_cost)
                             if value_of_first_replacement == 0:
                                 value_of_first_replacement = replacement_costs
 
@@ -1445,10 +1456,9 @@ class Scenario(models.Model):
 
                     structure_costs['sum'] += costs_sum
                     structure_costs['o_and_m_sum'] += o_and_m_costs
-
                     structure_costs['replacement_sum'] += replacement_costs
 
-                    # add to classifiction costs
+                    # add to classification costs
                     project_costs['construction'] += construction_cost
                     project_costs['planning_and_design'] += planning_and_design_costs
 
@@ -1465,8 +1475,6 @@ class Scenario(models.Model):
                         this is awful.  sorry.
                     """
                     project_costs['sum'] += costs_sum
-                    project_costs['sum'] += construction_cost
-                    project_costs['sum'] += planning_and_design_costs
 
                     classification_costs['sum'] += costs_sum
 
@@ -1480,14 +1488,11 @@ class Scenario(models.Model):
                             'construction': construction_cost,
                             'planning_and_design': planning_and_design_costs,
                             'o_and_m': round(o_and_m_costs, 0),
-                            'first_replacement': value_of_first_replacement,
                             'replacement': round(replacement_costs, 0),
+                            'first_replacement': value_of_first_replacement,
                             'replacement_years': replacement_years,
                         }
                     }
-
-        # TODO sum o_and_m
-        # TODO sum replacement
 
         project_life_cycle_costs['total'] = {
             'construction': total_construction_cost,
@@ -1512,13 +1517,6 @@ class ScenarioCostItemUserCosts(models.Model):
 
      this stores the 'scenario' values for the costitem costs.
      each row is attached to one CostItem for one Scenario
-
-     Note: refactored name from CostItemUserCosts to StructureCostItemUserCosts
-
-     TODO: fix the error in renaming.  This does not relate to Structure at all - which is confusing enough.
-     This should have been renamed ScenarioCostItemUserCosts
-
-     TODO: refactor name from StructureCostItemUserCosts to ScenarioCostItemUserCosts
 
     """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_costs",
@@ -1566,13 +1564,7 @@ class ScenarioCostItemUserCosts(models.Model):
 
 class ScenarioArealFeature(models.Model):
     """
-        2022-01-13 - this is a proposed storage mechanism for the users Areal Feature information
-           that is currently stored in  ArealFeature
-           This is being considered because the 1 existing tables have hardwired contents
-           and there is no way anyone could easily expand or alter what are considered Areal Features
-           in the future.
-
-           If this works, then the 1 tables ArealFeature will be removed.
+        2022-01-13 - this is the new storage for the users Areal Feature information
 
         this is a User Data Table of what Areal Feature Area and on/off values are selected for
         each Scenario
@@ -1630,17 +1622,14 @@ class StructureCostItemUserFactors(models.Model):
         This is connected to the Structure Costs page
         and stores data by (project/)scenario/structure/costitem
 
-        the 'user' cost assumptions are stored here
-
-     Note: refactored name from CostItemUserAssumptions to StructureCostItemUserFactors
-
+        the 'user' factors are stored here
     """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
                                  default=None, blank=False, null=False)
     structure = models.ForeignKey(Structures, on_delete=models.CASCADE, default=None, blank=False, null=False)
     costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
-    checked = models.BooleanField("Checked in UI", default=None, null=True)
+    checked = models.BooleanField("Is Checked", default=None, null=True)
 
     a_area = models.CharField("Area (a)", max_length=10, default=None, blank=True, null=True)
     z_depth = models.CharField("Depth (z)", max_length=10, default=None, blank=True, null=True)
@@ -1655,4 +1644,3 @@ class StructureCostItemUserFactors(models.Model):
         verbose_name_plural = "Scenario Structure Cost Item User Factors"
         unique_together = ("scenario", 'structure', "costitem")
 
-        # ordering = ['sort_nu', ]

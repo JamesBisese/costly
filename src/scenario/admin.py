@@ -157,7 +157,9 @@ def costitem_name(obj):
 class CostItemDefaultCostsAdmin(StructuresAdmin):
     list_display = (costitem_sort_nu, 'costitem_name', 'costitem_units', 'rsmeans_va',
                     'db_25pct_va', 'db_50pct_va', 'db_75pct_va',
-                    'replacement_life', 'o_and_m_pct', 'equation')
+                    # 'replacement_life', 'o_and_m_pct',
+                    # 'equation'
+                    )
     list_display_links = ('costitem_name',)
 
     @admin.display(empty_value='unknown', ordering='costitem__units')
@@ -170,7 +172,10 @@ class CostItemDefaultCostsAdmin(StructuresAdmin):
 
 
 class CostItemDefaultEquationsAdmin(StructuresAdmin):
-    list_display = (costitem_sort_nu, costitem_name, 'equation_tx', 'a_area', 'z_depth', 'd_density', 'n_number')
+    list_display = (costitem_sort_nu, costitem_name, 'equation_tx',
+                    'replacement_life', 'o_and_m_pct',
+                    # 'a_area', 'z_depth', 'd_density', 'n_number'
+                    )
     list_display_links = (costitem_name,)
     pass
 

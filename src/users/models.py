@@ -9,6 +9,11 @@ class UserManager(BaseUserManager):
 
     use_in_migrations = True
 
+    # note 2022-01-27 trying to reduce hits on db
+    # https://stackoverflow.com/questions/46854395/prefetch-related-for-authenticated-user/62080682
+    def get(self, *args, **kwargs):
+        return super().select_related('profile').get(*args, **kwargs)
+
     def _create_user(self, email, password, **extra_fields):
         """Create and save a User with the given email and password."""
         if not email:

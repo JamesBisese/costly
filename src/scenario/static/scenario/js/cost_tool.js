@@ -103,11 +103,17 @@ $(document).ready(function()
             populateUI(data);
 
             initializeForm();
+            document.getElementById("network_indicator").style.display = "none";
+            document.getElementById("cost_tool-loader").style.display = "none";
+            document.getElementById("calculate").style.animation = "fade_in_show 0.75s";
+            document.getElementById("calculate").style.display = "block";
         },
         error: function(data) {
             showError(data);
         }
     });
+
+
 });
 
 
@@ -519,7 +525,7 @@ function populateResultsTab(){
 
     var DivElement = document.getElementById('result-box');
     DivElement.innerHTML = ""; //  "Loading ...<div style='width: 100%; display: flex;'><progress style='margin-left:auto;margin-right:auto;'></progress></div>";
-
+    document.getElementById("network_indicator").style.display = "";
     let scenario_id;
     let inputDom = document.getElementById('ui_' + 'scenario_id');
     if (inputDom){
@@ -574,6 +580,7 @@ function updateResultsPane(data){
 
     // wait 700 milliseconds just because it looks better - less flashy
     setTimeout(function() { div.innerHTML = contentTX;}, 0);
+    document.getElementById("network_indicator").style.display = "none";
 
 }
 
@@ -1502,6 +1509,8 @@ function saveDB(action) {
     var scenarioData = compileScenarioData();
     let tab_id = getCookie('tab');
 
+    document.getElementById("network_indicator").style.display = "";
+
     // only work on sections that are on the active_tab
     scenarioData.active_tab = tab_id;
 
@@ -1554,6 +1563,7 @@ function saveDB(action) {
 
             updateProjectTitle(data.siteData);
             updateStructureCostDropDown(data.siteData);
+            document.getElementById("network_indicator").style.display = "none";
         },
         error: function (data) {
             showError(data);

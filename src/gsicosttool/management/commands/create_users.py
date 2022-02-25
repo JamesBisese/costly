@@ -13,11 +13,12 @@ class Command(BaseCommand):
         CustomUser = get_user_model()
 
         user_list = {
-            'admin': {'email': 'admin@tetratech.com', 'password': 'cost2021', 'is_superuser': True, 'is_staff': True},
-            'manager': {'email': 'manager@tetratech.com', 'password': 'cost2021', 'is_staff': True},
-            'user1': {'email': 'user1@tetratech.com', 'password': 'user1021'},
-            'user2': {'email': 'user2@tetratech.com', 'password': 'user2021'},
-            'user3': {'email': 'user3@tetratech.com', 'password': 'user3021'},
+            'admin': {'email': 'admin@tetratech.com', 'password': 'cost2022', 'is_superuser': True, 'is_staff': True},
+            'manager': {'email': 'manager@tetratech.com', 'password': 'mcost2022', 'is_staff': True},
+            'user1': {'email': 'user1@tetratech.com', 'password': 'user1022'},
+            'user2': {'email': 'user2@tetratech.com', 'password': 'user2022'},
+            'user3': {'email': 'user3@tetratech.com', 'password': 'user3022'}, # user4@tetratech.com user4022
+            'foobar': {'email': 'foobar@tetratech.com', 'password': 'user3022'},
         }
 
         is_staff_permissions = [
@@ -50,6 +51,7 @@ class Command(BaseCommand):
                                                     password=user_atts['password'],
                                                     # agency='Tetra Tech',
                                                     name=user_atts['email'][0:user_atts['email'].index('@')],
+                                                    is_active=True,
                                                     is_staff=user_atts['is_staff'] if 'is_staff' in user_atts else False,
                                                     is_superuser=user_atts['is_superuser'] if 'is_superuser' in user_atts else False,
                                                    )

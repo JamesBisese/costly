@@ -46,10 +46,8 @@ class Command(BaseCommand):
 
         for row in reader:
 
-            # set blanks as null so they remove any previos value that might have been added
-            field_list = ['replacement_life',
-                          'o_and_m_pct',
-                          'rsmeans_va',
+            # set blanks as null so they remove any previous value that might have been added
+            field_list = ['rsmeans_va',
                           'db_25pct_va',
                           'db_50pct_va',
                           'db_75pct_va']
@@ -67,8 +65,6 @@ class Command(BaseCommand):
 
                 i = CostItemDefaultCosts.objects.create(
                                 costitem=cost_item,
-                                replacement_life=row['replacement_life'],
-                                o_and_m_pct=row['o_and_m_pct'],
                                 rsmeans_va=row['rsmeans_va'],
                                 db_25pct_va=row['db_25pct_va'],
                                 db_50pct_va=row['db_50pct_va'],
@@ -79,9 +75,7 @@ class Command(BaseCommand):
             else:
                 c = CostItemDefaultCosts.objects.get(costitem__code=row['code'])
                 changed_fields = set()
-                for field_nm in ('replacement_life',
-                                 'o_and_m_pct',
-                                 'rsmeans_va',
+                for field_nm in ('rsmeans_va',
                                  'db_25pct_va',
                                  'db_50pct_va',
                                  'db_75pct_va'):
@@ -104,19 +98,6 @@ class Command(BaseCommand):
                     c.save()
                 else:
                     print('no updates for "{}"'.format(row['code']))
-
-                # c = CostItemDefaultCosts.objects.get(costitem=cost_item)
-                #
-                # c.replacement_life = row['replacement_life']
-                # c.o_and_m_pct = row['o_and_m_pct']
-                # c.rsmeans_va = row['rsmeans_va']
-                # c.db_25pct_va = row['db_25pct_va']
-                # c.db_50pct_va = row['db_50pct_va']
-                # c.db_75pct_va = row['db_75pct_va']
-                # c.equation = row['equation_tx']
-                #
-                # c.save()
-                # print('CostItemDefaultCosts "{}" exists already, updated'.format(cost_item))
 
     count_nu = CostItemDefaultCosts.objects.count()
     self.stdout.write('CostItemDefaultCosts.objects.count() == {}'.format(count_nu))

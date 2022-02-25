@@ -26,6 +26,73 @@ body>.navbar-transparent {
     box-shadow: none;
 }
 
+/* region cost_tool-loader */
+/* Center the cost_tool-loader */
+#cost_tool-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1333;
+  width: 261px;
+  height: 261px;
+    margin-top: -76px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: -76px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+
+
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fade_in_show {
+     0% {
+          opacity: 0;
+          transform: scale(0)
+     }
+
+     100% {
+          opacity: 1;
+          transform: scale(1)
+     }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 }
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom {
+  from{ bottom:-100px; opacity:0 }
+  to{ bottom:0; opacity:1 }
+}
+
+/* endregion cost_tool-loader */
+
+
 /* this is a div to push all navbar content below the image and navbar */
 #topheader {
     height: 135px;
@@ -197,10 +264,12 @@ body>.navbar-transparent {
 /*}*/
 
 .footer {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  margin-top: 40px;
-  border-top: 1px solid #eee;
+    /*position: absolute;*/
+    /*bottom: 0;*/
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-top: 40px;
+    border-top: 1px solid #eee;
     display: flex;
     justify-content: center;
 }
@@ -209,6 +278,9 @@ body>.navbar-transparent {
     text-decoration: none;
 }
 
+.footer p {
+    text-align: center;
+}
 
 /* this section supports icons on buttons and the Home page home icon (left edge of navbar) */
 

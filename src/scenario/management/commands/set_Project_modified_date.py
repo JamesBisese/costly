@@ -25,4 +25,3 @@ class Command(BaseCommand):
             project.modified_date = None
             print('Project "{} {}" '.format(project.id, project.modified_date))
             project.save()
-

@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 from django.urls import path, include
 
 """
@@ -10,5 +10,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-	url(r'^select2/', include('django_select2.urls')),
+	re_path(r'^select2/', include('django_select2.urls')),
 ]

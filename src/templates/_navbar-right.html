@@ -9,10 +9,7 @@
     {% endblock navbar-auth-login %}
 {% else %}
     <li class="dropdown" style="background: rgba(74,139,44,.9);">
-        <a class="nav-link" href="#" class="dropdown-toggle profile-menu" data-toggle="dropdown">
-        {{ user.get_full_name|truncatechars:20 }}
-        <span class="caret"></span>
-        </a>
+        <a class="nav-link" href="./SUBMENU" class="dropdown-toggle profile-menu" data-toggle="dropdown">{{ user.get_full_name|truncatechars:20 }}<span class="caret"></span></a>
         <ul class="dropdown-menu" role="menu">
             {% if user.is_superuser %}
                 <li class="nav-item"><a class="nav-link" target="gsicosttool_admin" href="{% url 'admin:index' %}">Admin Page</a></li>

@@ -16,7 +16,7 @@ $(document).ready(function() {
                     // Use dot notation to reference nested serializers.
                     {"data": "user.name", "searchable": true},
                     {"data": "user.organization_tx", "searchable": true},
-                    {"data": "user.profile.user_type", "searchable": true},
+                    {"data": "user.user_type", "searchable": true},
                     {"data": "project.project_title", "searchable": true},
                     {"data": "scenario2.scenario_title", "searchable": true},
                     {"data": "costitem_name", "searchable": true},

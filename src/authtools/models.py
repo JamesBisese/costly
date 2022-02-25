@@ -4,11 +4,17 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
-# from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
+
+    # note 2022-01-27 trying to reduce hits on db
+    # https://stackoverflow.com/questions/46854395/prefetch-related-for-authenticated-user/62080682
+    def get(self, *args, **kwargs):
+        return super().select_related('profile').get(*args, **kwargs)
+
+
     def create_user(self, email, password=None, **kwargs):
         email = self.normalize_email(email)
         user = self.model(email=email, **kwargs)

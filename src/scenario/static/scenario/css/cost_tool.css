@@ -248,17 +248,20 @@ a.bmplabel:hover {
 /*	margin: 2px 0;*/
 /*	}*/
 #calculate {
+
+	display: none;
 	position: relative;
 	margin: 0 15px;
 	margin-top: 8px;
 	border-top: 1px solid #f8f9fa!important; /* #b0dd24; */
 	background: #f8f9fa!important; /* #639C16 url(../images/bg-calc.gif) 0 0 repeat-x; */
 	zoom: 1;
-	}
+}
 		
 #calculate-box {
 	margin: 3px 10px;
-	}
+}
+
 #calculate h2 {
 	color: #E8Ff8f;
 	color: #fff;
@@ -288,8 +291,30 @@ a.bmplabel:hover {
 	}
 #inputs .content {
 	/*border-top: 1px solid #d9f75d;  */
-	padding: 25px;
+	/*padding-left: 25px;*/
+	/*padding-right: 25px;*/
+	/*border-style: solid;*/
+	/*border-color: red;*/
 	} 
+
+#scenario_name {
+	display: inline-block;
+}
+#network_indicator {
+	/*display: none;*/
+	position: relative;
+	left: 96%;
+	z-index: 1;
+	width: 30px;
+	height: 30px;
+	/*margin: -76px 0 0 -76px;*/
+	margin-top: -32px;
+	border: 16px solid #f3f3f3;
+	border-radius: 50%;
+	border-top: 16px solid #3498db;
+	-webkit-animation: spin 2s linear infinite;
+	animation: spin 2s linear infinite;
+}
 
 .intro {
 	font-size: 15px;
@@ -352,8 +377,8 @@ a.bmplabel:hover {
 	margin-top: 7px;
 }
 .cost_item_help_FOOBAR {
-	border-top-color: darkgreen;
-	border-top-style: solid;
+	border-color: darkgreen;
+	border-style: solid;
 }
 
 #pageoptions {
@@ -517,7 +542,7 @@ a.pageoption:hover {
 	background: url(../images/shading.gif) top left repeat-x;
 	}
 #results {
-	margin: -42px -47px;
+	/*margin: -42px -47px;*/
 	border: 1px solid #81CEE9;
 	/*background-color: #228EA9;*/
 	/*background: #228EA9 url(../images/bg-results.gif) 0 0 repeat-x;*/
@@ -791,7 +816,7 @@ select.form-control:not([size]):not([multiple]) {
     color: #7ece32;
     font-size: 25px;
     margin-left: -30px;
-    margin-top: -28px;
+    /*margin-top: -28px;*/
     margin-bottom: 12px;
 }
 .nav-tabs{
@@ -826,7 +851,7 @@ select.form-control:not([size]):not([multiple]) {
     color: #7ece32;
     font-size: 25px;
 
-    margin-top: -28px;
+    /*margin-top: -28px;*/
 
     text-align: center;
 }

@@ -1,108 +1,127 @@
+/*jshint esversion: 6 */
+/*jshint strict:false */
+/*globals $:false */
 
 // scenario_index.js
+let URLS = null; // this gets set via another javascript file sourced before this file
 
 $(function () {
 
-    var is_superuser = false;
+    let is_superuser = false;
+
+    URLS = SETTINGS.URLS;
 
     /* Binding */
     $(document).ready(function() {
 
-        var inputDom = document.getElementById('is_superuser');
+        let inputDom = document.getElementById('is_superuser');
 
         is_superuser = (inputDom) ? true: false;
 
-        var inputDom = document.getElementById('project_id');
+        inputDom = document.getElementById('project_id');
 
+        let project_id;
         if (inputDom){
             project_id = inputDom.innerText;
         }
 
         loadTable(project_id);
 
-        $('#compareScenarios').attr('disabled','disabled');
         $('#compareScenarios2').addClass('disabled');
         $('#exportScenarios2').addClass('disabled');
+        $('#exportScenariosExtended').addClass('disabled');
         // limit user to selecting 2 rows
 
         $('#scenario-table tbody').on( 'click', 'tr', function ()
         {
             //jab changed this to allow selecting more than 2 so the export will work
             //
-            if($('.selected').length < 4 || $(this).hasClass('selected'))
+            if($('.selected').length < 40 || $(this).hasClass('selected'))
             {
                $(this).toggleClass('selected');
             }
 
             if($('.selected').length > 0)
             {
-                if($('.selected').length == 1)
+                let table;
+                let tblData;
+                let scenario_id;
+
+                if($('.selected').length === 1)
                 {
-                    var table = $('#scenario-table').DataTable();
-                    var tblData = table.rows('.selected').data();
-                    scenario_id = tblData[0]['id'];
+                    table = $('#scenario-table').DataTable();
+                    tblData = table.rows('.selected').data();
+                    scenario_id = tblData[0].id;
+                }
+                if($('.selected').length === 2)
+                {
+                    $('#compareScenarios2').removeClass('disabled');
+                }
+                else if ($('.selected').length > 2)
+                {
+                    $('#compareScenarios2').addClass('disabled');
                 }
 
-               $('#compareScenarios').removeAttr('disabled');
-               $('#compareScenarios2').removeClass('disabled');
                $('#exportScenarios2').removeClass('disabled');
+               $('#exportScenariosExtended').removeClass('disabled');
 
-                var table = $('#scenario-table').DataTable();
+                table = $('#scenario-table').DataTable();
 
-                var tblData = table.rows('.selected').data();
-                var scenario_id = [];
+                tblData = table.rows('.selected').data();
+
+                let scenario_ids = [];
                 $.each(tblData, function(i, val)
                 {
-                    tmpData = tblData[i];
-                    scenario_id.push(tmpData['id'])
+                    let tmpData = tblData[i];
+                    scenario_ids.push(tmpData.id);
                 });
 
-                var url = SETTINGS.URLS.scenario_results + scenario_id.join(',');
+                let url = URLS.scenario_results + scenario_ids.join(',');
 
                 document.getElementById("compareScenarios2").href= url ;
 
                 // set the url for exporting 1 or 2 scenarios
-                url = SETTINGS.URLS.scenario_export_results + scenario_id.join(',');
+                url = URLS.scenario_export_results + scenario_ids.join(',');
 
                 document.getElementById("exportScenarios2").href= url ;
 
                 // set the url for exporting 1 or 2 scenarios DETAIL view
-                url = SETTINGS.URLS.scenario_export_extended_excel_report + scenario_id.join(',');
+                url = URLS.scenario_export_extended_excel_report + scenario_ids.join(',');
 
                 document.getElementById("exportScenariosExtended").href= url ;
             }
             else
             {
-                $('#compareScenarios').attr('disabled','disabled');
                 $('#compareScenarios2').addClass('disabled');
                 $('#exportScenarios2').addClass('disabled');
+                $('#exportScenariosExtended').addClass('disabled');
             }
         } );
 
         $('#compareScenarios').click( function ()
         {
-            var table = $('#scenario-table').DataTable();
+            let table = $('#scenario-table').DataTable();
 
-            var tblData = table.rows('.selected').data();
-            var scenario_id = [];
+            let tblData = table.rows('.selected').data();
+            let scenario_id = [];
             $.each(tblData, function(i, val)
             {
-                tmpData = tblData[i];
-                scenario_id.push(tmpData['id'])
+                let tmpData = tblData[i];
+                scenario_id.push(tmpData.id);
             });
 
-            var url = SETTINGS.URLS.scenario_results + scenario_id.join(',');
-            alert( 'compare scenarios at ' + url);
+            let url = URLS.scenario_results + scenario_id.join(',');
+            window.alert( 'compare scenarios at ' + url);
         } );
     });
 
     var loadTable = function(project_id) {
 
-        var export_columns = [0, 1, 2, 3];
+        let export_columns = [0, 1, 2, 3];
 
-        var scenario_url = SETTINGS.URLS.new_scenario_list.replace('<int:pk>', project_id);
+        let scenario_url = URLS.new_scenario_list.replace('<int:pk>', project_id);
 
-        var options = {
+        let options = {
             "serverSide": false,
             "responsive": true,
             "ajax": scenario_url,
@@ -141,9 +160,9 @@ $(function () {
                     "sWidth": "250px",
                     "render": function (data, type, row) {
 
-                        var duplicate_url = SETTINGS.URLS.scenario_duplicate.replace('<int:pk>', data);
-                        var update_url = SETTINGS.URLS.scenario_update.replace('<int:pk>', data);
-                        var delete_url = SETTINGS.URLS.scenario_delete.replace('<int:pk>', data);
+                        let duplicate_url = URLS.scenario_duplicate.replace('<int:pk>', data);
+                        let update_url = URLS.scenario_update.replace('<int:pk>', data);
+                        let delete_url = URLS.scenario_delete.replace('<int:pk>', data);
 
                         return '<button type="button" class="btn btn-primary btn-sm js-duplicate-scenario" data-url="' + duplicate_url + '">'+
                            '<span class="glyphicon glyphicon-duplicate"></span> Copy'+
@@ -155,14 +174,14 @@ $(function () {
 
                             '<button type="button" class="btn btn-danger btn-sm js-delete-scenario" data-url="' + delete_url + '">'+
                            '<span class="glyphicon glyphicon-trash"></span> Delete'+
-                           '</button>'
+                           '</button>';
                     }
                 },
             ],
             "order": [[ 1, 'asc' ]]
         };
 
-        var table = $('#scenario-table').DataTable(options);
+        let table = $('#scenario-table').DataTable(options);
 
         table.on( 'order.dt search.dt', function () {
             table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
@@ -174,16 +193,16 @@ $(function () {
 
     /* Functions */
     function showValidationErrors(error) {
-        $("#help-block").text(error)
+        $("#help-block").text(error);
     }
 
     function clearValidationError() {
-        $("#help-block").text()
+        $("#help-block").text();
     }
 
     /* generic */
     var loadForm = function () {
-        var btn = $(this);
+        let btn = $(this);
         $.ajax({
             url: btn.attr("data-url"),
             type: 'get',
@@ -201,7 +220,7 @@ $(function () {
 
     /* generic with one extra step to reload the data table */
     var duplicateForm = function () {
-        var btn = $(this);
+        let btn = $(this);
 
         $.ajax({
             url: btn.attr("data-url"),
@@ -227,7 +246,7 @@ $(function () {
 
     /* ajax used when the modal is submitted */
     var submitForm = function () {
-        var form = $(this);
+        let form = $(this);
         $.ajax({
             url: form.attr("action"),
             data: form.serialize(),
@@ -235,7 +254,7 @@ $(function () {
             dataType: 'json',
             success: function (data) {
                 if (data.hasOwnProperty('exception')){
-                    showValidationErrors(data['exception'])
+                    showValidationErrors(data.exception);
                 }
                 else {
                     if (data.form_is_valid) {
@@ -250,11 +269,11 @@ $(function () {
             },
             error: function (res) {
 
-                if (res.status == 422) {
-                    var data = res.responseJSON;
+                if (res.status === 422) {
+                    let data = res.responseJSON;
 
                     for (let i in data) {
-                        showValidationErrors(i, data[i][0])
+                        showValidationErrors(i, data[i][0]);
                     }
                 }
             }

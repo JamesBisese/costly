@@ -1,5 +1,5 @@
 from django.urls import path, include
-from django.conf.urls import url
+from django.urls import re_path
 from django.conf import settings
 from rest_framework import routers
 
@@ -9,8 +9,8 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'projects', views.ProjectViewSet, 'projects')
 router.register(r'scenarios', views.ScenarioViewSet)
-router.register(r'scenario_list', views.ScenarioListViewSet)
-router.register(r'scenario_audit', views.ScenarioAuditViewSet)
+router.register(r'scenario_list', views.ScenarioListViewSet, 'scenariolist')
+router.register(r'scenario_audit', views.ScenarioAuditViewSet, 'scenarioaudit')
 router.register(r'structures', views.StructureViewSet)
 router.register(r'cost_item', views.CostItemViewSet)
 
@@ -18,7 +18,7 @@ router.register(r'cost_item_default_costs', views.CostItemDefaultCostViewSet)
 router.register(r'cost_item_user_costs', views.CostItemUserCostViewSet)
 
 router.register(r'cost_item_default_equations_and_factors', views.CostItemDefaultEquationsAndFactors)
-router.register(r'structure_cost_item_default_factors', views.CostItemDefaultFactorsViewSet)
+router.register(r'structure_cost_item_default_factors', views.StructureCostItemDefaultFactorsViewSet)
 router.register(r'structure_user_cost_item_factors', views.StructureCostItemUserFactorsViewSet)
 
 iis_app_alias = ''
@@ -45,9 +45,9 @@ urlpatterns = [
 
 
     # Scenario CRUD - with extra 'duplicate' and 'save'
-    path(r'scenario/add/', views.scenario_create, name='scenario_create'),
+    # path(r'scenario/add/', views.scenario_create, name='scenario_create'),
 
-    url(r'project/(?P<project_id>\d+)/scenario/add/', views.scenario_create, name='project_scenario_create'),
+    re_path(r'project/(?P<project_id>\d+)/scenario/add/', views.scenario_create, name='project_scenario_create'),
 
     path(r'scenario/<int:pk>/duplicate/', views.scenario_duplicate, name='scenario_duplicate'),
     path(r'scenarios/', views.scenario_list, name='scenario_index'),  # plural version
@@ -102,5 +102,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    url(r'^select2/', include('django_select2.urls')),
+    re_path(r'^select2/', include('django_select2.urls')),
 ]

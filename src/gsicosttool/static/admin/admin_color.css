@@ -1,6 +1,10 @@
 #branding h1 a:link, #branding h1 a:visited {
     color: #fff;
 }
+h1 {
+    font-weight: 600;
+    font-size: 27px;
+}
 
 #header {
     background: #4a8b2c;
@@ -79,7 +83,8 @@ a:link, a:visited {
 }
 
 a:focus, a:hover {
-    color: #999;
+    color: #000;
+    border-bottom:2px solid #4a8b2c;
 }
 
 table thead th.sorted .sortoptions a.sortremove:focus:after,

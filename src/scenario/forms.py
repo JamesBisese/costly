@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML, Div
 from crispy_forms.bootstrap import FormActions
-from bootstrap_datepicker_plus import DatePickerInput
+# from bootstrap_datepicker_plus import DatePickerInput
 
 from .models import Project, Scenario
 
@@ -115,9 +115,9 @@ class ScenarioEditForm(forms.ModelForm):
         maxDate_tx = f"{datetime.datetime.now():%Y-%m-%d}"
 
         widgets = {'name': forms.Textarea(attrs={'rows': 4, 'cols': 25}),
-                   'scenario_date': DatePickerInput(format='%m/%d/%Y',
-                                                    attrs={'autocomplete': 'off', },
-                                                    ),
+                   # 'scenario_date': DatePickerInput(format='%m/%d/%Y',
+                   #                                  attrs={'autocomplete': 'off', },
+                   #                                  ),
                    }
 
     def __init__(self, *args, **kwargs):

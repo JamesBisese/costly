@@ -51,6 +51,9 @@
 </head>
 
 <body>
+
+
+
 <div id="topheader">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
@@ -136,9 +139,11 @@
             <div class="footer">
                 <div class="row">
 
-                      <p>{{ settings.COPYRIGHT_DISCLAIMER | safe }} {{ settings.VERSION_INFORMATION }}<br>
-                          Send comments and questions to <a href="mailto:{{ settings.EMAIL_CONTACT }}">
-                            {{ settings.EMAIL_CONTACT }}</a></p>
+                      <p>{{ settings.COPYRIGHT_DISCLAIMER | safe }}
+                            <br>Send comments and questions to <a href="mailto:{{ settings.EMAIL_CONTACT }}">
+                            {{ settings.EMAIL_CONTACT }}</a>
+                          <br><div id="version_information">{{ settings.VERSION_INFORMATION }}</div>
+                      </p>
 
                 </div>
             </div>

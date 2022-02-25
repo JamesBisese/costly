@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.conf import settings
+from django.urls import re_path
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 from django.urls import include, path
 
 import authtools.urls
@@ -40,6 +42,8 @@ urlpatterns = [
     path(iis_app_alias + 'audit/', views.AuditPage.as_view(),   name='audit'),
 
     path(iis_app_alias + 'users/', include(profiles.urls)),
+
+    re_path(r'^admin/login/$', RedirectView.as_view(url=settings.LOGIN_URL, permanent=True, query_string=True)),
     path(iis_app_alias + 'admin/', admin.site.urls),
 
     path(iis_app_alias + 'accounts/', include(authtools.urls)),

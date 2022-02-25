@@ -43,12 +43,12 @@ $(function () {
                 {"data": "rsmeans_va", "searchable": true},
 
                 //TODO: use this once we have enough data for the db values
-                // {"data": "db_25pct_va", "searchable": false},
-                // {"data": "db_50pct_va", "searchable": false},
-                // {"data": "db_75pct_va", "searchable": false},
+                {"data": "db_25pct_va", "searchable": false},
+                {"data": "db_50pct_va", "searchable": false},
+                {"data": "db_75pct_va", "searchable": false},
 
-                {"data": "replacement_life", "searchable": true},
-                {"data": "o_and_m_pct", "searchable": false},
+                // {"data": "replacement_life", "searchable": true},
+                // {"data": "o_and_m_pct", "searchable": false},
              ],
             "columnDefs": [],
         };

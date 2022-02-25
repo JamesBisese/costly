@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
 from .models import Project, Scenario, Structures, \
-    ConventionalStructures, \
-    NonConventionalStructures, \
     CostItem, \
     CostItemDefaultCosts, \
     ScenarioCostItemUserCosts, \
@@ -59,9 +57,45 @@ class UserSerializer(serializers.ModelSerializer):
             'organization_tx',
             'job_title',
             'is_active',
+            'is_staff',
+            'is_superuser',
             'profile',
             'date_joined',
             'last_login',
+        )
+        # Specifying fields in datatables_always_serialize
+        # will also force them to always be serialized.
+        datatables_always_serialize = ('id',)
+
+        read_only_fields = [f.name for f in User._meta.get_fields()]
+
+
+class UserSimpleSerializer(serializers.ModelSerializer):
+    #
+    name = serializers.CharField()
+
+    def get_name(self, user):
+        return '%s' % user.name.lower()
+
+    # end
+
+    # profile = ProfileSerializer()
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, user):
+        return user.profile.user_type
+
+    # date_joined = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+    # last_login = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+
+    class Meta:
+        model = User
+        fields = (
+            # '__all__'
+            'id',
+            'name',
+            'organization_tx',
+            'user_type',
         )
         # Specifying fields in datatables_always_serialize
         # will also force them to always be serialized.
@@ -260,7 +294,7 @@ class StructureSerializer(serializers.ModelSerializer):
             'units_html',
             'help_text',
         )
-        read_only_fields = [f.name for f in Structures._meta.get_fields()]
+        # read_only_fields = [f.name for f in Structures._meta.get_fields()]
 
 
 class EmbeddedScenarioArealFeatureSerializer(serializers.ModelSerializer):
@@ -321,7 +355,7 @@ class CostItemSerializer(serializers.ModelSerializer):
             'units',
             'help_text',
         )
-        read_only_fields = [f.name for f in CostItem._meta.get_fields()]
+        # read_only_fields = [f.name for f in CostItem._meta.get_fields()]
 
 
 class CostItemDefaultCostSerializer(serializers.ModelSerializer):
@@ -339,8 +373,8 @@ class CostItemDefaultCostSerializer(serializers.ModelSerializer):
         fields = (
             'costitem',
             'id',
-            'replacement_life',
-            'o_and_m_pct',
+            # 'replacement_life',
+            # 'o_and_m_pct',
             'rsmeans_va',
             'db_25pct_va',
             'db_50pct_va',
@@ -363,10 +397,10 @@ class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
         fields = (
             'costitem',
             'id',
-            'a_area',
-            'z_depth',
-            'd_density',
-            'n_number',
+            'replacement_life',
+            'o_and_m_pct',
+            # 'd_density',
+            # 'n_number',
             'equation_tx',
             'help_text',
         )
@@ -587,7 +621,7 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         user1 = obj.scenario.project.user
-        return UserSerializer(user1, many=False).data
+        return UserSimpleSerializer(user1, many=False).data
     # scenario = ScenarioListSerializer(many=False, read_only=True)
     #
     # # the uncommented 'project' controls what fields are included

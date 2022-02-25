@@ -35,7 +35,7 @@ from django.contrib.auth import update_session_auth_hash
 
 from django.shortcuts import redirect, resolve_url
 from django.utils.functional import lazy
-from django.utils.http import base36_to_int, is_safe_url, urlsafe_base64_decode
+from django.utils.http import base36_to_int, urlsafe_base64_decode, url_has_allowed_host_and_scheme
 from django.utils import six
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -98,7 +98,7 @@ class WithNextUrlMixin(object):
             except AttributeError:
                 pass
 
-            url_is_safe = is_safe_url(
+            url_is_safe = url_has_allowed_host_and_scheme(
                 redirect_to,
                 allowed_hosts=allowed_hosts,
                 require_https=self.request.is_secure()
@@ -106,7 +106,7 @@ class WithNextUrlMixin(object):
 
         except TypeError:
             # django < 1.11
-            url_is_safe = is_safe_url(redirect_to, host=host)
+            url_is_safe = url_has_allowed_host_and_scheme(redirect_to, host=host)
 
         if url_is_safe:
             return redirect_to
@@ -207,7 +207,7 @@ class LoginView(AuthDecoratorsMixin, SuccessURLAllowedHostsMixin,
 
 class LogoutView(NeverCacheMixin, SuccessURLAllowedHostsMixin, WithCurrentSiteMixin, WithNextUrlMixin, TemplateView,
                  RedirectView):
-    template_name = 'registration/logged_out.html'
+    template_name = 'registration/FOOBARlogged_out.html'
     permanent = False
 
     def get_redirect_url(self, **kwargs):
@@ -215,8 +215,8 @@ class LogoutView(NeverCacheMixin, SuccessURLAllowedHostsMixin, WithCurrentSiteMi
 
         if redirect_to:
             return redirect_to
-        elif getattr(settings, 'LOGOUT_REDIRECT_URL', None) is not None:  # Setting is only available in django 1.10
-            return resolve_url(settings.LOGOUT_REDIRECT_URL)
+        elif getattr(settings, 'LOGIN_URL', None) is not None:  # Setting is only available in django 1.10
+            return resolve_url(settings.LOGIN_URL)
         elif self.request.POST.get(self.redirect_field_name, self.request.GET.get(self.redirect_field_name, '')):
             # we have a url, but it is not safe. Django redirects back to the same view.
             return self.request.path

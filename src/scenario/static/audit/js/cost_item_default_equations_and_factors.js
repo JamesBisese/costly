@@ -57,10 +57,8 @@ $(function () {
                 {"data": "costitem.name", "searchable": true},
                 {"data": "costitem.units", "searchable": true},
 
-                {"data": "a_area", "searchable": true},
-                {"data": "z_depth", "searchable": true},
-                {"data": "d_density", "searchable": true},
-                {"data": "n_number", "searchable": true},
+                {"data": "replacement_life", "searchable": true},
+                {"data": "o_and_m_pct", "searchable": true},
                 {"data": "equation_tx", "searchable": true}
 
              ],

@@ -31,16 +31,16 @@ function reveal()
 }
 
 $(document).ready(function() {
-    let acknowledgeDom = document.getElementById('id_acknowledge_terms');
-    let submitLoginDom = document.getElementById('submit-id-sign_in');
-    if (submitLoginDom){
-        submitLoginDom.disabled = true;
-        // submitLoginDom.addEventListener("change", enableSubmit, false);
-    }
-    $("#id_acknowledge_terms").change(function() {
-        let submitLoginDom = document.getElementById('submit-id-sign_in');
-        submitLoginDom.disabled = submitLoginDom.disabled === true ? false : true;
-    });
+    // let acknowledgeDom = document.getElementById('id_acknowledge_terms');
+    // let submitLoginDom = document.getElementById('submit-id-sign_in');
+    // if (submitLoginDom){
+    //     submitLoginDom.disabled = true;
+    //     // submitLoginDom.addEventListener("change", enableSubmit, false);
+    // }
+    // $("#id_acknowledge_terms").change(function() {
+    //     let submitLoginDom = document.getElementById('submit-id-sign_in');
+    //     submitLoginDom.disabled = submitLoginDom.disabled === true ? false : true;
+    // });
 });
 
 

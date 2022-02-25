@@ -4,75 +4,53 @@ import argparse
 
 from scenario.models import ArealFeatureLookup
 
-from scenario.scenario_frameworks import TEMPLATE_SCENARIO
-
 #
 # data is loaded from csv file
-#
-#
-# (venv) C:\inetpub\wwwdjango\gsicosttool\src> \
-#               python manage.py load_CostItems \
-#                   --csvfile "C:\Data_and_Tools\raleigh_cost_tool\working\data\CostItemDefaultAssumptions_costs.csv"
+# (venv) $> python manage.py load_CostItems \
+#                   --csvfile "C:\Data_and_Tools\raleigh_cost_tool\working\data\ArealFeatureLookup.csv"
 #
 class Command(BaseCommand):
     help = 'Tool to help automate creating ArealFeatureLookup model only - prints to screen.'
 
-    # default_file_path = r".\scenario\static\scenario\data\ArealFeatureLookup.csv"
-    #
-    # def add_arguments(self, parser):
-    #     parser.add_argument('--csvfile', type=argparse.FileType('r'),
-    #                         default=self.default_file_path)
+    default_file_path = r".\scenario\static\scenario\data\ArealFeatureLookup.csv"
+
+    def add_arguments(self, parser):
+        parser.add_argument('--csvfile', type=argparse.FileType('r'),
+                            default=self.default_file_path)
 
     def handle(self, *args, **options):
 
-        doc = TEMPLATE_SCENARIO
+        with options['csvfile'] as csvfile:
 
-        # print(doc.siteData.areal_features)
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if not ArealFeatureLookup.objects.filter(code=row['code']).exists():
 
-        labels = doc['siteData']['areal_features']['labels']
-
-
-        # create each cost item shown in the list above
-
-        # first truncate the table to add new values.
-        # NOTE: this also truncates CostItemDefaultCosts - so that will need to be reloaded
-        # CostItemDefaultAssumptions.objects.all().delete()
-
-        ArealFeatureLookup.objects.all().delete()
-
-        sort_nu = 0
-        for code in labels:
-            name = labels[code]
-            sort_nu += 1
-
-            print(code + '--' + labels[code])
-            if not ArealFeatureLookup.objects.filter(code=code).exists():
-
-                i = ArealFeatureLookup.objects.create(code=code,
-                                             name=name,
-                                             sort_nu=sort_nu,
-                                             units='SF',
-                                             units_html='SF',
-                                             help_text = 'TBD'
-                                            )
-                print('created "{}"'.format(code))
-            else:
-                c = ArealFeatureLookup.objects.get(code=code)
-                changed_fields = set()
-                if str(getattr(c, 'name')) != name:
-                    changed_fields.add(name)
-                    print("'{}' ne '{}'".format(getattr(c, 'name'), name))
-                    setattr(c, 'sort_nu', name)
-                if str(getattr(c, 'sort_nu')) != sort_nu:
-                    changed_fields.add(sort_nu)
-                    print("'{}' ne '{}'".format(getattr(c, 'sort_nu'), sort_nu))
-                    setattr(c, 'sort_nu', sort_nu)
-
-                if len(changed_fields) > 0:
-                    print('updated "{}" field(s): '.format(code) + ', '.join(changed_fields))
-                    c.save()
+                    i = ArealFeatureLookup.objects.create(code=row['code'],
+                                                     name=row['name'],
+                                                     sort_nu=row['sort_nu'],
+                                                 units='SF',
+                                                 units_html='SF',
+                                                 help_text = 'TBD'
+                                                )
+                    print('created "{}"'.format(row['code']))
                 else:
-                    print('no updates for "{}"'.format(code))
+                    c = ArealFeatureLookup.objects.get(code=row['code'])
+                    changed_fields = set()
+                    if str(getattr(c, 'name')) != row['name']:
+                        changed_fields.add(row['name'])
+                        print("'{}' ne '{}'".format(getattr(c, 'name'), row['name']))
+                        setattr(c, 'sort_nu', row['name'])
+                    if str(getattr(c, 'sort_nu')) != row['sort_nu']:
+                        changed_fields.add(row['sort_nu'])
+                        print("'{}' ne '{}'".format(getattr(c, 'sort_nu'), row['sort_nu']))
+                        setattr(c, 'sort_nu', row['sort_nu'])
+
+                    if len(changed_fields) > 0:
+                        print('updated "{}" field(s): '.format(row['code']) + ', '.join(changed_fields))
+                        c.save()
+                    else:
+                        print('no updates for "{}"'.format(row['code']))
 
         count_nu = ArealFeatureLookup.objects.count()
         self.stdout.write('ArealFeatureLookup.objects.count() == {}'.format(count_nu))

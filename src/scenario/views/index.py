@@ -2,6 +2,7 @@ import json
 import logging
 
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -11,13 +12,14 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 from djmoney.money import Money
-from rest_framework import viewsets, mixins, viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 
-from scenario.models import Project, Scenario, ArealFeatures, ArealFeatureLookup, Structures, \
+from scenario.models import Project, Scenario, \
+    ArealFeatureLookup, Structures, \
     CostItem, \
-    CostItemDefaultCosts, ScenarioCostItemUserCosts, \
+    CostItemDefaultCosts, CostItemDefaultEquations, \
+    ScenarioCostItemUserCosts, \
     StructureCostItemUserFactors, \
     ScenarioArealFeature, ScenarioStructure
 
@@ -26,11 +28,12 @@ from scenario.forms import ProjectForm
 from scenario.serializers import EmbeddedProjectSerializer, \
     ScenarioSerializer, ScenarioCostItemUserCostsSerializer
 
-from scenario.views.decorators import query_debugger2
+from scenario.decorators import sql_query_debugger
 
 from .reports import *
 
 logger = logging.getLogger('developer')
+
 
 # region Project
 
@@ -38,7 +41,7 @@ logger = logging.getLogger('developer')
 @login_required
 def project_list(request):
     """
-        project list as function based views using ajax to feed in data
+        project list as function based views using javascript to load the data and render the table
 
         http://127.0.0.1:92/projects/
     """
@@ -55,12 +58,11 @@ def project_list(request):
     return render(request, 'project/project_index.html', context_data)
 
 
+@login_required
 def project_save(request, form, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
-            # I don't know how this is supposed to work.  I needed
-            # to add the 'instance' thing, but it doesn't seem right
             if form.cleaned_data['project_area'] is not None:
                 form.cleaned_data['project_area'] = form.cleaned_data['project_area'].replace(",", "")
                 form.instance.project_area = form.cleaned_data['project_area'].replace(",", "")
@@ -80,6 +82,7 @@ def project_save(request, form, template_name):
     return JsonResponse(data)
 
 
+@login_required
 def project_create(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
@@ -88,8 +91,23 @@ def project_create(request):
     return project_save(request, form, 'project/includes/partial_project_create.html')
 
 
+@login_required
 def project_update(request, pk):
-    project = get_object_or_404(Project, pk=pk)
+    queryset = Project.objects \
+        .select_related('user', 'user__profile') \
+        .only('project_title', 'project_ownership', 'project_type',
+              'project_area', 'land_unit_cost', 'land_unit_cost_currency', 'project_location',
+              'project_purchase_information',
+              'create_date', 'modified_date',
+              'user__name', 'user__email', 'user__phone_tx', 'user__job_title', 'user__organization_tx',
+              'user__is_active', 'user__date_joined', 'user__last_login',
+              'user__profile__user_type') \
+        .all().order_by('project_title')
+
+    if not request.user.is_superuser:
+        queryset = queryset.filter(user=request.user)
+
+    project = get_object_or_404(queryset, pk=pk)
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=project)
     else:
@@ -97,6 +115,7 @@ def project_update(request, pk):
     return project_save(request, form, 'project/includes/partial_project_update.html')
 
 
+@login_required
 def project_delete(request, pk):
     project = get_object_or_404(Project, pk=pk)
     data = dict()
@@ -112,11 +131,13 @@ def project_delete(request, pk):
         data['html_form'] = render_to_string('project/includes/partial_project_delete.html', context, request=request)
     return JsonResponse(data)
 
+
 # endregion Project
 
 
 # region Scenario
 
+@login_required
 def scenario_save(request):
     """
 
@@ -130,6 +151,8 @@ def scenario_save(request):
     posted_data = json.loads(request.body.decode('utf-8'))
 
     form_data = json.loads(posted_data)
+
+    scenario = None
 
     # CREATE
     # TODO: remove this - we will do adds using the db, not this UI
@@ -156,7 +179,9 @@ def scenario_save(request):
                                   }
 
             # DB_SPECIFIC
-            if (error.args[0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
+            if error.args[
+                0] == "UNIQUE constraint failed: scenario_scenario.user_id, " + \
+                    "scenario_scenario.project_title, scenario_scenario.scenario_title":
                 form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
                                                 + "scenario with the the same Project Title and Scenario Title"
                 form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
@@ -177,34 +202,10 @@ def scenario_save(request):
         # TODO: check that it found the object
         scenario = get_object_or_404(Scenario, pk=form_data['scenario_id'])
 
-        # try:
-            # send it off to be processed
+        # send it off to be processed
         scenario.process_related_data(form_data['siteData'], form_data['active_tab'])
 
         scenario.save()
-
-        # except Exception as error:
-        #     # don't dump all the form_data content if there is a failure
-        #     # form_data = {}
-        #     form_data['Error'] = {'Type': type(error).__name__,
-        #                           'message': "1.232 Unexpected error:" + str(error.args[0]),
-        #                           }
-        #     # DB_SPECIFIC
-        #     if (error.args[
-        #         0] == "UNIQUE constraint failed: scenario_scenario.user_id, scenario_scenario.project_title, scenario_scenario.scenario_title"):
-        #         form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
-        #                                         + "scenario with the the same Project Title and Scenario Title"
-        #         form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
-        #     elif error.args[0] == 'list index out of range':
-        #         form_data['Error']['message'] = "List Index out of range???"
-        #         form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
-        #
-        #     if ('duplicate key value violates unique constraint' in error.args[0]):
-        #         form_data['Error']['message'] = "Duplicate Project and Scenario Title.  You can only have one " \
-        #                                         + "scenario with the the same Project Title and Scenario Title"
-        #         form_data['Error']['error_dom_id'] = 'scenario_title_validation_error'
-
-        # TADA
 
         serializer_class = EmbeddedProjectSerializer
 
@@ -214,11 +215,9 @@ def scenario_save(request):
 
         form_data['processing_message'] = 'Successfully Saved'
 
-        scenario_cost_item_costs = ScenarioCostItemUserCosts.objects\
-            .select_related('scenario', 'costitem')\
+        scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
+            .select_related('scenario', 'costitem') \
             .filter(scenario__id=scenario.id)
-
-        # form_data['user_costs'] = cost_item_user_costs
 
         serializer_class = ScenarioCostItemUserCostsSerializer
 
@@ -233,7 +232,8 @@ def scenario_save(request):
     return JsonResponse(form_data)
 
 
-class CompareScenarioResults(APIView):
+# LoginRequiredMixin,
+class CompareScenarioResults(LoginRequiredMixin, APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "scenario/results_compare.html"
 
@@ -250,11 +250,12 @@ class CompareScenarioResults(APIView):
             scenarios[id] = {'id': id, 'html': scenario_table, 'data': scenario}
 
         left_scenario = scenarios[ids[0]]['data']
-        right_scenario = scenarios[ids[1]]['data']
+        comparison = {}
+        if len(ids) == 2:
+            right_scenario = scenarios[ids[1]]['data']
+            comparison_column_html = comparison_column(left_scenario, right_scenario)
 
-        comparison_column_html = comparison_column(ids, left_scenario, right_scenario)
-
-        comparison = {'html': comparison_column_html}
+            comparison = {'html': comparison_column_html}
 
         context = {
             'scenarios': scenarios,
@@ -276,7 +277,7 @@ class CompareScenarioColumn(APIView):
         left_scenario = get_object_or_404(Scenario, pk=ids[0])
         right_scenario = get_object_or_404(Scenario, pk=ids[1])
 
-        comparison_column_html = comparison_column(ids, left_scenario, right_scenario)
+        comparison_column_html = comparison_column(left_scenario, right_scenario)
 
         return HttpResponse(comparison_column_html)
 
@@ -284,14 +285,14 @@ class CompareScenarioColumn(APIView):
 #
 # this is the scenario data in a single html partial table
 #
-class ScenarioResults(APIView):
+class ScenarioResults(LoginRequiredMixin, APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "scenario/results.html"
 
     def get(self, request, multiple_pks):
         pass
 
-    # @query_debugger2
+    # @sql_query_debugger
     def get(self, request, pk):
         scenario = get_object_or_404(Scenario, pk=pk)
 
@@ -302,7 +303,7 @@ class ScenarioResults(APIView):
 
 
 @login_required
-# @query_debugger2
+# @sql_query_debugger
 def scenario_list(request, pk=None):
     """
         scenario as function based views using ajax to feed in data
@@ -329,6 +330,7 @@ def scenario_list(request, pk=None):
     return render(request, 'scenario/scenario_index.html', context_data)
 
 
+@login_required
 def scenario_create(request, project_id=None):
     """
 
@@ -337,7 +339,23 @@ def scenario_create(request, project_id=None):
     this has to have the pk of the project you are adding the scenario to
 
     """
-    project = get_object_or_404(Project, id=project_id)
+    queryset = Project.objects \
+        .select_related('user', 'user__profile') \
+        .only('project_title', 'project_ownership', 'project_type',
+              'project_area', 'land_unit_cost', 'land_unit_cost_currency', 'project_location',
+              'project_purchase_information',
+              'create_date', 'modified_date',
+              'user__name', 'user__email', 'user__phone_tx', 'user__job_title', 'user__organization_tx',
+              'user__is_active', 'user__date_joined', 'user__last_login',
+              'user__profile__user_type') \
+        .all().order_by('project_title')
+
+    if not request.user.is_superuser:
+        queryset = queryset.filter(user=request.user)
+
+    project = get_object_or_404(queryset, id=project_id)
+    #
+    # project = get_object_or_404(Project, id=project_id)
 
     data = dict()
     if request.method == 'POST':
@@ -374,7 +392,7 @@ def scenario_create(request, project_id=None):
         try:
             scenario.save()
             data['form_is_valid'] = True
-        except IntegrityError as exc:
+        except IntegrityError:
             data['exception'] = "Scenario Title must be unique for the project. Change the Title"
 
     else:
@@ -384,6 +402,7 @@ def scenario_create(request, project_id=None):
     return JsonResponse(data)
 
 
+@login_required
 def scenario_duplicate(request, pk):
     """
         If requested using GET This loads a partial that is shown in a modal
@@ -392,9 +411,6 @@ def scenario_duplicate(request, pk):
     scenario = get_object_or_404(Scenario, pk=pk)
     data = dict()
     if request.method == 'POST':
-
-        # depreciated
-        areal_features = ArealFeatures.objects.filter(scenario=scenario)[0]
 
         scenario_areal_features = ScenarioArealFeature.objects.filter(scenario=scenario)
         scenario_structures = ScenarioStructure.objects.filter(scenario=scenario)
@@ -409,15 +425,8 @@ def scenario_duplicate(request, pk):
         else:
             scenario.scenario_title += ' (copy)'
 
-        # depreciated
-        areal_features.pk = None
-        areal_features.scenario = scenario
-        areal_features.save()
-
         try:
             scenario.save()
-
-            scenario.areal_features = areal_features
 
             # duplicate all the existing rows
             for s in scenario_areal_features:
@@ -442,7 +451,7 @@ def scenario_duplicate(request, pk):
 
             data['form_is_valid'] = True
 
-        except IntegrityError as exc:
+        except IntegrityError:
             data['exception'] = "Scenario Title must be unique for the project. Change the Title"
 
     else:
@@ -454,7 +463,7 @@ def scenario_duplicate(request, pk):
 
 
 @login_required
-# @query_debugger2
+# @sql_query_debugger
 def scenario_update(request, pk):
     """
 
@@ -465,8 +474,8 @@ def scenario_update(request, pk):
         available via /scenario/{id}/update
 
     """
-    queryset = Scenario.objects\
-        .select_related('project', 'project__user', 'project__user__profile')\
+    queryset = Scenario.objects \
+        .select_related('project', 'project__user', 'project__user__profile') \
         .filter(pk=pk)
     scenario = get_object_or_404(queryset)
 
@@ -478,13 +487,30 @@ def scenario_update(request, pk):
 
     structures = Structures.objects.all().order_by("sort_nu")
 
-    cost_item_user_costs = ScenarioCostItemUserCosts.objects\
-        .select_related('scenario', 'costitem')\
+    cost_item_user_costs = ScenarioCostItemUserCosts.objects \
+        .select_related('scenario', 'costitem') \
         .filter(scenario__id=scenario.id)
 
-    default_cost_item_costs = CostItemDefaultCosts.objects\
-        .select_related('costitem')\
+    default_cost_item_costs = CostItemDefaultCosts.objects \
+        .select_related('costitem') \
         .all().order_by("costitem__sort_nu")
+
+    default_cost_item_equations = CostItemDefaultEquations.objects \
+        .select_related('costitem') \
+        .all().order_by("costitem__sort_nu")
+
+    # move 2 fields from equations into costs
+    for cost_item_costs in default_cost_item_costs:
+        cost_item_equations_objs = [x for x in default_cost_item_equations if
+                                    x.costitem.code == cost_item_costs.costitem.code]
+
+        if cost_item_equations_objs is not None and len(cost_item_equations_objs) > 0:
+            cost_item_equations_obj = cost_item_equations_objs[0]
+            cost_item_costs.replacement_life = cost_item_equations_obj.replacement_life
+            cost_item_costs.o_and_m_pct = cost_item_equations_obj.o_and_m_pct
+        else:
+            cost_item_costs.replacement_life = 999
+            cost_item_costs.o_and_m_pct = 999
 
     context = {
         'scenario': serializer.data,
@@ -498,6 +524,7 @@ def scenario_update(request, pk):
     return render(request, 'scenario/costtool/index.html', context)
 
 
+@login_required
 def scenario_delete(request, pk):
     """
         this is the content of the Confirm scenario deletion pop-up
@@ -571,11 +598,12 @@ class CostItemHelp(APIView):
 
     def get(self, request, costitem_code):
         costitem_meta = CostItem.objects.filter(code=costitem_code)
+        default_cost_item_cost = None
         if len(costitem_meta) == 0:
             costitem_meta = CostItem.objects.all()
         else:
-            default_cost_item_cost = CostItemDefaultCosts.objects\
-                .select_related('costitem')\
+            default_cost_item_cost = CostItemDefaultCosts.objects \
+                .select_related('costitem') \
                 .filter(costitem__code=costitem_code).first()
             costitem_meta = costitem_meta[0]
 
@@ -593,6 +621,7 @@ def costitem_help_html(costitem_meta, costitem_code, cost_item_default_cost):
     return render_to_string(template_name, context)
 
 
+# @sql_query_debugger
 def results_table_html(scenario):
     """
     generate the Results table and return as an HTML string
@@ -602,18 +631,10 @@ def results_table_html(scenario):
     """
     logger.debug("################################ results_table_html({})".format(scenario))
 
-    # this is templates/scenario/results
     template_name = "scenario/results.html"
 
-    # get a serialized copy of the scenario and in the users browser
-    # it will be loaded into the Results tab
     serializer_class = ScenarioSerializer
     serializer = serializer_class(scenario)
-
-    # scenarioTemplate = Scenario.templateScenario
-
-    # this holds calculated values used in the tables but not stored in a
-    # scenario variable
 
     sum_values = {}
 
@@ -623,7 +644,7 @@ def results_table_html(scenario):
 
     if serializer.data['a_features']:
         for obj in serializer.data['a_features']:
-            if obj['is_checked'] == True and obj['area'] != "0" and obj['area'] != None:
+            if obj['is_checked'] is True and obj['area'] != "0" and obj['area'] is not None:
                 areal_features_sum_area += int(float(obj['area']))
                 obj['label'] = obj['areal_feature_name']
             else:
@@ -636,11 +657,11 @@ def results_table_html(scenario):
     impervious_area = 0
     try:
         pervious_area = int(float(serializer.data['embedded_scenario']['pervious_area']))
-    except:
+    except TypeError:
         pass
     try:
         impervious_area = int(float(serializer.data['embedded_scenario']['impervious_area']))
-    except:
+    except TypeError:
         pass
 
     sum_values['pervious_impervious_area'] = pervious_area + impervious_area
@@ -667,7 +688,6 @@ def results_table_html(scenario):
     #         obj['label'] = labels[r]
     # sum_values['nonconventional_structure_sum_area'] = nonconventional_structure_sum_area
 
-
     for test_structure in serializer.data['c_structures']:
         if test_structure['is_checked'] is True and test_structure['area'] is not None:
             conventional_structure_sum_area += int(float(test_structure['area']))
@@ -678,9 +698,25 @@ def results_table_html(scenario):
     sum_values['nonconventional_structure_sum_area'] = nonconventional_structure_sum_area
 
     # load the labels for Cost Items
-    default_cost_item_costs = CostItemDefaultCosts.objects\
-        .select_related('costitem')\
+    cost_item_default_costs = CostItemDefaultCosts.objects \
+        .select_related('costitem') \
         .all().order_by("costitem__sort_nu")
+
+    cost_item_default_equations = CostItemDefaultEquations.objects \
+        .select_related('costitem') \
+        .only('costitem__code', 'replacement_life', 'o_and_m_pct') \
+        .all().order_by("costitem__sort_nu")
+
+    for cost_item_obj in cost_item_default_costs:
+        default_equations_objs = [x for x in cost_item_default_equations if x.costitem_id == cost_item_obj.id]
+        if default_equations_objs is not None and len(default_equations_objs) > 0:
+            default_equations_obj = default_equations_objs[0]
+
+            cost_item_obj.replacement_life = default_equations_obj.replacement_life
+            cost_item_obj.o_and_m_pct = default_equations_obj.o_and_m_pct
+        else:
+            cost_item_obj.replacement_life = -88
+            cost_item_obj.o_and_m_pct = -88
 
     cost_item_user_cost = serializer.data['cost_item_user_costs']
 
@@ -690,7 +726,7 @@ def results_table_html(scenario):
 
     cost_item_costs = []
 
-    for cost_item_obj in default_cost_item_costs:
+    for cost_item_obj in cost_item_default_costs:
         code = cost_item_obj.costitem.code
         cost_source_tx = 'Eng. Est.'
 
@@ -755,7 +791,8 @@ def results_table_html(scenario):
             if cost_item_user_cost_dict[code]['cost_source'] == 'user':
                 cost_item_obj['cost_source'] = 'User'
                 # change the value to a Money
-                cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'] or '0.00', 'USD').amount
+                cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'] or '0.00',
+                                                   'USD').amount
                 cost_item_obj['base_year'] = cost_item_user_cost_dict[code]['base_year']
 
     #
@@ -792,12 +829,15 @@ def results_table_html(scenario):
     return render_to_string(template_name, context)
 
 
+def comparison_column(left_scenario, right_scenario):
+    """
 
-#
-# generate the Results table and return as an HTML string (make sure this is true)
-#
-def comparison_column(ids, left_scenario, right_scenario):
-    # this is templates/scenario/results
+    generate the Results table and return as an HTML string
+
+    :param left_scenario:
+    :param right_scenario:
+    :return:
+    """
     template_name = "scenario/comparison_column.html"
 
     left = left_scenario
@@ -818,8 +858,10 @@ def comparison_column(ids, left_scenario, right_scenario):
             or left.discount_rate != right.discount_rate:
         diff['planning_and_design'] = True
 
-    diff['pervious_area'] = left.pervious_area or 0 - right.pervious_area or 0
-    diff['impervious_area'] = left.impervious_area or 0 - right.impervious_area or 0
+    diff['pervious_area'] = (left.pervious_area if left.pervious_area is not None else 0) - (
+        right.pervious_area if right.pervious_area is not None else 0)
+    diff['impervious_area'] = (left.impervious_area if left.impervious_area is not None else 0) - (
+        right.impervious_area if right.impervious_area is not None else 0)
 
     diff['pervious'] = False
     if left.impervious_area != right.impervious_area:
@@ -828,7 +870,7 @@ def comparison_column(ids, left_scenario, right_scenario):
     left_total = left_costs['project_life_cycle_costs']['total']
     right_total = right_costs['project_life_cycle_costs']['total']
 
-    costs = {}
+    costs = dict()
     costs['construction'] = left_total['construction'] - right_total['construction']
     costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
     costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
@@ -838,31 +880,36 @@ def comparison_column(ids, left_scenario, right_scenario):
 
     diff['project_life_cycle_costs'] = costs
 
-    left_total = left_costs['project_life_cycle_costs']['conventional']['costs']
-    right_total = right_costs['project_life_cycle_costs']['conventional']['costs']
+    # left_total = left_costs['project_life_cycle_costs']['conventional']['costs']
+    # right_total = right_costs['project_life_cycle_costs']['conventional']['costs']
 
-    costs = {}
-    costs['construction'] = left_total['construction'] - right_total['construction']
-    costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
-    costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
-    costs['replacement'] = left_total['replacement'] - right_total['replacement']
-    costs['total'] = costs['construction'] + costs['planning_and_design'] + \
-                     costs['o_and_m'] + costs['replacement']
+    for structure_type in ['conventional', 'nonconventional']:
+        left_total = left_costs['project_life_cycle_costs'][structure_type]['costs']
+        right_total = right_costs['project_life_cycle_costs'][structure_type]['costs']
 
-    diff['conventional'] = costs
+        costs = dict()
+        costs['construction'] = left_total['construction'] - right_total['construction']
+        costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
+        costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
+        costs['replacement'] = left_total['replacement'] - right_total['replacement']
+        costs['total'] = costs['construction'] + \
+                         costs['planning_and_design'] + \
+                         costs['o_and_m'] + costs['replacement']
 
-    left_total = left_costs['project_life_cycle_costs']['nonconventional']['costs']
-    right_total = right_costs['project_life_cycle_costs']['nonconventional']['costs']
+        diff[structure_type] = costs
 
-    costs = {}
-    costs['construction'] = left_total['construction'] - right_total['construction']
-    costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
-    costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
-    costs['replacement'] = left_total['replacement'] - right_total['replacement']
-    costs['total'] = costs['construction'] + costs['planning_and_design'] + \
-                     costs['o_and_m'] + costs['replacement']
+    # left_total = left_costs['project_life_cycle_costs']['nonconventional']['costs']
+    # right_total = right_costs['project_life_cycle_costs']['nonconventional']['costs']
 
-    diff['nonconventional'] = costs
+    # costs = dict()
+    # costs['construction'] = left_total['construction'] - right_total['construction']
+    # costs['planning_and_design'] = left_total['planning_and_design'] - right_total['planning_and_design']
+    # costs['o_and_m'] = left_total['o_and_m'] - right_total['o_and_m']
+    # costs['replacement'] = left_total['replacement'] - right_total['replacement']
+    # costs['total'] = costs['construction'] + costs['planning_and_design'] + \
+    #                  costs['o_and_m'] + costs['replacement']
+    #
+    # diff['nonconventional'] = costs
 
     areal_features = {
         'total_area': 0,
@@ -883,16 +930,17 @@ def comparison_column(ids, left_scenario, right_scenario):
                 right_obj = obj
                 break
 
-        right_area = right_obj['area'] if right_obj['is_checked'] is True else 0
+        right_area = right_obj['area'] if right_obj is not None and right_obj['is_checked'] is True else 0
         left_area = left_obj['area'] if left_obj['is_checked'] is True else 0
-        diff_area = left_area or 0 - right_area or 0
+        diff_area = left_area if left_area is not None else 0 - right_area if right_area is not None else 0
         diff_area_sum += diff_area
-        areal_features['item_list'][code] = {'label': right_obj['areal_feature_name'], 'area': diff_area}
+        areal_features['item_list'][code] = {'label': left_obj['areal_feature_name'], 'area': diff_area}
         if code == 'stormwater_management_feature':
             areal_features['item_list'][code]['project_land_unit_cost'] = \
                 left_scenario.project.land_unit_cost
             areal_features['item_list'][code]['project_land_cost_diff'] = \
-                (left_area or 0 - right_area or 0) * left_scenario.project.land_unit_cost
+                (left_area if left_area is not None else 0 -
+                                                         right_area if right_area is not None else 0) * left_scenario.project.land_unit_cost
 
     areal_features['total_area'] = diff_area_sum
     diff['areal_features'] = areal_features
@@ -905,9 +953,9 @@ def comparison_column(ids, left_scenario, right_scenario):
     }
 
     areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu')
-    left_areal_features = ScenarioArealFeature.objects\
+    left_areal_features = ScenarioArealFeature.objects \
         .filter(scenario=left_scenario).values('areal_feature_id', 'scenario_id', 'area', 'is_checked')
-    right_areal_features = ScenarioArealFeature.objects\
+    right_areal_features = ScenarioArealFeature.objects \
         .filter(scenario=right_scenario).values('areal_feature_id', 'scenario_id', 'area', 'is_checked')
 
     left_dict = {}
@@ -924,13 +972,13 @@ def comparison_column(ids, left_scenario, right_scenario):
         right_area = 0
         if areal_feature.id in left_dict:
             left_area = left_dict[areal_feature.id]['area']
-        if areal_feature.id in left_dict:
+        if areal_feature.id in right_dict:
             right_area = right_dict[areal_feature.id]['area']
 
         if left_area is None and right_area is None:
             diff_area = 'N/A'
         else:
-            diff_area = left_area or 0 - right_area or 0
+            diff_area = left_area if left_area is not None else 0 - right_area if right_area is not None else 0
 
         # diff_area = left_area - right_area
         a_features['item_list'][areal_feature.code] = {'label': areal_feature.name, 'area': diff_area}
