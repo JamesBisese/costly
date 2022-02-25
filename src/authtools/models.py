@@ -61,12 +61,12 @@ class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
 
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-# @python_2_unicode_compatible
+
 class AbstractNamedUser(AbstractEmailUser):
     name = models.CharField(_('name'), max_length=255)
 
     #JAB these are added to authtools.
-    organization_tx = models.CharField('Organization/Company', max_length=100, default=None, blank=True, null=True)
+    organization_tx = models.CharField('Affiliation', max_length=100, default=None, blank=True, null=True)
     job_title = models.CharField('Job Title', max_length=100, default=None, blank=True, null=True)
     phone_tx = models.CharField('Phone', max_length=15, default=None, blank=True, null=True)
 

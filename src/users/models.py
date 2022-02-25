@@ -50,7 +50,7 @@ class CustomUser(AbstractUser):
     last_name = None
     email = models.EmailField(_('email address'), unique=True)
     username = models.CharField('Full Name', max_length=100, default=None, blank=True, null=True)
-    agency = models.CharField('Organization/Company', max_length=100, default=None, blank=True, null=True)
+    agency = models.CharField('OrganizationFOOBAR/Company', max_length=100, default=None, blank=True, null=True)
     phone_tx = models.CharField('Phone', max_length=15, default=None, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
