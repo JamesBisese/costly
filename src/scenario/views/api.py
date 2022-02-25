@@ -15,13 +15,13 @@ from scenario.decorators import sql_query_debugger
 
 from authtools.models import User
 from scenario.models import Project, \
-    Scenario, \
+    Scenario, ArealFeatureLookup, \
     Structures, CostItem, CostItemDefaultCosts, \
     ScenarioCostItemUserCosts, CostItemDefaultEquations, \
     StructureCostItemDefaultFactors, StructureCostItemUserFactors
 
 from scenario.serializers import UserSerializer, ProjectSerializer, \
-    ScenarioListSerializer, ScenarioSerializer, ScenarioAuditSerializer, \
+    ScenarioListSerializer, ScenarioSerializer, ScenarioAuditSerializer, ArealFeatureLookupSerializer, \
     StructureSerializer, CostItemSerializer, CostItemDefaultCostSerializer, \
     ScenarioCostItemUserCostsSerializer, CostItemDefaultEquationsSerializer, \
     StructureCostItemDefaultFactorsSerializer, StructureCostItemUserFactorsSerializer
@@ -127,6 +127,38 @@ class ProjectScenarioViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = super(ProjectScenarioViewSet, self).get_queryset()
         return qs
+
+
+class ArealFeatureLookupViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
+    """
+        provided via /api/structures and /api/structures/?code=TBD
+    """
+    queryset = ArealFeatureLookup.objects.all().order_by("sort_nu")
+    serializer_class = ArealFeatureLookupSerializer
+
+    @method_decorator(staff_member_required, name='dispatch')
+    def create(self, request):
+        serializer = StructureSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        qs = super(ArealFeatureLookupViewSet, self).get_queryset()
+        code = self.request.query_params.get('code', None)
+        if code is not None:
+            qs = qs.filter(code=code)
+        return qs
+
+    @method_decorator(staff_member_required, name='dispatch')
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class StructureViewSet(LoginRequiredMixin, viewsets.ModelViewSet):

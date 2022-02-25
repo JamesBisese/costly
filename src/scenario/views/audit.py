@@ -79,6 +79,16 @@ def audit_structure(request):
 
 
 @login_required
+def audit_areal_feature(request):
+    """
+        Audit Cost Items
+
+        URI/audit/areal_feature/
+    """
+    context_data = {'title': 'Areal Features', 'header': 'Areal Features', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
+    return render(request, 'audit/areal_feature.html', context_data)
+
+@login_required
 def audit_cost_items(request):
     """
         Audit Cost Items

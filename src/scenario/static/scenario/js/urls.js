@@ -42,6 +42,7 @@ SETTINGS.URLS = {
     'scenario_structure_help': '/scenario/structure_costs/help',
 
     // JSON data for pages in REFERENCES tab
+    'audit_areal_feature_data': '/api/areal_features/',
     'audit_structure_data': '/api/structures/',
     'audit_cost_item_data':  '/api/cost_item/',
     'audit_cost_item_default_cost_data': '/api/cost_item_default_costs/',

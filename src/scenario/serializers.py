@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Project, Scenario, Structures, \
+from .models import Project, Scenario, ArealFeatureLookup, Structures, \
     CostItem, \
     CostItemDefaultCosts, \
     ScenarioCostItemUserCosts, \
@@ -274,6 +274,21 @@ class EmbeddedScenarioFields(serializers.Field):
         }
         return ret
 
+
+class ArealFeatureLookupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ArealFeatureLookup
+        fields = (
+            'id',
+            'code',
+            'name',
+            'sort_nu',
+            'units',
+            'units_html',
+            'help_text',
+        )
+        # read_only_fields = [f.name for f in Structures._meta.get_fields()]
 
 class StructureSerializer(serializers.ModelSerializer):
     classification_display = serializers.SerializerMethodField()

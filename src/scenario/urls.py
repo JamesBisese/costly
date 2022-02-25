@@ -9,6 +9,7 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'projects', views.ProjectViewSet, 'projects')
 router.register(r'scenarios', views.ScenarioViewSet)
+router.register(r'areal_features', views.ArealFeatureLookupViewSet)
 router.register(r'scenario_list', views.ScenarioListViewSet, 'scenariolist')
 router.register(r'scenario_audit', views.ScenarioAuditViewSet, 'scenarioaudit')
 router.register(r'structures', views.StructureViewSet)
@@ -84,6 +85,7 @@ urlpatterns = [
 
     # audit HTML pages for the (relatively) immutable look-up lists and reference lists
     path(r'audit/structures/', views.audit_structure, name='structures'),
+    path(r'audit/areal_feature/', views.audit_areal_feature, name='areal_feature'),
     path(r'audit/cost_item/', views.audit_cost_items, name='costitems'),
     path(r'audit/cost_item/default_costs/', views.audit_cost_item_default_cost,
          name='costitems_default_costs'),
