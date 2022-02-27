@@ -38,8 +38,9 @@ STATIC_URL = '/' + iis_app_alias + 'static/'
 # Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
 
-# if DEBUG == False, the django application will only run on hosts that are in the ALLOWED_HOSTS list
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 DATABASES = {
      # Raises ImproperlyConfigured exception if DATABASE_URL not in env file

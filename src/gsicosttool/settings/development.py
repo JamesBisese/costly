@@ -74,8 +74,8 @@ TEMPLATES[0]['OPTIONS'].update({'debug': True})
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
+
 SECRET_KEY = env('SECRET_KEY')
 
 # Turn off debug while imported by Celery with a workaround

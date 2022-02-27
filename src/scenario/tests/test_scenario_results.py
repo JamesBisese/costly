@@ -231,7 +231,7 @@ class ScenarioCostsTestCase(BaseLookupTestCase):
 
         scenario_costs = self.scenario.get_costs()
 
-        logger.debug("scenario costs is:\n{}".format(json.dumps(scenario_costs, indent=2, cls=DjangoJSONEncoder)))
+        # logger.debug("scenario costs is:\n{}".format(json.dumps(scenario_costs, indent=2, cls=DjangoJSONEncoder)))
 
         # make sure the costs for the single structure/costitem are the same as the overall costs
         self.assertEqual(self.scenario.planning_and_design_factor, self.planning_and_design_factor)
@@ -375,7 +375,7 @@ class ScenarioCostsTestCase(BaseLookupTestCase):
 
         scenario_costs = self.scenario.get_costs()
 
-        logger.debug("scenario costs is:\n{}".format(json.dumps(scenario_costs, indent=2, cls=DjangoJSONEncoder)))
+        # logger.debug("scenario costs is:\n{}".format(json.dumps(scenario_costs, indent=2, cls=DjangoJSONEncoder)))
 
         # make sure the costs for the single structure/costitem are the same as the overall costs
         self.assertEqual(self.scenario.planning_and_design_factor, self.planning_and_design_factor)

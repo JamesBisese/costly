@@ -180,12 +180,14 @@ class ContextListViewTest(TestCase):
         # and test that datatables format works too
         response = self.staff_user_client.get("/api/scenario_list/?project={}&format=datatables".format(self.staff_user_project.pk))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]['scenario_title'], scenario_title)
+
+        #TODO this changed from response.data[0] to response.data['data'][0] and i don't know when or why
+        self.assertEqual(response.data['data'][0]['scenario_title'], scenario_title)
 
         # and make sure that non-authorized users can't get to the data
         response = self.non_staff_user_client.get("/api/scenario_list/?project={}&format=datatables".format(self.staff_user_project.pk))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['data']), 0)
         self.assertEqual(json.loads(response.content)['recordsTotal'], 0)
 
         scenario_title2 = 'TESTING FOOBAR NUMBER 2'
