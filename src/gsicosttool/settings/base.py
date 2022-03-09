@@ -4,19 +4,59 @@ Django settings for GSI Cost Tool project.
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
 
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/dev/ref/settings/
+This is imported from either development.py or production.py and then the values are overridden.
+An important point is that both of these files then read a .env file to import the correct settings.
+
 """
+import logging.config
 import os
 from pathlib import Path
 
 from django.contrib import messages
 from django.urls import reverse_lazy
 
+class SQLFormatter(logging.Formatter):
+    def format(self, record):
+
+        # Check if Pygments is available for coloring
+        try:
+            import pygments
+            from pygments.lexers import SqlLexer
+            from pygments.formatters import TerminalTrueColorFormatter
+        except ImportError:
+            pygments = None
+
+        # Check if sqlparse is available for indentation
+        try:
+            import sqlparse
+        except ImportError:
+            sqlparse = None
+
+        # Remove leading and trailing whitespaces
+        sql = record.sql.strip()
+
+        if sqlparse:
+            # Indent the SQL query
+            sql = sqlparse.format(sql, reindent=True)
+
+        if pygments:
+            # Highlight the SQL query
+            sql = pygments.highlight(
+                sql,
+                SqlLexer(),
+                TerminalTrueColorFormatter()
+            )
+
+        # Set the records statement to the formatted query
+        record.statement = sql
+        return super(SQLFormatter, self).format(record)
+
 
 DEBUG = False
 
-TEMPLATE_DEBUG = False
+SECRET_KEY = ''
+
+ALLOWED_HOSTS = []
 
 """
     Note for running in dev and on IIS
@@ -48,7 +88,6 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -77,16 +116,18 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATE_DEBUG = False
 
+# Cache the templates in memory for speed-up
+loaders = [
+    ('django.template.loaders.cached.Loader', [
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    ]),
+]
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
-SECRET_KEY = ''
-
-ALLOWED_HOSTS = []
+TEMPLATES[0]['OPTIONS'].update({"loaders": loaders})
+TEMPLATES[0].update({"APP_DIRS": False})
 
 # Application definition
 
@@ -113,7 +154,6 @@ INSTALLED_APPS = (
 
     'django_tables2',
     'crispy_forms',
-    'easy_thumbnails',
     'django_select2',
     'multiselectfield',
     'widget_tweaks',
@@ -133,6 +173,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables.renderers.DatatablesRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
+    'PAGE_SIZE': 50,
+}
+
 ROOT_URLCONF = 'gsicosttool.urls'
 
 WSGI_APPLICATION = 'gsicosttool.wsgi.application'
@@ -146,26 +199,6 @@ DATABASES = {}
 
 # added this for newer Django requirement.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-
-# DATABASES = {
-#      # Raises ImproperlyConfigured exception if DATABASE_URL not in
-#      # os.environ
-#      'default': env.db(),
-# }
-
-#TODO 2019-05-31 at 15:11
-# DATABASES = {
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.postgresql',
-# 		'NAME': '############',
-# 		'USER': '#############',
-# 		'PASSWORD': '###############',
-# 		'HOST': '127.0.0.1',
-# 		'PORT': '5433',
-# 		'DATABASE_SCHEMA': 'pubic'
-# 	}
-# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
@@ -224,21 +257,6 @@ LOGOUT_REDIRECT_URL = reverse_lazy("home")
 
 THUMBNAIL_EXTENSION = 'png'
 
-
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'rest_framework_datatables.renderers.DatatablesRenderer',
-    ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_datatables.filters.DatatablesFilterBackend',
-    ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
-    'PAGE_SIZE': 50,
-}
-
-
 # https://github.com/django-money/django-money
 CURRENCIES = ('USD',)
 CURRENCY_CHOICES = [('USD', 'USD $'), ]
@@ -252,7 +270,7 @@ HEADER_LOGO_URI='gsicosttool/img/tetratech-icon-1024.png'
 
 IS_TESTING_INSTANCE='true'
 
-VERSION_INFORMATION='Version 1.018 Updated November 29, 2021'
+VERSION_INFORMATION='Version 0.0.0 (base) Updated January 1, 1970'
 
 COPYRIGHT_DISCLAIMER='&copy; City of Raleigh, NC 2021'
 

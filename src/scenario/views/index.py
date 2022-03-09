@@ -916,35 +916,35 @@ def comparison_column(left_scenario, right_scenario):
         'item_list': {}
     }
 
-    # region old treatment
-    serializer_class = ScenarioSerializer
-    left_serializer = serializer_class(left_scenario)
-    right_serializer = serializer_class(right_scenario)
-
-    diff_area_sum = 0
-    for left_obj in left_serializer.data['a_features']:
-        code = left_obj['areal_feature_code']
-        right_obj = None
-        for obj in right_serializer.data['a_features']:
-            if obj['areal_feature_code'] == code:
-                right_obj = obj
-                break
-
-        right_area = right_obj['area'] if right_obj is not None and right_obj['is_checked'] is True else 0
-        left_area = left_obj['area'] if left_obj['is_checked'] is True else 0
-        diff_area = left_area if left_area is not None else 0 - right_area if right_area is not None else 0
-        diff_area_sum += diff_area
-        areal_features['item_list'][code] = {'label': left_obj['areal_feature_name'], 'area': diff_area}
-        if code == 'stormwater_management_feature':
-            areal_features['item_list'][code]['project_land_unit_cost'] = \
-                left_scenario.project.land_unit_cost
-            areal_features['item_list'][code]['project_land_cost_diff'] = \
-                (left_area if left_area is not None else 0 -
-                                                         right_area if right_area is not None else 0) * left_scenario.project.land_unit_cost
-
-    areal_features['total_area'] = diff_area_sum
-    diff['areal_features'] = areal_features
-    # endregion old treatment
+    # # region old treatment
+    # serializer_class = ScenarioSerializer
+    # left_serializer = serializer_class(left_scenario)
+    # right_serializer = serializer_class(right_scenario)
+    #
+    # diff_area_sum = 0
+    # for left_obj in left_serializer.data['a_features']:
+    #     code = left_obj['areal_feature_code']
+    #     right_obj = None
+    #     for obj in right_serializer.data['a_features']:
+    #         if obj['areal_feature_code'] == code:
+    #             right_obj = obj
+    #             break
+    #
+    #     right_area = right_obj['area'] if right_obj is not None and right_obj['is_checked'] is True else 0
+    #     left_area = left_obj['area'] if left_obj['is_checked'] is True else 0
+    #     diff_area = left_area if left_area is not None else 0 - right_area if right_area is not None else 0
+    #     diff_area_sum += diff_area
+    #     areal_features['item_list'][code] = {'label': left_obj['areal_feature_name'], 'area': diff_area}
+    #     if code == 'stormwater_management_feature':
+    #         areal_features['item_list'][code]['project_land_unit_cost'] = \
+    #             left_scenario.project.land_unit_cost
+    #         areal_features['item_list'][code]['project_land_cost_diff'] = \
+    #             (left_area if left_area is not None else 0 -
+    #                                                      right_area if right_area is not None else 0) * left_scenario.project.land_unit_cost
+    #
+    # areal_features['total_area'] = diff_area_sum
+    # diff['areal_features'] = areal_features
+    # # endregion old treatment
 
     # region new treatment
     a_features = {
@@ -978,10 +978,10 @@ def comparison_column(left_scenario, right_scenario):
         if left_area is None and right_area is None:
             diff_area = 'N/A'
         else:
-            diff_area = left_area if left_area is not None else 0 - right_area if right_area is not None else 0
+            diff_area = (left_area if left_area is not None else 0) - (right_area if right_area is not None else 0)
 
         # diff_area = left_area - right_area
-        a_features['item_list'][areal_feature.code] = {'label': areal_feature.name, 'area': diff_area}
+        a_features['item_list'][areal_feature.code] = {'label': areal_feature.name, 'area': diff_area, 'diff_area': '-999'}
         diff_area_sum += diff_area
 
         # if areal_feature.code in list_of_values:

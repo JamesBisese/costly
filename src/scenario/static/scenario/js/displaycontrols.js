@@ -232,78 +232,9 @@ function collapseDetail(element) {
     }
 }
 
-/* open and close the details parts.
- *  this relies on the next dom node being the thing to collapse,
- *  and the first class name being the 'name' to use */
-function toggleDetail(element, boolOpen) {
-
-    let className = element.nextElementSibling.classList[0];
-
-    let elements = document.getElementsByClassName(className);
-
-    if (elements.length <= 0) {
-        return;
-    }
-    let i;
-    // let isShowing = elements[0].classList.contains("w3-show");
-    for (i = 0; i < elements.length; i++) {
-        let classList = elements[i].className.split(" ");
-        if (boolOpen === true && classList.indexOf("w3-show") === -1) {
-            elements[i].className += " " + "w3-show";
-        } else if (boolOpen === false && classList.indexOf("w3-show") !== -1) {
-            elements[i].className = elements[i].className.replace(/\bw3-show\b/g, "");
-        }
-    }
-    /* if isShowing == true then we are closing.  collapse to 0 height */
-    if (boolOpen === true) {
-        let max_height = 0;
-
-        for (let i = 0; i < elements.length; i++) {
-            let height = elements[i].offsetHeight;
-
-            if (height > max_height) {
-                max_height = height;
-            }
-        }
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].style.height = max_height;
-        }
-    } else {
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].style.height = 'unset';
-        }
-    }
-}
 
 
-function expandAllDetail(element) {
-    let resultDetails = document.getElementsByClassName('resultDetails');
-    for (let j = 0; j < resultDetails.length; j++) {
-        let kbButtons = resultDetails[j].getElementsByClassName("w3-container-button");
-        for (let i = 0; i < kbButtons.length; i++) {
-            let classList = kbButtons[i].className.split(" ");
-            if (classList.indexOf("w3-button-open") === -1) {
-                kbButtons[i].className += " " + "w3-button-open";
-            }
-            toggleDetail(kbButtons[i], true);
-        }
-    }
-}
 
-
-function collapseAllDetail(element) {
-    let resultDetails = document.getElementsByClassName('resultDetails');
-    for (let j = 0; j < resultDetails.length; j++) {
-        let kbButtons = resultDetails[j].getElementsByClassName("w3-container-button");
-        for (let i = 0; i < kbButtons.length; i++) {
-            let classList = kbButtons[i].className.split(" ");
-            if (classList.indexOf("w3-button-open") !== -1) {
-                kbButtons[i].className = kbButtons[i].className.replace(/\bw3-button-open\b/g, "");
-            }
-            toggleDetail(kbButtons[i], false);
-        }
-    }
-}
 
 
 //

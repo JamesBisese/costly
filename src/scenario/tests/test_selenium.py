@@ -12,8 +12,20 @@ logger = logging.getLogger('developer')
 logger.setLevel(logging.INFO)
 
 
-# Create your tests here.
 class WebUITest(LiveServerTestCase):
+
+    # address running server
+    uri = 'http://127.0.0.1:94'
+
+    admin_user = None
+    admin_user_email = 'admin@tetratech.com'
+    admin_user_password_tx = 'cost2018'
+    staff_user = None
+    staff_user_email = 'staff@tetratech.com'
+    staff_user_password_tx = 'cost2018'
+    non_staff_user = None
+    non_staff_user_email = 'user4@tetratech.com'
+    non_staff_user_password_tx = 'user4022'
 
     def setUp(self):
         pass
@@ -23,44 +35,42 @@ class WebUITest(LiveServerTestCase):
         opts.add_argument("--window-size=1440,1440")
         selenium = webdriver.Chrome(options=opts)
         # Choose your url to visit
-        selenium.get('http://127.0.0.1:94/login')
+        selenium.get(self.uri + '/login')
 
         version_info = selenium.find_element(By.ID, 'version_information')
         logger.debug('version_info: {}'.format(version_info.text))
 
         # now login as administrator
-        selenium.find_element(By.ID, 'id_username').send_keys('admin@tetratech.com')
-        selenium.find_element(By.ID, 'id_password').send_keys('cost2018')
+        box = selenium.find_element(By.ID, 'id_acknowledge_terms')
+        selenium.execute_script("arguments[0].click()", box)
+        selenium.find_element(By.ID, 'id_username').send_keys(self.admin_user_email)
+        selenium.find_element(By.ID, 'id_password').send_keys(self.admin_user_password_tx)
         selenium.find_element(By.ID, 'submit-id-sign_in').click()
 
-        # selenium.get('http://127.0.0.1:94/api/users/?format=datatables')
-        #
         selenium.implicitly_wait(2)
         #
         # pre = selenium.find_element(By.TAG_NAME, "pre").text
         # users_data = json.loads(pre)
         # print(json.dumps(users_data, indent=2))
         #
-        selenium.get('http://127.0.0.1:94/api/projects/?format=datatables')
+        selenium.get(self.uri + '/api/projects/?format=datatables')
 
         selenium.implicitly_wait(2)
 
         pre = selenium.find_element(By.TAG_NAME, "pre").text
         project_data = json.loads(pre)
 
+        # TODO figure out what to assert
         for p in project_data['data']:
-            # v = project_data['data'][p]
             print(p['id'])
-
         print(json.dumps(project_data, indent=2))
-
 
     def test_nav_bar(self):
         opts = Options()
         opts.add_argument("--window-size=1440,1440")
         selenium = webdriver.Chrome(options=opts)
         # Choose your url to visit
-        selenium.get('http://127.0.0.1:94/')
+        selenium.get(self.uri + '/')
 
         version_info = selenium.find_element(By.ID, 'version_information')
         logger.debug('version_info: {}'.format(version_info.text))
@@ -83,10 +93,12 @@ class WebUITest(LiveServerTestCase):
 
         # now login as administrator
 
-        selenium.get('http://127.0.0.1:94/login')
+        selenium.get(self.uri + '/login')
 
-        selenium.find_element(By.ID, 'id_username').send_keys('admin@tetratech.com')
-        selenium.find_element(By.ID, 'id_password').send_keys('cost2018')
+        box = selenium.find_element(By.ID, 'id_acknowledge_terms')
+        selenium.execute_script("arguments[0].click()", box)
+        selenium.find_element(By.ID, 'id_username').send_keys(self.admin_user_email)
+        selenium.find_element(By.ID, 'id_password').send_keys(self.admin_user_password_tx)
         selenium.find_element(By.ID, 'submit-id-sign_in').click()
 
         nav_links = selenium.find_elements(By.CLASS_NAME, 'nav-link')
@@ -132,8 +144,10 @@ class WebUITest(LiveServerTestCase):
                 link.click()
                 break
 
-        selenium.find_element(By.ID, 'id_username').send_keys('staff@tetratech.com')
-        selenium.find_element(By.ID, 'id_password').send_keys('cost2018')
+        box = selenium.find_element(By.ID, 'id_acknowledge_terms')
+        selenium.execute_script("arguments[0].click()", box)
+        selenium.find_element(By.ID, 'id_username').send_keys(self.staff_user_email)
+        selenium.find_element(By.ID, 'id_password').send_keys(self.staff_user_password_tx)
         selenium.find_element(By.ID, 'submit-id-sign_in').click()
 
         nav_links = selenium.find_elements(By.CLASS_NAME, 'nav-link')
@@ -177,8 +191,10 @@ class WebUITest(LiveServerTestCase):
                 link.click()
                 break
 
-        selenium.find_element(By.ID, 'id_username').send_keys('user4@tetratech.com')
-        selenium.find_element(By.ID, 'id_password').send_keys('user4022')
+        box = selenium.find_element(By.ID, 'id_acknowledge_terms')
+        selenium.execute_script("arguments[0].click()", box)
+        selenium.find_element(By.ID, 'id_username').send_keys(self.non_staff_user_email)
+        selenium.find_element(By.ID, 'id_password').send_keys(self.non_staff_user_password_tx)
         selenium.find_element(By.ID, 'submit-id-sign_in').click()
 
         nav_links = selenium.find_elements(By.CLASS_NAME, 'nav-link')

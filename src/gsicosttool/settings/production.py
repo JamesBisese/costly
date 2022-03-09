@@ -1,30 +1,30 @@
-# In production set the environment variable like this:
-#    DJANGO_SETTINGS_MODULE=gsicosttool.settings.production
-
-# First import base.py and then override settings with this content
 import environ
 import logging.config
+import os
+import sys
 
+# First import base.py and then override settings with this content
 from .base import *
 
 # Use 12factor inspired environment variables from a file
 
 env = environ.Env()
 
-# Create a local.env file in the settings directory
-# But ideally this env file should be outside the git repo
+# every .env file should be outside the git repo
 env_file = os.path.join(Path(__file__).resolve().parent, 'local.production.env')
 
+ENV_FILE = None
 if os.path.exists(env_file):
     environ.Env.read_env(env_file)
+    ENV_FILE = env_file
+else:
+    ENV_FILE = 'not found: ' + env_file
 
 # For security and performance reasons, DEBUG is turned off
 DEBUG = env.bool('DEBUG', default=False)
 
-# this is used to map the URLS when app is installed on IIS using an alias
-
 # if running in pycharm or with runserver, you need to clear this
-IIS_APP_ALIAS = env('IIS_APP_ALIAS')
+IIS_APP_ALIAS = env.str('IIS_APP_ALIAS', '')
 
 # reset these 2 URIs for IIS alias to work
 iis_app_alias = ''
@@ -36,16 +36,54 @@ STATIC_URL = '/' + iis_app_alias + 'static/'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Raises ImproperlyConfigured exception if SECRET_KEY not in os.environ
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env.str('SECRET_KEY', 'UNSETSECRETKEY!!!')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = []
+if 'ALLOWED_HOSTS' in env:
+    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = []
+if 'CSRF_TRUSTED_ORIGINS' in env:
+    CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
+
+# Turn off debug while imported by Celery with a workaround
+# See http://stackoverflow.com/a/4806384
+if "celery" in sys.argv[0]:
+    DEBUG = False
+
+# unsetting this variable allows the testing account passwords to pass, although they are refused for 'production'
+AUTH_PASSWORD_VALIDATORS = []
+
+# Show emails to console in DEBUG mode
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Show thumbnail generation errors
+THUMBNAIL_DEBUG = True
+
+# Allow internal IPs for debugging
+INTERNAL_IPS = [
+    '127.0.0.1',
+    '0.0.0.1',
+]
 
 DATABASES = {
-     # Raises ImproperlyConfigured exception if DATABASE_URL not in env file
-     'default': env.db(),
+  'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': ':memory:',
+  }
 }
+
+try:
+    DATABASE_URL = env.db()
+    DATABASES['default'] = DATABASE_URL
+except:
+    pass
+
+# if the installation is using SQL Server then it needs to set the engine explicitly
+try:
+    DATABASES['default']['ENGINE'] = env.str('DATABASE_ENGINE')
+except:
+    pass
 
 # if the installation is using SQL Server then it needs to add the 'driver' in the OPTIONS
 try:
@@ -53,19 +91,12 @@ try:
 except:
     pass
 
-TIME_ZONE = env('TIME_ZONE')
+# if the installation can't create a test database using the default system, create one that can be used, for example sqllite
+if ('test' in sys.argv or 'test_coverage' in sys.argv) \
+        and env.str('DATABASE_TEST_ENGINE', 'False') != 'False': #Covers regular testing and django-coverage
+    DATABASES['default'] = {'ENGINE':  env.str('DATABASE_TEST_ENGINE')}
 
-# Cache the templates in memory for speed-up
-loaders = [
-    ('django.template.loaders.cached.Loader', [
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    ]),
-]
-
-TEMPLATES[0]['OPTIONS'].update({"loaders": loaders})
-TEMPLATES[0].update({"APP_DIRS": False})
-
+TIME_ZONE = env.str('TIME_ZONE', 'US/Eastern')
 
 # Log everything to the logs directory at the top
 LOGFILE_ROOT = os.path.join(BASE_DIR.parent, 'logs', 'production')
@@ -89,8 +120,18 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'sql': {
+            '()': SQLFormatter,
+            'format': '[%(duration).3f] %(statement)s',
+        },
     },
     'handlers': {
+        'django_log_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGFILE_ROOT, 'django.log'),
+            'formatter': 'verbose'
+        },
         'proj_log_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -101,12 +142,30 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
-        }
+        },
+        'sql': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'sql',
+        },
     },
     'loggers': {
+        'django': {
+            'handlers': ['django_log_file'],
+            'propagate': True,
+            'level': 'WARNING',
+        },
         'project': {
             'handlers': ['proj_log_file'],
             'level': 'DEBUG',
+        },
+        'django.db.backends': {
+            'handlers': ['sql'],  # note: toggle this between console and sql
+            'level': 'WARNING',
+        },
+        'developer': {
+            'handlers': ['console'],
+            'level': 'WARNING',
         },
     }
 }
@@ -144,3 +203,12 @@ try:
     VERSION_INFORMATION = env.str('VERSION_INFORMATION')
 except:
     pass
+
+# email related stuff
+
+EMAIL_BACKEND = env.str('EMAIL_BACKEND', '')
+EMAIL_HOST = env.str('EMAIL_HOST', '')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', '')
+EMAIL_PORT = env.str('EMAIL_PORT', '')
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', '')

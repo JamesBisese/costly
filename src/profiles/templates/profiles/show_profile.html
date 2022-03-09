@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% load static %}
-{% load thumbnail %}
 
 {% block title %}{{ block.super }}Account{% endblock %}
 
@@ -23,8 +22,6 @@
       <a href="{% url 'profiles:edit_self' %}" class="btn btn-sm">Edit Account</a>
       {% endif %}
     </div>
-    <!--<div class="col-sm-2"><img title="profile picture" class="img-circle img-responsive" src="{% thumbnail show_user.profile.picture|default:'default_profile.png' 140x140 crop %}">-->
-    <!--</div>-->
   </div>
 </div>
 

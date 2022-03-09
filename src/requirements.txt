@@ -18,7 +18,6 @@ django-location-field==2.1.0
 django-mathfilters==1.0.0
 django-money==2.1.1
 django-moneyfield==0.2.1
-django-mssql-backend==2.8.1
 django-multiselectfield==0.1.12
 django-select2==7.10.0
 django-settings-export==1.2.1
@@ -28,12 +27,12 @@ django-widget-tweaks==1.4.12
 djangorestframework==3.13.1
 djangorestframework-datatables==0.7.0
 djangorestframework-filters==0.11.1
-easy-thumbnails==2.8.1
 et-xmlfile==1.1.0
 importlib-metadata==4.11.1
 jdcal==1.4.1
 lxml==4.8.0
 MarkupPy==1.14
+mssql-django==1.1.2
 odfpy==1.4.1
 openpyxl==3.0.9
 packaging==21.3

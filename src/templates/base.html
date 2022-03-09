@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
     {% load static %}
-    {% load thumbnail %}
     {% load bootstrap4 %}
 
 <head>
@@ -59,7 +58,9 @@
 
       <a class="navbar-brand" href="{% url 'home' %}">
         {% block navbar-brand %}
+            {% if settings.HEADER_LOGO_URI != '' %}
           <img src="{% static '' %}{{  settings.HEADER_LOGO_URI}}" alt="logo">
+            {% endif %}
         {% endblock navbar-brand %}
       </a>
 
