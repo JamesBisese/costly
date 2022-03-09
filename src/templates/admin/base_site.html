@@ -6,7 +6,9 @@
      <link rel="stylesheet" type="text/css" href="{% static "admin/admin_color.css" %}"/>
 {% endblock %}
 {% block branding %}
-    <img src="{% static '' %}{{  settings.HEADER_LOGO_URI}}" alt="logo" style="height: 40px; width: 40px;">
+    {% if settings.HEADER_LOGO_URI != '' %}
+        <img src="{% static '' %}{{  settings.HEADER_LOGO_URI}}" alt="logo" style="height: 40px; width: 40px;">
+    {% endif %}
     <h1 id="site-name" style="display:inline-block; vertical-align: middle;">{% trans "GSI Cost Tool Admin Page" %}</h1>
 {% endblock %}
 {% block nav-global %}{% endblock %}
