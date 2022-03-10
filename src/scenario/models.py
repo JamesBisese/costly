@@ -252,7 +252,17 @@ class CostItemDefaultCosts(models.Model):
         the 'user' costs are stored in StructureCostItemUserCosts which is defined after Scenario model
 
     """
-    costitem = models.OneToOneField(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
+    costitem = models.ForeignKey(CostItem, on_delete=models.CASCADE, default=None, blank=False, null=False)
+
+    # region new storage
+    cost_type = models.CharField("Cost Estimate Type", max_length=50, default='Engineer Estimate', blank=False, null=False)
+    value_numeric = MoneyField('Cost Item Unit Value', decimal_places=2, max_digits=11,
+                                default_currency='USD', blank=False, null=False, default=9.99)
+    valid_start_date_tx = models.CharField("Date Text", max_length=20, default='2018', blank=True, null=True)
+
+    created_date = models.DateTimeField('Create Date', null=True, auto_now_add=True)
+    modified_date = models.DateTimeField('Modified Date', auto_now=True)
+    # endregion new storage
 
     # TODO: this is 'Engineering Estimate' and should be named 'eng_estimate' or similar
     rsmeans_va = MoneyField('RSMeans unit cost', decimal_places=2, max_digits=11,
@@ -266,11 +276,13 @@ class CostItemDefaultCosts(models.Model):
                              default_currency='USD', blank=True, null=True)
 
     def __str__(self):
-        return self.costitem.name + " -- default costs"
+        return self.costitem.name + " -- " + self.cost_type + " -- " + self.valid_start_date_tx + " -- " + str(self.value_numeric.amount)
 
     class Meta:
         verbose_name_plural = "Cost Item Default Costs"
         ordering = ['costitem__sort_nu', ]
+        # new storage
+        # unique_together = ('costitem', 'cost_type', 'valid_start_date_tx')
 
 
 class CostItemDefaultEquations(models.Model):

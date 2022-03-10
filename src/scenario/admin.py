@@ -155,12 +155,14 @@ def costitem_name(obj):
 
 
 class CostItemDefaultCostsAdmin(StructuresAdmin):
-    list_display = (costitem_sort_nu, 'costitem_name', 'costitem_units', 'rsmeans_va',
-                    'db_25pct_va', 'db_50pct_va', 'db_75pct_va',
+    list_display = (costitem_sort_nu, 'costitem_name', 'costitem_units', 'cost_type',
+                    'valid_start_date_tx', 'value_numeric',  # 'db_75pct_va',
+                    'created_date', 'modified_date'
                     # 'replacement_life', 'o_and_m_pct',
                     # 'equation'
                     )
     list_display_links = ('costitem_name',)
+    readonly_fields = ['created_date', 'modified_date']
 
     @admin.display(empty_value='unknown', ordering='costitem__units')
     def costitem_units(self, obj):
