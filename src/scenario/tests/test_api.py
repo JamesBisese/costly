@@ -64,7 +64,6 @@ class AccountTests(APITestCase):
 
         self.staff_user_project.save()
 
-
     def test_create_costitem(self):
         """
         Ensure admin and staff can create a costitem object, but not non-staff
@@ -159,6 +158,43 @@ class AccountTests(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(CostItem.objects.count(), 0)
+
+    def test_create_costitem_default_cost(self):
+        """
+        NOTE: I am going to do this in test_models first
+
+        Ensure admin and staff can create a costitem object, but not non-staff
+        """
+        self.client = Client()
+
+        logged_in = self.client.login(email=self.admin_user.email, password=self.admin_user_password_tx)
+        self.assertTrue(logged_in)
+
+        url = reverse('scenario:costitem-list')
+        data = {'code': 'costly',
+                'name': 'DabApps',
+                'units': 'SF',
+                'help_text': 'boo'}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(CostItem.objects.count(), 1)
+        self.assertEqual(CostItem.objects.get().code, data['code'])
+        self.assertEqual(CostItem.objects.get().name, data['name'])
+        self.assertEqual(CostItem.objects.get().units, data['units'])
+        self.assertEqual(CostItem.objects.get().help_text, data['help_text'])
+
+        costitem = CostItem.objects.get()
+        # create the
+
+
+        # delete the same object
+        url = reverse('scenario:costitem-detail', args=[CostItem.objects.get().id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(CostItem.objects.count(), 0)
+
+        # logout the admin user
+        self.client.logout()
 
     def test_create_structure(self):
         """

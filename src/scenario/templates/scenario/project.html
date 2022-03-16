@@ -1,42 +1,11 @@
 {% load humanize %}
 {% load mathfilters %}
+{% load static %}
 
-<style>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'scenario/css/cost_tool.css' %}" title="normal" type="text/css" media="all">
+{% endblock extra_css %}
 
-.result_table td  {
-  border: 1px solid black;
-  padding: 0px 5px 0px 5px;
-}
-.result_col {
-  text-align: right;
-  width:85px;
-}
-.input_col {
-  background: rgb(221, 235, 247);
-}
-.output_col {
-  background: rgb(226, 239, 218);
-}
-.result_table th  {
-  border: 1px solid black;
-  text-align:center;
-  padding: 5px;
-}
-.result_table {
-  border-collapse: collapse;
-  border-spacing: 10px;
-  width: 365px;
-  font-family: "Franklin ITC Light",sans-serif;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 13px;
-}
-.caption_table {
-    width: 365px;
-    font-weight: bold;
-}
-
-</style>
 
 <div style="display: inline-block">
 <table class="caption_table">

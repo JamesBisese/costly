@@ -395,9 +395,10 @@
             <th>Cost Item</th>
             <th >Units</th>
             <th >Source</th>
+            <th >Yr</th>
             <th >Unit Costs</th>
 
-            <th >Yr</th>
+
             <th >Rep. Life</th>
             <th >O&amp;M %</th>
         </tr>
@@ -408,9 +409,10 @@
             <td> {{ obj.label }}</td>
             <td > {{ obj.units }}</td>
             <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.cost_source }}</td>
+            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.base_year }}</td>
             <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"><div class="dollar">$</div> {{ obj.unit_cost }}</td>
 
-            <td class="result_col {% if obj.cost_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.base_year }}</td>
+
             <td class="result_col {% if obj.replacement_life_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.replacement_life }}</td>
             <td class="result_col {% if obj.o_and_m_pct_source == 'User' %}input_col{% else %}output_col{% endif %}"> {{ obj.o_and_m_pct }}</td>
         </tr>

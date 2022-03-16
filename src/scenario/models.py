@@ -257,14 +257,14 @@ class CostItemDefaultCosts(models.Model):
     # region new storage
     cost_type = models.CharField("Cost Estimate Type", max_length=50, default='Engineer Estimate', blank=False, null=False)
     value_numeric = MoneyField('Cost Item Unit Value', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=False, null=False, default=9.99)
-    valid_start_date_tx = models.CharField("Date Text", max_length=20, default='2018', blank=True, null=True)
+                                default_currency='USD', blank=False, null=False)
+    valid_start_date_tx = models.CharField("Date Text", max_length=20, default='2022', blank=False, null=False)
 
     created_date = models.DateTimeField('Create Date', null=True, auto_now_add=True)
     modified_date = models.DateTimeField('Modified Date', auto_now=True)
     # endregion new storage
 
-    # TODO: this is 'Engineering Estimate' and should be named 'eng_estimate' or similar
+    # region old storage
     rsmeans_va = MoneyField('RSMeans unit cost', decimal_places=2, max_digits=11,
                             default_currency='USD', blank=True, null=True)
     db_25pct_va = MoneyField('DB 25-percentile unit cost', decimal_places=2, max_digits=11,
@@ -274,15 +274,17 @@ class CostItemDefaultCosts(models.Model):
                              blank=True, null=True)
     db_75pct_va = MoneyField('DB 75-percentile unit cost', decimal_places=2, max_digits=11,
                              default_currency='USD', blank=True, null=True)
+    # endregion old storage
 
     def __str__(self):
-        return self.costitem.name + " -- " + self.cost_type + " -- " + self.valid_start_date_tx + " -- " + str(self.value_numeric.amount)
+        return self.costitem.name + " -- " + self.cost_type + " -- " + \
+               self.valid_start_date_tx + " -- " + str(self.value_numeric.amount)
 
     class Meta:
         verbose_name_plural = "Cost Item Default Costs"
-        ordering = ['costitem__sort_nu', ]
+        ordering = ['costitem__sort_nu', '-valid_start_date_tx']
         # new storage
-        # unique_together = ('costitem', 'cost_type', 'valid_start_date_tx')
+        unique_together = ('costitem', 'cost_type', 'valid_start_date_tx')
 
 
 class CostItemDefaultEquations(models.Model):
@@ -609,12 +611,12 @@ class Scenario(models.Model):
 
                         self.process_scenario_structure(structure, scenario_structures, area_value, is_checked)
 
+        if active_tab == 'costitems':
+            self.process_cost_item_unit_costs(form_data['cost_items']['unit_costs'])
+
         if active_tab == 'structure_costs':
             self.process_strucure_costs(form_data['cost_items']['user_assumptions'],
                                         scenarioTemplate['cost_items']['fields'])
-
-        if active_tab == 'costitems':
-            self.process_cost_item_unit_costs(form_data['cost_items']['unit_costs'])
 
         return
 
@@ -824,9 +826,12 @@ class Scenario(models.Model):
 
     # @sql_query_debugger
     def process_cost_item_unit_costs(self, cost_items):
+
         """
         
             this manages the tab 'Scenario Cost Item Unit Costs'
+
+            the input 'cost_items' are a dictionary from the form.
             
         """
         scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
@@ -870,167 +875,242 @@ class Scenario(models.Model):
                 default_costs_obj.replacement_life = default_equations_obj.replacement_life
                 default_costs_obj.o_and_m_pct = default_equations_obj.o_and_m_pct
 
-            is_default = 1
-            change_count = 0
-
-            db_record_exists = False
-            if user_costs_obj is not None:
-                db_record_exists = True
-
-            list_of_attributes = [
-                'cost_source',
-                'replacement_life',
-                'o_and_m_pct'
-            ]
-
-            # process checking for user changing 'cost_source'
             cost_source = form_costs['cost_source']
-            if cost_source == 'user':
-                is_default -= 1  # there is a user cost_source, so it is not 'default' (unless the user_input_cost and year are blank, and the rep_likfe and o+m are defaults
-                list_of_attributes.extend([
-                    'base_year',
-                    'user_input_cost',
-                ])
+            user_input_cost = None
+            base_year = None
 
-            """
-            
-            NOTE: 2021-12-06 something in here is missing saving the user defined cost and deleting that value.
-            
-            NOTE: 2021-12-13 this is an example of generalizing something to the point where it is not readable.
-            I can't read it and I am the only one who ever would try.
-            
-            Note: yes, this is terrible.  I can't tell if it is bad and complex, or 
-            the system is really this complex
-            
-            --The rules are--
-            if everything is blank, 
-                if exists in db, delete
-                else if not exist
-                    continue
-            else
-                if exists in db
-                    if changed 
-                        update
-                    else
-                        continue
-                else
-                    create
-            
-            """
-            for attribute in list_of_attributes:
+            if user_costs_obj is None:
+                # CREATE
+                costitem = CostItem.objects.filter(code=cost_item).first()
+                if cost_source == 'user':
+                    user_input_cost = form_costs['user_input_cost']
+                    base_year = form_costs['base_year']
 
-                db_field_value = -1
-                default_field_value = -1
-
-                # submitted form value
-                form_value = form_costs[attribute]
-
-                # existing db user value
-                if hasattr(user_costs_obj, attribute):
-                    db_field_value = getattr(user_costs_obj, attribute, None)
-                    # special test for Money fields to compare just the amount
-                    if isinstance(db_field_value, Money):
-                        db_field_value = str(db_field_value.amount)
-                    elif attribute == 'cost_source':
-                        if db_record_exists is True and form_value != 'rsmeans' and form_value != db_field_value:
-                            is_default -= 1
-                            change_count += 1
-                            """
-                                don't do any more processing on cost_source
-                            """
-                            continue
-                        else:
-                            pass
-                elif attribute == 'cost_source':
-                    continue
-
-                # default value
-                if cost_source != 'user' and hasattr(default_costs_obj, attribute):
-                    default_field_value = getattr(default_costs_obj, attribute, None)
-                elif cost_source == 'user' and attribute != 'cost_source':
-                    if attribute == 'user_input_cost' or attribute == 'base_year':
-                        default_field_value = -1
-                    else:
-                        default_field_value = getattr(default_costs_obj, attribute, None)
-
-                if db_field_value != -1 and default_field_value != -1 \
-                        and str(db_field_value) != str(default_field_value):
-                    # store the data
-                    is_default -= 1
-                if db_field_value != -1 and str(db_field_value) != str(form_value):
-                    # the user changed the value from what they set earlier
-                    change_count += 1
-                    if default_field_value != -1 and str(form_value) == str(default_field_value):
-                        is_default += 1  # the user reset a value to the default
-                    # this is the place where I am having a problem.  inserted this elif just to test things
-                    elif attribute == 'cost_source':
-                        pass
-                    else:
-                        is_default -= 1
-
-                if db_field_value == -1 and default_field_value != -1 \
-                        and str(form_value) != str(default_field_value):
-                    # the user changed the value from the default
-                    is_default -= 1
-                    change_count += 1
-                elif db_field_value == -1 and default_field_value == -1 \
-                        and str(form_value) is not None:
-                    # there is a value (this is for user_input_cost and base_year)
-                    is_default -= 1
-                    change_count += 1
-
-                print_str = "cost_item: {}; field: {}; form_value: {}, " + \
-                            "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
-
-                if change_count > 0:
-                    logger.debug(print_str.format(
-                                            cost_item,
-                                            attribute,
-                                            form_value,
-                                            db_field_value,
-                                            default_field_value,
-                                            is_default,
-                                            change_count,
-                                        )
-                            )
-                # if is_default != 1 and change_count > 0:
-                #     break
-
-            # dont store copies that are just the default
-            if is_default == 1 and db_record_exists is True:
-                # DELETE
-                user_costs_obj.delete()
-
-            if is_default != 1 and change_count > 0:
+                c = ScenarioCostItemUserCosts(
+                    scenario=self,
+                    costitem=costitem,
+                    cost_source=cost_source,
+                    user_input_cost=user_input_cost,
+                    base_year=base_year,
+                    replacement_life=form_costs['replacement_life'],
+                    o_and_m_pct=form_costs['o_and_m_pct'],
+                )
+                c.save()
+            else:
                 # UPDATE
-                if user_costs_obj is not None:
-                    user_costs_obj.cost_source = form_costs['cost_source']
-                    user_costs_obj.user_input_cost = form_costs['user_input_cost']
-                    user_costs_obj.base_year = form_costs['base_year']
-                    user_costs_obj.replacement_life = form_costs['replacement_life']
-                    user_costs_obj.o_and_m_pct = form_costs['o_and_m_pct']
-
+                has_changed = 0
+                if cost_source == 'user':
                     if user_costs_obj.cost_source != 'user':
+                        has_changed += 1
+                        user_costs_obj.cost_source = 'user'
+                        user_costs_obj.user_input_cost = form_costs['user_input_cost']
+                        user_costs_obj.base_year = form_costs['base_year']
+                    else:
+                        if user_costs_obj.user_input_cost is None:
+                            if form_costs['user_input_cost'] is not None:
+                                has_changed += 1
+                                user_costs_obj.user_input_cost = form_costs['user_input_cost']
+                        elif str(user_costs_obj.user_input_cost.amount) != form_costs['user_input_cost']:
+                            has_changed += 1
+                            user_costs_obj.user_input_cost = form_costs['user_input_cost']
+                        if str(user_costs_obj.base_year) != form_costs['base_year']:
+                            has_changed += 1
+                            user_costs_obj.base_year = form_costs['base_year']
+                else:
+                    if user_costs_obj.cost_source == 'user':
+                        has_changed += 1
+                        user_costs_obj.cost_source = int(cost_source)
+                    elif user_costs_obj.cost_source != str(int(cost_source)):
+                        has_changed += 1
+                        user_costs_obj.cost_source = int(cost_source)
+
+                    if user_costs_obj.default_cost_id != int(cost_source):
+                        has_changed += 1
+                        user_costs_obj.default_cost_id = int(cost_source)
+
+                    if user_costs_obj.user_input_cost is not None:
+                        has_changed += 1
                         user_costs_obj.user_input_cost = None
+
+                    if user_costs_obj.base_year is not None:
+                        has_changed += 1
                         user_costs_obj.base_year = None
 
+                if user_costs_obj.replacement_life != int(form_costs['replacement_life']):
+                    has_changed += 1
+                    user_costs_obj.replacement_life = form_costs['replacement_life']
+
+                if user_costs_obj.o_and_m_pct != int(form_costs['o_and_m_pct']):
+                    has_changed += 1
+                    user_costs_obj.o_and_m_pct = form_costs['o_and_m_pct']
+                if has_changed > 0:
                     user_costs_obj.save()
 
-                else:
-                    # CREATE
-                    costitem = CostItem.objects.filter(code=cost_item).first()
-
-                    # print("create cost_item {}".format(cost_item))
-                    c = ScenarioCostItemUserCosts(
-                        scenario=self,
-                        costitem=costitem,
-                        cost_source=form_costs['cost_source'],
-                        user_input_cost=form_costs['user_input_cost'],
-                        base_year=form_costs['base_year'],
-                        replacement_life=form_costs['replacement_life'],
-                        o_and_m_pct=form_costs['o_and_m_pct'],
-                    )
-                    c.save()
+            #     if user_costs_obj.cost_source == 'user' and cost_source != 'user':
+            #         if user_costs_obj.user_input_cost != None:
+            #             has_changed += 1
+            #             user_costs_obj.user_input_cost = None
+            #
+            #         if user_costs_obj.base_year != None:
+            #             has_changed += 1
+            #             user_costs_obj.base_year = None
+            # if cost_source == 'user':
+            #     is_default -= 1  # there is a user cost_source, so it is not 'default' (unless the user_input_cost and year are blank, and the rep_likfe and o+m are defaults
+            #     list_of_attributes.extend([
+            #         'base_year',
+            #         'user_input_cost',
+            #     ])
+            # elif isinstance(int(cost_source), int):
+            #     """ process the new storage """
+            #     # UPDATE
+            #     has_changed = 0
+            #     if user_costs_obj is not None:
+            #
+            #
+            #
+            #
+            #     else:
+            #         # CREATE
+            #         costitem = CostItem.objects.filter(code=cost_item).first()
+            #
+            #         # print("create cost_item {}".format(cost_item))
+            #         c = ScenarioCostItemUserCosts(
+            #             scenario=self,
+            #             costitem=costitem,  # this sets costitem
+            #             cost_source=int(cost_source),
+            #             user_input_cost=None,
+            #             base_year=None,
+            #             replacement_life=form_costs['replacement_life'],
+            #             o_and_m_pct=form_costs['o_and_m_pct'],
+            #         )
+            #         c.save()
+            #     pass
+            #
+            # """
+            #
+            #
+            # """
+            # for attribute in list_of_attributes:
+            #
+            #     db_field_value = -1
+            #     default_field_value = -1
+            #
+            #     # submitted form value
+            #     form_value = form_costs[attribute]
+            #
+            #     # existing db user value
+            #     if hasattr(user_costs_obj, attribute):
+            #         db_field_value = getattr(user_costs_obj, attribute, None)
+            #         # special test for Money fields to compare just the amount
+            #         if isinstance(db_field_value, Money):
+            #             db_field_value = str(db_field_value.amount)
+            #         elif attribute == 'cost_source':
+            #             if db_record_exists is True and form_value != db_field_value:
+            #                 is_default -= 1
+            #                 change_count += 1
+            #                 """
+            #                     don't do any more processing on cost_source
+            #                 """
+            #                 continue
+            #             else:
+            #                 pass
+            #     elif attribute == 'cost_source':
+            #         continue
+            #
+            #     # default value
+            #     if cost_source != 'user' and hasattr(default_costs_obj, attribute):
+            #         default_field_value = getattr(default_costs_obj, attribute, None)
+            #     elif cost_source == 'user' and attribute != 'cost_source':
+            #         if attribute == 'user_input_cost' or attribute == 'base_year':
+            #             default_field_value = -1
+            #         else:
+            #             default_field_value = getattr(default_costs_obj, attribute, None)
+            #
+            #     if db_field_value != -1 and default_field_value != -1 \
+            #             and str(db_field_value) != str(default_field_value):
+            #         # store the data
+            #         is_default -= 1
+            #     if db_field_value != -1 and str(db_field_value) != str(form_value):
+            #         # the user changed the value from what they set earlier                    change_count += 1
+            #         if default_field_value != -1 and str(form_value) == str(default_field_value):
+            #             is_default += 1  # the user reset a value to the default
+            #         # this is the place where I am having a problem.  inserted this elif just to test things
+            #         elif attribute == 'cost_source':
+            #             pass
+            #         else:
+            #             is_default -= 1
+            #
+            #     if db_field_value == -1 and default_field_value != -1 \
+            #             and str(form_value) != str(default_field_value):
+            #         # the user changed the value from the default
+            #         is_default -= 1
+            #         change_count += 1
+            #     elif db_field_value == -1 and default_field_value == -1 \
+            #             and str(form_value) is not None:
+            #         # there is a value (this is for user_input_cost and base_year)
+            #         is_default -= 1
+            #         change_count += 1
+            #     elif db_field_value != -1 \
+            #             and str(form_value) is not None \
+            #             and str(form_value) != str(db_field_value):
+            #         # there is a value (this is for user_input_cost and base_year)
+            #         is_default -= 1
+            #         change_count += 1
+            #
+            #     print_str = "cost_item: {}; field: {}; form_value: {}, " + \
+            #                 "db_user_value: {}; default_value: {}; is_default: {}; change_count: {}"
+            #
+            #     if change_count > 0:
+            #         logger.debug(print_str.format(
+            #                                 cost_item,
+            #                                 attribute,
+            #                                 form_value,
+            #                                 db_field_value,
+            #                                 default_field_value,
+            #                                 is_default,
+            #                                 change_count,
+            #                             )
+            #                 )
+            #     # if is_default != 1 and change_count > 0:
+            #     #     break
+            #
+            # # dont store copies that are just the default
+            # if is_default == 1 and db_record_exists is True:
+            #     # DELETE
+            #     user_costs_obj.delete()
+            #
+            # if is_default != 1 and change_count > 0:
+            #     # UPDATE
+            #     if user_costs_obj is not None:
+            #         user_costs_obj.cost_source = form_costs['cost_source']
+            #         user_costs_obj.user_input_cost = form_costs['user_input_cost']
+            #         user_costs_obj.base_year = form_costs['base_year']
+            #         user_costs_obj.replacement_life = form_costs['replacement_life']
+            #         user_costs_obj.o_and_m_pct = form_costs['o_and_m_pct']
+            #
+            #         if user_costs_obj.cost_source != 'user':
+            #             user_costs_obj.user_input_cost = None
+            #             user_costs_obj.base_year = None
+            #         else:
+            #             pass
+            #
+            #         user_costs_obj.save()
+            #
+            #     else:
+            #         # CREATE
+            #         costitem = CostItem.objects.filter(code=cost_item).first()
+            #
+            #         # print("create cost_item {}".format(cost_item))
+            #         c = ScenarioCostItemUserCosts(
+            #             scenario=self,
+            #             costitem=costitem,
+            #             cost_source=form_costs['cost_source'],
+            #             user_input_cost=form_costs['user_input_cost'],
+            #             base_year=form_costs['base_year'],
+            #             replacement_life=form_costs['replacement_life'],
+            #             o_and_m_pct=form_costs['o_and_m_pct'],
+            #         )
+            #         c.save()
 
         return
 
@@ -1069,7 +1149,7 @@ class Scenario(models.Model):
             .all().order_by('costitem__sort_nu')
 
         scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
-            .select_related('costitem') \
+            .select_related('costitem', 'default_cost') \
             .filter(scenario=self).order_by('costitem__sort_nu')
 
         # testing using RelatedManager .all()
@@ -1142,8 +1222,8 @@ class Scenario(models.Model):
                     costs[costitem_code]['unit_cost'] = unit_cost
                     costs[costitem_code]['units'] = cost_items_dict[costitem_code]['units']
             else:
-                costs[costitem_code] = {'cost_source': 'rsmeans',
-                                        'unit_cost': default_cost_item_costs_obj.rsmeans_va.amount,
+                costs[costitem_code] = {'cost_source': str(default_cost_item_costs_obj.id),
+                                        'unit_cost': default_cost_item_costs_obj.value_numeric.amount,
                                         'units': cost_items_dict[costitem_code]['units'],
                                         'o_and_m_pct': default_cost_item_costs_obj.o_and_m_pct,
                                         'replacement_life': default_cost_item_costs_obj.replacement_life,
@@ -1536,33 +1616,43 @@ class ScenarioCostItemUserCosts(models.Model):
     costitem = models.ForeignKey(CostItem,
                                  on_delete=models.CASCADE, default=None, blank=False, null=False)
 
+    # region new storage
+    """ if this is null, then there is a 'User' input cost, 
+    else it is one of the default costs created by an administrator 
+    """
+    default_cost = models.ForeignKey(CostItemDefaultCosts, on_delete=models.DO_NOTHING,
+                                     default=None, blank=True, null=True)
+
+    created_date = models.DateTimeField('Create Date', null=True, auto_now_add=True)
+    modified_date = models.DateTimeField('Modified Date', auto_now=True)
+    # endregion new storage
+
+    # region old storage
     COST_SOURCE_VALUES = ('rsmeans', 'db_25_pct', 'db_50_pct', 'db_75_pct')
     COST_SOURCE_TEXTS = ('Eng. Est.', 'DB - 25%', 'DB - 50%', 'DB - 75%')
     COST_SOURCE_CHOICES = zip(COST_SOURCE_VALUES, COST_SOURCE_TEXTS)
 
-    # content of dropdown list
     cost_source = models.CharField("Source of user_input_cost", choices=COST_SOURCE_CHOICES,
                                    unique=False, max_length=24,
                                    default=None, blank=False, null=False)
-    #
+    # endregion old storage
+
     user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
                                  default_currency='USD', blank=True, null=True)
     base_year = models.PositiveIntegerField(default=20180, validators=[MinValueValidator(2018),
                                                                       MaxValueValidator(2090)
                                                                       ], blank=True, null=True)
+
     replacement_life = models.PositiveIntegerField("Replacement Life ('R')",
                                                    default=40, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)
                                                                            ], blank=True, null=True)
-
-    #
     o_and_m_pct = models.PositiveIntegerField("Ongoing Operations and Maintenance Factor (%)",
                                               default=0,
                                               validators=[MinValueValidator(0),
                                                           MaxValueValidator(100)
                                                           ],
                                               blank=True, null=True)
-
     first_year_maintenance = MoneyField('User supplied First Year Maintenance Cost', decimal_places=2, max_digits=11,
                                         default_currency='USD', blank=True, null=True)
 
@@ -1635,6 +1725,8 @@ class StructureCostItemUserFactors(models.Model):
         and stores data by (project/)scenario/structure/costitem
 
         the 'user' factors are stored here
+
+        This might be called ScenarioStructureCostItemUserFactors
     """
     scenario = models.ForeignKey(Scenario, related_name="cost_item_user_assumptions", on_delete=models.CASCADE,
                                  default=None, blank=False, null=False)

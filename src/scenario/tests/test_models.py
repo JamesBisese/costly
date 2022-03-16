@@ -305,28 +305,69 @@ class CostItemDefaultCostsTestCase(BaseLookupTestCase):
         alpha = self.my_model.objects.get(code=self.alpha_code)
         with transaction.atomic():
             with transaction.atomic():
-                m = CostItemDefaultCosts.objects.create(costitem=alpha, )
+                m = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                        value_numeric=688.99,
+                                                        valid_start_date_tx='2022',
+                                                        )
                 m.save()
 
         with self.assertRaises(IntegrityError):
-            m = CostItemDefaultCosts.objects.create(costitem=alpha, )
+            m = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                    value_numeric=688.99,
+                                                    valid_start_date_tx='2022',)
             m.save()
 
-            m2 = CostItemDefaultCosts.objects.create(costitem=alpha,)
+            m2 = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                    value_numeric=688.99,
+                                                    valid_start_date_tx='2022',)
+            m2.save()
+
+    def test_cost_item_new_structure(self):
+        alpha = self.my_model.objects.get(code=self.alpha_code)
+
+        m = CostItemDefaultCosts.objects.create(
+            costitem=alpha,
+            value_numeric=688.99,
+            valid_start_date_tx='2020',
+        )
+        m.save()
+
+        with transaction.atomic():
+            with transaction.atomic():
+                m = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                        value_numeric=688.99,
+                                                        valid_start_date_tx='2021', )
+                m.save()
+
+        with self.assertRaises(IntegrityError):
+            m = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                    value_numeric=688.99,
+                                                    valid_start_date_tx='2022', )
+            m.save()
+
+            m2 = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                     value_numeric=688.99,
+                                                     valid_start_date_tx='2022',)
             m2.save()
 
     def test_minimum_attributes(self):
         alpha = self.my_model.objects.get(code=self.alpha_code)
         with transaction.atomic():
             with transaction.atomic():
-                m = CostItemDefaultCosts.objects.create(costitem=alpha, )
+                m = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                        value_numeric=688.99,
+                                                        valid_start_date_tx='2022', )
                 m.save()
 
         with self.assertRaises(IntegrityError):
-            m = CostItemDefaultCosts.objects.create(costitem=alpha, )
+            m = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                    value_numeric=688.99,
+                                                    valid_start_date_tx='2020', )
             m.save()
 
-            m2 = CostItemDefaultCosts.objects.create(costitem=alpha,)
+            m2 = CostItemDefaultCosts.objects.create(costitem=alpha,
+                                                     value_numeric=688.99,
+                                                     valid_start_date_tx='2020', )
             m2.save()
 
 

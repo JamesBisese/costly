@@ -21,9 +21,10 @@ $(document).ready(function() {
                     {"data": "scenario2.scenario_title", "searchable": true},
                     {"data": "costitem_name", "searchable": true},
                     {"data": "units", "searchable": false},
+                    {"data": "cost_source", "searchable": false},
                     {"data": "user_input_cost", "searchable": false},
                     {"data": "base_year", "searchable": false},
-                    {"data": "replacement_life", "searchable": false},
+                    // {"data": "replacement_life", "searchable": false},
                     {"data": "o_and_m_pct", "searchable": false},
                 ],
 

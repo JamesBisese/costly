@@ -379,17 +379,26 @@ class CostItemDefaultCostSerializer(serializers.ModelSerializer):
         default values
         /api/costitemdefaultcosts
 
+        Note: updated 2022-03-11 to hold multiple values for each CostItem
+
     """
-    # each default cost is applied to a single costitem
     costitem = CostItemSerializer(many=False, read_only=True)
+
+    created_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
+    modified_date = serializers.DateTimeField(format="%Y-%m-%d %I:%M %p %Z")
 
     class Meta:
         model = CostItemDefaultCosts
         fields = (
             'costitem',
             'id',
-            # 'replacement_life',
-            # 'o_and_m_pct',
+            # region new storage
+            'cost_type',
+            'value_numeric',
+            'valid_start_date_tx',
+            'created_date',
+            'modified_date',
+            # endregion new storage
             'rsmeans_va',
             'db_25pct_va',
             'db_50pct_va',
@@ -414,8 +423,6 @@ class CostItemDefaultEquationsSerializer(serializers.ModelSerializer):
             'id',
             'replacement_life',
             'o_and_m_pct',
-            # 'd_density',
-            # 'n_number',
             'equation_tx',
             'help_text',
         )
@@ -667,6 +674,21 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
     def get_o_and_m_pct(self, obj):
         return str(obj.o_and_m_pct)
 
+    default_cost = serializers.SerializerMethodField()
+
+    def get_default_cost(self, obj):
+        # return str(obj.default_cost)
+        if obj.default_cost is None:
+            return None
+
+        l = ['cost_type',
+             # 'value_numeric',
+             'valid_start_date_tx']
+        d = {key: getattr(obj.default_cost, key) for key in l}
+        d['value_numeric'] = obj.default_cost.value_numeric.amount
+
+        return d
+
     class Meta:
         model = ScenarioCostItemUserCosts
         fields = (
@@ -680,6 +702,7 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
             'costitem_name',
             'units',
             'cost_source',
+            'default_cost',
             'user_input_cost',
             'base_year',
             'replacement_life',
@@ -748,7 +771,7 @@ class ScenarioSerializer(serializers.ModelSerializer):
 
     def get_cost_item_user_costs(self, instance):
         user_cost_items = instance.cost_item_user_costs\
-            .select_related('costitem')\
+            .select_related('costitem', 'default_cost')\
             .all().order_by('costitem__sort_nu')
         return ScenarioCostItemUserCostsSerializer(user_cost_items, many=True).data
 

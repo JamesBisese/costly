@@ -163,6 +163,8 @@ class CostItemDefaultCostsAdmin(StructuresAdmin):
                     )
     list_display_links = ('costitem_name',)
     readonly_fields = ['created_date', 'modified_date']
+    search_fields = ('costitem__name', 'cost_type',
+                    'valid_start_date_tx')
 
     @admin.display(empty_value='unknown', ordering='costitem__units')
     def costitem_units(self, obj):
@@ -239,10 +241,10 @@ def scenario_title(obj):
 @admin.display(description='Cost Source', ordering='cost_source')
 def cost_source(obj):
     source = obj.cost_source
-    if source == 'rsmeans':
-        source = 'Default'
-    elif source == 'user':
+    if source == 'user':
         source = 'User'
+    elif obj.default_cost is not None:
+        source = str(obj.default_cost)
     return "%s" % source
 
 
@@ -272,13 +274,16 @@ def first_year_maintenance(obj):
 class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, costitem_name,
                     cost_source, user_input_cost, 'base_year',
-                    replacement_life, o_and_m_pct, first_year_maintenance)
+                    replacement_life, o_and_m_pct)
     list_display_links = (costitem_name,)
     list_filter = (
         ('scenario__project__user__profile__user_type', custom_titled_filter("User Type")),
         ('scenario__project__user__name', custom_titled_filter("User Name")),
         ('costitem__name', custom_titled_filter('Cost Item Name'))
     )
+    search_fields = ('scenario__scenario_title', 'costitem__name',
+                    )
+    ordering = ['scenario__scenario_title', 'costitem__sort_by',]
 
     def get_actions(self, request):
         actions = super().get_actions(request)

@@ -249,7 +249,16 @@ function populateUI(siteData) {
                 ];
                 let inputDom = document.getElementById('ui_' + cost_item_code + '_' + 'cost_source');
                 if (inputDom) {
-                    inputDom.value = field_object.cost_source;
+                    // this is for migration to the new storage
+                    if (field_object.cost_source === 'rsmeans')
+                    {
+                        inputDom.options[1].selected = true;
+                    }
+                    else
+                    {
+                        inputDom.value = field_object.cost_source;
+                    }
+
                 }
 
                 for (var j in field_list) {
@@ -322,13 +331,13 @@ function populateUI(siteData) {
     //TODO: replace that function with normal loading
 }
 
+
+function populateStructureEquations(data){
 /*
-* this populates fields in the Structure/Cost Item Costs page
+* this populates fields in the Structure Cost Item User Factors page
 *
 *
 */
-function populateStructureEquations(data){
-
     //TODO
     // var structure_name = data.structure.name;
     if (data.structure.area === null){
@@ -489,15 +498,16 @@ function populateStructureEquations(data){
                         } else if (field_name === 'unit_cost') {
 
                             let dollar_div = document.createElement('div');
-                            dollar_div.className = 'dollar';
-                            dollar_div.innerText = '$';
-                            dollar_div.style.paddingLeft = '3px';
-                            dollar_div.style.display = 'inline';
-                            let text = document.createTextNode(Number(cost_item_data.unit_cost).toFixed(2));
+                            // dollar_div.className = 'dollar';
+                            // dollar_div.innerText = '$';
+                            // dollar_div.style.paddingLeft = '3px';
+                            // dollar_div.style.display = 'inline';
+                            let text = document.createTextNode(cost_item_data.cost_data.cost_type + " " + cost_item_data.cost_data.valid_start_date_tx +
+                                " - " + Number(cost_item_data.cost_data.value_numeric).toFixed(2));
                             while (inputDom.firstChild) {
                                 inputDom.removeChild(inputDom.firstChild);
                             }
-                            inputDom.appendChild(dollar_div);
+                            // inputDom.appendChild(dollar_div);
                             inputDom.appendChild(text);
                         }
                     }

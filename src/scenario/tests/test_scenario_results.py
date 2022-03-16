@@ -165,7 +165,8 @@ class ScenarioCostsTestCase(BaseLookupTestCase):
 
         self.costitem_default_costs2 = CostItemDefaultCosts.objects.create(
             costitem=self.costitem2,
-            rsmeans_va=688.99,
+            value_numeric=688.99,
+            valid_start_date_tx='2022',
         )
         self.costitem_default_costs2.save()
         self.assertIsNotNone(self.costitem_default_costs2)

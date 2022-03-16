@@ -65,7 +65,7 @@
         <tr style="text-align: center;">
             <th style="width: 130px;">Cost Item</th>
             <th style="width: 40px;">Bid Units</th>
-            <th style="width: 80px;">Unit Cost</th>
+            <th style="width: 250px;">Unit Cost</th>
             <th style="width: 46px;">Area (scale factor)</th>
             <th style="width: 42px;">Depth (FT)</th>
             <th style="width: 50px;">Density (TN/CY)</th>
@@ -77,32 +77,32 @@
 
 <!-- complete table of all cost items.  the data gets loaded client-side -->
     <tbody>
-{% for cost_item_default_cost in cost_item_default_costs %}
-        <tr id="tr_{{ cost_item_default_cost.costitem.code }}">
+{% for cost_item in cost_items %}
+        <tr id="tr_{{ cost_item.code }}">
 
             <td>
                 <div class="input-group mb-3 input-group-sm">
                     <div class="input-group-prepend" style="width: 100%;"
-                         id="structure_costitem_{{ cost_item_default_cost.costitem.code }}"
+                         id="structure_costitem_{{ cost_item.code }}"
                          onclick="open_costitem_help(this);">
                         <div class="input-group-text input-group-link-text" style="width: 100%; font-size: 10px">
-                            <input type="checkbox" id="checkbox_{{ cost_item_default_cost.costitem.code }}"
+                            <input type="checkbox" id="checkbox_{{ cost_item.code }}"
                                     value="1"
                                    onclick="event.stopPropagation();recalculateCosts(this);" >
-                            <div >{{ cost_item_default_cost.costitem.name }}</div>
+                            <div >{{ cost_item.name }}</div>
                         </div>
                     </div>
                 </div>
             </td>
 
-            <td class="td_centered ">{{ cost_item_default_cost.costitem.units }}</td>
-            <td class="rightaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_user_input_cost_READONLY"></td>
+            <td class="td_centered ">{{ cost_item.units }}</td>
+            <td class="rightaligned" id="ui_{{ cost_item.code }}_user_input_cost_READONLY"></td>
             <td>
                 <div class="input-group mb-3 input-group-sm">
                     <input type="text" class="form-control"
                             style="font-size: 10px;" autocomplete="off"
                            title="Multiple the Structure areal units by this unit-less factor"
-                           id="ui_{{ cost_item_default_cost.costitem.code }}_a_area"
+                           id="ui_{{ cost_item.code }}_a_area"
                            onkeypress="returnCalc(this);" onchange="recalculateCosts(this);">
                 </div>
             </td>
@@ -110,7 +110,7 @@
                 <div class="input-group mb-3 input-group-sm">
                     <input type="text" class="form-control" style="font-size: 10px;" autocomplete="off"
                            title="Depth in feet of this cost item"
-                           id="ui_{{ cost_item_default_cost.costitem.code }}_z_depth"
+                           id="ui_{{ cost_item.code }}_z_depth"
                            onkeypress="returnCalc(this);" onchange="recalculateCosts(this);">
                 </div>
             </td>
@@ -119,7 +119,7 @@
                     <input type="text" class="form-control"
                             style="font-size: 10px;" autocomplete="off"
                            title="Density of this cost item in tons per cubic yard"
-                           id="ui_{{ cost_item_default_cost.costitem.code }}_d_density"
+                           id="ui_{{ cost_item.code }}_d_density"
                            onkeypress="returnCalc(this);" onchange="recalculateCosts(this);">
                 </div>
             </td>
@@ -128,13 +128,13 @@
                     <input type="text" class="form-control"
                             style="font-size: 10px;" autocomplete="off"
                            title="Count of items of this cost item"
-                           id="ui_{{ cost_item_default_cost.costitem.code }}_n_number"
+                           id="ui_{{ cost_item.code }}_n_number"
                            onkeypress="returnCalc(this);" onchange="recalculateCosts(this);">
                 </div>
             </td>
 
-            <td class="leftaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_equation"></td>
-            <td class="rightaligned" id="ui_{{ cost_item_default_cost.costitem.code }}_cost_V1"></td>
+            <td class="leftaligned" id="ui_{{ cost_item.code }}_equation"></td>
+            <td class="rightaligned" id="ui_{{ cost_item.code }}_cost_V1"></td>
         </tr>
 {% endfor %}
 
