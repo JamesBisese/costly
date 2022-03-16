@@ -113,7 +113,7 @@ class ArealFeatureLookupAdmin(admin.ModelAdmin):
         return True
 
 class StructuresAdmin(admin.ModelAdmin):
-    list_display = ('sort_nu', 'classification', 'name')
+    list_display = ('sort_nu', 'classification', 'name', 'units', 'help_text',)
     list_display_links = ('name',)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -174,6 +174,11 @@ class CostItemDefaultCostsAdmin(StructuresAdmin):
     def costitem_name(self, obj):
         return "%s" % obj.costitem.name
 
+    model = CostItemDefaultCosts
+    def get_queryset(self, request):
+        return super(CostItemDefaultCostsAdmin, self)\
+            .get_queryset(request).select_related(
+            'costitem')
 
 class CostItemDefaultEquationsAdmin(StructuresAdmin):
     list_display = (costitem_sort_nu, costitem_name, 'equation_tx',
@@ -181,14 +186,19 @@ class CostItemDefaultEquationsAdmin(StructuresAdmin):
                     # 'a_area', 'z_depth', 'd_density', 'n_number'
                     )
     list_display_links = (costitem_name,)
-    pass
+
+    model = CostItemDefaultEquations
+    def get_queryset(self, request):
+        return super(CostItemDefaultEquationsAdmin, self)\
+            .get_queryset(request).select_related(
+            'costitem')
 
 
 class StructureCostItemDefaultFactorsAdmin(StructuresAdmin):
     """
     this is tied to both Structure (parent) and Cost Item (child)
     """
-    list_display = ('structure_name', 'costitem_name', 'a_area', 'z_depth', 'd_density', 'n_number')
+    list_display = ('structure_name', 'costitem_name', 'costitem_units','a_area', 'z_depth', 'd_density', 'n_number')
     list_display_links = ('structure_name', 'costitem_name',)
     list_filter = (('structure__name', custom_titled_filter("Structure Name")),
                    ('costitem__name', custom_titled_filter('Cost Item Name')))
@@ -200,6 +210,10 @@ class StructureCostItemDefaultFactorsAdmin(StructuresAdmin):
     @admin.display(empty_value='unknown', ordering='costitem__name')
     def costitem_name(self, obj):
         return "%s" % obj.costitem.name
+
+    @admin.display(empty_value='unknown')
+    def costitem_units(self, obj):
+        return "%s" % obj.costitem.units
 
     @admin.display(description='Area (a)')
     def a_area(self, obj):
@@ -216,6 +230,21 @@ class StructureCostItemDefaultFactorsAdmin(StructuresAdmin):
     @admin.display(description='Count (n)')
     def n_number(self, obj):
         return obj.z_depth
+
+    model = StructureCostItemDefaultFactors
+    def get_queryset(self, request):
+        return super(StructureCostItemDefaultFactorsAdmin, self)\
+            .get_queryset(request)\
+            .select_related(
+                'structure',
+                'costitem',
+            )  \
+            .only('structure__name', 'structure__sort_nu',
+                  'costitem__name', 'costitem__units', 'costitem__sort_nu',
+                  'a_area', 'z_depth', 'd_density', 'n_number',
+                  )\
+            .order_by('structure__sort_nu', 'costitem__sort_nu',)
+
 
 
 @admin.display(description='User', ordering='scenario__project__user__name')
@@ -244,19 +273,36 @@ def cost_source(obj):
     if source == 'user':
         source = 'User'
     elif obj.default_cost is not None:
-        source = str(obj.default_cost)
+        source = str(obj.default_cost.cost_type)
     return "%s" % source
 
 
-@admin.display(description='User Cost', ordering='user_input_cost')
+@admin.display(description='Date Text')
+def date_text(obj):
+    source = obj.cost_source
+    if source == 'user':
+        source = obj.base_year
+    elif obj.default_cost is not None:
+        source = obj.default_cost.valid_start_date_tx
+    return "%s" % source
+
+
+@admin.display(description='Unit Cost', ordering='user_input_cost')
 def user_input_cost(obj):
-    input_cost = obj.user_input_cost
-    if not input_cost:
-        input_cost = 'N/A'
+    source = obj.cost_source
+    input_cost = None
+    if source == 'user':
+        input_cost = obj.user_input_cost
+    elif obj.default_cost is not None:
+        input_cost = obj.default_cost.value_numeric
+
+    # input_cost = obj.user_input_cost
+    # if not input_cost:
+    #     input_cost = 'N/A'
     return "%s" % input_cost
 
 
-@admin.display(description='Replacement Life (Years)', ordering='replacement_life')
+@admin.display(description='Rep Life (yrs)', ordering='replacement_life')
 def replacement_life(obj):
     return "%s" % obj.replacement_life
 
@@ -273,8 +319,8 @@ def first_year_maintenance(obj):
 
 class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, costitem_name,
-                    cost_source, user_input_cost, 'base_year',
-                    replacement_life, o_and_m_pct)
+                    cost_source, date_text, user_input_cost,
+                    replacement_life, o_and_m_pct, 'modified_date')
     list_display_links = (costitem_name,)
     list_filter = (
         ('scenario__project__user__profile__user_type', custom_titled_filter("User Type")),
@@ -284,6 +330,26 @@ class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     search_fields = ('scenario__scenario_title', 'costitem__name',
                     )
     ordering = ['scenario__scenario_title', 'costitem__sort_by',]
+
+    exclude = ('first_year_maintenance',)
+
+    model = ScenarioCostItemUserCosts
+    def get_queryset(self, request):
+        return super(ScenarioCostItemUserCostsAdmin, self)\
+            .get_queryset(request)\
+            .select_related(
+                'scenario', 'scenario__project', 'scenario__project__user',
+                'scenario__project__user__profile',
+                'costitem', 'default_cost'
+            ) \
+            .only('scenario__scenario_title', 'scenario__project__project_title',
+                  'scenario__project__user__name', 'scenario__project__user__profile__user_type',
+                  'user_input_cost', 'user_input_cost_currency',
+                  'replacement_life', 'o_and_m_pct', 'cost_source', 'modified_date', 'base_year',
+                  'costitem__name',
+                  'default_cost__cost_type',  'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+                  'default_cost__valid_start_date_tx',
+                  )
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -323,6 +389,22 @@ class StructureCostItemUserFactorsAdmin(admin.ModelAdmin):
 
     # def has_delete_permission(self, request, obj=None):
     #     return False
+    model = StructureCostItemUserFactors
+    def get_queryset(self, request):
+        return super(StructureCostItemUserFactorsAdmin, self)\
+            .get_queryset(request)\
+            .select_related(
+                'scenario', 'scenario__project', 'scenario__project__user',
+                'scenario__project__user__profile',
+                'structure',
+                'costitem',
+            ) \
+            .only('scenario__scenario_title', 'scenario__project__project_title',
+                  'scenario__project__user__name', 'scenario__project__user__profile__user_type',
+                  'structure__name',
+                  'costitem__name',
+                  'checked', 'a_area', 'z_depth', 'd_density', 'n_number',
+                  )
 
 
 admin.site.register(ArealFeatureLookup, ArealFeatureLookupAdmin)

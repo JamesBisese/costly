@@ -1612,12 +1612,12 @@ class ScenarioCostItemUserCosts(models.Model):
                                    default=None, blank=False, null=False)
     # endregion old storage
 
-    user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
-                                 default_currency='USD', blank=True, null=True)
+
     base_year = models.PositiveIntegerField(default=20180, validators=[MinValueValidator(2018),
                                                                       MaxValueValidator(2090)
                                                                       ], blank=True, null=True)
-
+    user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
+                                 default_currency='USD', blank=True, null=True)
     replacement_life = models.PositiveIntegerField("Replacement Life ('R')",
                                                    default=40, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)
