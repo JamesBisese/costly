@@ -1166,6 +1166,8 @@ class Scenario(models.Model):
             if scenario_cost_item_costs_obj.user_input_cost is not None:
                 # note: this is a Money field
                 unit_cost = scenario_cost_item_costs_obj.user_input_cost.amount
+            elif scenario_cost_item_costs_obj.default_cost is not None:
+                unit_cost = scenario_cost_item_costs_obj.default_cost.value_numeric.amount
 
             cost_source = scenario_cost_item_costs_obj.cost_source
             if cost_source == 'user':
@@ -1203,21 +1205,11 @@ class Scenario(models.Model):
 
             if costitem_code in costs:
                 if costs[costitem_code]['cost_source'] != 'user':
-                    cost_source = costs[costitem_code]['cost_source']
-                    # the user selected or entered data in assumptions tab, but not in cost tab
-                    if cost_source == 'TBD1':
-                        costs[costitem_code]['cost_source'] = 'rsmeans'
-                        cost_source = 'rsmeans'
+                    # cost_source = costs[costitem_code]['cost_source']
 
                     unit_cost = None
-                    if cost_source == 'rsmeans':
-                        unit_cost = default_cost_item_costs_obj.rsmeans_va.amount
-                    elif cost_source == 'db_25_pct':
-                        unit_cost = default_cost_item_costs_obj.db_25pct_va.amount
-                    elif cost_source == 'db_50_pct':
-                        unit_cost = default_cost_item_costs_obj.db_50pct_va.amount
-                    elif cost_source == 'db_75_pct':
-                        unit_cost = default_cost_item_costs_obj.db_75pct_va.amount
+                    if costs[costitem_code]['unit_cost'] is not None:
+                        unit_cost = costs[costitem_code]['unit_cost']
 
                     costs[costitem_code]['unit_cost'] = unit_cost
                     costs[costitem_code]['units'] = cost_items_dict[costitem_code]['units']
@@ -1228,9 +1220,6 @@ class Scenario(models.Model):
                                         'o_and_m_pct': default_cost_item_costs_obj.o_and_m_pct,
                                         'replacement_life': default_cost_item_costs_obj.replacement_life,
                                         }
-
-        # conventional_structures = self.conventional_structures
-        # nonconventional_structures = self.nonconventional_structures
 
         # prepare the cost item user assumptions - which are per structure per cost item
         cost_item_user_factors = self.cost_item_user_assumptions\
@@ -1275,12 +1264,10 @@ class Scenario(models.Model):
         study_life = int(self.study_life) if self.study_life else 0
         discount_rate = float(self.discount_rate) if self.discount_rate else 0
 
-        # region new storage
         for scenario_structure in scenario_structures:
             structure = None
             # is_checked = scenario_structure.is_checked
             area_value = scenario_structure.area
-
 
             for s in structures:
                 if s == scenario_structure.structure:
@@ -1289,21 +1276,9 @@ class Scenario(models.Model):
 
             structure.area = area_value
 
-        # endregion new storage
-
-        # for structure in structures:
-
             structure_code = structure.code
-            # is_checked = False
+
             sum_value = 0
-
-            # if conventional_structures is None and nonconventional_structures is None:
-            #     continue
-
-
-
-            # if not is_checked:
-            #     continue
 
             if structure_code not in user_assumptions:
                 continue
