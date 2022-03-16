@@ -3,9 +3,12 @@ import os
 import sys
 
 if __name__ == "__main__":
-    # CHANGED manage.py will use development settings by
-    # default. Change the DJANGO_SETTINGS_MODULE environment variable
-    # for using the environment specific settings file.
+    """
+    
+    TODO add code to look in a defined folder for an .env file - first look for production and then development
+    If neither are found, then raise an error and quit
+    
+    """
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gsicosttool.settings.development")
 

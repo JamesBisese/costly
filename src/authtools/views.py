@@ -2,7 +2,6 @@
 Mostly equivalent to the views from django.contrib.auth.views, but
 implemented as class-based views.
 """
-from __future__ import unicode_literals
 import warnings
 
 from django.conf import settings

@@ -175,6 +175,11 @@ logging.config.dictConfig(LOGGING)
 # these are loaded if they are found in the env file.  else the default is used from base
 
 try:
+    USER_LIST = env.str('USER_LIST', multiline=True)
+except:
+    pass
+
+try:
     EMAIL_CONTACT = env.str('EMAIL_CONTACT')
 except:
     pass

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import forms, VERSION as DJANGO_VERSION
 from django.forms.utils import flatatt
 from django.contrib.auth.forms import (

@@ -36,20 +36,18 @@ $(function () {
             ],
             "columns": [
                 // Use dot notation to reference nested serializers.
-                {"data": "costitem.sort_nu", "searchable": true},
+                {"data": "costitem.sort_nu", "searchable": false},
                 {"data": "costitem.name", "searchable": true},
                 {"data": "costitem.units", "searchable": true},
 
-                {"data": "rsmeans_va", "searchable": true},
-
-                //TODO: use this once we have enough data for the db values
-                {"data": "db_25pct_va", "searchable": false},
-                {"data": "db_50pct_va", "searchable": false},
-                {"data": "db_75pct_va", "searchable": false},
-
-                // {"data": "replacement_life", "searchable": true},
-                // {"data": "o_and_m_pct", "searchable": false},
+                // updated to use new system
+                {"data": "cost_type", "searchable": true},
+                {"data": "valid_start_date_tx", "searchable": true},
+                {"data": "value_numeric", "searchable": false},
+                {"data": "created_date", "searchable": false},
+                {"data": "modified_date", "searchable": false},
              ],
+            "order": [[0, 'asc'],[4, 'desc']],
             "columnDefs": [],
         };
 

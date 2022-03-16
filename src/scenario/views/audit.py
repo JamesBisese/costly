@@ -59,7 +59,7 @@ def audit_costitem_user_cost(request):
 
         http://127.0.0.1:92/audit/cost_item/user_costs/
     """
-    context_data = {'title': 'Cost ItemUserCosts', 'header': 'Audit Cost Item User Costs',
+    context_data = {'title': 'Cost ItemUserCosts', 'header': 'Audit Scenario Cost Item User Costs',
                     'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/cost_item_user_cost.html', context_data)
 

@@ -263,17 +263,18 @@ a.bmplabel:hover {
 }
 
 #calculate h2 {
-	color: #E8Ff8f;
-	color: #fff;
-	color: #117700;
-	font-size: 19px;
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	    vertical-align: middle;
-    margin-left: 10px;
-    margin-bottom: -10px;
-    margin-top: 11px;
-	}
+	/*color: #E8Ff8f;*/
+	/*color: #fff;*/
+	/*color: #117700;*/
+	/*font-size: 19px;*/
+	/*text-transform: uppercase;*/
+	/*letter-spacing: 2px;*/
+	/*    vertical-align: middle;*/
+    /*margin-left: 10px;*/
+    /*margin-bottom: -10px;*/
+    /*margin-top: 11px;*/
+}
+
 #tab_options {
 	margin: 0;
 	margin-left: 0;
@@ -299,6 +300,10 @@ a.bmplabel:hover {
 
 #scenario_name {
 	display: inline-block;
+	color: #117700;
+	font-size: 23px;
+	letter-spacing: 2px;
+    margin-left: 10px;
 }
 #network_indicator {
 	/*display: none;*/
@@ -1008,3 +1013,39 @@ a.ui-button:active, .ui-button:active,
 }
 
 
+.costItemTable {
+	width: 640px;
+	margin-left: -53px;
+	border-collapse: collapse;
+	font-size: 11px;
+}
+.costItemTable .input-group-text {
+	padding-right: 0px!important;
+	padding-left: 3px!important;
+}
+.costItemTable .input-group {
+	padding-right: 1px!important;
+	padding-left: 2px!important;
+}
+.costItemTable .td_centered {
+	text-align: center;
+}
+.costItemTable .form-control .leftaligned {
+	text-align: left;
+}
+.costItemTable .td_left_padded {
+	padding-left: 3px;
+	font-size: larger;
+}
+.costItemTable .form-control {
+	text-align: right;
+	padding-right: 6px!important;
+	padding-left: 2px!important;
+	border-radius: 0px;
+}
+.costItemTable .mb-3 {
+	margin-bottom: 0px!important;
+}
+.costItemTable td {
+	background: #e9ecef;
+}
