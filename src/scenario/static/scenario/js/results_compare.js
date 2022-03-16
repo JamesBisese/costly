@@ -8,7 +8,7 @@ URLS = SETTINGS.URLS;
     window.onload = init_results_compare;
 
     $(document).ready(function() {
-      $('button:contains("Areal Features")').css({'color': 'red'});
+      // $('button:contains("Areal Features")').css({'color': 'red'});
     });
 
     function resize_div(div_class){

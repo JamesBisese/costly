@@ -287,15 +287,15 @@ class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
+        # if 'delete_selected' in actions:
+        #     del actions['delete_selected']
         return actions
 
     def has_add_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 @admin.display(description='Structure Name', empty_value='unknown', ordering='structure__name')
@@ -310,18 +310,19 @@ class StructureCostItemUserFactorsAdmin(admin.ModelAdmin):
                     # replacement_life, o_and_m_pct, first_year_maintenance
                     )
     list_display_links = (costitem_name,)
-    list_filter = (('scenario__project__project_title', custom_titled_filter("Project")),)
+    list_filter = (('scenario__project__project_title', custom_titled_filter("Project")),
+                   ('costitem__name', custom_titled_filter('Cost Item Name')))
     def get_actions(self, request):
         actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
+        # if 'delete_selected' in actions:
+        #     del actions['delete_selected']
         return actions
 
     def has_add_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 admin.site.register(ArealFeatureLookup, ArealFeatureLookupAdmin)
@@ -330,8 +331,5 @@ admin.site.register(CostItem, CostItemAdmin)
 admin.site.register(CostItemDefaultCosts, CostItemDefaultCostsAdmin)
 admin.site.register(CostItemDefaultEquations, CostItemDefaultEquationsAdmin)
 admin.site.register(StructureCostItemDefaultFactors, StructureCostItemDefaultFactorsAdmin)
-
-
-
 admin.site.register(ScenarioCostItemUserCosts, ScenarioCostItemUserCostsAdmin)
 admin.site.register(StructureCostItemUserFactors, StructureCostItemUserFactorsAdmin)

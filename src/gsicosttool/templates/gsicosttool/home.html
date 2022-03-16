@@ -59,14 +59,14 @@
             <div style="width: 500px;">
                 <div >
                     {% if user.is_superuser or user.is_staff %}
-                    <a href="{% url 'why' %}">
-                        <div class="image_container" style="position:relative; text-align:left; color: white; ">
-                            <img class="image_container_img" src="{% static 'gsicosttool/img/gi.jpg' %}">
-                            <div class="image_container_text">
-                                <p>Why is Raleigh investing<br>in GSI?</p>
-                            </div>
-                        </div>
-                    </a><br>
+{#                    <a href="{% url 'why' %}">#}
+{#                        <div class="image_container" style="position:relative; text-align:left; color: white; ">#}
+{#                            <img class="image_container_img" src="{% static 'gsicosttool/img/gi.jpg' %}">#}
+{#                            <div class="image_container_text">#}
+{#                                <p>Why is Raleigh investing<br>in GSI?</p>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </a><br>#}
                     {%  endif %}
                     <a href="{% url 'setup' %}">
                         <div class="image_container" style="position:relative; text-align:left; color: white; ">
