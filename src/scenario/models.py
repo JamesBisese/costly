@@ -1594,6 +1594,8 @@ class ScenarioCostItemUserCosts(models.Model):
     # region new storage
     """ if this is null, then there is a 'User' input cost, 
     else it is one of the default costs created by an administrator 
+    
+    TODO this should be costitem_default_cost
     """
     default_cost = models.ForeignKey(CostItemDefaultCosts, on_delete=models.DO_NOTHING,
                                      default=None, blank=True, null=True)

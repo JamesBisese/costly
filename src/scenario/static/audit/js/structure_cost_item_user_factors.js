@@ -1,17 +1,10 @@
+/*jshint esversion: 6 */
+/*jshint strict:false */
+/*globals $:false */
 
-// the SETTINGS.URLS is loaded from from urls.js (or urls_production.js)
-// which is loaded via the HTML file.
+var table;
+var URLS = null; // this gets set via another javascript file sourced before this file
 
-//NOTE: to get things right, open the API in another tab, and check that the 'columns.data'
-// align with the json structure
-
-//NOTE: somehow this knows about the HTML part. You hide the column here, but it has
-// to exist in the HTML
-
-//NOTE: classification_display cant be sorted or searched - it has something to do with
-// the serializer. there must be a fix but I don't have time to investigate.
-// error is
-//    django.core.exceptions.FieldError: Related Field got invalid lookup: classification_display
 
 $(function () {
 
@@ -19,6 +12,8 @@ $(function () {
 
     /* Binding */
     $(document).ready(function() {
+
+        URLS = SETTINGS.URLS;
 
         var inputDom = document.getElementById('is_superuser');
 
@@ -32,12 +27,13 @@ $(function () {
         var export_columns = [ 0, 1, 3, 4, 5, 6, 7, 8, 9];
 
         var options = {
-            "serverSide": false,
+            "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.audit_cost_item_user_factors_data + '?format=datatables',
-            "paging": false,
+            "ajax": URLS.audit_cost_item_user_factors_data + '?format=datatables',
+            "lengthMenu": [ [50, 100, 250, -1], [50, 100, 250, "All"] ],
+            "paging": true,
             "info" : false,
-            "dom": 'Bfrtip',
+            "dom": 'Blpifrt',
             "buttons": [
                 { 'extend': 'copy',  'exportOptions': {'columns': export_columns}},
                 { 'extend': 'csv',   'exportOptions': {'columns': export_columns}},
@@ -47,12 +43,11 @@ $(function () {
             ],
             "columns": [
                 // Use dot notation to reference nested serializers.
-
-                {"data": "user.name", "searchable": true},
-                {"data": "user.organization_tx", "searchable": true},
-                {"data": "user.profile.user_type", "searchable": true},
-                {"data": "project_title"},
-                {"data": "scenario_title"},
+                {"data": "user.name", 'name': 'scenario.project.user.name', "searchable": true},
+                {"data": "user.organization_tx", 'name': 'scenario.project.user.organization_tx', "searchable": false},
+                {"data": "user.profile.user_type", 'name': 'scenario.project.user.profile.user_type', "searchable": false},
+                {"data": "project_title", 'name': 'scenario.project.project_title', "searchable": false},
+                {"data": "scenario_title", 'name': 'scenario.scenario_title', "searchable": true},
 
                 {"data": "structure.name", "searchable": true},
                 {"data": "structure.units", "searchable": true},

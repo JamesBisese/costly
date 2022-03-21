@@ -606,17 +606,24 @@ class ScenarioAuditSerializer(serializers.ModelSerializer):
 class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
     """
 
-        CostItem User Cost - users values
+        Scenario CostItem User Cost - users values
 
     """
-    # each default cost is applied to a single costitem
-    # scenario_id = serializers.CharField(read_only=True, source="scenario.id")
+    DT_RowId = serializers.SerializerMethodField()
+    DT_RowAttr = serializers.SerializerMethodField()
+
     #
+    def get_DT_RowId(self, scenario):
+        return 'row_%d' % scenario.pk
+
+    def get_DT_RowAttr(self, scenario):
+        return {'data-pk': scenario.pk}
+
     costitem_code = serializers.CharField(read_only=True, source="costitem.code")
     costitem_name = serializers.CharField(read_only=True, source="costitem.name")
-    # each default cost is applied to a single costitem
 
     scenario2 = serializers.SerializerMethodField()
+
     def get_scenario2(self, obj):
         return {
             'id': obj.scenario.id,
@@ -624,35 +631,40 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
         }
 
     project = serializers.SerializerMethodField()
+
     def get_project(self, obj):
-        return {'project_title': obj.scenario.project.project_title}
-
-    # ProjectSerializer(source='scenario.project', many=False, read_only=True)
-
-    # costitem = CostItemSerializer(many=False, read_only=True)
-
-    # # NOTE: the underlying model has to have a field marked with matching related_name. (I have no idea why)
-    # # i.e. related_name="cost_item_user_costs"
-    # cost_item_user_costs = serializers.SerializerMethodField()
-    #
-    # def get_cost_item_user_costs(self, instance):
-    #     user_cost_items = instance.cost_item_user_costs.all().order_by('costitem__sort_nu')
-    #     return StructureCostItemUserCostSerializer(user_cost_items, many=True).data
+        user1 = obj.scenario.project.user
+        return {'project_title': obj.scenario.project.project_title,
+                'user': UserSimpleSerializer(user1, many=False).data
+                }
 
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         user1 = obj.scenario.project.user
         return UserSimpleSerializer(user1, many=False).data
-    # scenario = ScenarioListSerializer(many=False, read_only=True)
-    #
-    # # the uncommented 'project' controls what fields are included
-    # project = EmbeddedProjectFields(source='scenario.project')
 
-    # scenario_id = serializers.SerializerMethodField()
-    #
-    # def get_scenario_id(self, obj):
-    #     return obj.scenario.id
+    user_name = serializers.SerializerMethodField()
+    def get_user_name(self, obj):
+        user1 = obj.scenario.project.user
+        return user1.name
+
+    organization_tx = serializers.SerializerMethodField()
+    def get_organization_tx(self, obj):
+        return obj.scenario.project.user.organization_tx
+
+    user_type = serializers.SerializerMethodField()
+    def get_user_type(self, obj):
+        return obj.scenario.project.user.profile.user_type
+
+    project_title = serializers.SerializerMethodField()
+    def get_project_title(self, obj):
+        return obj.scenario.project.project_title
+
+    costitem_sort_nu = serializers.SerializerMethodField()
+
+    def get_costitem_sort_nu(self, obj):
+        return obj.costitem.sort_nu
 
     costitem_code = serializers.SerializerMethodField()
 
@@ -677,27 +689,34 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
     default_cost = serializers.SerializerMethodField()
 
     def get_default_cost(self, obj):
-        # return str(obj.default_cost)
+        # put the 'user' information in this structure
         if obj.default_cost is None:
-            return None
-
-        l = ['cost_type',
-             # 'value_numeric',
-             'valid_start_date_tx']
-        d = {key: getattr(obj.default_cost, key) for key in l}
-        d['value_numeric'] = obj.default_cost.value_numeric.amount
+            d = {
+                'cost_type': 'User',
+                'valid_start_date_tx': obj.base_year,
+                'value_numeric': obj.user_input_cost.amount
+            }
+        else:
+            l = ['cost_type', 'valid_start_date_tx']
+            d = {key: getattr(obj.default_cost, key) for key in l}
+            d['value_numeric'] = obj.default_cost.value_numeric.amount
 
         return d
 
     class Meta:
         model = ScenarioCostItemUserCosts
         fields = (
+            'DT_RowId', 'DT_RowAttr',
             'id',
             'user',
+            'user_name',
+            'organization_tx',
+            'user_type',
             'scenario2',
             'project',
-            # 'scenario_id',
+            'project_title',
             'costitem',
+            'costitem_sort_nu',
             'costitem_code',
             'costitem_name',
             'units',

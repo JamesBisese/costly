@@ -1,17 +1,9 @@
+/*jshint esversion: 6 */
+/*jshint strict:false */
+/*globals $:false */
 
-// the SETTINGS.URLS is loaded from from urls.js (or urls_production.js)
-// which is loaded via the HTML file.
-
-//NOTE: to get things right, open the API in another tab, and check that the 'columns.data'
-// align with the json structure
-
-//NOTE: somehow this knows about the HTML part. You hide the column here, but it has
-// to exist in the HTML
-
-//NOTE: classification_display cant be sorted or searched - it has something to do with
-// the serializer. there must be a fix but I don't have time to investigate.
-// error is
-//    django.core.exceptions.FieldError: Related Field got invalid lookup: classification_display
+var table;
+var URLS = null; // this gets set via another javascript file sourced before this file
 
 $(function () {
 
@@ -19,6 +11,8 @@ $(function () {
 
     /* Binding */
     $(document).ready(function() {
+
+        URLS = SETTINGS.URLS;
 
         var inputDom = document.getElementById('is_superuser');
 
@@ -34,8 +28,9 @@ $(function () {
         var options = {
             "serverSide": true,
             "responsive": true,
-            "ajax": SETTINGS.URLS.audit_structure_cost_item_default_factors_data + '?format=datatables',
-            "paging": false,
+            "ajax": URLS.audit_structure_cost_item_default_factors_data + '?format=datatables',
+            'pageLength': 50,
+            "paging": true,
             "info" : false,
             "dom": 'Bfrtip',
             "buttons": [

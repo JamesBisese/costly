@@ -251,14 +251,26 @@ class CostItemUserCostViewSet(UserPassesTestMixin, viewsets.ModelViewSet):
     """
 
         provided via /api/cost_item_user_costs and /api/costitem_user_costs/?code=fill
-    TODO: remove the extra fields for this.  there is too much going on in the serializer
+
     """
     def test_func(self):
         return self.request.user.is_active
 
     queryset = ScenarioCostItemUserCosts.objects\
         .select_related('costitem', 'scenario', 'scenario__project',
-                        'scenario__project__user', 'scenario__project__user__profile')\
+                        'scenario__project__user', 'scenario__project__user__profile',
+                        'default_cost') \
+        .only(
+            'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+            'scenario__scenario_title',
+            'scenario__project__project_title',
+            'scenario__project__user__name', 'scenario__project__user__organization_tx',
+            'scenario__project__user__profile__user_type',
+            'default_cost__cost_type', 'default_cost__valid_start_date_tx',
+            'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+            'replacement_life', 'o_and_m_pct', 'user_input_cost', 'user_input_cost_currency',
+            'base_year', 'cost_source',
+        ) \
         .all().order_by("costitem__sort_nu")
     serializer_class = ScenarioCostItemUserCostsSerializer
 
