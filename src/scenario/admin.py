@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from .models import Project, Scenario, Structures, ArealFeatureLookup, \
     CostItem, StructureCostItemDefaultFactors, CostItemDefaultCosts, CostItemDefaultEquations, \
-    ScenarioCostItemUserCosts, StructureCostItemUserFactors, ScenarioArealFeature
+    ScenarioStructure, ScenarioCostItemUserCosts, StructureCostItemUserFactors, ScenarioArealFeature
 
 
 class ObjectAdmin(admin.ModelAdmin):
@@ -66,8 +66,8 @@ class ScenarioAdmin(admin.ModelAdmin):
     list_display = ('user_fullname', user_affiliation, 'user_type',
                     'project_title', 'scenario_title', 'create_date', 'modified_date')
     list_display_links = ('scenario_title',)
-    list_filter = (('project__user__profile__user_type', custom_titled_filter("User Type")),)
-
+    list_filter = (('project__user__profile__user_type', custom_titled_filter("User Type")),
+                   ('project__user__name', custom_titled_filter("User Name")),)
     exclude = ('areal_features', 'conventional_structures', 'nonconventional_structures', 'counter', 'scenario_date')
 
     readonly_fields = ['create_date', 'modified_date']
@@ -113,7 +113,7 @@ class ArealFeatureLookupAdmin(admin.ModelAdmin):
         return True
 
 class StructuresAdmin(admin.ModelAdmin):
-    list_display = ('sort_nu', 'classification', 'name', 'units', 'help_text',)
+    list_display = ('sort_nu', 'classification', 'code', 'name', 'units', 'help_text',)
     list_display_links = ('name',)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -134,7 +134,7 @@ class StructuresAdmin(admin.ModelAdmin):
 
 
 class CostItemAdmin(StructuresAdmin):
-    list_display = ('sort_nu', 'name', 'units', 'help_text')
+    list_display = ('sort_nu', 'code', 'name', 'units', 'help_text')
     list_display_links = ('name',)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -317,6 +317,9 @@ def o_and_m_pct(obj):
 def areal_feature_name(obj):
     return "%s" % obj.areal_feature.name
 
+@admin.display(description='structure_name')
+def structure_name(obj):
+    return "%s" % obj.structure.name
 
 @admin.display(description='First Year Maintenance', ordering='first_year_maintenance')
 def first_year_maintenance(obj):
@@ -324,7 +327,7 @@ def first_year_maintenance(obj):
 
 class ScenarioArealFeatureAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, areal_feature_name,
-                    )
+                    'area2', 'is_checked')
     list_display_links = (areal_feature_name,)
     list_filter = (
         ('scenario__project__user__profile__user_type', custom_titled_filter("User Type")),
@@ -332,8 +335,18 @@ class ScenarioArealFeatureAdmin(admin.ModelAdmin):
         ('areal_feature__name', custom_titled_filter('areal_feature Name'))
     )
     search_fields = ('scenario__scenario_title', 'areal_feature_name',
-                    )
+                     )
     ordering = ['scenario__scenario_title', ]
+
+    @admin.display(description='Area (sf)')
+    def area2(self, obj):
+        if obj.area is None:
+            return '--'
+        return "{: <10,}".format(obj.area)
+
+    @admin.display(description='Checked ')
+    def is_checked(self, obj):
+        return obj.is_checked
 
     model = ScenarioArealFeature
     def get_queryset(self, request):
@@ -343,15 +356,43 @@ class ScenarioArealFeatureAdmin(admin.ModelAdmin):
                 'scenario', 'scenario__project', 'scenario__project__user',
                 'scenario__project__user__profile',
                 'areal_feature',
-                # 'costitem',
             )
-        # \
-        #     .only('scenario__scenario_title', 'scenario__project__project_title',
-        #           'scenario__project__user__name', 'scenario__project__user__profile__user_type',
-        #           'structure__name',
-        #           'costitem__name',
-        #           'checked', 'a_area', 'z_depth', 'd_density', 'n_number',
-        #           )
+
+class ScenarioStructureAdmin(admin.ModelAdmin):
+            list_display = (user_name, user_type, scenario_project_title,
+                            scenario_title, structure_name,
+                            'area2', 'is_checked')
+            list_display_links = (structure_name,)
+            list_filter = (
+                ('scenario__project__user__profile__user_type', custom_titled_filter("User Type")),
+                ('scenario__project__user__name', custom_titled_filter("User Name")),
+                ('structure__name', custom_titled_filter('Structure Name'))
+            )
+            search_fields = ('scenario__scenario_title', 'structure_name',
+                             )
+            ordering = ['scenario__scenario_title', 'structure__sort_nu',]
+
+            @admin.display(description='Area (sf)')
+            def area2(self, obj):
+                if obj.area is None:
+                    return '--'
+                return "{: <10,}".format(obj.area)
+
+            @admin.display(description='Checked ')
+            def is_checked(self, obj):
+                return obj.is_checked
+
+            model = ScenarioStructure
+
+            def get_queryset(self, request):
+                return super(ScenarioStructureAdmin, self) \
+                    .get_queryset(request) \
+                    .select_related(
+                    'scenario', 'scenario__project', 'scenario__project__user',
+                    'scenario__project__user__profile',
+                    'structure',
+                )
+
 
 class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, costitem_name,
@@ -450,5 +491,6 @@ admin.site.register(CostItemDefaultCosts, CostItemDefaultCostsAdmin)
 admin.site.register(CostItemDefaultEquations, CostItemDefaultEquationsAdmin)
 admin.site.register(StructureCostItemDefaultFactors, StructureCostItemDefaultFactorsAdmin)
 admin.site.register(ScenarioArealFeature, ScenarioArealFeatureAdmin)
+admin.site.register(ScenarioStructure, ScenarioStructureAdmin)
 admin.site.register(ScenarioCostItemUserCosts, ScenarioCostItemUserCostsAdmin)
 admin.site.register(StructureCostItemUserFactors, StructureCostItemUserFactorsAdmin)

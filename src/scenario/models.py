@@ -1703,7 +1703,7 @@ class ScenarioStructure(models.Model):
         return self.scenario.scenario_title + ' - ' + self.structure.name
 
     class Meta:
-        verbose_name_plural = "ScenarioStructures"
+        verbose_name_plural = "Scenario Structures"
         unique_together = ("scenario", 'structure',)
 
 

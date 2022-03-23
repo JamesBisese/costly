@@ -16,6 +16,7 @@ ADMIN_ORDERING = [
 		'Project',
 		'Scenario',
         'ScenarioArealFeature',
+        'ScenarioStructure',
 		'ScenarioCostItemUserCosts',
 		'StructureCostItemUserFactors',
 	]),
