@@ -507,6 +507,7 @@ class Scenario(models.Model):
     scenario_date = models.DateField('Scenario Date', auto_now_add=False, default=None, blank=True, null=True)
 
     pervious_area = models.IntegerField(default=0, blank=True, null=True)
+
     impervious_area = models.IntegerField(default=0, blank=True, null=True)
 
     nutrient_req_met = models.CharField('Level of nutrient requirements met', choices=NUTRIENT_CHOICES, max_length=25,
@@ -516,37 +517,11 @@ class Scenario(models.Model):
     meets_peakflow_req = models.CharField('Site meets peak flow requirements', choices=REGS_CHOICES2, max_length=25,
                                           default='unknown', blank=True, null=True)
 
-    # cost elements
     planning_and_design_factor = models.DecimalField("Planning and Design Factor (Multiplier)",
                                                         max_digits=12, decimal_places=2,
                                                         default=20.0, blank=True, null=True)
     study_life = models.IntegerField("Study Life(years)", default=40, blank=True, null=True)
     discount_rate = models.FloatField("Discount Rate(DISC)", default=2.875, blank=True, null=True)
-
-    # areal_features = models.OneToOneField(
-    #     ArealFeatures,
-    #     on_delete=models.CASCADE,
-    #     primary_key=False,
-    #     default=None,
-    #     blank=True,
-    #     null=True
-    # )
-    # conventional_structures = models.OneToOneField(
-    #     ConventionalStructures,
-    #     on_delete=models.CASCADE,
-    #     primary_key=False,
-    #     default=None,
-    #     blank=True,
-    #     null=True
-    # )
-    # nonconventional_structures = models.OneToOneField(
-    #     NonConventionalStructures,
-    #     on_delete=models.CASCADE,
-    #     primary_key=False,
-    #     default=None,
-    #     blank=True,
-    #     null=True
-    # )
 
     counter = models.IntegerField('Integer Counter', default=0, blank=False, null=False)
 
@@ -615,8 +590,8 @@ class Scenario(models.Model):
             self.process_cost_item_unit_costs(form_data['cost_items']['unit_costs'])
 
         if active_tab == 'structure_costs':
-            self.process_strucure_costs(form_data['cost_items']['user_assumptions'],
-                                        scenarioTemplate['cost_items']['fields'])
+            self.process_strucure_costitem_user_factors(form_data['cost_items']['user_assumptions'],
+                                                        scenarioTemplate['cost_items']['fields'])
 
         return
 
@@ -716,9 +691,9 @@ class Scenario(models.Model):
                     c.save(update_fields=list(changed_fields))
 
 
-    def process_strucure_costs(self, user_assumptions, cost_items):
+    def process_strucure_costitem_user_factors(self, user_assumptions, cost_items):
         """
-            process the content of the 'Structure Cost Item User Function' tab
+            process the content of the 'Structure Cost Item User Factors' tab
               - combination of Structure (single) and Cost Items
 
             user_assumptions should have a single 'structure' - the structure selected
@@ -735,8 +710,8 @@ class Scenario(models.Model):
         # have to run through all the cost_items to delete any that are not found
         structure_obj = None
         structure_cost_item_user_factors = StructureCostItemUserFactors.objects\
-            .select_related('costitem', 'structure')\
-            .filter(scenario__id=self.id, structure__code=structure_code)
+            .select_related('scenario', 'scenario__project', 'costitem', 'structure')\
+            .filter(scenario_id=self.id, structure__code=structure_code)
 
         for cost_item in cost_items:
             cost_item_assumptions_objs = [x for x in structure_cost_item_user_factors if x.costitem.code == cost_item]
@@ -1122,7 +1097,8 @@ class Scenario(models.Model):
 
         """
         cost_items_dict = {}
-        cost_items = CostItem.objects.all().order_by('sort_nu')
+        cost_items = CostItem.objects\
+            .all().order_by('sort_nu')
         for cost_item in cost_items:
             cost_items_dict[cost_item.code] = {'code': cost_item.code,
                                                'name': cost_item.name,
@@ -1137,19 +1113,54 @@ class Scenario(models.Model):
 
         result = {}
 
-        structures = Structures.objects.all().order_by('sort_nu')
+        structures = Structures.objects\
+            .all().order_by('sort_nu')
 
         # these are the scenario structures
         scenario_structures = ScenarioStructure.objects\
             .select_related('scenario', 'structure')\
             .filter(scenario=self, is_checked=True)
 
-        default_cost_item_costs = CostItemDefaultCosts.objects \
+        # queryset = ScenarioCostItemUserCosts.objects\
+        #     .select_related('costitem', 'scenario', 'scenario__project',
+        #                     'scenario__project__user', 'scenario__project__user__profile',
+        #                     'default_cost') \
+        #     .only(
+        #         'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+        #         'scenario__scenario_title',
+        #         'scenario__project__project_title',
+        #         'scenario__project__user__name', 'scenario__project__user__organization_tx',
+        #         'scenario__project__user__profile__user_type',
+        #         'default_cost__cost_type', 'default_cost__valid_start_date_tx',
+        #         'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+        #         'replacement_life', 'o_and_m_pct', 'user_input_cost', 'user_input_cost_currency',
+        #         'base_year', 'cost_source',
+        #     ) \
+        #     .all().order_by("costitem__sort_nu")
+
+        costitem_default_costs = CostItemDefaultCosts.objects \
             .select_related('costitem') \
+            .only(
+                'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+                'cost_type', 'valid_start_date_tx',
+                'value_numeric', 'value_numeric_currency',
+            )\
             .all().order_by('costitem__sort_nu')
 
         scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
-            .select_related('costitem', 'default_cost') \
+            .select_related('costitem',
+                            'default_cost') \
+            .only(
+                'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+                # 'scenario__scenario_title',
+                # 'scenario__project__project_title',
+                # 'scenario__project__user__name', 'scenario__project__user__organization_tx',
+                # 'scenario__project__user__profile__user_type',
+                'default_cost__cost_type', 'default_cost__valid_start_date_tx',
+                'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+                'replacement_life', 'o_and_m_pct', 'user_input_cost', 'user_input_cost_currency',
+                'base_year', 'cost_source',
+            ) \
             .filter(scenario=self).order_by('costitem__sort_nu')
 
         # testing using RelatedManager .all()
@@ -1190,18 +1201,18 @@ class Scenario(models.Model):
                 costs[costitem_code]['cost_source'] = cost_source
 
         # then add in the default costs to update the non 'user' (cost_source) costs
-        for default_cost_item_costs_obj in default_cost_item_costs:
-            costitem_code = default_cost_item_costs_obj.costitem.code
+        for costitem_default_cost in costitem_default_costs:
+            costitem_code = costitem_default_cost.costitem.code
 
             default_equations_objs = [x for x in cost_item_default_equations if x.costitem.code == costitem_code]
             if default_equations_objs is not None and len(default_equations_objs) > 0:
                 default_equations_obj = default_equations_objs[0]
 
-                default_cost_item_costs_obj.replacement_life = default_equations_obj.replacement_life
-                default_cost_item_costs_obj.o_and_m_pct = default_equations_obj.o_and_m_pct
+                costitem_default_cost.replacement_life = default_equations_obj.replacement_life
+                costitem_default_cost.o_and_m_pct = default_equations_obj.o_and_m_pct
             else:
-                default_cost_item_costs_obj.replacement_life = -77
-                default_cost_item_costs_obj.o_and_m_pct = -76
+                costitem_default_cost.replacement_life = -77
+                costitem_default_cost.o_and_m_pct = -76
 
             if costitem_code in costs:
                 if costs[costitem_code]['cost_source'] != 'user':
@@ -1214,30 +1225,30 @@ class Scenario(models.Model):
                     costs[costitem_code]['unit_cost'] = unit_cost
                     costs[costitem_code]['units'] = cost_items_dict[costitem_code]['units']
             else:
-                costs[costitem_code] = {'cost_source': str(default_cost_item_costs_obj.id),
-                                        'unit_cost': default_cost_item_costs_obj.value_numeric.amount,
+                costs[costitem_code] = {'cost_source': str(costitem_default_cost.id),
+                                        'unit_cost': costitem_default_cost.value_numeric.amount,
                                         'units': cost_items_dict[costitem_code]['units'],
-                                        'o_and_m_pct': default_cost_item_costs_obj.o_and_m_pct,
-                                        'replacement_life': default_cost_item_costs_obj.replacement_life,
+                                        'o_and_m_pct': costitem_default_cost.o_and_m_pct,
+                                        'replacement_life': costitem_default_cost.replacement_life,
                                         }
 
         # prepare the cost item user assumptions - which are per structure per cost item
-        cost_item_user_factors = self.cost_item_user_assumptions\
+        costitem_user_factors = self.cost_item_user_assumptions\
             .select_related('costitem', 'structure')\
             .all().order_by('costitem__sort_nu')
 
         user_assumptions = {}
-        for user_factor in cost_item_user_factors:
+        for user_factor in costitem_user_factors:
             if user_factor.structure.code not in user_assumptions:
                 user_assumptions[user_factor.structure.code] = {}
             user_assumptions[user_factor.structure.code][user_factor.costitem.code] = user_factor
 
         # if the user has not made any edits to the default user assumptions, you need to get the
         # assumptions from that model
-        cost_item_default_factors = StructureCostItemDefaultFactors.objects \
+        costitem_default_factors = StructureCostItemDefaultFactors.objects \
             .select_related('costitem', 'structure') \
             .all()
-        for default_factor in cost_item_default_factors:
+        for default_factor in costitem_default_factors:
             if default_factor.structure.code not in user_assumptions:
                 # the defaults are by definition checked
                 default_factor.checked = True

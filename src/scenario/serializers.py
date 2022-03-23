@@ -691,10 +691,13 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
     def get_default_cost(self, obj):
         # put the 'user' information in this structure
         if obj.default_cost is None:
+            value_numeric = None
+            if obj.user_input_cost is not None:
+                value_numeric = obj.user_input_cost.amount
             d = {
                 'cost_type': 'User',
                 'valid_start_date_tx': obj.base_year,
-                'value_numeric': obj.user_input_cost.amount
+                'value_numeric': value_numeric
             }
         else:
             l = ['cost_type', 'valid_start_date_tx']
@@ -790,9 +793,19 @@ class ScenarioSerializer(serializers.ModelSerializer):
 
     def get_cost_item_user_costs(self, instance):
         user_cost_items = instance.cost_item_user_costs\
-            .select_related('costitem', 'default_cost')\
+            .select_related('costitem',
+                            'default_cost') \
+            .only(
+                'scenario_id',
+                'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+                'default_cost__cost_type', 'default_cost__valid_start_date_tx',
+                'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+                'replacement_life', 'o_and_m_pct', 'user_input_cost', 'user_input_cost_currency',
+                'base_year', 'cost_source',
+            ) \
             .all().order_by('costitem__sort_nu')
-        return ScenarioCostItemUserCostsSerializer(user_cost_items, many=True).data
+        d = ScenarioCostItemUserCostsSerializer(user_cost_items, many=True).data
+        return d
 
     DT_RowId = serializers.SerializerMethodField()
     DT_RowAttr = serializers.SerializerMethodField()

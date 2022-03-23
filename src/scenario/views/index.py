@@ -216,7 +216,23 @@ def scenario_save(request):
         form_data['processing_message'] = 'Successfully Saved'
 
         scenario_cost_item_costs = ScenarioCostItemUserCosts.objects \
-            .select_related('scenario', 'costitem') \
+            .select_related('scenario',
+                            'scenario__project',
+                            'scenario__project__user',
+                            'scenario__project__user__profile',
+                            'costitem',
+                            'default_cost') \
+            .only(
+                'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+                'scenario__scenario_title',
+                'scenario__project__project_title',
+                'scenario__project__user__name', 'scenario__project__user__organization_tx',
+                'scenario__project__user__profile__user_type',
+                'default_cost__cost_type', 'default_cost__valid_start_date_tx',
+                'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+                'replacement_life', 'o_and_m_pct', 'user_input_cost', 'user_input_cost_currency',
+                'base_year', 'cost_source',
+            ) \
             .filter(scenario__id=scenario.id)
 
         serializer_class = ScenarioCostItemUserCostsSerializer
@@ -294,7 +310,18 @@ class ScenarioResults(LoginRequiredMixin, APIView):
 
     # @sql_query_debugger
     def get(self, request, pk):
-        scenario = get_object_or_404(Scenario, pk=pk)
+
+        queryset = Scenario.objects \
+            .select_related('project', 'project__user', 'project__user__profile')\
+            .defer('project__user__password')\
+            .filter(pk=pk)
+
+        if not (self.request.user.is_superuser or self.request.user.is_staff):
+            queryset = queryset.filter(project__user_id=self.request.user.id)
+
+        scenario = get_object_or_404(queryset)
+
+        # scenario = get_object_or_404(Scenario, pk=pk)
 
         # return the scenario as an HTML table
         disclaimer_tx = render_to_string('scenario/results_disclaimer.html')
@@ -490,11 +517,29 @@ def scenario_update(request, pk):
     cost_items = CostItem.objects.all()
 
     cost_item_user_costs = ScenarioCostItemUserCosts.objects \
-        .select_related('scenario', 'costitem') \
+        .select_related('scenario',
+                        'costitem',
+                        'default_cost') \
+        .only(
+            'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+            'scenario__scenario_title',
+            'scenario__project__project_title',
+            'scenario__project__user__name', 'scenario__project__user__organization_tx',
+            'scenario__project__user__profile__user_type',
+            'default_cost__cost_type', 'default_cost__valid_start_date_tx',
+            'default_cost__value_numeric', 'default_cost__value_numeric_currency',
+            'replacement_life', 'o_and_m_pct', 'user_input_cost', 'user_input_cost_currency',
+            'base_year', 'cost_source',
+        ) \
         .filter(scenario__id=scenario.id)
 
     default_cost_item_costs = CostItemDefaultCosts.objects \
         .select_related('costitem') \
+        .only(
+            'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
+            'cost_type', 'valid_start_date_tx',
+            'value_numeric', 'value_numeric_currency',
+        ) \
         .all().order_by('costitem__sort_nu', '-valid_start_date_tx')
 
     default_cost_item_equations = CostItemDefaultEquations.objects \
@@ -711,7 +756,7 @@ def results_table_html(scenario):
 
     cost_item_default_equations = CostItemDefaultEquations.objects \
         .select_related('costitem') \
-        .only('costitem__code', 'replacement_life', 'o_and_m_pct') \
+        .only('costitem__code', 'equation_tx', 'replacement_life', 'o_and_m_pct') \
         .all().order_by("costitem__sort_nu")
 
     for cost_item_obj in cost_item_default_costs:
@@ -757,33 +802,6 @@ def results_table_html(scenario):
             base_year = d['valid_start_date_tx']
             unit_cost = Money(d['value_numeric'], 'USD')  # TODO fix misspelling. should be value_numeric
 
-        # if code in cost_item_user_cost_dict:
-        #     # update stuff
-        #     if cost_item_user_cost_dict[code]['replacement_life'] != replacement_life:
-        #         replacement_life = cost_item_user_cost_dict[code]['replacement_life']
-        #         replacement_life_source = 'User'
-        #
-        #     if cost_item_user_cost_dict[code]['o_and_m_pct'] != o_and_m_pct:
-        #         o_and_m_pct = cost_item_user_cost_dict[code]['o_and_m_pct']
-        #         o_and_m_pct_source = 'User'
-        #
-        #     if cost_item_user_cost_dict[code]['cost_source'] == 'user':
-        #         cost_source_tx = 'User'
-        #         if cost_item_user_cost_dict[code]['user_input_cost'] is None:
-        #             unit_cost = Money(0.00, 'USD')
-        #         else:
-        #             unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
-        #         base_year = cost_item_user_cost_dict[code]['base_year']
-        #     # TBD the cost_source text should match, or almost match, the variable name
-        #     elif 'default_cost' in cost_item_user_cost_dict[code] and cost_item_user_cost_dict[code][
-        #         'default_cost'] is not None:
-        #         d = cost_item_user_cost_dict[code]['default_cost']
-        #         cost_source_tx = "{} - {} - {}".format(d['cost_type'], d['valid_numeric'], d['valid_start_date_tx'])
-        #         unit_cost = Money(d['valid_start_date_tx'], 'USD')
-        #     else:
-        #         cost_source_tx = 'NOT WORKING CORRECTLY'
-        #         unit_cost = 6666666666666666
-
         cost_item_costs.append({
             'code': cost_item_obj['costitem_code'],
             'label': cost_item_obj['costitem_name'],
@@ -797,74 +815,6 @@ def results_table_html(scenario):
             'o_and_m_pct': o_and_m_pct,
             'o_and_m_pct_source': o_and_m_pct_source
         })
-
-    # for cost_item_obj in cost_item_costs:
-    #     code = cost_item_obj['code']
-    #
-    #     if code in cost_item_user_cost_dict:
-    #         # update stuff
-    #         cost_item_obj['replacement_life'] = cost_item_user_cost_dict[code]['replacement_life']
-    #         cost_item_obj['o_and_m_pct'] = cost_item_user_cost_dict[code]['o_and_m_pct']
-    #
-    #         if cost_item_user_cost_dict[code]['cost_source'] == 'user':
-    #             cost_item_obj['cost_source'] = 'User'
-    #             # change the value to a Money
-    #             cost_item_obj['unit_cost'] = Money(cost_item_user_cost_dict[code]['user_input_cost'] or '0.00',
-    #                                                'USD').amount
-    #             cost_item_obj['base_year'] = cost_item_user_cost_dict[code]['base_year']
-
-    # for cost_item_obj in cost_item_default_costs:
-    #     code = cost_item_obj.costitem.code
-    #     cost_source_tx = 'Eng. Est.'
-    #
-    #     unit_cost = cost_item_obj.rsmeans_va
-    #     base_year = ''
-    #     replacement_life = cost_item_obj.replacement_life
-    #     replacement_life_source = 'Default'
-    #     o_and_m_pct = cost_item_obj.o_and_m_pct
-    #     o_and_m_pct_source = 'Default'
-    #
-    #     if code in cost_item_user_cost_dict:
-    #         # update stuff
-    #         if cost_item_user_cost_dict[code]['replacement_life'] != replacement_life:
-    #             replacement_life = cost_item_user_cost_dict[code]['replacement_life']
-    #             replacement_life_source = 'User'
-    #
-    #         if cost_item_user_cost_dict[code]['o_and_m_pct'] != o_and_m_pct:
-    #             o_and_m_pct = cost_item_user_cost_dict[code]['o_and_m_pct']
-    #             o_and_m_pct_source = 'User'
-    #
-    #         if cost_item_user_cost_dict[code]['cost_source'] == 'user':
-    #             cost_source_tx = 'User'
-    #             if cost_item_user_cost_dict[code]['user_input_cost'] is None:
-    #                 unit_cost = Money(0.00, 'USD')
-    #             else:
-    #                 unit_cost = Money(cost_item_user_cost_dict[code]['user_input_cost'], 'USD')
-    #             base_year = cost_item_user_cost_dict[code]['base_year']
-    #         # TBD the cost_source text should match, or almost match, the variable name
-    #         elif 'default_cost' in cost_item_user_cost_dict[code] and cost_item_user_cost_dict[code]['default_cost'] is not None:
-    #             d = cost_item_user_cost_dict[code]['default_cost']
-    #             cost_source_tx = "{} - {} - {}".format(d['cost_type'], d['valid_numeric'], d['valid_start_date_tx'])
-    #             unit_cost = Money(d['valid_start_date_tx'], 'USD')
-    #         else:
-    #             cost_source_tx = 'NOT WORKING CORRECTLY'
-    #             unit_cost = 6666666666666666
-    #
-    #     cost_item_costs.append({
-    #         'code': cost_item_obj.costitem.code,
-    #         'label': cost_item_obj.costitem.name,
-    #         'units': cost_item_obj.costitem.units,
-    #
-    #         'cost_source': cost_source_tx,
-    #         'unit_cost': unit_cost.amount,
-    #         'base_year': base_year,
-    #         'replacement_life': replacement_life,
-    #         'replacement_life_source': replacement_life_source,
-    #         'o_and_m_pct': o_and_m_pct,
-    #         'o_and_m_pct_source': o_and_m_pct_source
-    #     })
-
-
 
     #
     # TODO: now create the computed costs part

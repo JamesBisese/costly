@@ -17,7 +17,7 @@ from authtools.models import User
 from scenario.models import Project, \
     Scenario, ArealFeatureLookup, \
     Structures, CostItem, CostItemDefaultCosts, \
-    ScenarioCostItemUserCosts, CostItemDefaultEquations, \
+    ScenarioStructure, ScenarioCostItemUserCosts, CostItemDefaultEquations, \
     StructureCostItemDefaultFactors, StructureCostItemUserFactors
 
 from scenario.serializers import UserSerializer, ProjectSerializer, \
@@ -257,8 +257,11 @@ class CostItemUserCostViewSet(UserPassesTestMixin, viewsets.ModelViewSet):
         return self.request.user.is_active
 
     queryset = ScenarioCostItemUserCosts.objects\
-        .select_related('costitem', 'scenario', 'scenario__project',
-                        'scenario__project__user', 'scenario__project__user__profile',
+        .select_related('scenario',
+                        'scenario__project',
+                        'scenario__project__user',
+                        'scenario__project__user__profile',
+                        'costitem',
                         'default_cost') \
         .only(
             'costitem__code', 'costitem__name', 'costitem__sort_nu', 'costitem__units',
@@ -548,84 +551,110 @@ class StructureCosts(UserPassesTestMixin, APIView):
         if not (self.request.user.is_superuser or self.request.user.is_staff):
             queryset = queryset.filter(project__user_id=self.request.user.id)
 
-        # queryset = self.get_queryset()
-        # queryset = queryset.filter(pk=pk)
-
         scenario = get_object_or_404(queryset)
-        serializer_class = ScenarioSerializer
-        serializer = serializer_class(scenario)
-        scenario_data = serializer
 
+        """ this .get() syntax raises a fatal error if there is no structure with the provided code """
         structure = Structures.objects.get(code=structure_code)
-
-        # debugging
-        # costitem_code = None
 
         """
         this explicit version is to allow filtering for just a certain costitem.
         this is the first time I've used this syntax
         """
         q = {}
-        # if costitem_code is not None:
-        #     q.update({'costitem__code': costitem_code})
-
-        default_cost_item_costs = CostItemDefaultCosts.objects\
+        if costitem_code is not None:
+            q.update({'costitem__code': costitem_code})
+        costitem_default_costs = CostItemDefaultCosts.objects\
             .select_related('costitem')\
+            .only(
+                'cost_type', 'value_numeric_currency', 'value_numeric', 'valid_start_date_tx',
+                'costitem__code', 'costitem__name', 'costitem__sort_nu',
+            )\
             .filter(**q).order_by("costitem__sort_nu", '-valid_start_date_tx')
 
-        q2 = {}
-        q2.update({'structure': structure})
-        if costitem_code is not None:
-            q2.update({'costitem__code': costitem_code})
+        # this will be a single item, so use first() to take it out of a list
+        q = {}
+        q.update({'scenario': scenario})
+        q.update({'structure': structure})
+        scenario_structure = ScenarioStructure.objects \
+            .select_related('structure') \
+            .filter(**q).first()
 
-        default_cost_item_factors = StructureCostItemDefaultFactors.objects\
+        q = {}
+        q.update({'structure': structure})
+        if costitem_code is not None:
+            q.update({'costitem__code': costitem_code})
+
+        structure_costitem_default_factors = StructureCostItemDefaultFactors.objects\
             .select_related('structure', 'costitem')\
-            .filter(**q2)
+            .filter(**q)
 
-        q3 = {}
-        q3.update({'scenario': scenario})
+        q = {}
+        q.update({'scenario': scenario})
         if costitem_code is not None:
-            q3.update({'costitem__code': costitem_code})
+            q.update({'costitem__code': costitem_code})
 
         scenario_cost_item_user_costs = ScenarioCostItemUserCosts.objects \
-            .select_related('costitem', 'scenario', 'default_cost') \
-            .filter(**q3)
+            .select_related('scenario',
+                            'costitem',
+                            'default_cost'
+            ) \
+            .only(
+                'scenario__id',
+                'costitem_id', 'default_cost_id', 'cost_source', 'base_year', 'user_input_cost_currency', 'user_input_cost',
+                'replacement_life', 'o_and_m_pct',
+                'default_cost__cost_type', 'default_cost__value_numeric_currency', 'default_cost__value_numeric', 'default_cost__valid_start_date_tx',
+                'costitem__code', 'costitem__sort_nu',
+            )\
+            .filter(**q)
 
-        q4 = {}
-        q4.update({'scenario__id': pk})
-        q4.update({'structure': structure})
+        q = {}
+        q.update({'scenario__id': pk})
+        q.update({'structure': structure})
         if costitem_code is not None:
-            q4.update({'costitem__code': costitem_code})
+            q.update({'costitem__code': costitem_code})
 
         scenario_structure_cost_item_factors = StructureCostItemUserFactors.objects\
             .select_related('scenario', 'structure', 'costitem')\
-            .filter(**q4)
+            .filter(**q)
+
+        q = {}
+        if costitem_code is not None:
+            q.update({'costitem__code': costitem_code})
 
         cost_item_default_equations = CostItemDefaultEquations.objects \
             .select_related('costitem') \
             .filter(**q).order_by("costitem__sort_nu")
 
+        q = {}
+        if costitem_code is not None:
+            q.update({'code': costitem_code})
+        cost_items = CostItem.objects.filter(**q).order_by("sort_nu")
+
         # return the content as JSON
         return JsonResponse(structure_cost_item_json(structure,
-                                                     scenario_data,
-                                                     default_cost_item_costs,
-                                                     default_cost_item_factors,
+                                                     scenario,
+                                                     scenario_structure,
+                                                     cost_items,
+                                                     costitem_default_costs,
+                                                     cost_item_default_equations,
+                                                     structure_costitem_default_factors,
                                                      scenario_cost_item_user_costs,
-                                                     scenario_structure_cost_item_factors,
-                                                     cost_item_default_equations
+                                                     scenario_structure_cost_item_factors
                                                      ))
 
 
 def structure_cost_item_json(structure,
-                             scenario_data,
-                             default_cost_item_costs,
-                             default_cost_item_factors,
-                             scenario_cost_item_user_costs,
-                             cost_item_user_assumptions,
-                             cost_item_default_equations
+                             scenario,
+                             scenario_structure,
+                             cost_items,
+                             costitem_default_costs,
+                             costitem_default_equations,
+                             structure_costitem_default_factors,
+                             scenario_costitem_user_costs,
+                             structure_costitem_user_factors
                              ):
     """
-        This is called when the user changes the 'Structure' selection
+        This is called when the user changes the 'Structure' selection on the Structure/Cost Item User Factors tab of the Cost Tool
 
         return JSON to cost tool for processing by javascript to populate
         the 'Structure/Cost Item Costs' tab
@@ -634,30 +663,19 @@ def structure_cost_item_json(structure,
         /scenario/<scenario_id>/structure_costs/<structure_code>/?format=json
 
     """
+
     structure.area = -9
 
-    for test_structure in scenario_data.data['c_structures']:
-        if test_structure['structure_code'] == structure.code:
-            structure.area = test_structure['area']
-            continue
-    if structure.area == -9:
-        for test_structure in scenario_data.data['nc_structures']:
-            if test_structure['structure_code'] == structure.code:
-                structure.area = test_structure['area']
-                continue
-
-    scenario_json = scenario_data.data
+    if scenario_structure.area is not None:
+        structure.area = scenario_structure.area
 
     # TODO: make this legible. I can't figure out what is going on.
-    # this has all the assumptions, with the 'structure_code' in there.
-    #   scenario_json['cost_item_user_assumptions']
-    # cost_item_user_assumptions = scenario_json['cost_item_user_assumptions']
 
-    structure_costs = {'structure': {'code': structure.code,
-                                     'name': structure.name,
-                                     'area': structure.area,
-                                     'units': structure.units,
-                                     'units_html': structure.units_html,
+    structure_costs = {'structure': {'code': scenario_structure.structure.code,
+                                     'name': scenario_structure.structure.name,
+                                     'area': scenario_structure.area,
+                                     'units': scenario_structure.structure.units,
+                                     'units_html': scenario_structure.structure.units_html,
                                      },
                        'data': {}}
 
@@ -674,7 +692,7 @@ def structure_cost_item_json(structure,
         2. set value in Factor Assumptions, Sizing Factor (k) or Sizing Factor (n)
     """
     # jab new - get equation from CostItemDefaultEquations table
-    for obj in cost_item_default_equations:
+    for obj in costitem_default_equations:
         costitem_code = obj.costitem.code
         structure_costs['data'][costitem_code] = {'equation': obj.equation_tx,
                                                   'units': obj.costitem.units,
@@ -687,8 +705,8 @@ def structure_cost_item_json(structure,
                                                   }
 
     seen_costitem_codes = set()
-    if len(cost_item_user_assumptions) > 0:
-        for obj in cost_item_user_assumptions:
+    if len(structure_costitem_user_factors) > 0:
+        for obj in structure_costitem_user_factors:
             costitem_code = obj.costitem.code
 
             seen_costitem_codes.add(costitem_code)
@@ -699,7 +717,7 @@ def structure_cost_item_json(structure,
             structure_costs['data'][costitem_code]['d_density'] = obj.d_density
             structure_costs['data'][costitem_code]['n_number'] = obj.n_number
     # else:
-    for obj in default_cost_item_factors:
+    for obj in structure_costitem_default_factors:
         costitem_code = obj.costitem.code
 
         if costitem_code not in seen_costitem_codes:
@@ -713,21 +731,23 @@ def structure_cost_item_json(structure,
         new change to use defaults from CostItemDefaultEquations table
     """
 
-    cost_items = CostItem.objects.all().order_by("sort_nu")
-    for cost_item in cost_items:
+
+    for costitem in cost_items:
+        costitem_code = costitem.code
+
         # get the default and user costs
-        cost_item.user_costs = [x for x in scenario_cost_item_user_costs if
-                                    x.costitem.code == cost_item.code]
+        costitem.user_costs = [x for x in scenario_costitem_user_costs if
+                                    x.costitem.code == costitem_code]
 
-        cost_item.default_costs = [x for x in default_cost_item_costs if
-                                    x.costitem.code == cost_item.code]
+        costitem.default_costs = [x for x in costitem_default_costs if
+                                    x.costitem.code == costitem_code]
 
-        if len(cost_item.user_costs) == 1:
-            selected_user_cost = cost_item.user_costs[0]
+        if len(costitem.user_costs) == 1:
+            selected_user_cost = costitem.user_costs[0]
 
             if selected_user_cost.cost_source == 'user':
                 # TODO remove this - only use the 'cost_data'
-                structure_costs['data'][cost_item.code]['cost_source'] = 'user'
+                structure_costs['data'][costitem_code]['cost_source'] = 'user'
                 if selected_user_cost.user_input_cost is None:
                     unit_cost = 0
                 else:
@@ -737,36 +757,36 @@ def structure_cost_item_json(structure,
                         'cost_type': 'User',
                         'value_numeric': unit_cost,
                         'valid_start_date_tx': selected_user_cost.base_year}
-                structure_costs['data'][cost_item.code]['cost_data'] = data
+                structure_costs['data'][costitem_code]['cost_data'] = data
 
                 # TODO remove this
-                structure_costs['data'][cost_item.code]['unit_cost'] = data['value_numeric']
+                structure_costs['data'][costitem_code]['unit_cost'] = data['value_numeric']
             elif selected_user_cost.cost_source == 'rsmeans' or selected_user_cost.default_cost_id is None:
                 # this is for legacy data - give them the most recent value set by the application
-                legacy_default_costs = [x for x in default_cost_item_costs if
-                                           x.costitem.code == cost_item.code and x.cost_type == 'Engineer Estimate' and x.valid_start_date_tx == '2018']
+                legacy_default_costs = [x for x in costitem_default_costs if
+                                           x.costitem.code == costitem_code and x.cost_type == 'Engineer Estimate' and x.valid_start_date_tx == '2018']
                 if len(legacy_default_costs) == 0:
-                    selected_default_costs = cost_item.default_costs[0]
+                    selected_default_costs = costitem.default_costs[0]
                 else:
                     selected_default_costs = legacy_default_costs[0]
 
 
-                selected_default_costs = cost_item.default_costs[0]
+                selected_default_costs = costitem.default_costs[0]
                 # TODO remove this - only use the 'cost_data'
-                structure_costs['data'][cost_item.code]['cost_source'] = str(selected_default_costs)
+                structure_costs['data'][costitem_code]['cost_source'] = str(selected_default_costs)
 
                 data = {'cost_source': str(selected_default_costs),
                         'cost_type': selected_default_costs.cost_type,
                         'value_numeric': selected_default_costs.value_numeric.amount,
                         'valid_start_date_tx': selected_default_costs.valid_start_date_tx}
 
-                structure_costs['data'][cost_item.code]['cost_data'] = data
+                structure_costs['data'][costitem_code]['cost_data'] = data
 
                 # TODO remove this
-                structure_costs['data'][cost_item.code]['unit_cost'] = data['value_numeric']
+                structure_costs['data'][costitem_code]['unit_cost'] = data['value_numeric']
             else:
                 # user selected a default cost
-                selected_default_costs = [x for x in default_cost_item_costs if
+                selected_default_costs = [x for x in costitem_default_costs if
                                     x.id == selected_user_cost.default_cost_id]
 
                 if len(selected_default_costs) == 0:
@@ -775,113 +795,67 @@ def structure_cost_item_json(structure,
                 selected_default_costs = selected_default_costs[0]
 
                 # TODO remove this - only use the 'cost_data'
-                structure_costs['data'][cost_item.code]['cost_source'] = str(selected_default_costs)
+                structure_costs['data'][costitem_code]['cost_source'] = str(selected_default_costs)
 
                 data = {'cost_source': str(selected_default_costs),
                         'cost_type': selected_default_costs.cost_type,
                         'value_numeric': selected_default_costs.value_numeric.amount,
                         'valid_start_date_tx': selected_default_costs.valid_start_date_tx}
 
-                structure_costs['data'][cost_item.code]['cost_data'] = data
+                structure_costs['data'][costitem_code]['cost_data'] = data
 
                 # TODO remove this
-                structure_costs['data'][cost_item.code]['unit_cost'] = data['value_numeric']
+                structure_costs['data'][costitem_code]['unit_cost'] = data['value_numeric']
 
-        elif len(cost_item.user_costs) > 1:
-            raise TypeError('there should only be one scenario-cost_item for each cost_item')
-        elif len(cost_item.default_costs) == 0:
-            raise TypeError('there must be a default cost for each cost_item')
+        elif len(costitem.user_costs) > 1:
+            raise TypeError('there should only be one scenario-costitem for each costitem')
+        elif len(costitem.default_costs) == 0:
+            raise TypeError('no default cost found for "{}".there must be a default cost for each costitem.'.format(costitem_code))
         else:
-            selected_default_costs = cost_item.default_costs[0]
+            selected_default_costs = costitem.default_costs[0]
             # TODO remove this - only use the 'cost_data'
-            structure_costs['data'][cost_item.code]['cost_source'] = str(selected_default_costs)
+            structure_costs['data'][costitem_code]['cost_source'] = str(selected_default_costs)
 
             data = {'cost_source': str(selected_default_costs),
                     'cost_type': selected_default_costs.cost_type,
                     'value_numeric': selected_default_costs.value_numeric.amount,
                     'valid_start_date_tx': selected_default_costs.valid_start_date_tx}
 
-            structure_costs['data'][cost_item.code]['cost_data'] = data
+            structure_costs['data'][costitem_code]['cost_data'] = data
 
             # TODO remove this
-            structure_costs['data'][cost_item.code]['unit_cost'] = data['value_numeric']
+            structure_costs['data'][costitem_code]['unit_cost'] = data['value_numeric']
 
 
-    # # first add in the cost_item_user_costs
-    # for obj in scenario_cost_item_user_costs:
-    #     if obj.default_cost_id is not None:
-    #         pass
-    #     else:
-    #         pass
-    # for obj in cost_item_user_costs:
-    for obj in scenario_data.data['cost_item_user_costs']:
-        costitem_code = obj['costitem_code']
+    for scenario_costitem_user_cost in scenario_costitem_user_costs:
+        costitem_code = scenario_costitem_user_cost.costitem.code
 
-        cost_source = None
-        unit_cost = None
-
-        if 'user_input_cost' in obj and obj['user_input_cost'] is not None:
-            # note: this is a Money field
-            unit_cost = obj['user_input_cost']
-
-        cost_source = obj['cost_source']
-
-        """
-            the only cost data that is available here is the 'user' input costs - not
-            rsmean, db25, db50, etc.
-        """
-        if cost_source == 'user':
-            if 'user_input_cost' in obj and obj['user_input_cost'] is not None:
-                # note: this is a Money field and this just uses the decimal part
-                unit_cost = obj['user_input_cost']
-
-
-        # add the user costs data
-        # structure_costs['data'][costitem_code]['cost_source'] = cost_source
-        # structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
-
-        structure_costs['data'][costitem_code]['o_and_m_pct'] = int(obj['o_and_m_pct'])
-        structure_costs['data'][costitem_code]['replacement_life'] = int(obj['replacement_life'] or "0")
+        structure_costs['data'][costitem_code]['o_and_m_pct'] = int(scenario_costitem_user_cost.o_and_m_pct)
+        structure_costs['data'][costitem_code]['replacement_life'] = int(scenario_costitem_user_cost.replacement_life or "0")
 
     # then add in the default costs to update the non 'user' (cost_source) costs
 
-    for obj in default_cost_item_costs:
-        costitem_code = obj.costitem.code
+    for costitem_default_cost in costitem_default_costs:
+        costitem_code = costitem_default_cost.costitem.code
 
         # make the blank structure
         if not costitem_code in structure_costs['data']:
-            structure_costs['data'][costitem_code] = {'cost_source': 'rsmeans'}
-            # structure_costs['data'][costitem_code]['cost_source'] = 'rsmeans'
+            structure_costs['data'][costitem_code] = {'cost_source': 'UNKNOWN'}
 
         if not 'o_and_m_pct' in structure_costs['data'][costitem_code]:
-            structure_costs['data'][costitem_code]['o_and_m_pct'] = obj.o_and_m_pct
+            structure_costs['data'][costitem_code]['o_and_m_pct'] = costitem_default_cost.o_and_m_pct
         if not 'replacement_life' in structure_costs['data'][costitem_code]:
-            structure_costs['data'][costitem_code]['replacement_life'] = obj.replacement_life
-
-        # l = ['cost_type',
-        #      'value_numeric',
-        #      'valid_start_date_tx']
-        # data = {key: getattr(obj, key) for key in l}
-        # structure_costs['data'][costitem_code]['cost_data'] = data
-
-        # unit_cost = 77777777777777 # structure_costs['data'][costitem_code]['cost_data']['value_numeric'].amount
-        #
-        # if 'unit_cost' not in structure_costs['data'][costitem_code]:
-        #     structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
-        #
-        # structure_costs['data'][costitem_code]['unit_cost'] = unit_cost
-        #
-        # structure_costs['data'][costitem_code]['cost_data']['value_numeric'] = unit_cost
+            structure_costs['data'][costitem_code]['replacement_life'] = costitem_default_cost.replacement_life
 
     """
-        TADA - this is the calculation (started on this 2019-07-15)
+        now do the calculation that displays the Cost
 
         I think the way to do it is to find all 'data' that where checked == true
         and then replace all the components of the equation as strings and then eval it
 
     """
-    for cost_item in structure_costs['data']:
-        cost_item_data = structure_costs['data'][cost_item]
+    for costitem_code in structure_costs['data']:
+        cost_item_data = structure_costs['data'][costitem_code]
 
         if 'checked' not in cost_item_data:
             cost_item_data['checked'] = False
@@ -940,24 +914,25 @@ def structure_cost_item_json(structure,
      """
 
     # these are 'Scenario' level values set on the 'Project-Scenario Description' page
-    if scenario_data['embedded_scenario'].value['planning_and_design_factor'] is None:
+    if scenario.planning_and_design_factor is None:
         planning_and_design_factor = 0
     else:
-        planning_and_design_factor = int(scenario_data['embedded_scenario'].value['planning_and_design_factor'])
-    if scenario_data['embedded_scenario'].value['study_life'] is None:
+        planning_and_design_factor = int(scenario.planning_and_design_factor)
+    if scenario.study_life is None:
         study_life = 0
     else:
-        study_life = int(scenario_data['embedded_scenario'].value['study_life'])
-    if scenario_data['embedded_scenario'].value['discount_rate'] is None:
+        study_life = scenario.study_life
+    if scenario.discount_rate is None:
         discount_rate = 0
     else:
-        discount_rate = float(scenario_data['embedded_scenario'].value['discount_rate'])
+        discount_rate = scenario.discount_rate
 
     """
         these are 'Structure' level values for each 'Cost Item' add the costs for each cost item
     """
-    for cost_item in structure_costs['data']:
-        cost_item_data = structure_costs['data'][cost_item]
+    for costitem_code in structure_costs['data']:
+        cost_item_data = structure_costs['data'][costitem_code]
+
         if cost_item_data['checked'] is True:
             construction_cost = round(float(cost_item_data.pop('construction_cost')), 2)
             planning_and_design_costs = round(construction_cost * planning_and_design_factor * 0.01, 2)
@@ -993,7 +968,7 @@ def structure_cost_item_json(structure,
                     if value_of_first_replacement == 0:
                         value_of_first_replacement = replacement_costs
 
-            structure_costs['data'][cost_item]['costs'] = {
+            structure_costs['data'][costitem_code]['costs'] = {
                 'construction': construction_cost,
                 'planning_and_design': planning_and_design_costs,
                 'o_and_m': round(o_and_m_costs, 2),

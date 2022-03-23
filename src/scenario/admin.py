@@ -166,6 +166,8 @@ class CostItemDefaultCostsAdmin(StructuresAdmin):
     search_fields = ('costitem__name', 'cost_type',
                     'valid_start_date_tx')
 
+    exclude = ('rsmeans_va','db_25pct_va','db_50pct_va','db_75pct_va')
+
     @admin.display(empty_value='unknown', ordering='costitem__units')
     def costitem_units(self, obj):
         return "%s" % obj.costitem.units
@@ -311,11 +313,45 @@ def replacement_life(obj):
 def o_and_m_pct(obj):
     return "%s" % obj.o_and_m_pct
 
+@admin.display(description='areal_feature_name')
+def areal_feature_name(obj):
+    return "%s" % obj.areal_feature.name
+
 
 @admin.display(description='First Year Maintenance', ordering='first_year_maintenance')
 def first_year_maintenance(obj):
     return "%s" % obj.first_year_maintenance
 
+class ScenarioArealFeatureAdmin(admin.ModelAdmin):
+    list_display = (user_name, user_type, scenario_project_title, scenario_title, areal_feature_name,
+                    )
+    list_display_links = (areal_feature_name,)
+    list_filter = (
+        ('scenario__project__user__profile__user_type', custom_titled_filter("User Type")),
+        ('scenario__project__user__name', custom_titled_filter("User Name")),
+        ('areal_feature__name', custom_titled_filter('areal_feature Name'))
+    )
+    search_fields = ('scenario__scenario_title', 'areal_feature_name',
+                    )
+    ordering = ['scenario__scenario_title', ]
+
+    model = ScenarioArealFeature
+    def get_queryset(self, request):
+        return super(ScenarioArealFeatureAdmin, self)\
+            .get_queryset(request)\
+            .select_related(
+                'scenario', 'scenario__project', 'scenario__project__user',
+                'scenario__project__user__profile',
+                'areal_feature',
+                # 'costitem',
+            )
+        # \
+        #     .only('scenario__scenario_title', 'scenario__project__project_title',
+        #           'scenario__project__user__name', 'scenario__project__user__profile__user_type',
+        #           'structure__name',
+        #           'costitem__name',
+        #           'checked', 'a_area', 'z_depth', 'd_density', 'n_number',
+        #           )
 
 class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, costitem_name,
@@ -413,5 +449,6 @@ admin.site.register(CostItem, CostItemAdmin)
 admin.site.register(CostItemDefaultCosts, CostItemDefaultCostsAdmin)
 admin.site.register(CostItemDefaultEquations, CostItemDefaultEquationsAdmin)
 admin.site.register(StructureCostItemDefaultFactors, StructureCostItemDefaultFactorsAdmin)
+admin.site.register(ScenarioArealFeature, ScenarioArealFeatureAdmin)
 admin.site.register(ScenarioCostItemUserCosts, ScenarioCostItemUserCostsAdmin)
 admin.site.register(StructureCostItemUserFactors, StructureCostItemUserFactorsAdmin)
