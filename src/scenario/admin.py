@@ -338,7 +338,7 @@ class ScenarioArealFeatureAdmin(admin.ModelAdmin):
                      )
     ordering = ['scenario__scenario_title', ]
 
-    @admin.display(description='Area (sf)')
+    @admin.display(description='Area (sf)', ordering='area')
     def area2(self, obj):
         if obj.area is None:
             return '--'
