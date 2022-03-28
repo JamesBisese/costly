@@ -144,18 +144,18 @@ class CostItemAdmin(StructuresAdmin):
         return field
 
 
-@admin.display(description='CostItem Sort No', ordering='costitem__sort_nu')
+@admin.display(description='Sort #', ordering='costitem__sort_nu')
 def costitem_sort_nu(obj):
     return obj.costitem.sort_nu
 
 
-@admin.display(description='CostItem Name', empty_value='unknown', ordering='costitem__name')
+@admin.display(description='Cost Item', empty_value='unknown', ordering='costitem__name')
 def costitem_name(obj):
     return "%s" % obj.costitem.name
 
 
 class CostItemDefaultCostsAdmin(StructuresAdmin):
-    list_display = (costitem_sort_nu, 'costitem_name', 'costitem_units', 'cost_type',
+    list_display = (costitem_sort_nu, 'costitem_name', 'costitem_units', 'cost_type2',
                     'valid_start_date_tx', 'value_numeric',  # 'db_75pct_va',
                     'created_date', 'modified_date'
                     # 'replacement_life', 'o_and_m_pct',
@@ -168,11 +168,15 @@ class CostItemDefaultCostsAdmin(StructuresAdmin):
 
     exclude = ('rsmeans_va','db_25pct_va','db_50pct_va','db_75pct_va')
 
-    @admin.display(empty_value='unknown', ordering='costitem__units')
+    @admin.display(description='Bid Units', empty_value='unknown', ordering='costitem__units')
     def costitem_units(self, obj):
         return "%s" % obj.costitem.units
 
-    @admin.display(empty_value='unknown', ordering='costitem__name')
+    @admin.display(description='Cost Type')
+    def cost_type2(self, obj):
+        return "%s" % obj.cost_type
+
+    @admin.display(description='Cost Item', empty_value='unknown', ordering='costitem__name')
     def costitem_name(self, obj):
         return "%s" % obj.costitem.name
 
@@ -279,8 +283,8 @@ def cost_source(obj):
     return "%s" % source
 
 
-@admin.display(description='Date Text')
-def date_text(obj):
+@admin.display(description='Year (revision)')
+def valid_start_date_tx(obj):
     source = obj.cost_source
     if source == 'user':
         source = obj.base_year
@@ -396,7 +400,7 @@ class ScenarioStructureAdmin(admin.ModelAdmin):
 
 class ScenarioCostItemUserCostsAdmin(admin.ModelAdmin):
     list_display = (user_name, user_type, scenario_project_title, scenario_title, costitem_name,
-                    cost_source, date_text, user_input_cost,
+                    cost_source, valid_start_date_tx, user_input_cost,
                     replacement_life, o_and_m_pct, 'modified_date')
     list_display_links = (costitem_name,)
     list_filter = (

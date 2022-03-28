@@ -256,11 +256,11 @@ class CostItemDefaultCosts(models.Model):
 
     # region new storage
     cost_type = models.CharField("Cost Estimate Type", max_length=50, default='Engineer Estimate', blank=False, null=False)
-    value_numeric = MoneyField('Cost Item Unit Value', decimal_places=2, max_digits=11,
-                                default_currency='USD', blank=False, null=False)
-    valid_start_date_tx = models.CharField("Date Text", max_length=20, default='2022', blank=False, null=False)
+    value_numeric = MoneyField('Unit Cost ($)', decimal_places=2, max_digits=11,
+                               default_currency='USD', blank=False, null=False)
+    valid_start_date_tx = models.CharField("Year (revision)", max_length=20, default='2022', blank=False, null=False)
 
-    created_date = models.DateTimeField('Create Date', null=True, auto_now_add=True)
+    created_date = models.DateTimeField('Created Date', null=True, auto_now_add=True)
     modified_date = models.DateTimeField('Modified Date', auto_now=True)
     # endregion new storage
 
