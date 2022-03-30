@@ -61,6 +61,11 @@ function open_structure_help(button_context, type) {
     let sourceContentDiv = document.getElementById("help_" + structure_id + "_innerHTML");
 
     // let help_div_id = "help_" + structure_id;
+    let sourceTitleContentDiv;
+
+    if (sourceContentDiv === null)  {
+        return;
+    }
 
     if (sourceContentDiv !== null) {
         if (sourceContentDiv.style.display === "none") {
@@ -72,6 +77,19 @@ function open_structure_help(button_context, type) {
         if (sourceContentDiv.getElementsByClassName("closebutton").length > 0) {
             return;
         }
+        let sourceTitleContentDivs = sourceContentDiv.getElementsByClassName(["title"]);
+        if (sourceTitleContentDivs.length === 1) {
+            sourceTitleContentDiv = sourceTitleContentDivs[0];
+        }
+
+        // add a tag to the picture
+        let picrightDivs = sourceContentDiv.getElementsByClassName(["picright"]);
+        if (picrightDivs.length === 1) {
+            let captionDiv = document.createElement("p");
+            captionDiv.innerHTML = "Jenn Lenart, Tetra Tech, INC";
+            captionDiv.classList.add("source");
+            picrightDivs[0].appendChild(captionDiv);
+        }
     }
 
     // let page_help_div_id = "structures_help_col";
@@ -81,11 +99,8 @@ function open_structure_help(button_context, type) {
     // let pageHelpDiv = document.getElementById(page_help_div_id);
     // let topAlignDiv = document.getElementById(top_align_div_id);
 
-    let sourceTitleContentDiv;
-    let sourceTitleContentDivs = sourceContentDiv.getElementsByClassName(["title"]);
-    if (sourceTitleContentDivs.length === 1) {
-        sourceTitleContentDiv = sourceTitleContentDivs[0];
-    }
+
+
 
     let buttonDiv = document.createElement("button");
     buttonDiv.type = "button";
@@ -102,14 +117,7 @@ function open_structure_help(button_context, type) {
     sourceTitleContentDiv.style.fontSize = "18px";
     sourceTitleContentDiv.style.fontWeight = "bold";
 
-    // add a tag to the picture
-    let picrightDivs = sourceContentDiv.getElementsByClassName(["picright"]);
-    if (picrightDivs.length === 1) {
-        let captionDiv = document.createElement("p");
-        captionDiv.innerHTML = "Jenn Lenart, Tetra Tech, INC";
-        captionDiv.classList.add("source");
-        picrightDivs[0].appendChild(captionDiv);
-    }
+
 
     sourceContentDiv.style.display = "";
 }

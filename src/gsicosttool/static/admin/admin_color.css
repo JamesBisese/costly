@@ -167,3 +167,18 @@ input[type=file]::-webkit-file-upload-button:hover {
 .field-area2 {
     text-align: right;
 }
+
+#footer {
+    padding-left: 40px;
+}
+
+#footer h1 {
+    /*margin-left: 30px;*/
+    font-weight: 600;
+    font-size: 27px;
+    color: var(--body-quiet-color);
+}
+
+#footer a {
+    color: #222;
+}

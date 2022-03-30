@@ -12,3 +12,18 @@
     <h1 id="site-name" style="display:inline-block; vertical-align: middle;">{% trans "GSI Cost Tool Admin Page" %}</h1>
 {% endblock %}
 {% block nav-global %}{% endblock %}
+
+{% block footer %}<div id="footer">
+    <h1>Site administration Documentation</h1>
+    These MS Word documents include information used to manage User accounts, and to manage and update the data contained in the GSI Cost Tool.
+<ol>
+    <li><a href="{% static 'admin/docs/Authorizing a new User.docx' %}">Authorizing a new User</a></li>
+    <li><a href="{% static 'admin/docs/Adding a new Cost Item Default Cost.docx' %}">Adding a new Cost Item Default Cost</a></li>
+    <li><a href="{% static 'admin/docs/Adding a new Areal Feature.docx' %}">Adding a new Areal Feature</a></li>
+    <li><a href="{% static 'admin/docs/Adding a new Structure.docx' %}">Adding a new Structure</a></li>
+    <li><a href="{% static 'admin/docs/Adding a new Cost Item.docx' %}">Adding a new Cost Item</a></li>
+</ol>
+
+There are additional documents for installing and updating the web application.  They are in the codebase for
+the GSI Cost Tool.
+</div>{% endblock %}
