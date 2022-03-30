@@ -805,6 +805,12 @@ class ScenarioSerializer(serializers.ModelSerializer):
             ) \
             .all().order_by('costitem__sort_nu')
         d = ScenarioCostItemUserCostsSerializer(user_cost_items, many=True).data
+
+        # if the user has no default costs then you need to make something - this is used in Cost Tool to select the original default items in the UI/UX
+        if len(d) == 0:
+            cost_items = CostItem.objects.all()
+            d = CostItemSerializer(cost_items, many=True).data
+
         return d
 
     DT_RowId = serializers.SerializerMethodField()

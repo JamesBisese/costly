@@ -239,53 +239,59 @@ function populateUI(siteData) {
             if (field_dict.hasOwnProperty(i)) {
                 let field_object = field_dict[i];
 
-                // each one has one or more 'area', 'unit_cost', 'replacement_life', 'first_year'
-                var cost_item_code = field_object.costitem_code;
-                let field_list = [
-                    'user_input_cost',
-                    'base_year',
-                    'replacement_life',
-                    'o_and_m_pct'
-                ];
-                let inputDom = document.getElementById('ui_' + cost_item_code + '_' + 'cost_source');
-                if (inputDom) {
-                    // this is for migration to the new storage
-                    if (field_object.cost_source === 'rsmeans')
-                    {
-                        inputDom.options[1].selected = true;
-                    }
-                    else
-                    {
-                        inputDom.value = field_object.cost_source;
-                    }
-
+                if (field_object.costitem_code === undefined)
+                {
+                    // this is used (it is a hack) to deal with new scenarios with no defaults.  the array field_dict is just
+                    // a list of cost_items
+                    let inputDom = document.getElementById('ui_' + field_object.code + '_' + 'cost_source');
+                    inputDom.options[1].selected = true;
                 }
-
-                for (var j in field_list) {
-                    if (field_list.hasOwnProperty(j)) {
-                        var subfield_name = field_list[j];
-                        var value_name = field_object[subfield_name];
-
-                        let inputDom2 = document.getElementById('ui_' + cost_item_code + '_' + subfield_name);
-                        if (inputDom2) {
-                            inputDom2.value = value_name;
-                        }
-                    }
-                }
-                var inputs = ['user_input_cost', 'base_year'];
-
-                inputs.forEach(function (input_name) {
-                    let elementObj = document.getElementById('ui_' + cost_item_code + '_' + input_name);
-                    if (elementObj) {
-                        if (field_object.cost_source !== 'user') {
-                            elementObj.disabled = true;
-                            elementObj.style.textDecoration = 'line-through';
+                else {
+                    // each one has one or more 'area', 'unit_cost', 'replacement_life', 'first_year'
+                    var cost_item_code = field_object.costitem_code;
+                    let field_list = [
+                        'user_input_cost',
+                        'base_year',
+                        'replacement_life',
+                        'o_and_m_pct'
+                    ];
+                    let inputDom = document.getElementById('ui_' + cost_item_code + '_' + 'cost_source');
+                    if (inputDom) {
+                        // this is for migration to the new storage
+                        if (field_object.cost_source === 'rsmeans') {
+                            inputDom.options[1].selected = true;
                         } else {
-                            elementObj.disabled = false;
-                            elementObj.style.textDecoration = 'none';
+                            inputDom.value = field_object.cost_source;
+                        }
+
+                    }
+
+                    for (var j in field_list) {
+                        if (field_list.hasOwnProperty(j)) {
+                            var subfield_name = field_list[j];
+                            var value_name = field_object[subfield_name];
+
+                            let inputDom2 = document.getElementById('ui_' + cost_item_code + '_' + subfield_name);
+                            if (inputDom2) {
+                                inputDom2.value = value_name;
+                            }
                         }
                     }
-                });
+                    var inputs = ['user_input_cost', 'base_year'];
+
+                    inputs.forEach(function (input_name) {
+                        let elementObj = document.getElementById('ui_' + cost_item_code + '_' + input_name);
+                        if (elementObj) {
+                            if (field_object.cost_source !== 'user') {
+                                elementObj.disabled = true;
+                                elementObj.style.textDecoration = 'line-through';
+                            } else {
+                                elementObj.disabled = false;
+                                elementObj.style.textDecoration = 'none';
+                            }
+                        }
+                    });
+                }
             }
         }
     }
