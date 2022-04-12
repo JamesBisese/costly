@@ -402,25 +402,61 @@ def scenario_create(request, project_id=None):
                     form_variable_scenario_title = test_title
                     break
 
-        # not functioning yet.  just boilerplate
+        # make a new scenario using the title entered by the user
         scenario = Scenario(
             project=project,
             scenario_title=form_variable_scenario_title,
 
-            # set defaults ??? questionable for some of these
-            planning_and_design_factor=20,
-            study_life=40,
-            discount_rate=2.875,
+            # set defaults - these are hardwired in the model.
+            planning_and_design_factor=Scenario._meta.get_field('planning_and_design_factor').get_default(),
+            study_life=Scenario._meta.get_field('study_life').get_default(),
+            discount_rate=Scenario._meta.get_field('discount_rate').get_default(),
 
-            pervious_area=0,
-            impervious_area=0,
+            pervious_area=Scenario._meta.get_field('pervious_area').get_default(),
+            impervious_area=Scenario._meta.get_field('impervious_area').get_default(),
         )
 
         try:
             scenario.save()
+
+
+
             data['form_is_valid'] = True
         except IntegrityError:
             data['exception'] = "Scenario Title must be unique for the project. Change the Title"
+
+        # also need to make a set of the 'user' Cost Item default costs
+        cost_item_default_costs = CostItemDefaultCosts.objects.\
+            select_related('costitem')\
+            .all()\
+            .order_by('costitem__sort_nu', '-valid_start_date_tx')
+
+        cost_item_default_equations = CostItemDefaultEquations.objects.\
+            select_related('costitem')\
+            .all()
+
+        seen_costitem_codes = set()
+        for cost_item_default_cost in cost_item_default_costs:
+            if cost_item_default_cost.costitem.code not in seen_costitem_codes:
+                # CREATE
+                # Note: this is a sign of a problem that I need to consult 2 models to create these
+                # user defaults. Storing the Rep Life and O&M% elsewhere seems wrong somehow.
+                cost_item_default_equation_list = [x for x in cost_item_default_equations if
+                                                x.costitem.code == cost_item_default_cost.costitem.code]
+
+                # should have test and way to get around missing - but ... too much work
+                cost_item_default_equation = cost_item_default_equation_list[0]
+
+                c = ScenarioCostItemUserCosts.objects.create(
+                    scenario=scenario,
+                    costitem=cost_item_default_cost.costitem,
+                    cost_source=str(cost_item_default_cost.id),
+                    default_cost=cost_item_default_cost,
+                    replacement_life=cost_item_default_equation.replacement_life,
+                    o_and_m_pct=cost_item_default_equation.o_and_m_pct
+                )
+                c.save()
+                seen_costitem_codes.add(cost_item_default_cost.costitem.code)
 
     else:
         context = {'project': project}

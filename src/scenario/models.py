@@ -1631,6 +1631,8 @@ class ScenarioCostItemUserCosts(models.Model):
                                                                       ], blank=True, null=True)
     user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
                                  default_currency='USD', blank=True, null=True)
+
+
     replacement_life = models.PositiveIntegerField("Replacement Life ('R')",
                                                    default=40, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)
@@ -1641,6 +1643,8 @@ class ScenarioCostItemUserCosts(models.Model):
                                                           MaxValueValidator(100)
                                                           ],
                                               blank=True, null=True)
+
+    # DEPRECIATED - this is not used in the UI/UX or anywhere else
     first_year_maintenance = MoneyField('User supplied First Year Maintenance Cost', decimal_places=2, max_digits=11,
                                         default_currency='USD', blank=True, null=True)
 

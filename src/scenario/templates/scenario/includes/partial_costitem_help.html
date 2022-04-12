@@ -1,6 +1,6 @@
 {% load static %}
 
-<div id="{{ costitem_code }}" class="cost_item_help_FOOBAR">
+<div id="cost_item_help_{{ costitem_code }}" class="cost_item_help_FOOBAR">
     {%  if costitem_meta.count > 1 %}
         {% if costitem_code != 'all' %}
             <p>Unable to find structure with code {{ costitem_code }}</p>

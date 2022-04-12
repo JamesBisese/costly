@@ -1857,6 +1857,7 @@ function open_costitem_help(button_context) {
 
     var id;
     var helpDom;
+    var newHelpDom;
     if (typeof (button_context) === 'string') {
         id = button_context;
         helpDom = document.getElementById('CostItemItemUnitCostsHelpText');
@@ -1864,17 +1865,18 @@ function open_costitem_help(button_context) {
         id = button_context.id;
         id = id.replace('structure_costitem_', '');
         helpDom = document.getElementById('StructureCostItemHelpText');
+        newHelpDom = document.getElementById('cost_item_help_' + id);
     }
 
     if (helpDom.style.display === 'block') {
         // now see if they are toggling off an existing help section
-        var helpSelectedDom = helpDom.querySelector('[id="' + id + '"]');
+        var helpSelectedDom = helpDom.querySelector('[id="cost_item_help_' + id + '"]');
 
         if (helpSelectedDom !== null) {
             //helpSelectedDom.innerHTML = '';
             //helpSelectedDom.style.display = "none";
             helpSelectedDom.remove();
-            if (helpDom.childElementCount === 1) {
+            if (helpDom.childElementCount === 0) {
                 helpDom.style.display = 'none';
             }
             return;

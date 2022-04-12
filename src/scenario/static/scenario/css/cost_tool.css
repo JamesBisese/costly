@@ -382,8 +382,9 @@ a.bmplabel:hover {
 	margin-top: 7px;
 }
 .cost_item_help_FOOBAR {
-	border-color: darkgreen;
-	border-style: solid;
+	border: 1px solid #B0DD24;
+	margin-left: -15px;
+	margin-right: -15px;
 }
 
 #pageoptions {

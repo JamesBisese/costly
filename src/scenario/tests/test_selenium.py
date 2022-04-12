@@ -63,7 +63,7 @@ class WebUITest(LiveServerTestCase):
         # TODO figure out what to assert
         for p in project_data['data']:
             print(p['id'])
-        print(json.dumps(project_data, indent=2))
+        # print(json.dumps(project_data, indent=2))
 
     def test_nav_bar(self):
         opts = Options()
@@ -83,7 +83,8 @@ class WebUITest(LiveServerTestCase):
             logger.debug("ANON {} '{}'".format(link.get_attribute('href'), link.get_attribute('text')))
             links.add(link.get_attribute('text'))
 
-        self.assertTrue('WHY IS RALEIGH INVESTING IN GSI' in links)
+        # removed on COR request in Feb 2022
+        # self.assertTrue('WHY IS RALEIGH INVESTING IN GSI' in links)
         self.assertTrue('HOW IS THE GSI COST TOOL SETUP' in links)
         self.assertFalse('REFERENCES' in links)
         self.assertFalse('AUDIT' in links)

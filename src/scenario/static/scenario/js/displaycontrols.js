@@ -156,7 +156,7 @@ function close_cost_item_help(button_context) {
 
         if (helpSelectedDom !== null) {
             helpSelectedDom.remove();
-            if (helpDom.childElementCount === 1) {
+            if (helpDom.childElementCount === 0) {
                 helpDom.style.display = 'none';
             }
         }

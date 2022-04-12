@@ -162,7 +162,7 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['sql'],  # note: toggle this between console and sql
             'propagate': False,
-            'level': 'DEBUG',
+            'level': 'WARNING',
         },
         'developer': {
             'handlers': ['console'],
