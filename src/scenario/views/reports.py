@@ -1,9 +1,14 @@
 import io
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from djmoney.money import Money
+
 import xlsxwriter
 from rest_framework.views import APIView
-from scenario.models import Scenario
+from scenario.models import Scenario, ArealFeatureLookup, ScenarioArealFeature,\
+    CostItemDefaultCosts, CostItemDefaultEquations
+
+from scenario.serializers import ScenarioSerializer
 
 """
     generate and return (excel) reports.  aka export excel reports
@@ -109,7 +114,7 @@ def scenario_workbook(scenario_ids):
         # add the leftmost scenario
         start_col = i
         populate_workbook(workbook, worksheet, id, formats, start_col)
-        i += 5
+        i += 9
 
     # Close the workbook before sending the data.
     workbook.close()
@@ -175,13 +180,39 @@ def create_formats(workbook):
     formats['header_bold'].set_align('center')
     formats['header_bold'].set_border(1)
 
+    formats['bold_left'] = copy_format(workbook, formats['bold'])
+    formats['bold_left'].set_align('left')
+    formats['bold_left'].set_border(1)
+
+    formats['bold_right'] = copy_format(workbook, formats['bold'])
+    formats['bold_right'].set_align('right')
+    formats['bold_right'].set_border(1)
+
     formats['label_col'] = workbook.add_format()
     formats['label_col'].set_border(1)
+
+    formats['col_center'] = workbook.add_format()
+    formats['col_center'].set_align('center')
+
+    formats['col_right'] = workbook.add_format()
+    formats['col_right'].set_align('right')
+
+    formats['col_right_box'] =copy_format(workbook, formats['col_right'])
+    formats['col_right_box'].set_top(1)
+    formats['col_right_box'].set_bottom(1)
+    formats['col_right_box'].set_left(1)
+    formats['col_right_box'].set_right(1)
 
     formats['input_col'] = workbook.add_format({'bg_color': 'DDEBF7', 'align': 'right'})  # light blue
     formats['input_col'].set_top(1)
     formats['input_col'].set_bottom(1)
     formats['input_col'].set_left(1)
+
+    formats['detail_header'] = workbook.add_format({'bg_color': '228EA9', 'align': 'center', 'valign': 'vcenter', 'color': 'FFFFFF'})  # darker blue
+    formats['detail_header'].set_align('left')
+    formats['detail_header'].set_top(1)
+    formats['detail_header'].set_bottom(1)
+    formats['detail_header'].set_left(1)
 
     formats['input_col_text'] = copy_format(workbook, formats['input_col'])
     formats['input_col_text'].set_align('left')
@@ -203,6 +234,8 @@ def create_formats(workbook):
     formats['money_small'].set_top(1)
     formats['money_small'].set_bottom(1)
     formats['money_small'].set_left(1)
+
+    formats['col_money_small'] = workbook.add_format({'num_format': '$#,##0.00'})
 
     formats['output_col_money_big'] = workbook.add_format({'num_format': '$#,##0', 'bg_color': 'E2EFDA'})
     formats['output_col_money_big'].set_top(1)
@@ -237,6 +270,23 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     # generate the data used in the tall-thin export
     #
     scenario = get_object_or_404(Scenario, pk=scenario_id)
+
+    serializer_class = ScenarioSerializer
+    serializer = serializer_class(scenario)
+
+    cost_item_default_costs = CostItemDefaultCosts.objects \
+        .select_related('costitem') \
+        .all().order_by("costitem__sort_nu")
+
+    cost_item_default_equations = CostItemDefaultEquations.objects \
+        .select_related('costitem') \
+        .only('costitem__code', 'equation_tx', 'replacement_life', 'o_and_m_pct') \
+        .all().order_by("costitem__sort_nu")
+
+    # areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu')
+    # scenario_areal_features = ScenarioArealFeature.objects \
+    #     .select_related('areal_feature') \
+    #     .filter(scenario=scenario)
 
     cost_results = scenario.get_costs()
 
@@ -443,9 +493,302 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
         # endregion
 
+    row += 2
+
+    sum_values = {}
+
+    areal_features_sum_area = 0
+    conventional_structure_sum_area = 0
+    nonconventional_structure_sum_area = 0
+
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Areal Features', formats['detail_header'])
+    row += 2
+    worksheet.write(row, col, 'Areal Feature', formats['table_title'])
+    worksheet.write(row, col + 1, 'Area ft2', formats['table_title'])
+    row += 1
+    if serializer.data['a_features']:
+        for obj in serializer.data['a_features']:
+            if obj['is_checked'] is True and obj['area'] != "0" and obj['area'] is not None:
+                areal_features_sum_area += int(float(obj['area']))
+            else:
+                obj['area'] = 0
+
+            worksheet.write(row, col + 0, obj['areal_feature_name'])
+            worksheet.write(row, col + 1, obj['area'])
+            row += 1
+    sum_values['areal_features_sum_area'] = areal_features_sum_area
+
+    worksheet.write(row, col + 0, 'Total', formats['bold_right'])
+    worksheet.write(row, col + 1, areal_features_sum_area)
+    row += 2
+
+    worksheet.merge_range(row, col, row + 1, col + 2, 'Structure Areas - Non-Conventional (GSI) Structures', formats['detail_header'])
+    row += 2
+    worksheet.write(row, col, 'Structure', formats['table_title'])
+    worksheet.write(row, col + 1, 'Size', formats['table_title'])
+    worksheet.write(row, col + 2, '% Project Area', formats['table_title'])
+    row += 1
+    for test_structure in serializer.data['nc_structures']:
+        if test_structure['is_checked'] is True and test_structure['area'] is not None:
+            nonconventional_structure_sum_area += int(float(test_structure['area']))
+            worksheet.write(row, col + 0, test_structure['structure_name'])
+            worksheet.write(row, col + 1, test_structure['area'])
+            worksheet.write(row, col + 2, "{:.2%}".format( (test_structure['area'] / int(scenario.project.project_area))), formats['col_right'])
+            row += 1
+    sum_values['nonconventional_structure_sum_area'] = nonconventional_structure_sum_area
+
+    row += 2
+
+    worksheet.merge_range(row, col, row + 1, col + 2, 'Structure Areas - Conventional Structures', formats['detail_header'])
+    row += 2
+    worksheet.write(row, col, 'Structure', formats['table_title'])
+    worksheet.write(row, col + 1, 'Size', formats['table_title'])
+    worksheet.write(row, col + 2, '% Project Area', formats['table_title'])
+    row += 1
+
+    for test_structure in serializer.data['c_structures']:
+        if test_structure['is_checked'] is True and test_structure['area'] is not None:
+            conventional_structure_sum_area += int(float(test_structure['area']))
+            worksheet.write(row, col + 0, test_structure['structure_name'])
+            worksheet.write(row, col + 1, test_structure['area'])
+            worksheet.write(row, col + 2, "{:.2%}".format( (test_structure['area'] / int(scenario.project.project_area))), formats['col_right'])
+            row += 1
+    sum_values['conventional_structure_sum_area'] = conventional_structure_sum_area
+
+    row += 2
+
+    worksheet.merge_range(row, col, row + 1, col + 6, 'Cost Item Unit Costs', formats['detail_header'])
+    row += 2
+    worksheet.write(row, col, 'Cost Item', formats['table_title'])
+    worksheet.write(row, col + 1, 'Units', formats['table_title'])
+    worksheet.write(row, col + 2, 'Source', formats['table_title'])
+    worksheet.write(row, col + 3, 'Yr', formats['table_title'])
+    worksheet.write(row, col + 4, 'Unit Cost', formats['table_title'])
+    worksheet.write(row, col + 5, 'Rep. Life', formats['table_title'])
+    worksheet.write(row, col + 6, 'O&M %', formats['table_title'])
+    row += 1
+
+    # load the data for Cost Items Cost
+    for cost_item_obj in cost_item_default_costs:
+        default_equations_objs = [x for x in cost_item_default_equations if x.costitem_id == cost_item_obj.id]
+        if default_equations_objs is not None and len(default_equations_objs) > 0:
+            default_equations_obj = default_equations_objs[0]
+
+            cost_item_obj.replacement_life = default_equations_obj.replacement_life
+            cost_item_obj.o_and_m_pct = default_equations_obj.o_and_m_pct
+        else:
+            cost_item_obj.replacement_life = -88
+            cost_item_obj.o_and_m_pct = -88
+
+    cost_item_user_cost = serializer.data['cost_item_user_costs']
+
+    cost_item_user_cost_dict = {}
+    for o in cost_item_user_cost:
+        cost_item_user_cost_dict[o['costitem_code']] = o
+
+    cost_item_costs = []
+
+    for cost_item_obj in cost_item_user_cost:
+        code = cost_item_obj['costitem_code']
+        cost_source_tx = 'Eng. Est.'
+
+        unit_cost = 222222222222222
+        base_year = ''
+        replacement_life = cost_item_obj['replacement_life']
+        replacement_life_source = 'Default'
+        o_and_m_pct = cost_item_obj['o_and_m_pct']
+        o_and_m_pct_source = 'Default'
+
+        if cost_item_obj['cost_source'] == 'user':
+            cost_source_tx = 'User'
+            if cost_item_obj['user_input_cost'] is None:
+                unit_cost = Money(0.00, 'USD')
+            else:
+                unit_cost = Money(cost_item_obj['user_input_cost'], 'USD')
+            base_year = cost_item_obj['base_year']
+        elif 'default_cost' in cost_item_obj and cost_item_obj['default_cost'] is not None:
+            d = cost_item_obj['default_cost']
+            cost_source_tx = d['cost_type']
+            base_year = d['valid_start_date_tx']
+            unit_cost = Money(d['value_numeric'], 'USD')
+
+        worksheet.write(row, col, cost_item_obj['costitem_name'])
+        worksheet.write(row, col + 1, cost_item_obj['units'])
+        worksheet.write(row, col + 2, cost_source_tx)
+        worksheet.write(row, col + 3, base_year, formats['col_center'])
+        worksheet.write(row, col + 4, unit_cost.amount, formats['col_money_small'])
+        worksheet.write(row, col + 5, replacement_life)
+        worksheet.write(row, col + 6, o_and_m_pct, formats['col_right'])
+        row += 1
+
+    row += 2
+
+    worksheet.merge_range(row, col, row + 1, col + 5, 'Structure/Cost Item Factors', formats['detail_header'])
+    row += 3
+    worksheet.merge_range(row, col, row, col + 5, 'Non-Conventional (GSI) Structures', formats['merge_format'])
+    row += 1
+    worksheet.merge_range(row, col, row, col + 4, 'Structures', formats['merge_format'])
+    worksheet.write(row, col + 5, 'Size', formats['merge_format'])
+    row += 2
+    for structure in cost_results['nonconventional']['structures'].values():
+            worksheet.merge_range(row, col, row, col + 4, structure['structure']['name'], formats['merge_format'])
+            worksheet.write(row, col + 5, str(structure['structure']['area']) + ' ' + structure['structure']['units'], formats['col_right_box'] )
+            row += 1
+            # insert the cost items factors here
+            worksheet.write(row, col, 'Cost Item', formats['table_title'])
+            worksheet.write(row, col + 1, 'Area (a)', formats['table_title'])
+            worksheet.write(row, col + 2, 'Depth (z)', formats['table_title'])
+            worksheet.write(row, col + 3, 'Density (d)', formats['table_title'])
+            worksheet.write(row, col + 4, 'Number (#)', formats['table_title'])
+            worksheet.write(row, col + 5, 'Equation', formats['table_title'])
+            row += 1
+            for objC in structure['cost_data'].values():
+                worksheet.write(row, col, objC['assumptions']['name'], formats['table_title'])
+                worksheet.write(row, col + 1, objC['assumptions']['a_area'])
+                worksheet.write(row, col + 2, objC['assumptions']['z_depth'])
+                worksheet.write(row, col + 3, objC['assumptions']['d_density'])
+                worksheet.write(row, col + 4, objC['assumptions']['n_number'])
+                worksheet.write(row, col + 5, "'" + objC['results']['equation'])
+                row += 1
+            row += 1
+
+    worksheet.merge_range(row, col, row, col + 5, 'Conventional (GSI) Structures', formats['merge_format'])
+    row += 1
+    worksheet.merge_range(row, col, row, col + 4, 'Structures', formats['merge_format'])
+    worksheet.write(row, col + 5, 'Size', formats['merge_format'])
+    row += 2
+    for structure in cost_results['conventional']['structures'].values():
+            worksheet.merge_range(row, col, row, col + 4, structure['structure']['name'], formats['merge_format'])
+            worksheet.write(row, col + 5, str(structure['structure']['area']) + ' ' + structure['structure']['units'], formats['col_right_box'] )
+            row += 1
+            # insert the cost items factors here
+            worksheet.write(row, col, 'Cost Item', formats['table_title'])
+            worksheet.write(row, col + 1, 'Area (a)', formats['table_title'])
+            worksheet.write(row, col + 2, 'Depth (z)', formats['table_title'])
+            worksheet.write(row, col + 3, 'Density (d)', formats['table_title'])
+            worksheet.write(row, col + 4, 'Number (#)', formats['table_title'])
+            worksheet.write(row, col + 5, 'Equation', formats['table_title'])
+            row += 1
+            for objC in structure['cost_data'].values():
+                worksheet.write(row, col, objC['assumptions']['name'], formats['table_title'])
+                worksheet.write(row, col + 1, objC['assumptions']['a_area'])
+                worksheet.write(row, col + 2, objC['assumptions']['z_depth'])
+                worksheet.write(row, col + 3, objC['assumptions']['d_density'])
+                worksheet.write(row, col + 4, objC['assumptions']['n_number'])
+                worksheet.write(row, col + 5, "'" + objC['results']['equation'])
+                row += 1
+            row += 1
+
+    row += 1
+
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Construction Cost - Non-Conventional (GSI) Structures', formats['detail_header'])
+    row += 2
+    worksheet.write(row, col, 'Structures', formats['merge_format'])
+    worksheet.write(row, col + 1, 'Size', formats['merge_format'])
+    row += 2
+    for structure in cost_results['nonconventional']['structures'].values():
+        worksheet.write(row, col, structure['structure']['name'], formats['bold_left'])
+        worksheet.write(row, col + 1, str(structure['structure']['area']) + ' ' + structure['structure']['units'], formats['col_right_box'])
+        row += 1
+        # insert the cost items factors here
+        worksheet.write(row, col, 'Cost Item', formats['table_title'])
+        worksheet.write(row, col + 1, 'Cost', formats['table_title'])
+        row += 1
+        total = 0
+        for objC in structure['cost_data'].values():
+            worksheet.write(row, col, objC['assumptions']['name'], formats['table_title'])
+            worksheet.write(row, col + 1, objC['results']['value_unformatted'], formats['output_col_money_big'])
+            total += int(objC['results']['value_unformatted'])
+            row += 1
+        worksheet.write(row, col, 'Total', formats['bold_right'])
+        worksheet.write(row, col + 1, total, formats['output_col_money_big'])
+        row += 2
+    row += 1
+
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Construction Cost - Conventional (GSI) Structures', formats['detail_header'])
+    row += 2
+    worksheet.write(row, col, 'Structures', formats['merge_format'])
+    worksheet.write(row, col + 1, 'Size', formats['merge_format'])
+    row += 2
+    for structure in cost_results['conventional']['structures'].values():
+        worksheet.write(row, col, structure['structure']['name'], formats['bold_left'])
+        worksheet.write(row, col + 1, str(structure['structure']['area']) + ' ' + structure['structure']['units'], formats['col_right_box'])
+        row += 1
+        # insert the cost items factors here
+        worksheet.write(row, col, 'Cost Item', formats['table_title'])
+        worksheet.write(row, col + 1, 'Cost', formats['table_title'])
+        row += 1
+        total = 0
+        for objC in structure['cost_data'].values():
+            worksheet.write(row, col, objC['assumptions']['name'], formats['table_title'])
+            worksheet.write(row, col + 1, objC['results']['value_unformatted'], formats['output_col_money_big'])
+            total += int(objC['results']['value_unformatted'])
+            row += 1
+        worksheet.write(row, col, 'Total', formats['bold_right'])
+        worksheet.write(row, col + 1, total, formats['output_col_money_big'])
+        row += 2
+    row += 1
 
 
+    worksheet.merge_range(row, col, row + 1, col + 2, 'O&M and Replacement Cost - Non-Conventional (GSI) Structures', formats['detail_header'])
+    row += 2
+    worksheet.merge_range(row, col, row, col + 1, 'Structures', formats['merge_format'])
+    worksheet.write(row, col + 2, 'Size', formats['merge_format'])
+    row += 2
+    for structure in structure_life_cycle_costs['nonconventional']['structures'].values():
+        worksheet.merge_range(row, col, row, col + 1, structure['meta']['name'], formats['bold_left'])
+        worksheet.write(row, col + 2, str(structure['meta']['area']) + ' ' + structure['meta']['units'], formats['col_right_box'])
+        row += 1
+        # insert the cost items factors here
+        worksheet.write(row, col, 'Cost Item', formats['table_title'])
+        worksheet.write(row, col + 1, 'O&M', formats['table_title'])
+        worksheet.write(row, col + 2, 'Replacement', formats['table_title'])
+        row += 1
+        o_and_m_total = 0
+        replacement_total = 0
+        for objC in structure['cost_items'].values():
+            worksheet.write(row, col, objC['meta']['name'], formats['table_title'])
+            worksheet.write(row, col + 1, objC['costs']['o_and_m'], formats['output_col_money_big'])
+            worksheet.write(row, col + 2, objC['costs']['replacement'], formats['output_col_money_big'])
+            o_and_m_total += objC['costs']['o_and_m']
+            replacement_total += objC['costs']['replacement']
+            row += 1
+        worksheet.write(row, col, 'Total', formats['bold_right'])
+        worksheet.write(row, col + 1, o_and_m_total, formats['output_col_money_big'])
+        worksheet.write(row, col + 2, replacement_total, formats['output_col_money_big'])
+        row += 2
+    row += 1
 
+    worksheet.merge_range(row, col, row + 1, col + 2, 'O&M and Replacement Cost - Conventional (GSI) Structures', formats['detail_header'])
+    row += 2
+    worksheet.merge_range(row, col, row, col + 1, 'Structures', formats['merge_format'])
+    worksheet.write(row, col + 2, 'Size', formats['merge_format'])
+    row += 2
+    for structure in structure_life_cycle_costs['conventional']['structures'].values():
+        worksheet.merge_range(row, col, row, col + 1, structure['meta']['name'], formats['bold_left'])
+        worksheet.write(row, col + 2, str(structure['meta']['area']) + ' ' + structure['meta']['units'], formats['col_right_box'])
+        row += 1
+        # insert the cost items factors here
+        worksheet.write(row, col, 'Cost Item', formats['table_title'])
+        worksheet.write(row, col + 1, 'O&M', formats['table_title'])
+        worksheet.write(row, col + 2, 'Replacement', formats['table_title'])
+        row += 1
+        o_and_m_total = 0
+        replacement_total = 0
+        for objC in structure['cost_items'].values():
+            worksheet.write(row, col, objC['meta']['name'], formats['table_title'])
+            worksheet.write(row, col + 1, objC['costs']['o_and_m'], formats['output_col_money_big'])
+            worksheet.write(row, col + 2, objC['costs']['replacement'], formats['output_col_money_big'])
+            o_and_m_total += objC['costs']['o_and_m']
+            replacement_total += objC['costs']['replacement']
+            row += 1
+        worksheet.write(row, col, 'Total', formats['bold_right'])
+        worksheet.write(row, col + 1, o_and_m_total, formats['output_col_money_big'])
+        worksheet.write(row, col + 2, replacement_total, formats['output_col_money_big'])
+        row += 2
+    row += 1
+
+    return
 
 def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenario_id, formats, start_row=0):
     """
@@ -463,6 +806,14 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
         .select_related('project', 'project__user', 'project__user__profile')\
         .filter(pk=scenario_id)
     scenario = get_object_or_404(queryset)
+
+    """ areal features.  this is the last of the insertable groups 
+    Note: this storage changed in March 2022, so I have to re-write this part
+    """
+    areal_features = ArealFeatureLookup.objects.all().order_by('sort_nu')
+    scenario_areal_features = ScenarioArealFeature.objects \
+        .select_related('areal_feature') \
+        .filter(scenario=scenario)
 
     cost_results = scenario.get_costs()
 
@@ -643,29 +994,26 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 
         # endregion
 
-    """ areal features.  this is the last of the insertable groups """
+    """ areal features.  this is the last of the insertable groups 
+    Note: this storage changed in March 2022, so I have to re-write this part
+    """
+
     format = formats['input_col']
 
-    if scenario.areal_features is None:
-        return
-
-    #property_alpha = [field_nm for field_nm in vars(scenario.areal_features) if field_nm.endswith("_area")]
-    #prop_names = [field_nm.replace("_area", '') for field_nm in property_alpha]
-
-    prop_names = [field_nm.replace("_area", '') for field_nm in vars(scenario.areal_features) if field_nm.endswith("_area")]
     if insert_header is True:
-        col_count = len(prop_names)
+        col_count = len(areal_features)
         worksheet.merge_range(0, col, 0, col + col_count - 1, 'Areal Features (square feet)', formats['merge_format'])
         hold_col = col
-        for label in prop_names:
-            worksheet.write(1, col, label, formats['bold'])
+        for areal_feature in areal_features:
+            worksheet.write(1, col, areal_feature.code, formats['bold'])
             col += 1
         col = hold_col
 
-    for label in prop_names:
+    for areal_feature in areal_features:
+        scenario_areal_feature = [x for x in scenario_areal_features if x.areal_feature.code == areal_feature.code]
         value = None
-        if getattr(scenario.areal_features, label + '_checkbox') == True:
-            value = getattr(scenario.areal_features, label + '_area')
+        if len(scenario_areal_feature) > 0:
+            value = scenario_areal_feature[0].area
         worksheet.write(row, col, value, format)
         col += 1
 
