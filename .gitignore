@@ -6,3 +6,5 @@ docs/*
 logs/production/*
 web.config
 .idea/*
+/src/scenario/migrations/
+/src/authtools/migrations/
