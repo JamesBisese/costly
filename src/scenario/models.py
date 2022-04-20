@@ -1626,7 +1626,7 @@ class ScenarioCostItemUserCosts(models.Model):
     # endregion old storage
 
 
-    base_year = models.PositiveIntegerField(default=20180, validators=[MinValueValidator(2018),
+    base_year = models.PositiveIntegerField(validators=[MinValueValidator(2018),
                                                                       MaxValueValidator(2090)
                                                                       ], blank=True, null=True)
     user_input_cost = MoneyField('User supplied unit cost', decimal_places=2, max_digits=11,
