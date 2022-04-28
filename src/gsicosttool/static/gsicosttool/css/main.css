@@ -368,7 +368,14 @@ body>.navbar-transparent {
     content: "\e015";
     padding-right: 2px;
 }
-
+.glyphicon-ok-sign-green:before {
+  content: "\e084";
+    color: rgba(74,139,44,1);
+}
+.glyphicon-remove-sign-red:before {
+  content: "\e083";
+    color: red;
+}
 
 /* this is on the help page (not included in menu) */
 

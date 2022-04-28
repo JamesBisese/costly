@@ -503,7 +503,7 @@ function populateStructureEquations(data){
 
                         } else if (field_name === 'unit_cost') {
 
-                            let dollar_div = document.createElement('div');
+                            // let dollar_div = document.createElement('div');
                             // dollar_div.className = 'dollar';
                             // dollar_div.innerText = '$';
                             // dollar_div.style.paddingLeft = '3px';
@@ -1852,8 +1852,9 @@ function open_af_button_title(button_context) {
     return "Check this to enable input for this areal feature";
 }
 
-function open_costitem_help(button_context) {
-    // get the id of the input that this label is connected too. i.e. ui_stormwater_wetland
+function open_cost_item_help(button_context) {
+    // this toggles the help on/off when the text is clicked.
+    // for some reason, there is also a '
 
     var id;
     var helpDom;

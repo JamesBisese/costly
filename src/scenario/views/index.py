@@ -712,13 +712,21 @@ class CostItemHelp(APIView):
         if len(costitem_meta) == 0:
             costitem_meta = CostItem.objects.all()
         else:
-            default_cost_item_cost = CostItemDefaultCosts.objects \
+            cost_item_default_cost = CostItemDefaultCosts.objects \
                 .select_related('costitem') \
+                .filter(costitem__code=costitem_code) \
+                .order_by('-valid_start_date_tx').first()
+            cost_item_default_equations = CostItemDefaultEquations.objects \
+                .select_related('costitem') \
+                .only('costitem__code', 'equation_tx', 'replacement_life', 'o_and_m_pct') \
                 .filter(costitem__code=costitem_code).first()
+            cost_item_default_cost.replacement_life = cost_item_default_equations.replacement_life
+            cost_item_default_cost.o_and_m_pct = cost_item_default_equations.o_and_m_pct
+
             costitem_meta = costitem_meta[0]
 
         # return the scenario as an HTML table
-        return HttpResponse(costitem_help_html(costitem_meta, costitem_code, default_cost_item_cost))
+        return HttpResponse(costitem_help_html(costitem_meta, costitem_code, cost_item_default_cost))
 
 
 def costitem_help_html(costitem_meta, costitem_code, cost_item_default_cost):

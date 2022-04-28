@@ -37,7 +37,7 @@
 {% for cost_item in cost_items %}
                     <tr>
                         <td class="td_left_padded input-group-link-text"
-                                onclick="open_costitem_help('{{ cost_item.code }}');">{{ cost_item.name }}</td>
+                                onclick="open_cost_item_help('{{ cost_item.code }}');">{{ cost_item.name }}</td>
                         <td class="td_centered">{{ cost_item.units }}</td>
                         <td>
                             <select id="ui_{{ cost_item.code }}_cost_source"

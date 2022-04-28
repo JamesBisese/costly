@@ -6,6 +6,17 @@ $(function () {
     var is_superuser = false;
     var table;
 
+    var simple_checkbox = function ( data, type, full, meta ) {
+        var is_checked = data === true ? "checked" : "";
+        if (data === true) {
+            return '<span title="Active" class="glyphicon glyphicon-ok-sign-green"></span>';
+        }
+        else {
+            return '<span title="Not Active" class="glyphicon glyphicon-remove-sign-red"></span>';
+        }
+
+    };
+
     /* Binding */
     $(document).ready(function() {
 
@@ -45,7 +56,7 @@ $(function () {
                {'data': 'email', },
                {'data': 'phone_tx', },
 
-
+{               'data': 'is_active', "sortable": true, "render": simple_checkbox, },
                {'data': 'date_joined', "sortable": true},
                {'data': 'last_login', "sortable": true},
           ],
