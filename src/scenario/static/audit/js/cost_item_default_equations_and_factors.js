@@ -29,7 +29,7 @@ $(function () {
 
     var loadTable = function() {
 
-        var export_columns = [ 0, 2, 3, 4, 5, 6, 7, 8, 9];
+        var export_columns = [ 0, 2, 3, 4, 5, 6, 7];
 
         var options = {
             "serverSide": true,
@@ -42,8 +42,8 @@ $(function () {
                 { 'extend': 'copy',  'exportOptions': {'columns': export_columns}},
                 { 'extend': 'csv',   'exportOptions': {'columns': export_columns}},
                 { 'extend': 'excel', 'exportOptions': {'columns': export_columns}},
-                { 'extend': 'pdf',   'exportOptions': {'columns': [ 3, 4, 5, 6, 7, 8, 9]}, 'title': 'Cost Item Default Equations'},
-                { 'extend': 'print', 'exportOptions': {'columns': [ 3, 4, 5, 6, 7, 8, 9]}, 'title': 'Cost Item Default Equations'},
+                { 'extend': 'pdf',   'exportOptions': {'columns': [ 3, 4, 5, 6, 7]}, 'title': 'Cost Item Default Equations'},
+                { 'extend': 'print', 'exportOptions': {'columns': [ 3, 4, 5, 6, 7]}, 'title': 'Cost Item Default Equations'},
             ],
             "columns": [
                 // Use dot notation to reference nested serializers.

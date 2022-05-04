@@ -23,7 +23,7 @@ $(function () {
 
     var loadTable = function() {
 
-        var export_columns = [ 0, 1, 3, 4, 5, 6, 7, 8, 9];
+        var export_columns = [ 0, 1, 3, 4, 5, 6, 7, 8, 9, 10];
 
         var options = {
             "serverSide": true,
@@ -37,8 +37,8 @@ $(function () {
                 { 'extend': 'copy',  'exportOptions': {'columns': export_columns}},
                 { 'extend': 'csv',   'exportOptions': {'columns': export_columns}},
                 { 'extend': 'excel', 'exportOptions': {'columns': export_columns}},
-                { 'extend': 'pdf',   'exportOptions': {'columns': [ 3, 4, 5, 6, 7, 8, 9]}, 'title': 'Cost Item Default Equations'},
-                { 'extend': 'print', 'exportOptions': {'columns': [ 3, 4, 5, 6, 7, 8, 9]}, 'title': 'Cost Item Default Equations'},
+                { 'extend': 'pdf',   'exportOptions': {'columns': [ 3, 4, 5, 6, 7, 8, 9, 10]}, 'title': 'Cost Item Default Equations'},
+                { 'extend': 'print', 'exportOptions': {'columns': [ 3, 4, 5, 6, 7, 8, 9, 10]}, 'title': 'Cost Item Default Equations'},
             ],
             "columns": [
                 // Use dot notation to reference nested serializers.
@@ -57,6 +57,7 @@ $(function () {
                 {"data": "a_area", "searchable": true},
                 {"data": "z_depth", "searchable": true},
                 {"data": "d_density", "searchable": true},
+                {"data": "n_number", "searchable": true},
 
 
              ],
