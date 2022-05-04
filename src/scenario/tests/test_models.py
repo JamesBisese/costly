@@ -518,8 +518,12 @@ class ScenarioTestCase(TestCase):
             with self.assertRaises(IntegrityError) as err:
                 Scenario.objects.create(scenario_title='SCENARIO FOO', project=foo, )
                 Scenario.objects.create(scenario_title='SCENARIO FOO', project=foo, )
+            # this is different in SQL Server and SQL Server Express
 
-            self.assertTrue('duplicate key value' in err.exception.args[0])
+            # # SQL Server
+            # self.assertTrue('duplicate key' in err.exception.args[0])
+            # SQL Server Express
+            self.assertTrue('duplicate key' in err.exception.args[1])
 
         s = Scenario.objects.create(scenario_title='SCENARIO FOO', project=foo,)
         s.full_clean()

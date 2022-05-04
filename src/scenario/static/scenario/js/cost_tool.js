@@ -42,7 +42,7 @@ $(document).ready(function()
     let id = getCookie('tab');
     if (id !== '')
     {
-        var index = $('#tab_box a[href="#' + id + '"]').parent().index();
+        let index = $('#tab_box a[href="#' + id + '"]').parent().index();
         $("#tab_box").tabs("option", "active", index );
 
         if (id === "input-result")
@@ -50,6 +50,11 @@ $(document).ready(function()
             populateResultsTab();
         }
     }
+
+    // 2022-05-04 Jonathan asked to always open to the Project-Scenario Description page so this is the edit.
+    id = 'project_information';
+    let index = $('#tab_box a[href="#' + id + '"]').parent().index();
+    $("#tab_box").tabs("option", "active", index );
 
     // set field restrictions (i.e. numbers only) on fields
     setAllFieldInputFilters();
