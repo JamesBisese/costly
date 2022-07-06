@@ -30,7 +30,7 @@ djangorestframework-filters==0.11.1
 et-xmlfile==1.1.0
 importlib-metadata==4.11.1
 jdcal==1.4.1
-lxml==4.8.0
+lxml==4.9.1
 MarkupPy==1.14
 mssql-django==1.1.2
 odfpy==1.4.1
