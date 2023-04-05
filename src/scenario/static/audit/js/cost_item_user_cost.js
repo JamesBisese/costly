@@ -41,7 +41,7 @@ $(document).ready(function() {
                     { "targets": [5], "visible": false },
                     { "targets": [10], className: 'dt-body-right' },
                 ],
-                "order": [[ 0, 'asc' ], [ 4, 'asc'], [5, 'asc']]
+                "order": [[ 0, 'asc' ], [ 4, 'asc'], [5, 'asc']],
             });
 });
 

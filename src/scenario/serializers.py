@@ -699,6 +699,15 @@ class ScenarioCostItemUserCostsSerializer(serializers.ModelSerializer):
                 'valid_start_date_tx': obj.base_year,
                 'value_numeric': value_numeric
             }
+        elif obj.cost_source == 'user':
+            value_numeric = None
+            if obj.user_input_cost is not None:
+                value_numeric = obj.user_input_cost.amount
+            d = {
+                'cost_type': 'User',
+                'valid_start_date_tx': obj.base_year,
+                'value_numeric': value_numeric
+            }
         else:
             l = ['cost_type', 'valid_start_date_tx']
             d = {key: getattr(obj.default_cost, key) for key in l}
