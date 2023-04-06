@@ -1112,6 +1112,9 @@ function validateForm(formField) {
                         // set the field value to 1
                         inputFieldDom.value = (partial_field_nm === 'n_number') ? 0 : 1;
                     }
+                    else if (isNaN(inputFieldDom.value)){
+                        return false;
+                    }
                 }
             }
         }
@@ -1664,7 +1667,7 @@ function setAllFieldInputFilters()
                 return /^\d{0,6}\.?\d{0,3}$/.test(value);
             });
             break;
-          case (field.match(/(_cost|_   |_first_year|_cost_per_ft2)$/) || {}).input:
+          case (field.match(/(_cost|_   |_first_year|_cost_per_ft2|_a_area|_z_depth|_d_density|_n_number)$/) || {}).input:
             setInputFilter(document.getElementById('ui_' + field), function (value) {
                 return /^\d{0,6}\.?\d{0,2}$/.test(value);
             });
@@ -1749,13 +1752,28 @@ function setAllFieldInputFilters()
         });
     }
 
-    function set_structure_costs_input_filter(costitems){
+    // 2023-04-06 trying to figure out if this is creating/working on
+    // Structure/Cost Item User Factors which is where I need to add filters
+    function set_structure_cost_item_user_factors_input_filter(costitems){
         costitems.forEach(function(costitem)
          {
             var fields = ['sizing_factor_k', 'sizing_factor_n'];
             fields.forEach(function(field) {
                setFieldInputFilter(costitem + '_' + field);
             });
+
+            // add input filters for these items to only allow numerical entries
+             // note: the input field always starts with 'ui_' due to poor programming practices.
+            var factor_field_list = [
+                                'a_area',
+                                'z_depth',
+                                'd_density',
+                                'n_number',
+                ];
+            factor_field_list.forEach(function(field) {
+               setFieldInputFilter(costitem + '_' + field);
+            });
+
         });
     }
 
@@ -1803,14 +1821,16 @@ function setAllFieldInputFilters()
         }
     }
 
+    // Structures
     set_structures_input_filter(scenario_template.siteData.conventional_structures.inputs);
 
+    // Structures
     set_structures_input_filter(scenario_template.siteData.nonconventional_structures.inputs);
 
-    //structure costs
-    set_structure_costs_input_filter(scenario_template.siteData.cost_items.fields);
+    // Structure / Cost Item User Factors tab
+    set_structure_cost_item_user_factors_input_filter(scenario_template.siteData.cost_items.fields);
 
-    // cost item unit costs
+    // Cost Item Unit Costs tab
     set_costitem_unit_costs_input_filter(scenario_template.siteData.cost_items.fields);
 }
 

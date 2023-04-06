@@ -145,7 +145,7 @@ INSTALLED_APPS = (
 
     'django.contrib.humanize',
     'bootstrap4',
-    # 'bootstrap_datepicker_plus',
+    'crispy_bootstrap4',
 
     'rest_framework',
     'rest_framework_datatables',
