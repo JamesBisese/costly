@@ -32,8 +32,7 @@ class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), max_length=255, unique=True)
 
     is_staff = models.BooleanField(_('staff status'), default=False,
-        help_text=_('Designates whether the user can log into this admin '
-                    'site.'))
+        help_text=_('Designates whether the user is City staff and can see all Projects and Scenarios for all other users.'))
     is_active = models.BooleanField(_('active'), default=False,
         help_text=_('Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.'))
@@ -59,7 +58,7 @@ class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
 
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-
+AbstractEmailUser._meta.get_field('is_superuser').help_text = 'Designates whether the user is City staff who can access the Admin functions.'
 class AbstractNamedUser(AbstractEmailUser):
     name = models.CharField(_('name'), max_length=255)
 
