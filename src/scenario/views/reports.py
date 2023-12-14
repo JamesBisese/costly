@@ -419,11 +419,11 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
         ['Project Construction Costs',
          ['Structure Class', 'Construction', 'P & D'],
          [
-             ['Non-Conventional (GSI)',
+             ['Green Infrastructure (GSI)',
               int(project_life_cycle_costs['nonconventional']['costs']['construction']),
               int(project_life_cycle_costs['nonconventional']['costs']['planning_and_design']),
               formats['output_col_money_big']],
-             ['Conventional',
+             ['Gray Infrastructure',
               int(project_life_cycle_costs['conventional']['costs']['construction']),
               int(project_life_cycle_costs['conventional']['costs']['planning_and_design']),
               formats['output_col_money_big']],
@@ -435,11 +435,11 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
         ['O&M and Replacement Costs',
          ['Structure Class', 'O & M', 'Replacement'],
          [
-             ['Non-Conventional (GSI)',
+             ['Green Infrastructure (GSI)',
               int(structure_life_cycle_costs['nonconventional']['costs']['o_and_m_sum']),
               int(structure_life_cycle_costs['nonconventional']['costs']['replacement_sum']),
               formats['output_col_money_big']],
-             ['Conventional',
+             ['Gray Infrastructure',
               int(structure_life_cycle_costs['conventional']['costs']['o_and_m_sum']),
               int(structure_life_cycle_costs['conventional']['costs']['replacement_sum']),
               formats['output_col_money_big']],
@@ -454,9 +454,9 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
         ['Life Cycle Costs',
          ['Structure', 'Life Cycle Total'],
          [
-             ['Non-Conventional (GSI)', int(project_life_cycle_costs['nonconventional']['costs']['sum']),
+             ['Green Infrastructure (GSI)', int(project_life_cycle_costs['nonconventional']['costs']['sum']),
               formats['output_col_money_big']],
-             ['Conventional', int(project_life_cycle_costs['conventional']['costs']['sum']),
+             ['Grey Infrastructure', int(project_life_cycle_costs['conventional']['costs']['sum']),
               formats['output_col_money_big']],
              ['Total', int(project_life_cycle_costs['total']['sum']), formats['int_big_output']],
          ]],
@@ -501,9 +501,9 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     conventional_structure_sum_area = 0
     nonconventional_structure_sum_area = 0
 
-    worksheet.merge_range(row, col, row + 1, col + 1, 'Areal Features', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Land Area', formats['detail_header'])
     row += 2
-    worksheet.write(row, col, 'Areal Feature', formats['table_title'])
+    worksheet.write(row, col, 'Land Area', formats['table_title'])
     worksheet.write(row, col + 1, 'Area ft2', formats['table_title'])
     row += 1
     if serializer.data['a_features']:
@@ -522,7 +522,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     worksheet.write(row, col + 1, areal_features_sum_area)
     row += 2
 
-    worksheet.merge_range(row, col, row + 1, col + 2, 'Structure Areas - Non-Conventional (GSI) Structures', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 2, 'Structure Areas - Green Infrastructure (GSI) Structures', formats['detail_header'])
     row += 2
     worksheet.write(row, col, 'Structure', formats['table_title'])
     worksheet.write(row, col + 1, 'Size', formats['table_title'])
@@ -539,7 +539,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
     row += 2
 
-    worksheet.merge_range(row, col, row + 1, col + 2, 'Structure Areas - Conventional Structures', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 2, 'Structure Areas - Gray Infrastructure', formats['detail_header'])
     row += 2
     worksheet.write(row, col, 'Structure', formats['table_title'])
     worksheet.write(row, col + 1, 'Size', formats['table_title'])
@@ -625,7 +625,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
     worksheet.merge_range(row, col, row + 1, col + 5, 'Structure/Cost Item Factors', formats['detail_header'])
     row += 3
-    worksheet.merge_range(row, col, row, col + 5, 'Non-Conventional (GSI) Structures', formats['merge_format'])
+    worksheet.merge_range(row, col, row, col + 5, 'Green Infrastructure (GSI) Structures', formats['merge_format'])
     row += 1
     worksheet.merge_range(row, col, row, col + 4, 'Structures', formats['merge_format'])
     worksheet.write(row, col + 5, 'Size', formats['merge_format'])
@@ -652,7 +652,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
                 row += 1
             row += 1
 
-    worksheet.merge_range(row, col, row, col + 5, 'Conventional (GSI) Structures', formats['merge_format'])
+    worksheet.merge_range(row, col, row, col + 5, 'Gray Infrastructure', formats['merge_format'])
     row += 1
     worksheet.merge_range(row, col, row, col + 4, 'Structures', formats['merge_format'])
     worksheet.write(row, col + 5, 'Size', formats['merge_format'])
@@ -681,7 +681,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
 
     row += 1
 
-    worksheet.merge_range(row, col, row + 1, col + 1, 'Construction Cost - Non-Conventional (GSI) Structures', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Construction Cost - Green Infrastructure (GSI) Structures', formats['detail_header'])
     row += 2
     worksheet.write(row, col, 'Structures', formats['merge_format'])
     worksheet.write(row, col + 1, 'Size', formats['merge_format'])
@@ -705,7 +705,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
         row += 2
     row += 1
 
-    worksheet.merge_range(row, col, row + 1, col + 1, 'Construction Cost - Conventional (GSI) Structures', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Construction Cost - Gray Infrastructure', formats['detail_header'])
     row += 2
     worksheet.write(row, col, 'Structures', formats['merge_format'])
     worksheet.write(row, col + 1, 'Size', formats['merge_format'])
@@ -730,7 +730,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     row += 1
 
 
-    worksheet.merge_range(row, col, row + 1, col + 2, 'O&M and Replacement Cost - Non-Conventional (GSI) Structures', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 2, 'O&M and Replacement Cost - Green Infrastructure (GSI) Structures', formats['detail_header'])
     row += 2
     worksheet.merge_range(row, col, row, col + 1, 'Structures', formats['merge_format'])
     worksheet.write(row, col + 2, 'Size', formats['merge_format'])
@@ -759,7 +759,7 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
         row += 2
     row += 1
 
-    worksheet.merge_range(row, col, row + 1, col + 2, 'O&M and Replacement Cost - Conventional (GSI) Structures', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 2, 'O&M and Replacement Cost - Gray Infrastructure', formats['detail_header'])
     row += 2
     worksheet.merge_range(row, col, row, col + 1, 'Structures', formats['merge_format'])
     worksheet.write(row, col + 2, 'Size', formats['merge_format'])
@@ -944,7 +944,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
     # now add the 3 cost-blocks, each with 5 values
 
     cost_blocks = (
-        ['Non-Conventional (GSI) Structures Costs',
+        ['Green Infrastructure Costs',
          ['Construction', 'P & D', 'O & M', 'Replacement', 'Total'],
          [
              int(structure_life_cycle_costs['nonconventional']['costs']['construction']),
@@ -954,7 +954,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
              int(project_life_cycle_costs['nonconventional']['costs']['sum']),
          ]
         ],
-        ['Conventional Structures Costs',
+        ['Gray Infrastructure Costs',
          ['Construction', 'P & D', 'O & M', 'Replacement', 'Total'],
          [
              int(structure_life_cycle_costs['conventional']['costs']['construction']),
@@ -1002,7 +1002,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 
     if insert_header is True:
         col_count = len(areal_features)
-        worksheet.merge_range(0, col, 0, col + col_count - 1, 'Areal Features (square feet)', formats['merge_format'])
+        worksheet.merge_range(0, col, 0, col + col_count - 1, 'Land Area (square feet)', formats['merge_format'])
         hold_col = col
         for areal_feature in areal_features:
             worksheet.write(1, col, areal_feature.code, formats['bold'])

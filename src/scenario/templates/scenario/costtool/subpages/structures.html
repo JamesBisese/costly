@@ -17,7 +17,7 @@
                     <span class="glyphicon glyphicon-copy"></span> Recalculate
                 </button>
                     <div id="nonconventional_structure_header">
-                        <h3 class="bmplabel" onclick="toggleHelpText('NonConventionalStructuresHelpText');">Non-Conventional Structures</h3>
+                        <h3 class="bmplabel" onclick="toggleHelpText('NonConventionalStructuresHelpText');">Green Infrastructures</h3>
                     </div>
                     {% for structure in structures %}
                         {% if structure.classification == 'nonconventional' %}
@@ -44,7 +44,7 @@
 
                 <div id="conventional_structure_header">
                     <h3 class="bmplabel" style="margin-top: 0px;"
-                        onclick="toggleHelpText('ConventionalStructuresHelpText');">Conventional Structures</h3>
+                        onclick="toggleHelpText('ConventionalStructuresHelpText');">Gray Infrastructures</h3>
                 </div>
                     {% for structure in structures %}
                         {% if structure.classification == 'conventional' %}

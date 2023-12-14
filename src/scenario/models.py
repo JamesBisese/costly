@@ -79,7 +79,7 @@ class ArealFeatureLookup(models.Model):
         return self.code + ' - ' + self.name
 
     class Meta:
-        verbose_name_plural = "Areal Features"
+        verbose_name_plural = "Land Cover"
         ordering = ['sort_nu', ]
 
 # DEPRECIATED.
@@ -136,7 +136,7 @@ class Structures(models.Model):
 
     """
     CLASSIFICATION_VALUES = ('conventional', 'nonconventional')
-    CLASSIFICATION_TEXTS = ('Conventional', 'Non-Conventional')
+    CLASSIFICATION_TEXTS = ('Gray Infrastructure', 'Green Infrastructure')
     CLASSIFICATION_CHOICES = zip(CLASSIFICATION_VALUES, CLASSIFICATION_TEXTS)
 
     code = models.CharField(unique=True, max_length=100, default=None, blank=False, null=False)
@@ -368,7 +368,7 @@ class Project(models.Model):
                            'development',
                            'voluntary_redevelopment')
     PROJECT_TYPE_TEXTS = ('redevelopment project focused on additional new impervious area',
-                          'whole site (new development)',
+                          'green field (new development)',
                           'BMP retrofit to existing development only (voluntary redevelopment)')
     PROJECT_TYPE_CHOICES = zip(PROJECT_TYPE_VALUES, PROJECT_TYPE_TEXTS)
 
@@ -1426,7 +1426,7 @@ class Scenario(models.Model):
 
             project_life_cycle_costs[classification] = {
                 'meta': {
-                    'name': ('Conventional' if classification == 'conventional' else 'Non-Conventional (GSI)')
+                    'name': ('Gray Infrastructure' if classification == 'conventional' else 'Green Infrastructure')
                 },
                 'costs': {
                     'sum': 0,
@@ -1439,7 +1439,7 @@ class Scenario(models.Model):
 
             structure_life_cycle_costs[classification] = {
                 'meta': {
-                    'name': ('Conventional' if classification == 'conventional' else 'Non-Conventional') +
+                    'name': ('Gray Infrastructure' if classification == 'conventional' else 'Green Infrastructure') +
                             ' (GSI) Structures',
                 },
                 'costs': {
@@ -1676,7 +1676,7 @@ class ScenarioArealFeature(models.Model):
         return self.scenario.scenario_title + ' - ' + self.areal_feature.name
 
     class Meta:
-        verbose_name_plural = "Scenario Areal Features"
+        verbose_name_plural = "Scenario Land Area"
         unique_together = ("scenario", 'areal_feature',)
 
 

@@ -106,13 +106,13 @@ ALERT: You have indicated one or more differences in the <b>Life Cycle Costs Ass
         </tr>
         </thead>
         <tr>
-          <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+          <td style="font-weight: bold;">Green Infrastructure (GSI)</td>
 
           <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.construction|floatformat:"0"|intcomma }}</td>
           <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.planning_and_design|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Conventional</td>
+          <td style="font-weight: bold;">Gray Infrastructure</td>
 
           <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.construction|floatformat:"0"|intcomma}}</td>
             <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.planning_and_design|floatformat:"0"|intcomma}}</td>
@@ -139,12 +139,12 @@ ALERT: You have indicated one or more differences in the <b>Life Cycle Costs Ass
         </thead>
 
             <tr>
-                <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+                <td style="font-weight: bold;">Green Infrastructure (GSI)</td>
                 <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.o_and_m|floatformat:"0"|intcomma }}  </td>
                 <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.replacement|floatformat:"0"|intcomma }} </td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">Conventional</td>
+                <td style="font-weight: bold;">Gray Infrastructure</td>
                 <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.o_and_m|floatformat:"0"|intcomma }}  </td>
                 <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.replacement|floatformat:"0"|intcomma }} </td>
             </tr>
@@ -167,11 +167,11 @@ ALERT: You have indicated one or more differences in the <b>Life Cycle Costs Ass
             <th class="cost_item_th">Life Cycle Total</th>
         </thead>
         <tr>
-            <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+            <td style="font-weight: bold;">Green Infrastructure (GSI)</td>
             <td class="result_col output_col"><div class="dollar">$</div>{{ diff.nonconventional.total|floatformat:"0"|intcomma }}  </td>
         </tr>
         <tr>
-            <td style="font-weight: bold;">Conventional</td>
+            <td style="font-weight: bold;">Gray Infrastructure</td>
             <td class="result_col output_col"><div class="dollar">$</div>{{ diff.conventional.total|floatformat:"0"|intcomma }}  </td>
         </tr>
         <tr>
@@ -186,7 +186,7 @@ ALERT: You have indicated one or more differences in the <b>Life Cycle Costs Ass
     <div class="areal_features comparison_column w3-container w3-animate-slide w3-hide " style="width: 380px;">
     <table class="result_table details_result_table">
     <thead><tr>
-      <th>Areal Feature</th>
+      <th>Land Area</th>
       <th>Area ft<sup>2</sup></th>
     </tr>
     </thead>

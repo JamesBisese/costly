@@ -36,13 +36,13 @@
                                     <option value=""> --- Select --- </option>
                                     {% for obj in scenario.nc_structures %}
                                       {% if obj.is_checked == True %}
-                                        <option value="{{ obj.structure_code }}">Non-Conventional - {{ obj.structure_name }}</option>
+                                        <option value="{{ obj.structure_code }}">Green Infrastructure - {{ obj.structure_name }}</option>
                                       {% endif %}
                                     {% endfor %}
 
                                     {% for obj in scenario.c_structures %}
                                       {% if obj.is_checked == True %}
-                                    <option value="{{ obj.structure_code }}">Conventional - {{ obj.structure_name }}</option>
+                                    <option value="{{ obj.structure_code }}">Gray Infrastructure - {{ obj.structure_name }}</option>
                                       {% endif %}
                                     {% endfor %}
 

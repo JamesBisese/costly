@@ -209,13 +209,13 @@
         </tr>
         </thead>
         <tr>
-          <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+          <td style="font-weight: bold;">Green Infrastructure (GSI)</td>
 
           <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.nonconventional.costs.construction|floatformat:"0"|intcomma }}</td>
           <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.nonconventional.costs.planning_and_design|floatformat:"0"|intcomma }}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Conventional</td>
+          <td style="font-weight: bold;">Gray Infrastructure</td>
 
           <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.conventional.costs.construction|floatformat:"0"|intcomma}}</td>
             <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.conventional.costs.planning_and_design|floatformat:"0"|intcomma}}</td>
@@ -243,9 +243,9 @@
 {% for r, objClassification in structure_life_cycle_costs.items %}
             <tr>
                 <td style="font-weight: bold;">{% if r == 'conventional' %}
-                        Conventional
+                        Gray Infrastructure
                     {% else %}
-                        Non-Conventional (GSI)
+                        Green Infrastructure (GSI)
                     {% endif %}</td>
                 <td class="result_col output_col"><div class="dollar">$</div>{{ objClassification.costs.o_and_m_sum|floatformat:"0"|intcomma }}  </td>
                 <td class="result_col output_col"><div class="dollar">$</div>{{ objClassification.costs.replacement_sum|floatformat:"0"|intcomma }} </td>
@@ -269,11 +269,11 @@
             <th class="cost_item_th">Life Cycle Total</th>
         </thead>
         <tr>
-            <td style="font-weight: bold;">Non-Conventional (GSI)</td>
+            <td style="font-weight: bold;">Green Infrastructure (GSI)</td>
             <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.nonconventional.costs.sum|floatformat:"0"|intcomma }}  </td>
         </tr>
         <tr>
-            <td style="font-weight: bold;">Conventional</td>
+            <td style="font-weight: bold;">Gray Infrastructure</td>
             <td class="result_col output_col"><div class="dollar">$</div>{{ project_life_cycle_costs.conventional.costs.sum|floatformat:"0"|intcomma }}  </td>
         </tr>
         <tr>
@@ -295,12 +295,12 @@
     </div>
 
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
-            >Areal Features
+            >Land Area
     </button>
     <div class="areal_features w3-container w3-animate-slide w3-hide">
         <table class="result_table details_result_table">
         <thead><tr>
-          <th>Areal Feature</th>
+          <th>Land Area</th>
           <th>Area ft<sup>2</sup></th>
         </tr>
         </thead>
@@ -326,9 +326,9 @@
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align"
             >Structure Areas
                         {% if r == 'conventional' %}
-                        Conventional Structures
+                        Gray Infrastructure
                     {% else %}
-                        - <br>Non-Conventional (GSI) Structures
+                        - <br>Green Infrastructure (GSI) Structures
                     {% endif %}
     </button>
 
@@ -337,9 +337,9 @@
             <thead><tr>
                 <th colspan="3" style="text-align: left;">
                     {% if r == 'conventional' %}
-                        Conventional Structures
+                        Gray Infrastructure
                     {% else %}
-                        Non-Conventional (GSI) Structures
+                        Green Infrastructure
                     {% endif %}
                 </th>
             </tr>
@@ -438,9 +438,9 @@
             <thead><tr>
                 <th style="text-align: center;">
                     {% if r == 'conventional' %}
-                        Conventional Structures
+                        Grey Infrastructure Structures
                     {% else %}
-                        Non-Conventional (GSI) Structures
+                        Green Infrastructure (GSI) Structures
                     {% endif %}
                 </th>
             </tr>
@@ -507,9 +507,9 @@
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align" style="width: 387px;background: #228EA9;">
         Construction Costs -<br>
             {% if r == 'conventional' %}
-                Conventional Structures
+                Gray Infrastructure
             {% else %}
-                Non-Conventional (GSI) Structures
+                Green Infrastructure
             {% endif %}</button>
 
     <div class="structure_costitem_costs_{{ r }} w3-container w3-animate-left w3-hide">
@@ -570,9 +570,9 @@
     <button onclick="collapseDetail(this)" class="w3-button w3-container-button w3-block w3-left-align">
         O&amp;M and Replacement Costs -<br>
             {% if r == 'conventional' %}
-                Conventional Structures
+                Gray Infrastructure
             {% else %}
-                Non-Conventional (GSI) Structures
+                Green Infrastructure
             {% endif %}</button>
 
     <div class="structure_costitem_costs_o_and_m_{{ r }} w3-container w3-animate-left w3-hide">

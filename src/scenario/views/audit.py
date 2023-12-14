@@ -85,7 +85,7 @@ def audit_areal_feature(request):
 
         URI/audit/areal_feature/
     """
-    context_data = {'title': 'Areal Features', 'header': 'Areal Features', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
+    context_data = {'title': 'Land Area', 'header': 'Land Area', 'IIS_APP_ALIAS': settings.IIS_APP_ALIAS}
     return render(request, 'audit/areal_feature.html', context_data)
 
 @login_required

@@ -9,6 +9,7 @@
 var _scenario_template = null;
 var URLS = null; // this gets set via another javascript file sourced before this file
 var csrftoken = null;
+var SAVE_COUNTER = 0;
 /********************************
 *
 * Initialize document
@@ -669,8 +670,8 @@ function updateStructureCostDropDown(siteData){
     //zed
     let structure_list = [];
 
-    compileStructureList(siteData.nonconventional_structures, 'Non-Conventional');
-    compileStructureList(siteData.conventional_structures, 'Conventional');
+    compileStructureList(siteData.nonconventional_structures, 'Green Infrastructure');
+    compileStructureList(siteData.conventional_structures, 'Gray Infrastructure');
 
     //
     structure_select.options.length = 0;
@@ -1499,7 +1500,7 @@ function compileScenarioData() {
 
     delete scenario_template.siteData.areal_features.toggles;
 
-    // get the data from the 'Structures' tab.  They are split into 2 bits for Conventional and Non-Conventional
+    // get the data from the 'Structures' tab.  They are split into 2 bits for Gray Infrastructure and Green Infrastructure
     compileStructure(scenario_template.siteData.conventional_structures);
 
     compileStructure(scenario_template.siteData.nonconventional_structures);
@@ -1534,7 +1535,7 @@ function saveDB(action) {
     let tab_id = getCookie('tab');
 
     document.getElementById("network_indicator").style.display = "";
-
+    //document.getElementById("network_indicator").innerHTML = String(++SAVE_COUNTER);
     // only work on sections that are on the active_tab
     scenarioData.active_tab = tab_id;
 
@@ -1802,7 +1803,7 @@ function setAllFieldInputFilters()
             // each Areal Feature has a button
             let domElement = document.getElementById('checkbox_' + name);
             if (!domElement) {
-                window.alert("There is no Areal Feature button: 'checkbox_" + name + "'");
+                window.alert("There is no Land Area button: 'checkbox_" + name + "'");
             } else {
                 // Adds 'Check this to enable input for this areal feature'
                 domElement.title = open_af_button_title(name);
@@ -1811,7 +1812,7 @@ function setAllFieldInputFilters()
             // and a text-box called 'ui_' name
             domElement = document.getElementById('ui_' + name + '_area'); //TODO
             if (!domElement) {
-                window.alert("There is no Areal Feature text-box: 'ui_" + name + "'");
+                window.alert("There is no Land Area text-box: 'ui_" + name + "'");
             } else {
                 // set the input filter to a float
                 setInputFilter(domElement, function (value) {
@@ -1874,7 +1875,7 @@ function open_structure_checkbox_title(structure){
 // mouse-over text attached to each Areal Feature button
 function open_af_button_title(button_context) {
     //TODO: implement logic to go get text for display
-    return "Check this to enable input for this areal feature";
+    return "Check this to enable input for this Land Area";
 }
 
 function open_cost_item_help(button_context) {
