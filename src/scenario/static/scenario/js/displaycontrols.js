@@ -296,7 +296,7 @@ function collapseDetail(element) {
             }
         }
         // let button_text = 'Areal Features';
-        let top_of_areal_features = $('button:contains("Land Area")').offset().top;
+        let top_of_areal_features = $('button:contains("Land Cover")').offset().top;
         let areal_features_dom = document.getElementsByClassName('areal_features');
         // areal_features_dom[2].clientTop = top_of_areal_features;
         resultDetails[2].style.top = top_of_areal_features;

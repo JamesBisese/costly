@@ -1803,7 +1803,7 @@ function setAllFieldInputFilters()
             // each Areal Feature has a button
             let domElement = document.getElementById('checkbox_' + name);
             if (!domElement) {
-                window.alert("There is no Land Area button: 'checkbox_" + name + "'");
+                window.alert("There is no Land Cover button: 'checkbox_" + name + "'");
             } else {
                 // Adds 'Check this to enable input for this areal feature'
                 domElement.title = open_af_button_title(name);
@@ -1812,7 +1812,7 @@ function setAllFieldInputFilters()
             // and a text-box called 'ui_' name
             domElement = document.getElementById('ui_' + name + '_area'); //TODO
             if (!domElement) {
-                window.alert("There is no Land Area text-box: 'ui_" + name + "'");
+                window.alert("There is no Land Cover text-box: 'ui_" + name + "'");
             } else {
                 // set the input filter to a float
                 setInputFilter(domElement, function (value) {
@@ -1875,7 +1875,7 @@ function open_structure_checkbox_title(structure){
 // mouse-over text attached to each Areal Feature button
 function open_af_button_title(button_context) {
     //TODO: implement logic to go get text for display
-    return "Check this to enable input for this Land Area";
+    return "Check this to enable input for this Land Cover";
 }
 
 function open_cost_item_help(button_context) {

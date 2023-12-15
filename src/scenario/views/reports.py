@@ -501,9 +501,9 @@ def populate_workbook(workbook, worksheet, scenario_id, formats, start_col=0):
     conventional_structure_sum_area = 0
     nonconventional_structure_sum_area = 0
 
-    worksheet.merge_range(row, col, row + 1, col + 1, 'Land Area', formats['detail_header'])
+    worksheet.merge_range(row, col, row + 1, col + 1, 'Land Cover', formats['detail_header'])
     row += 2
-    worksheet.write(row, col, 'Land Area', formats['table_title'])
+    worksheet.write(row, col, 'Land Cover', formats['table_title'])
     worksheet.write(row, col + 1, 'Area ft2', formats['table_title'])
     row += 1
     if serializer.data['a_features']:
@@ -1002,7 +1002,7 @@ def populate_scenario_extended_excel_report_workbook(workbook, worksheet, scenar
 
     if insert_header is True:
         col_count = len(areal_features)
-        worksheet.merge_range(0, col, 0, col + col_count - 1, 'Land Area (square feet)', formats['merge_format'])
+        worksheet.merge_range(0, col, 0, col + col_count - 1, 'Land Cover (square feet)', formats['merge_format'])
         hold_col = col
         for areal_feature in areal_features:
             worksheet.write(1, col, areal_feature.code, formats['bold'])

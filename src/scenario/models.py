@@ -1676,7 +1676,7 @@ class ScenarioArealFeature(models.Model):
         return self.scenario.scenario_title + ' - ' + self.areal_feature.name
 
     class Meta:
-        verbose_name_plural = "Scenario Land Area"
+        verbose_name_plural = "Scenario Land Cover"
         unique_together = ("scenario", 'areal_feature',)
 
 
